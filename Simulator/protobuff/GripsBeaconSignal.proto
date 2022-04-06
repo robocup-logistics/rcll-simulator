@@ -1,0 +1,16 @@
+package llsf_msgs;
+
+import "BeaconSignal.proto";
+
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "GripsBeaconSignalProtos";
+
+message GripsBeaconSignal{
+    enum CompType {
+        COMP_ID = 5000;
+        MSG_TYPE = 501;
+    }
+    
+    required BeaconSignal beacon_signal = 1; // beacon for refbox
+    optional int32 task_id = 2; // current task-id of robot 
+}

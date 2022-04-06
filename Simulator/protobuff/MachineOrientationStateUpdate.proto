@@ -1,0 +1,21 @@
+// [START declaration]
+package machineStates;
+// [END declaration]
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "MachineOrientationStateUpdateProtos";
+// [START messages]
+message MachineOrientationState {
+    enum CompType {
+        COMP_ID = 6000;
+        MSG_TYPE = 201;
+    }
+
+    required uint32 robot_id = 1;
+    optional bool found_machine = 2;
+    optional string machine_id = 3;
+    optional uint32 zone_number = 4;
+    optional string zone_prefix = 5;
+    optional double orientation = 6;
+}
+
+// [END messages]

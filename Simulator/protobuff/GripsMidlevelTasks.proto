@@ -1,0 +1,67 @@
+package llsf_msgs;
+
+import "Team.proto";
+
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "GripsMidlevelTasksProtos";
+
+message GripsMidlevelTasks {
+    enum CompType {
+        COMP_ID = 5000;
+        MSG_TYPE = 502;
+    }
+
+    // general infos
+    required Team team_color = 1;    // Color of the team
+    required uint32 task_id  = 2;
+    required uint32 robot_id = 3;
+
+    // Tasks
+    optional MoveToWaypoint move_to_waypoint = 5;
+    optional GetFromStation get_from_station = 6;
+    optional DeliverToStation deliver_to_station = 7;
+    optional BufferCapStation buffer_cap_station = 8;
+    optional ExploreMachine explore_machine = 9;
+    
+    // flags
+    optional bool cancel_task = 10; // cancels current task
+    optional bool pause_task = 11; // if true current task is paused, if false again task is continued
+    optional bool receive_machine_infos = 12; // true if robot requires machine-informations (can be set by robot and teamserver)
+    optional bool report_all_seen_machines = 13; // flag need for the exploration logic
+    optional bool lost_product = 14; // true if the product was lost
+    
+    // result of the execution from the robot
+    optional bool successful = 15;
+    optional bool canceled = 17;
+    optional uint32 error_code_midlevel = 16; // only set if failure, error-codes defined in GripsCommon
+}
+
+// Move robot to stated waypoint
+message MoveToWaypoint {
+    required string waypoint = 1;
+}
+
+// Get a workpiece at the given station and hold the product in the gripper
+message GetFromStation {
+    required string machine_id    = 1;
+    required string machine_point = 2; // valid machine-points: input, output
+}
+
+// Deliver the holding product to the given station
+message DeliverToStation {
+    required string machine_id    = 1;
+    required string machine_point = 2; // valid machine-points: input, slide
+}
+
+// Get product from shelf and place it immediately afterwards on the conveyor
+message BufferCapStation {
+    required string machine_id   = 1;  // machine-id because need to know if CS1 or CS2
+    required uint32 shelf_number = 2;  // only for old-gripper, valid shelf-numbers: 1, 2, 3
+}
+
+// Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
+message ExploreMachine {
+    required string machine_id    = 1;
+    required string machine_point = 2;  // valid machine-points: input, output
+    required string waypoint      = 3;
+}

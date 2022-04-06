@@ -1,0 +1,19 @@
+package llsf_msgs;
+
+import "BeaconSignal.proto";
+
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "RobotBeaconSignalProtos";
+
+message RobotBeaconSignal{
+    enum CompType {
+        COMP_ID = 5006;
+        MSG_TYPE = 702;
+    }
+    
+    required BeaconSignal beaconSignal = 1;
+    optional int32 task_id = 2;
+    required bool running = 3;
+    optional string oprs_stack = 4;
+    optional bool holdProduct = 5;
+}

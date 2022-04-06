@@ -1,0 +1,15 @@
+package llsf_msgs;
+
+import "RobotMachineReport.proto";
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "ReportAllMachinesProtos";
+
+message ReportAllMachines {
+    enum CompType {
+        COMP_ID = 2100;
+        MSG_TYPE = 201;
+    }
+    repeated RobotMachineReportEntry machines = 2;
+
+    required uint32 robotID = 3;
+}

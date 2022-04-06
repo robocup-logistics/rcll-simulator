@@ -1,0 +1,18 @@
+package llsf_msgs;
+
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "GripsReportMachineProtos";
+
+message GripsReportMachine {
+    enum CompType {
+        COMP_ID = 5000; 
+        MSG_TYPE = 505;
+    }
+
+    required uint32 robot_id = 1;
+    optional bool found_machine = 2;
+    optional string machine_id = 3;
+    optional uint32 zone_number = 4;
+    optional string zone_prefix = 5;
+    optional double orientation = 6;
+}

@@ -1,0 +1,122 @@
+﻿version: 2
+# Color of machine gets taken from a prefix of C-xxx or M-xxx
+stations:
+  C-BS: 
+    active: true
+    debug: true
+    type: BS
+    port: 4840
+  C-CS1:
+    active: true
+    debug: true
+    port:  4841
+    type: CS
+  C-CS2:
+    active: true
+    debug: true
+    port:  4842
+    type: CS
+  C-RS1:
+    active: true
+    debug: true
+    port:  4843
+    type: RS
+  C-RS2:
+    active: true
+    debug: true
+    port:  4844
+    type: RS
+  C-DS:
+    active: true
+    debug: true
+    port:  4845
+    type: DS
+  C-SS:
+    active: true
+    debug: true
+    port:  4846
+    type: SS
+  M-BS:
+    active: false
+    debug: false
+    port:  4840
+    type: BS
+  M-CS1:
+    active: false
+    debug: false
+    port:  4840
+    type: CS
+  M-CS2:
+    active: false
+    debug: false
+    port:  4840
+    type: CS
+  M-RS1:
+    active: false
+    debug: false
+    port:  4840
+    type: RS
+  M-RS2:
+    active: false
+    debug: false
+    port:  4840
+    type: RS
+  M-DS:
+    active: false
+    debug: false
+    port:  4840
+    type: DS
+  M-SS:
+    active: false
+    debug: false
+    port:  4840
+    type: SS
+robots:
+  Klaus:
+    active: true
+    jersey: 1
+    team: cyan
+  Wolf:
+    active: true
+    jersey: 2
+    team: cyan
+  Uke:
+    active: true
+    jersey: 3
+    team: cyan
+  Heinz:
+    active: false
+    jersey: 1
+    team: magenta
+teams:
+  CYAN:
+    name: GRIPS
+    active: true
+    host: 192.169.0.102
+    port: 2016
+  MAGENTA:
+    name: Carologistics
+    active: true
+    host: 192.169.0.94
+    port: 4444
+refbox:
+  public:
+    ip: 192.169.0.101
+    send: 4445
+    recv: 4444
+  cyan:
+    send: 4446
+    recv: 4441
+  magenta:
+    send: 4442
+    recv: 4447
+general:
+  timefactor: 1.0
+  mockup-connections: true
+  ignore-teamcolor: true
+  robot-move-zone-duration: 2 # in seconds
+  belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
+  bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo
+  cs-buffer-duration: 3.5  # buffer cap - taken from gazebo
+  rs-mount-duration: 3.5  # mounting a ring 3.5 seconds - taken from gazebo
+  ds-deliver-duration: 3.5  # time it takes to deliver - taken from gazebo

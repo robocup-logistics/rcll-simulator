@@ -1,0 +1,17 @@
+package llsf_msgs;
+
+option java_package = "org.robocup_logistics.llsf_msgs";
+option java_outer_classname = "GripsPrepareMachineProtos";
+
+message GripsPrepareMachine {   // Instructs the Teamserver to prepare the machine
+    enum CompType {
+        COMP_ID = 5000;
+        MSG_TYPE = 503;
+    }
+
+    required uint32 robot_id       = 1;
+    required string machine_id     = 2;
+    required string machine_point  = 3;
+    required bool machine_prepared = 4; // true if machine successfully prepared from teamserver
+}
+
