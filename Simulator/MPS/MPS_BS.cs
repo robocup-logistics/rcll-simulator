@@ -44,6 +44,39 @@ namespace Simulator.MPS
             }*/
             Work();
         }
+        public void DispenseBase()
+        {
+            MyLogger.Log("Got a GetBase Task!");
+            TaskDescription = "GetBaseTask";
+            InNodes.StatusNodes.busy.Value = true;
+            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            InNodes.StatusNodes.enable.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            Thread.Sleep(Configurations.GetInstance().BSTaskDuration);
+            MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
+            switch (InNodes.Data0.Value)
+            {
+                case 1:
+                    ProductOnBelt = Stock1.Dequeue();
+                    break;
+                case 2:
+                    ProductOnBelt = Stock2.Dequeue();
+                    break;
+                case 3:
+                    ProductOnBelt = Stock3.Dequeue();
+                    break;
+                default:
+                    MyLogger.Log("Unknown Stock to get base from!");
+                    break;
+            }
+            InNodes.ActionId.Value = 0;
+            Refbox.UpdateChanges(InNodes.ActionId);
+            InNodes.Data0.Value = 0;
+            Refbox.UpdateChanges(InNodes.Data0);
+            InNodes.StatusNodes.busy.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            //State = EnumState.Working;
+        }
         private void Work()
         {
             StartOpc(Type);
@@ -68,36 +101,7 @@ namespace Simulator.MPS
                         HandleBelt();
                         break;
                     case (ushort)BaseSpecificActions.GetBase:
-                        MyLogger.Log("Got a GetBase Task!");
-                        TaskDescription = "GetBaseTask";
-                        InNodes.StatusNodes.busy.Value = true;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-                        InNodes.StatusNodes.enable.Value = false;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.enable);
-                        Thread.Sleep(Configurations.GetInstance().BSTaskDuration);
-                        MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
-                        switch (InNodes.Data0.Value)
-                        {
-                            case 1:
-                                ProductOnBelt = Stock1.Dequeue();
-                                break;
-                            case 2:
-                                ProductOnBelt = Stock2.Dequeue();
-                                break;
-                            case 3:
-                                ProductOnBelt = Stock3.Dequeue();
-                                break;
-                            default:
-                                MyLogger.Log("Unknown Stock to get base from!");
-                                break;
-                        }
-                        InNodes.ActionId.Value = 0;
-                        Refbox.UpdateChanges(InNodes.ActionId);
-                        InNodes.Data0.Value = 0;
-                        Refbox.UpdateChanges(InNodes.Data0);
-                        InNodes.StatusNodes.busy.Value = false;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-                        //State = EnumState.Working;
+                        DispenseBase();
                         break;
                     default:
                         MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);

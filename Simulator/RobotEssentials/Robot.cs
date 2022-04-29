@@ -351,11 +351,11 @@ namespace Simulator.RobotEssentials
                 if (mps.Type == Mps.MpsType.CapStation && !target.Equals("output"))
                 {
                     MyLogger.Log("Prepare in case of a CapStation!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.PrepareMachine);
-                    if (message != null)
+                    if(Config.SendPrepare)
                     {
-                        Teamserver?.AddMessage(message);
+                        PrepareMachine();
                     }
+
                 }
                 CurrentTask.Successful = Move(targetZone);
                 if (!Configurations.GetInstance().MockUp && !CurrentTask.Successful)
@@ -377,10 +377,9 @@ namespace Simulator.RobotEssentials
                 {
                     case Mps.MpsType.BaseStation:
                         {
-                            var prepare = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
-                            if (prepare != null)
+                            if(Config.SendPrepare)
                             {
-                                Teamserver?.AddMessage(prepare);
+                                PrepareMachine();
                             }
                             break;
                         }
@@ -435,24 +434,18 @@ namespace Simulator.RobotEssentials
                 case MPS.Mps.MpsType.RingStation:
                     {
                         ((MPS_RS)mps).PlaceProduct(target, HeldProduct);
-                        var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
-                        MyLogger.Log("Tried to create a GripPrepareMachineTask!");
-                        if (message != null)
+                        if(Config.SendPrepare)
                         {
-                            MyLogger.Log("Sending a GripsPrepareMachineTask!");
-                            Teamserver?.AddMessage(message);
+                            PrepareMachine();
                         }
                         break;
                     }
                 case MPS.Mps.MpsType.DeliveryStation:
                     {
                         mps.PlaceProduct(target, HeldProduct);
-                        var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
-                        MyLogger.Log("Tried to create a GripPrepareMachineTask!");
-                        if (message != null)
+                        if(Config.SendPrepare)
                         {
-                            MyLogger.Log("Sending a GripsPrepareMachineTask!");
-                            Teamserver?.AddMessage(message);
+                            PrepareMachine();
                         }
                         break;
                     }
@@ -488,19 +481,12 @@ namespace Simulator.RobotEssentials
 
             MyLogger.Log("Trying to place the currently held Product on the input side of the CS");
             mps.PlaceProduct("input", HeldProduct);
-
             MyLogger.Log("Next we need to send a prepare machine to the teamserver!");
-            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
-            MyLogger.Log("Tried to create a GripPrepareMachineTask!");
-            if (message != null)
+            if(Config.SendPrepare)
             {
-                MyLogger.Log("Sending a GripsPrepareMachineTask!");
-                Teamserver?.AddMessage(message);
+                PrepareMachine();
             }
-            else
-            {
-                MyLogger.Log("No Prepare machine task can be sent!");
-            }
+            
             MpsManager ??= MpsManager.GetInstance();
 
             if (CurrentTask == null)
@@ -509,7 +495,7 @@ namespace Simulator.RobotEssentials
             }
             MyLogger.Log("Buffered the machine!");
             CurrentTask.Successful = true;
-            message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
             if (message != null)
             {
                 Teamserver?.AddMessage(message);
@@ -535,6 +521,19 @@ namespace Simulator.RobotEssentials
         private void Explore()
         {
             MyLogger.Log("Current Zone = " + CurrentZone.ToString());
+        }
+        private void PrepareMachine()
+        {
+            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
+            MyLogger.Log("Tried to create a GripPrepareMachineTask!");
+            if (message != null)
+            {
+                MyLogger.Log("Sending a GripsPrepareMachineTask!");
+                Teamserver?.AddMessage(message);
+                return;
+            }
+            MyLogger.Log("No Prepare machine task can be sent!");
+            return;
         }
         #endregion
         public void Work()

@@ -32,7 +32,7 @@ namespace Simulator
         public int FieldHeight = 8;
 
         public bool IgnoreTeamColor { get; private set; } = true;
-
+        public bool SendPrepare { get; private set; } = true;
         public int RobotActionDuration { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
@@ -121,6 +121,9 @@ namespace Simulator
                 {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
+                        break;
+                    case "robot-prepare-mps":
+                        SendPrepare = bool.Parse(value.ToString());
                         break;
                     case "ignore-teamcolor":
                         IgnoreTeamColor = bool.Parse(value.ToString());

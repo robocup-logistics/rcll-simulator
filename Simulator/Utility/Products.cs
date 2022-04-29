@@ -7,14 +7,13 @@ namespace Simulator.Utility
     public class Products
     {
         public int ID { get; private set; }
-        private Complexity Complexity;
+        public Complexity Complexity { get;  private set; }
         public BaseElement? Base;
         private CapElement? Cap;
         private List<RingElement> RingList = new List<RingElement>();
         public void AddPart(BaseElement newBase)
         {
             Base = newBase;
-            Complexity++;
         }
         public void AddPart(CapElement newCap)
         {
@@ -40,21 +39,23 @@ namespace Simulator.Utility
         public Products(BaseColor color)
         {
             Base =  new BaseElement(color);
+            Complexity = (Complexity)-1;
         }
         public Products(CapColor color)
         {
             Base = new BaseElement();
             Cap = new CapElement(color);
-
+            Complexity = (Complexity) 0;
         }
 
         public Products(RingColor color)
         {
             RingList.Add(new RingElement(color));
+            Complexity = (Complexity) 1;
         }
         public Products()
         {
-            
+            Complexity = 0;
         }
         public CapElement? RetrieveCap()
         {

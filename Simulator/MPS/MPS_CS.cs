@@ -10,7 +10,7 @@ namespace Simulator.MPS
         private readonly Queue<Products> Shelf1;
         private readonly Queue<Products> Shelf2;
         private readonly Queue<Products> Shelf3;
-        private CapElement? StoredCap;
+        public CapElement? StoredCap { get; private set; }
         private enum BaseSpecificActions
         {
             Reset = 300,
@@ -70,7 +70,7 @@ namespace Simulator.MPS
             }
         }
 
-        private void CapTask()
+        public void CapTask()
         {
             MyLogger.Log("Got a Cap Task!");
 
@@ -78,8 +78,7 @@ namespace Simulator.MPS
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
             InNodes.StatusNodes.enable.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.enable);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
+
             switch (InNodes.Data0.Value)
             {
                 case (ushort)CSOp.RetrieveCap:
@@ -121,7 +120,8 @@ namespace Simulator.MPS
                     break;
                 }
             }
-
+            InNodes.Data0.Value = 0;
+            Refbox.UpdateChanges(InNodes.Data0);
             InNodes.StatusNodes.busy.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
             TaskDescription = "Idle";
