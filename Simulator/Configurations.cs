@@ -49,9 +49,9 @@ namespace Simulator
             RobotConfigs = new List<RobotConfig>();
             Teams = new List<TeamConfig>();
             MockUp = true;
-            RobotActionDuration = 10 * 1000;
-            BeltActionDuration = 10 * 1000;
-            CSTaskDuration = 10 * 1000;
+            RobotActionDuration = 1000;
+            BeltActionDuration = 1000;
+            CSTaskDuration = 1000;
             BSTaskDuration = 1100;
             DSTaskDuration = 1000;
             RSTaskDuration = 1000;
