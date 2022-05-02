@@ -5,7 +5,7 @@ namespace Simulator.MPS
 {
     public class MPS_DS : Mps
     {
-        private enum BaseSpecificActions
+        public enum BaseSpecificActions
         {
             Reset = 400,
             DeliverToSlot = 401

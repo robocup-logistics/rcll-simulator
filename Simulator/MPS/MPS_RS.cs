@@ -9,7 +9,7 @@ namespace Simulator.MPS
     {
         private readonly Queue<RingElement> Stock1;
         private readonly Queue<RingElement> Stock2;
-        private enum BaseSpecificActions
+        public enum BaseSpecificActions
         {
             Reset = 200,
             WaitForXBases = 201,
@@ -86,7 +86,7 @@ namespace Simulator.MPS
             }
         }
 
-        private void MountRingTask()
+        public void MountRingTask()
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";

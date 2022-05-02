@@ -12,7 +12,7 @@ namespace Simulator.MPS
         private readonly Queue<Products> Stock2;
         private readonly Queue<Products> Stock3;
 
-        private enum BaseSpecificActions
+        public enum BaseSpecificActions
         {
             Reset = 100,
             GetBase = 101,

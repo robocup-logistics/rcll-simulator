@@ -27,7 +27,6 @@
     <Content Include="TerminalGui\RobotGuiView.cs" />
     <Content Include="TerminalGui\TerminalConfig.cs" />
     <Content Include="Utility\Logger.cs" />
-    <Content Include="Utility\Product.cs" />
     <Content Include="Utility\Timer.cs" />
     <Content Include="Utility\ZonesManager.cs" />
     <Content Include="RobotEssentials\RobotTeamserver.cs" />

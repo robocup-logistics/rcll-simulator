@@ -8,6 +8,7 @@ namespace Simulator.Utility
     {
         public int ID { get; private set; }
         public Complexity Complexity { get;  private set; }
+        public int RingCount = 0;
         public BaseElement? Base;
         private CapElement? Cap;
         private List<RingElement> RingList = new List<RingElement>();
@@ -24,6 +25,7 @@ namespace Simulator.Utility
         {
             RingList.Add(newRing);
             Complexity++;
+            RingCount++;
         }
         public string ProductDescription()
         {

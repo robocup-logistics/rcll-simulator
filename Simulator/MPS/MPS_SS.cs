@@ -4,7 +4,7 @@ namespace Simulator.MPS
 {
     public class MPS_SS : Mps
     {
-        private enum BaseSpecificActions
+        public enum BaseSpecificActions
         {
             Reset = 500,
             BandOnUntil = 502

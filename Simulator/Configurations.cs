@@ -26,14 +26,12 @@ namespace Simulator
 
         // all member variables concerning the simulation are here
         public bool MockUp { get; set; }
-        public int RobotMoveTime = 5;
 
         public int FieldWidth = 14;
         public int FieldHeight = 8;
 
         public bool IgnoreTeamColor { get; private set; } = true;
         public bool SendPrepare { get; private set; } = true;
-        public int RobotActionDuration { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
@@ -49,13 +47,12 @@ namespace Simulator
             RobotConfigs = new List<RobotConfig>();
             Teams = new List<TeamConfig>();
             MockUp = true;
-            RobotActionDuration = 1000;
             BeltActionDuration = 1000;
             CSTaskDuration = 1000;
             BSTaskDuration = 1100;
             DSTaskDuration = 1000;
             RSTaskDuration = 1000;
-            RobotMoveZoneDuration = 5 * 1000;
+            RobotMoveZoneDuration = 1000;
         }
 
         //private member and getter for my singleton configurations class
@@ -373,6 +370,11 @@ namespace Simulator
             var config = new RefboxConfig(ip, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
                 magentaSendPort, magentaRecvPort);
             return config;
+        }
+
+        public void AddTestData()
+        {
+            Teams.Add(new TeamConfig("TestTeam", Team.Cyan, "TestIp", 0));   
         }
     }
 

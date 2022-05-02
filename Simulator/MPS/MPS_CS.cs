@@ -11,7 +11,7 @@ namespace Simulator.MPS
         private readonly Queue<Products> Shelf2;
         private readonly Queue<Products> Shelf3;
         public CapElement? StoredCap { get; private set; }
-        private enum BaseSpecificActions
+        public enum BaseSpecificActions
         {
             Reset = 300,
             Cap = 301,

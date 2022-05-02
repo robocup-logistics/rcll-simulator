@@ -18,10 +18,8 @@ namespace Simulator
 {
     internal class MainClass
     {
-     
         private static void Main(string[] args)
         {
-
             var next = false;
             var path = "";
             var showGui = false;
@@ -78,8 +76,6 @@ namespace Simulator
 
                 var gui = new TerminalGui.TerminalGui(managerRobot, managerMachines, zonesManager);
             }
-
         }
-
     }
 }

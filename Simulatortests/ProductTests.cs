@@ -17,6 +17,8 @@ namespace Simulatortests
             Assert.IsNotNull(product.RetrieveCap());
             Assert.IsNull(product.RetrieveCap());
         }
+
+
         [TestMethod]
         public void RemoveCap()
         {
@@ -24,6 +26,8 @@ namespace Simulatortests
             Assert.IsNotNull(product.RetrieveCap());
             Assert.IsNull(product.RetrieveCap());
         }
+
+
         [TestMethod]
         public void AddRing()
         {

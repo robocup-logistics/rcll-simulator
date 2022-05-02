@@ -41,6 +41,7 @@ namespace Simulator.MPS
 
         private void UpdatePosition()
         {
+            //TODO add handling of several products on the belt!
             Position = Direction switch
             {
                 Direction.FromInToOut => Position switch
