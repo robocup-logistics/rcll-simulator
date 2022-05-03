@@ -56,33 +56,15 @@ namespace Simulatortests
             var baseProduct = new Products(BaseColor.BaseBlack);
             var complexity = baseProduct.Complexity;
             machine.ProductAtIn = baseProduct;
-            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_RS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Mid);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
                 Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
+            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
             Assert.IsNull(machine.ProductAtIn);
             Assert.IsNotNull(machine.ProductOnBelt);
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_RS.BaseSpecificActions.MountRing);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort) 1);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.MountRing, (ushort)1, (ushort)0);
             Thread.Sleep(Configurations.GetInstance().RSTaskDuration + 200);
             Assert.AreEqual(1, baseProduct.RingCount);
         }

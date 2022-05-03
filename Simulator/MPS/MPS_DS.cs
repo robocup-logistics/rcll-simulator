@@ -1,10 +1,15 @@
 ﻿using LlsfMsgs;
 using System.Threading;
+using Simulator.Utility;
 
 namespace Simulator.MPS
 {
     public class MPS_DS : Mps
     {
+        // TODO Add some more space to the slots
+        private Products Slot1;
+        private Products Slot2;
+        private Products Slot3;
         public enum BaseSpecificActions
         {
             Reset = 400,
@@ -23,10 +28,32 @@ namespace Simulator.MPS
             }*/
             Work();
         }
+        public bool ProductAtSlot(int slot)
+        {
+            switch (slot)
+            {
+                case 1:
+                    if (Slot1 != null)
+                        return true;
+                    else
+                        return false;
+                case 2:
+                    if (Slot2 != null)
+                        return true;
+                    else
+                        return false;
+                case 3:
+                    if (Slot3 != null)
+                        return true;
+                    else
+                        return false;
+            }
+            return false;
+        }
         private void Work()
         {
             StartOpc(Type);
-          
+
             while (true)
             {
                 WriteEvent.WaitOne();
@@ -62,6 +89,18 @@ namespace Simulator.MPS
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
             Thread.Sleep(Configurations.GetInstance().DSTaskDuration);
+            switch (InNodes.Data0.Value)
+            {
+                case 1:
+                    Slot1 = ProductAtIn;
+                    break;
+                case 2:
+                    Slot1 = ProductAtIn;
+                    break;
+                case 3:
+                    Slot1 = ProductAtIn;
+                    break;
+            }
             ProductAtIn = null;
             InNodes.ActionId.Value = 0;
             Refbox.UpdateChanges(InNodes.ActionId);

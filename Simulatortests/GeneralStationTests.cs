@@ -11,9 +11,6 @@ namespace Simulatortests
     [TestClass]
     public class GeneralStationTests
     {
-        public static string NodePath = "ns=4;s=DeviceSet/CPX-E-CEC-C1-PN/Resources/Application/GlobalVars/G/In/p/";
-
-
         [TestMethod]
         public void ResetMachine()
         {
@@ -28,6 +25,7 @@ namespace Simulatortests
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
         }
+
         [TestMethod]
         public void BeltTest1()
         {
@@ -48,31 +46,24 @@ namespace Simulatortests
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
         }
+
         [TestMethod]
         public void OPC_Connection()
         {
             // Testing the opc connection generally
             var port = 5003;
-            var machine = new MPS_BS("C-BS", 5003, 0, Team.Cyan, true);
+            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
             Thread.Sleep(300);
             var value = true;
-            try
-            {
-                using (var client = new OpcClient("opc.tcp://localhost:" + port + "/"))
-                {
-                    client.Connect();
-                    client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", value);
-                }
-
-            }
-            catch
-            {
+            var bs = new TestHelper(port);
+            if (!bs.CreateConnection())
                 Assert.Fail();
-            }
+            bs.EnableTask();
             Assert.AreEqual(machine.InNodes.StatusNodes.enable.Value, value);
+            bs.CloseConnection();
         }
 
         [TestMethod]
@@ -84,23 +75,16 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(300);
             var testnode = machine.InNodes.ActionId;
-            testnode.Value = 100;
-            Assert.AreNotEqual(testnode.Value,0);
-            try
-            {
-                using (var client = new OpcClient("opc.tcp://localhost:" + port + "/"))
-                {
-                    client.Connect();
-                    client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-                }
-
-            }
-            catch
-            {
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
                 Assert.Fail();
-            }
+            testhelper.SendTask((ushort)200);
+            Assert.AreEqual(200,testnode.Value);
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.Reset);
+            Assert.AreEqual(100 ,testnode.Value);
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
+            testhelper.CloseConnection();
         }
     }
 }

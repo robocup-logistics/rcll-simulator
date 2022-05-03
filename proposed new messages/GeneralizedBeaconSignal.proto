@@ -41,6 +41,7 @@
  import "Time.proto";
  import "Team.proto";
  import "Pose2D.proto";
+ import "GerneralizedTasks.proto";
  
  option java_package =
    "org.robocup_logistics.llsf_msgs";
@@ -72,6 +73,6 @@
    optional Pose2D pose = 7;
 
    // Maybe needed for future generalisation of beacon signal and tracking of robots current activity (used by GRIPS currently)
-   optional int32 task_id = 8; // current task-id of robot 
+   optional AgentTasks task = 8; // current task-id of robot 
  }
  

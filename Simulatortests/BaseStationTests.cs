@@ -35,24 +35,13 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(300);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            try
-            {
-                using (var client = new OpcClient("opc.tcp://localhost:" + port + "/"))
-                {
-                    client.Connect();
-                    client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_BS.BaseSpecificActions.GetBase);
-                    client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)1);
-                    client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-                }
-
-            }
-            catch
-            {
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
                 Assert.Fail();
-            }
-
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
+            testhelper.CloseConnection();
         }
         [TestMethod]
         public void OPC_WrongDispenseBase()
@@ -63,20 +52,10 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(300);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            try
-            {
-                using (var client = new OpcClient("opc.tcp://localhost:" + port + "/"))
-                {
-                    client.Connect();
-                    client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_BS.BaseSpecificActions.GetBase);
-                    client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)5);
-                    client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-                }
-            }
-            catch
-            {
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
                 Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
             Assert.IsNull(machine.ProductOnBelt);
         }
 
@@ -89,37 +68,19 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(300);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_BS.BaseSpecificActions.GetBase);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)1);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
                 Assert.Fail();
-            }
-
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)1);
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
-            try
-            {
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_BS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Out);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
+           
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
             Assert.AreEqual(machine.InNodes.StatusNodes.ready.Value, true);
-            client.Disconnect();
+            testhelper.CloseConnection();
         }
     }
 }

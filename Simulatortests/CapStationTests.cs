@@ -43,38 +43,19 @@ namespace Simulatortests
         public void OPC_BufferCapStationWithProductOnInput()
         {
             var port = 5201;
-            var machine = new MPS_CS("C-BS", port, 0, Team.Cyan, true);
+            var machine = new MPS_CS("C-CS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(300);
-            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
+            var cs = new TestHelper(port);
+            if (!cs.CreateConnection())
+                Assert.Fail();
             var product = new Products(CapColor.CapBlack);
             machine.PlaceProduct("input", product);
             Assert.IsNotNull(machine.ProductAtIn);
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_CS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Mid);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            cs.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_CS.BaseSpecificActions.Cap);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)CSOp.RetrieveCap);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            cs.SendTask((ushort)MPS_CS.BaseSpecificActions.Cap, (ushort)CSOp.RetrieveCap);
             Thread.Sleep(Configurations.GetInstance().CSTaskDuration + 200);
             Assert.IsNotNull(machine.StoredCap);
             Assert.IsNull(machine.ProductOnBelt?.RetrieveCap());
@@ -83,79 +64,33 @@ namespace Simulatortests
         [TestMethod]
         public void OPC_MountCapWithBufferingAction()
         {
-            var port = 5200;
+            var port = 5202;
             var machine = new MPS_CS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(300);
-            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
+                Assert.Fail();
             var product = new Products(CapColor.CapBlack);
             machine.PlaceProduct("input", product);
+
             Assert.IsNotNull(machine.ProductAtIn);
-            try
-            {
-                client.Connect();
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_CS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Mid);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
-            try
-            {
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort) MPS_CS.BaseSpecificActions.Cap);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort) CSOp.RetrieveCap);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_CS.BaseSpecificActions.Cap, (ushort)CSOp.RetrieveCap);
             Thread.Sleep(Configurations.GetInstance().CSTaskDuration + 200);
             Assert.IsNotNull(machine.StoredCap);
-            try
-            {
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort)MPS_CS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Out);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
             var secondProduct = new Products(BaseColor.BaseBlack);
             machine.PlaceProduct("input", secondProduct);
-            try
-            {
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort)MPS_CS.BaseSpecificActions.BandOnUntil);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)Positions.Mid);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[1]", (ushort)Direction.FromInToOut);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
-            try
-            {
-                client.WriteNode(GeneralStationTests.NodePath + "ActionId", (ushort)MPS_CS.BaseSpecificActions.Cap);
-                client.WriteNode(GeneralStationTests.NodePath + "Data/Data[0]", (ushort)CSOp.MountCap);
-                client.WriteNode(GeneralStationTests.NodePath + "Status/Enable", true);
-            }
-            catch
-            {
-                Assert.Fail();
-            }
+            testhelper.SendTask((ushort)MPS_CS.BaseSpecificActions.Cap, (ushort)CSOp.MountCap);
             Thread.Sleep(Configurations.GetInstance().CSTaskDuration + 300);
-            Assert.IsNotNull(machine.ProductOnBelt.RetrieveCap);
-            client.Disconnect();
+            Assert.IsNotNull(machine.ProductOnBelt.RetrieveCap());
+            testhelper.CloseConnection();
         }
     }
 }

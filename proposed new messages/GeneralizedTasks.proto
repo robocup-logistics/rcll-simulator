@@ -13,8 +13,8 @@ message AgentTasks {
 
     // general infos
     required Team team_color = 1;    // Color of the team
-    required uint32 task_id  = 2;
-    required uint32 robot_id = 3;
+    required uint32 task_id  = 2;    // identifier for the tasks
+    required uint32 robot_id = 3;    
 
     // Tasks
     oneof Tasks {  // test with oneof to reduce size of messages
@@ -40,18 +40,19 @@ message AgentTasks {
 
 // Move robot to stated waypoint
 message Move {
-    required string waypoint = 1;
+    required string waypoint = 1; // can be a zone or a machine (default is input side of a machine)
+    optional string machine_point = 2; // can be used to specify the point of the machine (input, output)
 }
 
 // Get a workpiece at the given station and hold the product in the gripper
 message Retrieve {
-    required string machine_id    = 1;
+    required string machine_id    = 1; // name of the machine 
     required string machine_point = 2; // valid machine-points: input, output
 }
 
 // Deliver the holding product to the given station
 message Deliver {
-    required string machine_id    = 1;
+    required string machine_id    = 1; // name of the machine 
     required string machine_point = 2; // valid machine-points: input, slide
 }
 
@@ -63,7 +64,7 @@ message Buffer {
 
 // Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
 message ExploreMachine {
-    required string machine_id    = 1;
+    required string machine_id    = 1;  // name of the machine 
     required string machine_point = 2;  // valid machine-points: input, output
     required string waypoint      = 3;
 }

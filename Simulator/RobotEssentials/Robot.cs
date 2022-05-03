@@ -72,7 +72,10 @@ namespace Simulator.RobotEssentials
         {
             return HeldProduct == null ? "no Product" : HeldProduct.ProductDescription();
         }
-
+        public bool IsHoldingSomething()
+        {
+            return HeldProduct != null ? true : false;
+        }
         public Zones? GetZone()
         {
             return CurrentZone;
@@ -253,7 +256,8 @@ namespace Simulator.RobotEssentials
                 {
                     Mps.MpsType.BaseStation => ((MPS_BS)mps).RemoveProduct(machinePoint),
                     Mps.MpsType.CapStation => ((MPS_CS)mps).RemoveProduct(machinePoint),
-                    _ => HeldProduct
+                    Mps.MpsType.RingStation => ((MPS_RS)mps).RemoveProduct(machinePoint),
+                    _ => null
                 };
                 //Teamserver.AddMessage(message);
                 attempts++;
@@ -342,6 +346,16 @@ namespace Simulator.RobotEssentials
             var mps = MpsManager.GetMachineViaId(CurrentTask.GetFromStation.MachineId);
             var target = CurrentTask.GetFromStation.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine);
+            if(targetZone == 0)
+            {
+                MyLogger.Log("Couldnt find the requested target machine!");
+                if(!Config.MockUp)
+                {
+                    CurrentTask.Successful = false;
+                    //TODO maybe add feedback for wrongly issued targets
+                }
+                return;
+            }
             if (targetZone == CurrentZone?.ZoneId)
             {
                 MyLogger.Log("I am in position to do my task!");
@@ -377,16 +391,23 @@ namespace Simulator.RobotEssentials
                 {
                     case Mps.MpsType.BaseStation:
                         {
-                            if(Config.SendPrepare)
+                            if (Config.SendPrepare)
                             {
                                 PrepareMachine();
                             }
                             break;
                         }
                 }
-
-
-                CurrentTask.Successful = GripProduct(mps, target);
+            }
+            if(mps == null)
+            {
+                MyLogger.Log("The Machine was not found? Griping not possible?");
+                CurrentTask = null;
+                return;
+            }
+            CurrentTask.Successful = GripProduct(mps, target);
+            if (!Configurations.GetInstance().MockUp)
+            {
                 var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
@@ -667,8 +688,8 @@ namespace Simulator.RobotEssentials
             MyLogger.Log("Entered WorkMockup! Running = " + Running.ToString());
             while (Running)
             {
-                MyLogger.Log("is [" + RobotState.ToString() + "] and doing his job! Gamephase is [" +
-                             GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
+                //MyLogger.Log("is [" + RobotState.ToString() + "] and doing his job! Gamephase is [" +
+                //             GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
                 if (CurrentTask != null)
                 {
                     if (CurrentTask.MoveToWaypoint != null)
@@ -707,7 +728,7 @@ namespace Simulator.RobotEssentials
                     }
                     else
                     {
-                        MyLogger.Log("No Tasks currently!");
+                        //MyLogger.Log("No Tasks currently!");
                         //TestMove();
                     }
                 }

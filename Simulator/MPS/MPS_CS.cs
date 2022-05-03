@@ -146,6 +146,8 @@ namespace Simulator.MPS
         public new Products RemoveProduct(string machinePoint)
         {
             Products returnProduct;
+            MyLogger.Log("Someone trys to grabs a Item from!");
+
             switch (machinePoint)
             {
                 case "shelf1":
@@ -156,6 +158,15 @@ namespace Simulator.MPS
                     break;
                 case "shelf3":
                     returnProduct = Shelf3.Dequeue();
+                    break;
+                case "output":
+                    MyLogger.Log("my Output!");
+                    returnProduct = ProductAtOut;
+                    ProductAtOut = null;
+                    break;
+                case "input":
+                    returnProduct = ProductAtIn;
+                    ProductAtIn = null;
                     break;
                 default:
                     MyLogger.Log("Defaulting!?");

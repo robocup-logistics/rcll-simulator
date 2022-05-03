@@ -376,6 +376,20 @@ namespace Simulator
         {
             Teams.Add(new TeamConfig("TestTeam", Team.Cyan, "TestIp", 0));   
         }
+        public void AddConfig(RobotConfig conf)
+        {
+            RobotConfigs.Add(conf);
+
+        }
+        public void AddConfig(MpsConfig conf)
+        {
+            MpsConfigs.Add(conf);
+
+        }
+        public void AddConfig(TeamConfig conf)
+        {
+            Teams.Add(conf);
+        }
     }
 
     public class MpsConfig

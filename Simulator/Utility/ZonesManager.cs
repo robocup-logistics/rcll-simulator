@@ -150,7 +150,7 @@ namespace Simulator.Utility
                 {
                     int offset = 0;
                     var orientation = value.Orientation;
-                    if (key > Zone.MZ11)
+                    if(MachineName.ElementAt(0).Equals("M"))
                     {
                         orientation += 180;
                         orientation %= 360;
@@ -193,6 +193,19 @@ namespace Simulator.Utility
                         default:
                             offset = 0;
                             break;
+                    }
+                    if((((int)key+offset) % 100) < (int)Zone.CZ11)
+                    {
+                        MyLogger.Log("The key = " + key + " and the offset = " + offset);
+                        MyLogger.Log("Below 10, need to switch sides!");
+                        if((int)key > 500)
+                        {
+                            offset = -1000; 
+                        }
+                        else
+                        {
+                            offset = 1000;
+                        }
                     }
                     MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());
                     return key + offset;
