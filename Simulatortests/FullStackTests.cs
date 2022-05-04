@@ -184,7 +184,7 @@ namespace Simulatortests
             movetask.MoveToWaypoint.Waypoint = "C-BS_output";
             rob.SetGripsTasks(movetask);
             Thread.Sleep(config.RobotMoveZoneDuration * 5 + 100);
-            
+
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, 1);
             Thread.Sleep(config.BSTaskDuration + 100);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
@@ -210,7 +210,7 @@ namespace Simulatortests
             movetask.MoveToWaypoint.Waypoint = "C-CS_output";
             rob.SetGripsTasks(movetask);
             cs.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
-            Thread.Sleep(config.BeltActionDuration+300);
+            Thread.Sleep(config.BeltActionDuration + 300);
             cs.SendTask((ushort)MPS_CS.BaseSpecificActions.Cap, (ushort)CSOp.MountCap);
             Thread.Sleep(config.CSTaskDuration + 300);
             cs.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
@@ -237,6 +237,10 @@ namespace Simulatortests
             Thread.Sleep(config.DSTaskDuration + 300);
             Assert.IsNotNull(((MPS_DS)machinemanager.Machines[2]).ProductAtSlot(1));
         }
-
+        [TestMethod]
+        public void CreateOneC1()
+        {
+            Assert.Inconclusive();
+        }
     }
 }

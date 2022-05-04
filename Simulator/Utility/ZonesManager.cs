@@ -104,7 +104,7 @@ namespace Simulator.Utility
             }
             return result;
         }
-        public Zone GetZoneFromString(string? zoneString)
+        public static Zone GetZoneFromString(string? zoneString)
         {
             if (zoneString == null)
             {
@@ -283,7 +283,7 @@ namespace Simulator.Utility
                 if (current.ZoneId == end.ZoneId)
                 {
                     MyLogger.Log("A Valid path has been found!");
-                    return reconstruct_path(cameFrom, current);
+                    return ReconstructPath(cameFrom, current);
                 }
                 
                 openList.Remove(current);
@@ -341,10 +341,12 @@ namespace Simulator.Utility
             return new List<Zones>();
         }
 
-        private List<Zones> reconstruct_path(Dictionary<Zones, Zones> cameFrom, Zones current)
+        private static List<Zones> ReconstructPath(Dictionary<Zones, Zones> cameFrom, Zones current)
         {
-            var path = new List<Zones>();
-            path.Add(current);
+            var path = new List<Zones>
+            {
+                current
+            };
             bool finished = false;
             while (!finished)
             {
@@ -364,7 +366,7 @@ namespace Simulator.Utility
             return path;
         }
 
-        public double CalcDistance(Zones Start, Zones End)
+        public static double CalcDistance(Zones Start, Zones End)
         {
             return Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2));
         }
@@ -453,7 +455,7 @@ namespace Simulator.Utility
         public readonly int Y;
         private readonly Team ZoneColor;
 
-        private List<Zones> NeighborsList;
+        private readonly List<Zones> NeighborsList;
         public Mps? Machine { get; private set; }
         public Robot? Robot { get; private set; }
         public uint Orientation { get; private set; }

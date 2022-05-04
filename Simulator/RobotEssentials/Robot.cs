@@ -74,7 +74,7 @@ namespace Simulator.RobotEssentials
         }
         public bool IsHoldingSomething()
         {
-            return HeldProduct != null ? true : false;
+            return HeldProduct != null;
         }
         public Zones? GetZone()
         {

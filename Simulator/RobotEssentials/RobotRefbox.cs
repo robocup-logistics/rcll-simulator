@@ -33,7 +33,7 @@ namespace Simulator.RobotEssentials
         public void ReceiveUdpMethod(int port)
         {
             MyLogger.Log("Starting the ReceiveUDPMethod!");
-            if(Config.Refbox == null)
+            if(Config?.Refbox == null)
             {
                 MyLogger.Log("No Refbox Configuration is found!");
                 return;

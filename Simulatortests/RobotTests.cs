@@ -79,7 +79,7 @@ namespace Simulatortests
         [TestMethod]
         public void Grab()
         {
-            var port = 9000;
+            var port = 6000;
             var jersey = 1;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
@@ -104,10 +104,11 @@ namespace Simulatortests
             });
             mpsmanager.PlaceMachines(machineinfo);
             robotmanger.Robots[0].SetZone(zonesmanager.GetZone(Zone.CZ15));
+            Thread.Sleep(400);
             var bs = new TestHelper(port);
             if (!bs.CreateConnection())
                 Assert.Fail();
-            Thread.Sleep(500);
+            Thread.Sleep(400);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1);
             Thread.Sleep(config.BSTaskDuration+300);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
@@ -131,7 +132,7 @@ namespace Simulatortests
         [TestMethod]
         public void GrabWithInvalidMachine()
         {
-            var port = 9001;
+            var port = 6001;
             var jersey = 1;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
@@ -156,10 +157,11 @@ namespace Simulatortests
             });
             mpsmanager.PlaceMachines(machineinfo);
             robotmanger.Robots[0].SetZone(zonesmanager.GetZone(Zone.CZ15));
+            Thread.Sleep(400);
             var bs = new TestHelper(port);
             if (!bs.CreateConnection())
                 Assert.Fail();
-            Thread.Sleep(500);
+            Thread.Sleep(400);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1);
             Thread.Sleep(config.BSTaskDuration + 300);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);

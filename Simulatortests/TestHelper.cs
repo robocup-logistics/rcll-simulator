@@ -10,8 +10,8 @@ namespace Simulatortests
     public class TestHelper
     {
         public string NodePath = "ns=4;s=DeviceSet/CPX-E-CEC-C1-PN/Resources/Application/GlobalVars/G/In/p/";
-        private int Port;
-        private OpcClient Client;
+        private readonly int Port;
+        private readonly OpcClient Client;
 
         public TestHelper(int port)
         {
