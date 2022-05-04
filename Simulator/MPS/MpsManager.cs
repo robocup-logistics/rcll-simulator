@@ -22,16 +22,17 @@ namespace Simulator.MPS
         }
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
+        private MyLogger myLogger;
         private MpsManager()
         {
-            var mylogger = new MyLogger("MpsManager", true);
-            mylogger.Log("Started the Mps Manager!");
+            myLogger = new MyLogger("MpsManager", true);
+            myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
             CreateMachines();
             AllMachineSet = false;
             if (!Configurations.GetInstance().MockUp)
             {
-                var rf = new RobotRefbox(null, mylogger);
+                var rf = new RobotRefbox(null, myLogger);
                 rf.Start();
             }
             Instance = this;
@@ -100,6 +101,8 @@ namespace Simulator.MPS
         }
         public void PlaceMachines(MachineInfo Info)
         {
+            myLogger.Log("Starting to PlaceMachines!");
+            myLogger.Log("Received Information = " + Info.ToString());
             foreach (var machineInfo in Info.Machines)
             {
                 foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name)))
@@ -108,6 +111,8 @@ namespace Simulator.MPS
                     {
                         continue;
                     }
+                    myLogger.Log("Placed " + machine.Name + "!");
+
                     machine.Zone = machineInfo.Zone;
                     machine.Rotation = machineInfo.Rotation;
                     ZonesManager.GetInstance().PlaceMachine(machineInfo.Zone, machine.Rotation, machine);

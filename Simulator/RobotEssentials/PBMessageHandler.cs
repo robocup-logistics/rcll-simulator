@@ -151,6 +151,12 @@ namespace Simulator.RobotEssentials
 
                         MyLogger.Log("Parsing of MachineInfo Message was successful!");
                         msg = mi.ToString();
+                        MyLogger.Log("The Parsed message = " + msg);
+                        if (mi.Machines.Count < MpsManager.GetInstance().Machines.Count)
+                        {
+                            MyLogger.Log("MachineInfo is not containing all machines!");
+                            return false;
+                        }
                         ZonesManager.GetInstance().ZoneManagerMutex.WaitOne();
                         if (Manager.AllMachineSet)
                         {
