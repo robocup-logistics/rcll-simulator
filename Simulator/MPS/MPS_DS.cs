@@ -7,9 +7,9 @@ namespace Simulator.MPS
     public class MPS_DS : Mps
     {
         // TODO Add some more space to the slots
-        private Products Slot1;
-        private Products Slot2;
-        private Products Slot3;
+        private Products? Slot1;
+        private Products? Slot2;
+        private Products? Slot3;
         public enum BaseSpecificActions
         {
             Reset = 400,
@@ -95,10 +95,10 @@ namespace Simulator.MPS
                     Slot1 = ProductAtIn;
                     break;
                 case 2:
-                    Slot1 = ProductAtIn;
+                    Slot2 = ProductAtIn;
                     break;
                 case 3:
-                    Slot1 = ProductAtIn;
+                    Slot3 = ProductAtIn;
                     break;
             }
             ProductAtIn = null;

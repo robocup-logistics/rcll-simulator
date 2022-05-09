@@ -5,7 +5,6 @@ using System.Threading;
 using Simulator;
 using Simulator.Utility;
 using Simulator.RobotEssentials;
-using Simulator.MPS;
 
 namespace Simulatortests
 {

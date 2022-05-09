@@ -69,10 +69,10 @@ namespace Simulator.MPS
                     MyLogger.Log("Unknown Stock to get base from!");
                     break;
             }
-            InNodes.ActionId.Value = 0;
+            /*InNodes.ActionId.Value = 0;
             Refbox.UpdateChanges(InNodes.ActionId);
             InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
+            Refbox.UpdateChanges(InNodes.Data0);*/
             InNodes.StatusNodes.busy.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
             //State = EnumState.Working;

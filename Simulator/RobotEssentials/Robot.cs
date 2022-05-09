@@ -52,6 +52,8 @@ namespace Simulator.RobotEssentials
             HeldProduct.AddPart(new CapElement(CapColor.CapBlack));
             */
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
+            MyLogger.Log("--------------------------------------------------------");
+            MyLogger.Log(RobotName + " is ready for production!");
             Running = true;
             RobotState = RobotState.Active;
             WaitForPrepare = new ManualResetEvent(false);
@@ -190,7 +192,13 @@ namespace Simulator.RobotEssentials
         private bool Move(Zone TargetZone)
         {
             var attempt = 0;
+
             var path = ZonesManager.GetInstance().Astar(CurrentZone, ZonesManager.GetInstance().GetZone(TargetZone));
+            if (path.Count == 0 && CurrentZone.ZoneId == TargetZone)
+            {
+                MyLogger.Log("Finished the move as I'm already in place!");
+                return true;
+            }
             MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
             foreach (var z in path)
             {
@@ -345,7 +353,7 @@ namespace Simulator.RobotEssentials
             MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(CurrentTask.GetFromStation.MachineId);
             var target = CurrentTask.GetFromStation.MachinePoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine);
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             if(targetZone == 0)
             {
                 MyLogger.Log("Couldnt find the requested target machine!");
@@ -417,6 +425,7 @@ namespace Simulator.RobotEssentials
             CurrentTask = null;
             TaskDescription = "Idle";
         }
+
         private void DeliverToStation()
         {
             MyLogger.Log("DeliverToStation!");
@@ -427,8 +436,9 @@ namespace Simulator.RobotEssentials
             }
             var machine = CurrentTask.DeliverToStation.MachineId;
             var target = CurrentTask.DeliverToStation.MachinePoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine);
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);
+
             if (targetZone == CurrentZone.ZoneId)
             {
                 MyLogger.Log("I am in position to do my task!");
@@ -455,7 +465,7 @@ namespace Simulator.RobotEssentials
                 case MPS.Mps.MpsType.RingStation:
                     {
                         ((MPS_RS)mps).PlaceProduct(target, HeldProduct);
-                        if(Config.SendPrepare)
+                        if(!target.Equals("slide") && Config.SendPrepare)
                         {
                             PrepareMachine();
                         }

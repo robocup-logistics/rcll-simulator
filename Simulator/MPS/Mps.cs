@@ -309,7 +309,7 @@ namespace Simulator.MPS
         }
         public Products RemoveProduct(string machinePoint)
         {
-            Products returnProduct;
+            Products? returnProduct;
             switch (machinePoint)
             {
                 case "input":

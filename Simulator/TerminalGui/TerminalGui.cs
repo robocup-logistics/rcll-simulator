@@ -93,7 +93,7 @@ namespace Simulator.TerminalGui
             }
             Application.Top.Add(MainView);
             Application.UseSystemConsole = true;
-            Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(500), UpdateViews);
+            Application.MainLoop.AddTimeout(TimeSpan.FromMilliseconds(200), UpdateViews);
             Application.Run(Application.Top);
         }
 

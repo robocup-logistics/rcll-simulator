@@ -32,8 +32,8 @@ namespace Simulator.MPS
             AllMachineSet = false;
             if (!Configurations.GetInstance().MockUp)
             {
-                var rf = new RobotRefbox(null, myLogger);
-                rf.Start();
+                /*var rf = new RobotRefbox(null, myLogger);
+                rf.Start();*/
             }
             Instance = this;
         }
@@ -103,6 +103,16 @@ namespace Simulator.MPS
         {
             myLogger.Log("Starting to PlaceMachines!");
             myLogger.Log("Received Information = " + Info.ToString());
+            var list = new List<Zone>();
+            foreach (var machine in Info.Machines)
+            {
+                list.Add(machine.Zone);
+            }
+            if(list.Distinct().Count() != Info.Machines.Count)
+            {
+                myLogger.Log("Duplicated zones for machines. Will skip this place machines!");
+                return;
+            }
             foreach (var machineInfo in Info.Machines)
             {
                 foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name)))

@@ -29,7 +29,11 @@ namespace Simulator.RobotEssentials
                 int y = 1;
                 while (!set)
                 {
-                    var zone = (Zone)(x * 10 + y);
+                    var zone = Zone.CZ11;
+                    if (robot.TeamColor == Team.Magenta)
+                        zone = (Zone)(1000 + x * 10 + y);
+                    else
+                        zone = (Zone)(x * 10 + y);
                     if (ZonesManager.PlaceRobot(zone, 0, robot))
                     {
                         robot.SetZone(ZonesManager.GetZone(zone));

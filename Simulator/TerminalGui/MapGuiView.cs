@@ -7,6 +7,7 @@ using View = Terminal.Gui.View;
 using Timer = Simulator.Utility.Timer;
 using Robot = Simulator.RobotEssentials.Robot;
 using LlsfMsgs;
+using Simulator.MPS;
 
 namespace Simulator.TerminalGui
 {
@@ -27,7 +28,10 @@ namespace Simulator.TerminalGui
         private const string TimeString = "{0:D4}:{1:D2}:{2:D3}";
         private Timer time;
         private List<MapField> MapFieldList;
+        private List<MpsInfoField> MpsInfoFieldList;
         private TerminalConfig Config;
+        
+
         public MapGuiView(int height, int width)
         {
             var height_without_border = height - 2;
@@ -41,6 +45,7 @@ namespace Simulator.TerminalGui
             Config = TerminalConfig.GetInstance();
 
             MapFieldList = new List<MapField>();
+            MpsInfoFieldList = new List<MpsInfoField>();
             time = Timer.GetInstance();
             Instance = new View();
             GeneralWindow = new Window("General Information")
@@ -135,10 +140,15 @@ namespace Simulator.TerminalGui
                 return;
             }
             TimeLabel.Text = string.Format(TimeString,time.Sec/60, time.Sec % 60, time.Nsec);
+            CyanTeamPointsLabel.Text = string.Format(PointString,Configurations.GetInstance().Teams[0].Points);
+            MagentaTeamPointsLabel.Text = string.Format(PointString,Configurations.GetInstance().Teams[1].Points);
             foreach (var field in MapFieldList)
             {
                 field.UpdateLabel();
-
+            }
+            foreach (var field in MpsInfoFieldList)
+            {
+                field.UpdateLabel();
             }
         }
 
@@ -204,6 +214,14 @@ namespace Simulator.TerminalGui
                 AutoSize = true,
                 ColorScheme = Config.Team2ColorScheme
             };
+            var anchor = MagentaTeamLabel;
+            foreach( var machine in MpsManager.GetInstance().Machines)
+            {
+                var MpsInfo = new MpsInfoField(machine, GeneralInformation, anchor); 
+                MpsInfoFieldList.Add(MpsInfo);
+                anchor = MpsInfo.GetAnchor();
+            }
+
             GeneralInformation.Add(timeTextLabel, headline, TimeLabel, CyanTeamLabel, CyanTeamPointsLabel,MagentaTeamLabel,MagentaTeamPointsLabel);
 
         }
@@ -261,8 +279,8 @@ namespace Simulator.TerminalGui
                 {
                     text += "\n" + Zone.Robot.TaskDescription;
                     Label.ColorScheme = Zone.Robot.TeamColor == Team.Cyan
-                        ? Config.Team1ColorScheme
-                        : Config.Team2ColorScheme;
+                        ? Config.Team1RobotColorScheme
+                        : Config.Team2RobotColorScheme;
                 }
 
                 if (Zone.Robot == null && Zone.Machine == null)
@@ -271,6 +289,100 @@ namespace Simulator.TerminalGui
                 }
                 Label.Text = text;
             }
+        }
+    }
+
+    class MpsInfoField
+    {
+        private const string LightString = " ";
+        private readonly Label NameLabel;
+        private readonly Label RedLabel;
+        private readonly Label YellowLabel;
+        private readonly Label GreenLabel;
+        private readonly Label? RingLabel1;
+        private readonly Label? RingLabel2;
+        private MPS.Mps Mps;
+        private TerminalConfig Config;
+        private Label Anchor;
+        public MpsInfoField(MPS.Mps mps, View parent, Label anchor)
+        {
+            Anchor = anchor;
+            Mps = mps;
+            Config = TerminalConfig.GetInstance();
+            NameLabel = new Label(String.Format("{0,-6}|",Mps.Name))
+            {
+                X = 0, 
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                AutoSize = true,
+                ColorScheme = Config.Team1ColorScheme
+            };
+            RedLabel = new Label(LightString)
+            {
+                X = Pos.Right(NameLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.RedLightColorScheme
+            };
+            YellowLabel = new Label(LightString)
+            {
+                X = Pos.Right(RedLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.YellowLightColorScheme
+            };
+            GreenLabel = new Label(LightString)
+            {
+                X = Pos.Right(YellowLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.GreenLightColorScheme
+            };
+
+            parent.Add(NameLabel,RedLabel,YellowLabel,GreenLabel);
+            if(mps.Type == Mps.MpsType.RingStation)
+            {
+                var divider = new Label("|")
+                {
+                    X = Pos.Right(GreenLabel),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = Config.Team1ColorScheme
+                };
+                RingLabel1 = new Label(LightString)
+                {
+                    X = Pos.Right(divider),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = Config.YellowLightColorScheme
+                };
+                RingLabel2 = new Label(LightString)
+                {
+                    X = Pos.Right(RingLabel1),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = Config.GreenLightColorScheme
+                };
+                parent.Add(divider,RingLabel1,RingLabel2);
+            }
+            Anchor = GreenLabel;
+        }
+        public Label GetAnchor()
+        {
+            return Anchor;
+        }
+        public void UpdateLabel()
+        {            
+            GreenLabel.ColorScheme = Mps.GreenLight.LightOn ? Config.GreenLightColorScheme : Config.LightOffColorScheme;
+            YellowLabel.ColorScheme = Mps.YellowLight.LightOn ? Config.YellowLightColorScheme : Config.LightOffColorScheme;
+            RedLabel.ColorScheme = Mps.RedLight.LightOn ? Config.RedLightColorScheme : Config.LightOffColorScheme;
         }
     }
 }

@@ -21,6 +21,8 @@ namespace Simulator.TerminalGui
         private Color DefaultColor;
         private Color Team1;
         private Color Team2;
+        private Color Team1Robot;
+        private Color Team2Robot;
         private Color RedLight;
         private Color YellowLight;
         private Color GreenLight;
@@ -29,6 +31,8 @@ namespace Simulator.TerminalGui
         public ColorScheme DefaultColorScheme { get; set; }
         public ColorScheme Team1ColorScheme { get; set; }
         public ColorScheme Team2ColorScheme { get; set; }
+        public ColorScheme Team1RobotColorScheme { get; set; }
+        public ColorScheme Team2RobotColorScheme { get; set; }
         public ColorScheme MapColor1 { get; set; }
         public ColorScheme MapColor2 { get; set; }
         public ColorScheme RedLightColorScheme { get; set; }
@@ -39,6 +43,8 @@ namespace Simulator.TerminalGui
         private Attribute DefaultAttribute;
         private Attribute Team1Attribute;
         private Attribute Team2Attribute;
+        private Attribute Team1RobotAttribute;
+        private Attribute Team2RobotAttribute;
         public Attribute MapColor1Attribute;
         public Attribute MapColor2Attribute;
         private Attribute RedLightAttribute;
@@ -59,9 +65,12 @@ namespace Simulator.TerminalGui
             Background1 = Color.DarkGray;
             Background2 = Color.Gray;
 
-            DefaultColor = Color.DarkGray;
+            DefaultColor = Color.Gray;
             Team1 = Color.BrightCyan;
             Team2 = Color.BrightMagenta;
+            Team1Robot = Color.BrightBlue;
+            Team2Robot = Color.BrightRed;
+
 
             RedLight = Color.BrightRed;
             YellowLight = Color.BrightYellow;
@@ -73,6 +82,8 @@ namespace Simulator.TerminalGui
             DefaultAttribute = new Attribute(DefaultColor, Background);
             Team1Attribute = new Attribute(Team1, Background);
             Team2Attribute = new Attribute(Team2, Background);
+            Team1RobotAttribute = new Attribute(Team1Robot, Background);
+            Team2RobotAttribute = new Attribute(Team2Robot, Background);
             MapColor1Attribute = new Attribute(DefaultColor, Background);
             MapColor2Attribute = new Attribute(DefaultColor, Background2);
             RedLightAttribute = new Attribute(RedLight, RedLight);
@@ -103,6 +114,21 @@ namespace Simulator.TerminalGui
                 HotFocus = Team2Attribute,
                 Disabled = Team2Attribute,
                 Normal = Team2Attribute
+            };
+            Team1RobotColorScheme = new ColorScheme()
+            {
+                Focus = Team1RobotAttribute,
+                HotFocus = Team1RobotAttribute,
+                Disabled = Team1RobotAttribute,
+                Normal = Team1RobotAttribute
+            };
+
+            Team2RobotColorScheme = new ColorScheme()
+            {
+                Focus = Team2RobotAttribute,
+                HotFocus = Team2RobotAttribute,
+                Disabled = Team2RobotAttribute,
+                Normal = Team2RobotAttribute
             };
             MapColor1 = new ColorScheme()
             {

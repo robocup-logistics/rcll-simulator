@@ -83,7 +83,7 @@ namespace Simulator.Utility
                 n.GetsMovedTo = true;
             }
         }
-        public Zone GetWaypoint(string target)
+        public Zone GetWaypoint(string target, string machinepoint = "")
         {
             MyLogger.Log("GetWayPoint with target ["+target+"]!");
             Zone result;
@@ -100,7 +100,7 @@ namespace Simulator.Utility
             catch (Exception )
             {
                 MyLogger.Log("Is not a Zone Waypoint!");
-                return GetZoneNextToMachine(target); ;
+                return GetZoneNextToMachine(target,machinepoint); ;
             }
             return result;
         }
@@ -141,7 +141,7 @@ namespace Simulator.Utility
 
         }
 
-        public Zone GetZoneNextToMachine(string MachineName)
+        public Zone GetZoneNextToMachine(string MachineName, string machinepoint = "")
         {
             MyLogger.Log("Getting Zone next to machine!" + MachineName);
             foreach (var (key, value) in Dictionary)
@@ -155,7 +155,7 @@ namespace Simulator.Utility
                         orientation += 180;
                         orientation %= 360;
                     }
-                    if (MachineName.Contains("output"))
+                    if (MachineName.Contains("output") || machinepoint.Equals("output"))
                     {
                         orientation += 180;
                         orientation %= 360;
