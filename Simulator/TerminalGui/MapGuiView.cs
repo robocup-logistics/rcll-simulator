@@ -434,20 +434,18 @@ namespace Simulator.TerminalGui
             };
             parent.Add(GripperLabel);
 
-
             BaseLabel = new Label("B")
             {
                 X = Pos.Right(parent) - 7,
                 Y = Pos.Bottom(anchor),
                 Width = 1,
                 Height = 1,
-                ColorScheme = GetBaseColorScheme(product.Base),
                 Visible = holding
             };
             var productanchor = BaseLabel;
             parent.Add(BaseLabel);
             RingLabels = new List<Label>();
-            foreach (var ring in product.RingList)
+            for (var ring =0; ring < 3; ring ++)
             {
                 var ringlabel = new Label("R")
                 {
@@ -455,7 +453,6 @@ namespace Simulator.TerminalGui
                     Y = Pos.Bottom(anchor),
                     Width = 1,
                     Height = 1,
-                    ColorScheme = GetRingColorScheme(ring),
                     Visible = holding
                 };
                 RingLabels.Add(ringlabel);
@@ -468,7 +465,6 @@ namespace Simulator.TerminalGui
                 Y = Pos.Bottom(anchor),
                 Width = 1,
                 Height = 1,
-                ColorScheme = GetCapColorScheme(product.Cap),
                 Visible = holding
             };
             parent.Add(CapLabel);
@@ -486,9 +482,23 @@ namespace Simulator.TerminalGui
             BaseLabel.Visible = holding;
             CapLabel.Visible = holding;
             foreach (var label in RingLabels)
-            {
                 label.Visible = holding;
+
+            if (holding)
+            {
+                var product = Robot.GetHeldProduct();
+                BaseLabel.ColorScheme = GetBaseColorScheme(product.Base);
+                CapLabel.ColorScheme = GetCapColorScheme(product.Cap);
+                var i = 0;
+                foreach (var ring in product.RingList)
+                {
+                    RingLabels.ElementAt(i).ColorScheme = GetRingColorScheme(ring);
+                    RingLabels.ElementAt(i).Visible = holding;
+                    i++;
+                }
             }
+
+            
 
         }
 
