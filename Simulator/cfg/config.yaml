@@ -6,71 +6,99 @@ stations:
     debug: true
     type: BS
     port: 4840
+    position: CZ18
+    orientation: 0
   C-CS1:
     active: true
     debug: true
     port:  4841
     type: CS
+    position: CZ72
+    orientation: 0
   C-CS2:
     active: true
     debug: true
     port:  4842
     type: CS
+    position: CZ73
+    orientation: 0
   C-RS1:
     active: true
     debug: true
     port:  4843
     type: RS
+    position: CZ74
+    orientation: 0
   C-RS2:
     active: true
     debug: true
     port:  4844
     type: RS
+    position: CZ75
+    orientation: 0
   C-DS:
     active: true
     debug: true
     port:  4845
     type: DS
+    position: CZ76
+    orientation: 0
   C-SS:
     active: true
     debug: true
     port:  4846
     type: SS
+    position: CZ77
+    orientation: 0
   M-BS:
-    active: false
+    active: true
     debug: false
     port:  4850
     type: BS
+    position: MZ72
+    orientation: 0
   M-CS1:
-    active: false
+    active: true
     debug: false
     port:  4851
     type: CS
+    position: MZ73
+    orientation: 0
   M-CS2:
-    active: false
+    active: true
     debug: false
     port:  4852
     type: CS
+    position: MZ74
+    orientation: 0
   M-RS1:
-    active: false
+    active: true
     debug: false
     port:  4853
     type: RS
+    position: MZ75
+    orientation: 0
   M-RS2:
-    active: false
+    active: true
     debug: false
     port:  4854
     type: RS
+    position: MZ76
+    orientation: 0
   M-DS:
-    active: false
+    active: true
     debug: false
     port:  4855
     type: DS
+    position: MZ77
+    orientation: 0
   M-SS:
-    active: false
+    active: true
     debug: false
     port:  4856
     type: SS
+    position: MZ77
+    orientation: 0
 robots:
   Klaus:
     active: true
@@ -120,6 +148,7 @@ refbox:
     recv: 4447
 general:
   timefactor: 1.0
+  fixed-mps-position: true
   mockup-connections: true
   ignore-teamcolor: true
   robot-prepare-mps: true # robot is responsible to send prepare machine messages
