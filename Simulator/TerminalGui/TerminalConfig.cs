@@ -123,9 +123,8 @@ namespace Simulator.TerminalGui
             Base1 = Color.Red;
             Base2 = Color.Black;
             Base3 = Color.DarkGray;
-
             Cap1 = Color.Black;
-            Cap2 = Color.Gray;
+            Cap2 = Color.DarkGray;
 
 
             DefaultAttribute = new Attribute(DefaultColor, Background);
@@ -144,10 +143,10 @@ namespace Simulator.TerminalGui
             AttributeRing2 = new Attribute(Color.Black, Ring2);
             AttributeRing3 = new Attribute(Color.Black, Ring3);
             AttributeRing4 = new Attribute(Color.Black, Ring4);
+            AttributeBase0 = new Attribute(Base0, Base0);
             AttributeBase1 = new Attribute(Color.White, Base1);
             AttributeBase2 = new Attribute(Color.White, Base2);
             AttributeBase3 = new Attribute(Color.White, Base3);
-            AttributeBase3 = new Attribute(Color.White, Base0);
             AttributeCap1 = new Attribute(Color.White, Cap1);
             AttributeCap2 = new Attribute(Color.White, Cap2);
 

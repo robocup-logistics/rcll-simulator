@@ -54,8 +54,8 @@ namespace Simulator.RobotEssentials
             HeldProduct = new Products(BaseColor.BaseRed);
             HeldProduct.AddPart(new CapElement(CapColor.CapGrey));
             HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
-            HeldProduct.AddPart(new RingElement(RingColor.RingOrange));
-            HeldProduct.AddPart(new RingElement(RingColor.RingYellow));
+            //HeldProduct.AddPart(new RingElement(RingColor.RingOrange));
+            //HeldProduct.AddPart(new RingElement(RingColor.RingYellow));
             */
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
             MyLogger.Log("--------------------------------------------------------");
