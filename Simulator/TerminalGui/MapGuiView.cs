@@ -19,18 +19,15 @@ namespace Simulator.TerminalGui
         public Window GeneralWindow;
         public Window GeneralInformation;
         private Label? TimeLabel;
-        private Label? CyanTeamLabel;
-        private Label? CyanTeamPointsLabel;
-        private Label? MagentaTeamLabel;
-        private Label? MagentaTeamPointsLabel;
-        private const string TeamString = "{0}";
-        private const string PointString = "{0,3}";
         private const string TimeString = "{0:D4}:{1:D2}:{2:D3}";
         private Timer time;
         private List<MapField> MapFieldList;
         private List<MpsInfoField> MpsInfoFieldList;
         private TerminalConfig Config;
-        
+        private Label? TeamLabel;
+        private Label? TeamPointsLabel;
+        private const string TeamString = "{0}";
+        private const string PointString = "{0,3}";
 
         public MapGuiView(int height, int width)
         {
@@ -140,8 +137,6 @@ namespace Simulator.TerminalGui
                 return;
             }
             TimeLabel.Text = string.Format(TimeString,time.Sec/60, time.Sec % 60, time.Nsec);
-            CyanTeamPointsLabel.Text = string.Format(PointString,Configurations.GetInstance().Teams[0].Points);
-            MagentaTeamPointsLabel.Text = string.Format(PointString,Configurations.GetInstance().Teams[1].Points);
             foreach (var field in MapFieldList)
             {
                 field.UpdateLabel();
@@ -177,52 +172,38 @@ namespace Simulator.TerminalGui
                 Width = Dim.Fill(),
                 Height = 1
             };
+            var anchor = headline;
+            foreach (var team in Configurations.GetInstance().Teams)
+            {
+                TeamLabel = new Label(String.Format(TeamString, team.Name))
+                {
+                    X = 0,
+                    Y = Pos.Bottom(anchor),
+                    Width = Dim.Fill(),
+                    Height = 1,
+                    AutoSize = true,
+                    ColorScheme = team.Color == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+                };
+                TeamPointsLabel = new Label(String.Format(PointString, 0))
+                {
+                    X = Config.ColumnWidthGeneralInfo - 5,
+                    Y = Pos.Bottom(anchor),
+                    Width = 3,
+                    Height = 1,
+                    AutoSize = true,
+                    ColorScheme = team.Color == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+                };
+                anchor = TeamLabel;
+                foreach (var machine in MpsManager.GetInstance().Machines.Where(machine => machine.Team.Equals(team.Color)))
+                {
+                    var MpsInfo = new MpsInfoField(machine, GeneralInformation, anchor);
+                    MpsInfoFieldList.Add(MpsInfo);
+                    anchor = MpsInfo.GetAnchor();
+                }
+                GeneralInformation.Add(TeamLabel,TeamPointsLabel);
 
-            CyanTeamLabel = new Label(String.Format(TeamString, Configurations.GetInstance().Teams[0].Name))
-            {
-                X = Pos.Left(GeneralInformation),
-                Y = Pos.Bottom(headline),
-                Width = Dim.Fill(),
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team1ColorScheme
-            };
-            CyanTeamPointsLabel = new Label(String.Format(PointString, 0))
-            {
-                X = Pos.Right(GeneralInformation)-5,
-                Y = Pos.Bottom(headline),
-                Width = 3,
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team1ColorScheme
-            };
-            MagentaTeamLabel = new Label(String.Format(TeamString, Configurations.GetInstance().Teams[1].Name))
-            {
-                X = Pos.Left(GeneralInformation),
-                Y = Pos.Bottom(CyanTeamLabel),
-                Width = Dim.Fill(),
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team2ColorScheme
-            };
-            MagentaTeamPointsLabel = new Label(String.Format(PointString, 0))
-            {
-                X = Pos.Right(GeneralInformation)-5,
-                Y = Pos.Bottom(CyanTeamLabel),
-                Width = 3,
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team2ColorScheme
-            };
-            var anchor = MagentaTeamLabel;
-            foreach( var machine in MpsManager.GetInstance().Machines)
-            {
-                var MpsInfo = new MpsInfoField(machine, GeneralInformation, anchor); 
-                MpsInfoFieldList.Add(MpsInfo);
-                anchor = MpsInfo.GetAnchor();
             }
-
-            GeneralInformation.Add(timeTextLabel, headline, TimeLabel, CyanTeamLabel, CyanTeamPointsLabel,MagentaTeamLabel,MagentaTeamPointsLabel);
+            GeneralInformation.Add(timeTextLabel, headline, TimeLabel);
 
         }
     }
@@ -301,6 +282,8 @@ namespace Simulator.TerminalGui
         private readonly Label GreenLabel;
         private readonly Label? RingLabel1;
         private readonly Label? RingLabel2;
+
+
         private MPS.Mps Mps;
         private TerminalConfig Config;
         private Label Anchor;
@@ -309,6 +292,8 @@ namespace Simulator.TerminalGui
             Anchor = anchor;
             Mps = mps;
             Config = TerminalConfig.GetInstance();
+
+           
             NameLabel = new Label(String.Format("{0,-6}|",Mps.Name))
             {
                 X = 0, 
@@ -316,7 +301,7 @@ namespace Simulator.TerminalGui
                 Width = 1,
                 Height = 1,
                 AutoSize = true,
-                ColorScheme = Config.Team1ColorScheme
+                ColorScheme = mps.Team == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme
             };
             RedLabel = new Label(LightString)
             {
@@ -352,7 +337,7 @@ namespace Simulator.TerminalGui
                     Y = Pos.Bottom(Anchor),
                     Width = 1,
                     Height = 1,
-                    ColorScheme = Config.Team1ColorScheme
+                    ColorScheme = mps.Team == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme
                 };
                 RingLabel1 = new Label(LightString)
                 {
@@ -379,7 +364,7 @@ namespace Simulator.TerminalGui
             return Anchor;
         }
         public void UpdateLabel()
-        {            
+        {
             GreenLabel.ColorScheme = Mps.GreenLight.LightOn ? Config.GreenLightColorScheme : Config.LightOffColorScheme;
             YellowLabel.ColorScheme = Mps.YellowLight.LightOn ? Config.YellowLightColorScheme : Config.LightOffColorScheme;
             RedLabel.ColorScheme = Mps.RedLight.LightOn ? Config.RedLightColorScheme : Config.LightOffColorScheme;

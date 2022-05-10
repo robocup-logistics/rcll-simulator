@@ -184,6 +184,13 @@ namespace Simulator.TerminalGui
                 Normal = HighlightAttribute
             };
             
+
+
+
+
+
+
+
             Instance = this;
         }
 

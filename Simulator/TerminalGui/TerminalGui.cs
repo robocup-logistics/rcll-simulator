@@ -188,7 +188,7 @@ namespace Simulator.TerminalGui
             var cancel = new Button(10, 14, "Cancel");
             cancel.Clicked += () => Application.RequestStop();
             var dialog = new Dialog("Send Command Prompt", 60, 18, ok, cancel);
-            ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine" };
+            ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "Add Points to Cyan" };
             var taskGroup = new RadioGroup(taskOptions)
             {
                 X = 4,
@@ -326,6 +326,11 @@ namespace Simulator.TerminalGui
                             };
                             break;
                         }
+                    case 7:
+                    {
+                        Configurations.GetInstance().Teams[0].Points += 1;
+                        break;
+                    }
                     default:
                         break;
                 }
