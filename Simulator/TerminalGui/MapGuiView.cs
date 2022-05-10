@@ -487,8 +487,8 @@ namespace Simulator.TerminalGui
             if (holding)
             {
                 var product = Robot.GetHeldProduct();
-                BaseLabel.ColorScheme = GetBaseColorScheme(product.Base);
-                CapLabel.ColorScheme = GetCapColorScheme(product.Cap);
+                BaseLabel.ColorScheme = GetBaseColorScheme(product!= null ? product.Base : null);
+                CapLabel.ColorScheme = GetCapColorScheme(product!= null ? product.Cap : null);
                 var i = 0;
                 foreach (var ring in product.RingList)
                 {
@@ -504,6 +504,10 @@ namespace Simulator.TerminalGui
 
         private ColorScheme GetBaseColorScheme(BaseElement bottom)
         {
+            if(bottom == null)
+            {
+                return Config.ProductColorSchemeBase0;
+            }
             switch (bottom.GetBaseColor())
             {
                 case 0:
@@ -535,8 +539,12 @@ namespace Simulator.TerminalGui
                     return Config.ProductColorSchemeBase0;
             }
         }
-        private ColorScheme GetCapColorScheme(CapElement cap)
+        private ColorScheme GetCapColorScheme(CapElement? cap)
         {
+            if (cap == null)
+            {
+                return Config.ProductColorSchemeBase0;
+            }
             switch (cap.GetCapColor())
             {
                 case CapColor.CapBlack:

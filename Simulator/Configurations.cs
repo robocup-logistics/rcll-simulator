@@ -32,6 +32,7 @@ namespace Simulator
 
         public bool IgnoreTeamColor { get; private set; } = true;
         public bool SendPrepare { get; private set; } = true;
+        public bool FixedMPSplacement {get; private set; } = false;
         public int RobotMoveZoneDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
@@ -146,6 +147,9 @@ namespace Simulator
                     case "ds-deliver-duration":
                         DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
+                    case "fixed-mps-position":
+                        FixedMPSplacement = bool.Parse(value.ToString());
+                        break;
 
                 }
             }
@@ -156,6 +160,8 @@ namespace Simulator
         {
 
             var port = 0;
+            var orientation = 0;
+            var zone = Zone.CZ11;
             var debug = false;
             var type = MpsType.BaseStation;
             var (yamlNode, yamlNode1) = child;
@@ -197,11 +203,17 @@ namespace Simulator
                     case "port":
                         port = int.Parse(value.ToString());
                         break;
+                    case "orientation":
+                        orientation = int.Parse(value.ToString());
+                        break;
+                    case "position":
+                        zone = (Zone)Enum.Parse(typeof(Zone), value.ToString());
+                        break;
                 }
             }
 
             var color = yamlNode.ToString().Contains("M-") ? Team.Magenta : Team.Cyan;
-            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug);
+            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug, zone, orientation);
             return config;
         }
 
@@ -399,13 +411,17 @@ namespace Simulator
         public int Port { get; }
         public Team Team { get; }
         public bool Debug { get; }
-        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug)
+        public Zone Zone {get;}
+        public int Orientation {get;}
+        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug, Zone zone = 0, int orientation = -1)
         {
             Name = name;
             Type = type;
             Port = port;
             Team = team;
             Debug = debug;
+            Zone = zone;
+            Orientation = orientation;
         }
 
         public void PrintConfig()
@@ -416,6 +432,8 @@ namespace Simulator
             Console.WriteLine("Port = [" + Port + "]");
             Console.WriteLine("Team = [" + Team + "]");
             Console.WriteLine("Debug = [" + Debug + "]");
+            Console.WriteLine("Zone = [" + Zone + "]");
+            Console.WriteLine("Orientation = [" + Orientation + "]");
         }
     }
 

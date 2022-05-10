@@ -61,6 +61,22 @@ namespace Simulator
                 Console.WriteLine("done!");
                 Console.Write("Starting the Machines ... ");
                 var managerMachines = MpsManager.GetInstance();
+                if(Configurations.GetInstance().FixedMPSplacement)
+                {
+                    var mi = new MachineInfo();
+                    foreach(var m in Configurations.GetInstance().MpsConfigs)
+                    {
+                        var machine = new Machine()
+                        {
+                            Name = m.Name,
+                            Zone = m.Zone,
+                            Rotation = (uint)m.Orientation
+
+                        };
+                    mi.Machines.Add(machine);
+                    }
+                    managerMachines.PlaceMachines(mi);
+                }
                 Console.WriteLine("done!");
                 Console.Write("Creating the Zones ... ");
                 var zonesManager = ZonesManager.GetInstance();
