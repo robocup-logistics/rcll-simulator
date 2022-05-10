@@ -37,37 +37,37 @@ stations:
     port:  4846
     type: SS
   M-BS:
-    active: true
+    active: false
     debug: false
     port:  4850
     type: BS
   M-CS1:
-    active: true
+    active: false
     debug: false
     port:  4851
     type: CS
   M-CS2:
-    active: true
+    active: false
     debug: false
     port:  4852
     type: CS
   M-RS1:
-    active: true
+    active: false
     debug: false
     port:  4853
     type: RS
   M-RS2:
-    active: true
+    active: false
     debug: false
     port:  4854
     type: RS
   M-DS:
-    active: true
+    active: false
     debug: false
     port:  4855
     type: DS
   M-SS:
-    active: true
+    active: false
     debug: false
     port:  4856
     type: SS
@@ -77,16 +77,24 @@ robots:
     jersey: 1
     team: cyan
   Wolf:
+    active: true
+    jersey: 2
+    team: cyan
+  Uke:
+    active: true
+    jersey: 3
+    team: cyan
+  Heinz:
+    active: false
+    jersey: 1
+    team: magenta
+  Franz:
     active: false
     jersey: 2
     team: magenta
-  Uke:
+  Hans:
     active: false
     jersey: 3
-    team: magenta
-  Heinz:
-    active: true
-    jersey: 1
     team: magenta
 teams:
   CYAN:

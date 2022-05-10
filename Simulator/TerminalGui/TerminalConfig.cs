@@ -28,6 +28,17 @@ namespace Simulator.TerminalGui
         private Color GreenLight;
         private Color LightOff;
         private Color HighlightColor;
+        private Color Ring1;
+        private Color Ring2;
+        private Color Ring3;
+        private Color Ring4;
+        private Color Base1;
+        private Color Base2;
+        private Color Base3;
+        private Color Base0;
+        private Color Cap1;
+        private Color Cap2;
+
         public ColorScheme DefaultColorScheme { get; set; }
         public ColorScheme Team1ColorScheme { get; set; }
         public ColorScheme Team2ColorScheme { get; set; }
@@ -39,7 +50,20 @@ namespace Simulator.TerminalGui
         public ColorScheme YellowLightColorScheme { get; set; }
         public ColorScheme GreenLightColorScheme { get; set; }
         public ColorScheme LightOffColorScheme { get; set; }
-        public ColorScheme HighlightColorScheme {get; set;}
+        public ColorScheme HighlightColorScheme { get; set; }
+
+
+        public ColorScheme ProductColorSchemeRing1 { get; set; }
+        public ColorScheme ProductColorSchemeRing2 { get; set; }
+        public ColorScheme ProductColorSchemeRing3 { get; set; }
+        public ColorScheme ProductColorSchemeRing4 { get; set; }
+        public ColorScheme ProductColorSchemeBase1 { get; set; }
+        public ColorScheme ProductColorSchemeBase2 { get; set; }
+        public ColorScheme ProductColorSchemeBase3 { get; set; }
+        public ColorScheme ProductColorSchemeBase0 { get; set; }
+        public ColorScheme ProductColorSchemeCap1 { get; set; }
+        public ColorScheme ProductColorSchemeCap2 { get; set; }
+
         private Attribute DefaultAttribute;
         private Attribute Team1Attribute;
         private Attribute Team2Attribute;
@@ -52,6 +76,18 @@ namespace Simulator.TerminalGui
         private Attribute GreenLightAttribute;
         private Attribute LightOffAttribute;
         private Attribute HighlightAttribute;
+
+        public Attribute AttributeRing1 { get; set; }
+        public Attribute AttributeRing2 { get; set; }
+        public Attribute AttributeRing3 { get; set; }
+        public Attribute AttributeRing4 { get; set; }
+        public Attribute AttributeBase1 { get; set; }
+        public Attribute AttributeBase2 { get; set; }
+        public Attribute AttributeBase3 { get; set; }
+        public Attribute AttributeBase0 { get; set; }
+        public Attribute AttributeCap1 { get; set; }
+        public Attribute AttributeCap2 { get; set; }
+
         public int ColumnWidthMPS;
         public int ColumnWidthRobot;
         public int ColumnWidthGeneralInfo;
@@ -79,6 +115,19 @@ namespace Simulator.TerminalGui
 
             HighlightColor = Color.BrightYellow;
 
+            Ring1 = Color.Blue;
+            Ring2 = Color.Green;
+            Ring3 = Color.BrightRed;
+            Ring4 = Color.BrightYellow;
+            Base0 = Color.Gray;
+            Base1 = Color.Red;
+            Base2 = Color.Black;
+            Base3 = Color.DarkGray;
+
+            Cap1 = Color.Black;
+            Cap2 = Color.Gray;
+
+
             DefaultAttribute = new Attribute(DefaultColor, Background);
             Team1Attribute = new Attribute(Team1, Background);
             Team2Attribute = new Attribute(Team2, Background);
@@ -91,6 +140,16 @@ namespace Simulator.TerminalGui
             GreenLightAttribute = new Attribute(GreenLight, GreenLight);
             LightOffAttribute = new Attribute(LightOff, LightOff);
             HighlightAttribute = new Attribute(HighlightColor, Background);
+            AttributeRing1 = new Attribute(Color.Black, Ring1);
+            AttributeRing2 = new Attribute(Color.Black, Ring2);
+            AttributeRing3 = new Attribute(Color.Black, Ring3);
+            AttributeRing4 = new Attribute(Color.Black, Ring4);
+            AttributeBase1 = new Attribute(Color.White, Base1);
+            AttributeBase2 = new Attribute(Color.White, Base2);
+            AttributeBase3 = new Attribute(Color.White, Base3);
+            AttributeBase3 = new Attribute(Color.White, Base0);
+            AttributeCap1 = new Attribute(Color.White, Cap1);
+            AttributeCap2 = new Attribute(Color.White, Cap2);
 
             DefaultColorScheme = new ColorScheme()
             {
@@ -183,13 +242,78 @@ namespace Simulator.TerminalGui
                 Disabled = HighlightAttribute,
                 Normal = HighlightAttribute
             };
-            
-
-
-
-
-
-
+            //------------------------------------------------
+            // PRODUCT COLOR SCHEMES
+            ProductColorSchemeRing1 = new ColorScheme()
+            {
+                Focus = AttributeRing1,
+                HotFocus = AttributeRing1,
+                Disabled = AttributeRing1,
+                Normal = AttributeRing1
+            };
+            ProductColorSchemeRing2 = new ColorScheme()
+            {
+                Focus = AttributeRing2,
+                HotFocus = AttributeRing2,
+                Disabled = AttributeRing2,
+                Normal = AttributeRing2
+            };
+            ProductColorSchemeRing3 = new ColorScheme()
+            {
+                Focus = AttributeRing3,
+                HotFocus = AttributeRing3,
+                Disabled = AttributeRing3,
+                Normal = AttributeRing3
+            };
+            ProductColorSchemeRing4 = new ColorScheme()
+            {
+                Focus = AttributeRing4,
+                HotFocus = AttributeRing4,
+                Disabled = AttributeRing4,
+                Normal = AttributeRing4
+            };
+            ProductColorSchemeBase1 = new ColorScheme()
+            {
+                Focus = AttributeBase1,
+                HotFocus = AttributeBase1,
+                Disabled = AttributeBase1,
+                Normal = AttributeBase1
+            };
+            ProductColorSchemeBase2 = new ColorScheme()
+            {
+                Focus = AttributeBase2,
+                HotFocus = AttributeBase2,
+                Disabled = AttributeBase2,
+                Normal = AttributeBase2
+            };
+            ProductColorSchemeBase3 = new ColorScheme()
+            {
+                Focus = AttributeBase3,
+                HotFocus = AttributeBase3,
+                Disabled = AttributeBase3,
+                Normal = AttributeBase3
+            };
+            ProductColorSchemeBase0 = new ColorScheme()
+            {
+                Focus = AttributeBase0,
+                HotFocus = AttributeBase0,
+                Disabled = AttributeBase0,
+                Normal = AttributeBase0
+            };
+            ProductColorSchemeCap1 = new ColorScheme()
+            {
+                Focus = AttributeCap1,
+                HotFocus = AttributeCap1,
+                Disabled = AttributeCap1,
+                Normal = AttributeCap1
+            };
+            ProductColorSchemeCap2 = new ColorScheme()
+            {
+                Focus = AttributeCap2,
+                HotFocus = AttributeCap2,
+                Disabled = AttributeCap2,
+                Normal = AttributeCap2
+            };
 
             Instance = this;
         }

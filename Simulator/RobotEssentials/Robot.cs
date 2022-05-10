@@ -50,6 +50,12 @@ namespace Simulator.RobotEssentials
             HeldProduct.AddPart(new BaseElement(BaseColor.BaseBlack));
             HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
             HeldProduct.AddPart(new CapElement(CapColor.CapBlack));
+            
+            HeldProduct = new Products(BaseColor.BaseRed);
+            HeldProduct.AddPart(new CapElement(CapColor.CapGrey));
+            HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
+            HeldProduct.AddPart(new RingElement(RingColor.RingOrange));
+            HeldProduct.AddPart(new RingElement(RingColor.RingYellow));
             */
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
             MyLogger.Log("--------------------------------------------------------");
@@ -82,7 +88,15 @@ namespace Simulator.RobotEssentials
         {
             return CurrentZone;
         }
-
+        public Products? GetHeldProduct()
+        {
+            return HeldProduct;
+        }    
+        public void DropItem()
+        {
+            MyLogger.Log("Dropping my Product!");
+            HeldProduct = null;
+        }
         public void SetZone(Zones zone)
         {
             CurrentZone = zone;

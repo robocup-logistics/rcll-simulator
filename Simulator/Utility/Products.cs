@@ -10,8 +10,8 @@ namespace Simulator.Utility
         public Complexity Complexity { get;  private set; }
         public int RingCount = 0;
         public BaseElement? Base;
-        private CapElement? Cap;
-        private List<RingElement> RingList = new List<RingElement>();
+        public CapElement? Cap;
+        public List<RingElement> RingList = new List<RingElement>();
         public void AddPart(BaseElement newBase)
         {
             Base = newBase;
@@ -115,7 +115,7 @@ namespace Simulator.Utility
         {
             CapColor = color;
         }
-        public CapColor GetRingColor()
+        public CapColor GetCapColor()
         {
             return CapColor;
         }

@@ -145,7 +145,7 @@ namespace Simulator.TerminalGui
 
         private View CreateGeneralView()
         {
-            var map = new MapGuiView(Console_Height, Console_Width)
+            var map = new MapGuiView(Console_Height, Console_Width, RobotManager)
             {
                 GeneralWindow =
                 {
@@ -188,7 +188,7 @@ namespace Simulator.TerminalGui
             var cancel = new Button(10, 14, "Cancel");
             cancel.Clicked += () => Application.RequestStop();
             var dialog = new Dialog("Send Command Prompt", 60, 18, ok, cancel);
-            ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "Add Points to Cyan" };
+            ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "Add Points to Cyan", "Robot drop item" };
             var taskGroup = new RadioGroup(taskOptions)
             {
                 X = 4,
@@ -331,6 +331,9 @@ namespace Simulator.TerminalGui
                         Configurations.GetInstance().Teams[0].Points += 1;
                         break;
                     }
+                    case 8:
+                        RobotManager.Robots[robotGroup.SelectedItem].DropItem();
+                        break;
                     default:
                         break;
                 }
