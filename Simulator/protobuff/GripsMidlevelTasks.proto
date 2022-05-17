@@ -32,10 +32,12 @@ message GripsMidlevelTasks {
     optional bool report_all_seen_machines = 13; // flag need for the exploration logic
     optional bool lost_product = 14; // true if the product was lost
     
-    // result of the execution from the robot
-    optional bool successful = 15;
-    optional bool canceled = 17;
-    optional uint32 error_code_midlevel = 16; // only set if failure, error-codes defined in GripsCommon
+    // flags and result of the current task
+    optional bool cancel_task = 11; // cancels current task
+    optional bool pause_task = 12; // if true current task is paused, if false again task is continued
+    optional bool successful = 13;
+    optional bool canceled = 14;
+    optional uint32 error_code_midlevel = 15; // only set if failure, error-codes defined in GripsCommon
 }
 
 // Move robot to stated waypoint
