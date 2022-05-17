@@ -483,19 +483,33 @@ namespace Simulator.TerminalGui
             CapLabel.Visible = holding;
             foreach (var label in RingLabels)
                 label.Visible = holding;
-
             if (holding)
             {
                 var product = Robot.GetHeldProduct();
                 BaseLabel.ColorScheme = GetBaseColorScheme(product!= null ? product.Base : null);
                 CapLabel.ColorScheme = GetCapColorScheme(product!= null ? product.Cap : null);
-                var i = 0;
-                foreach (var ring in product.RingList)
+
+                var anchor = BaseLabel;
+
+                for (var i = 0; i < 3; i++)
                 {
-                    RingLabels.ElementAt(i).ColorScheme = GetRingColorScheme(ring);
-                    RingLabels.ElementAt(i).Visible = holding;
-                    i++;
+                    if (i < product.RingList.Count)
+                    {
+                        RingLabels.ElementAt(i).ColorScheme = GetRingColorScheme(product.RingList.ElementAt(i));
+                        RingLabels.ElementAt(i).Visible = holding;
+                        RingLabels.ElementAt(i).X = Pos.Right(anchor);
+                        anchor = RingLabels.ElementAt(i);
+                    }
+                    else
+                    {
+                        RingLabels.ElementAt(i).Visible = false;
+                    }
+
                 }
+
+
+                CapLabel.X = Pos.Right(anchor);
+
             }
 
             

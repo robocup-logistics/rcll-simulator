@@ -125,7 +125,7 @@ namespace Simulatortests
                 }
             };
             robotmanger.Robots[0].SetGripsTasks(task);
-            Thread.Sleep(5000);
+            Thread.Sleep(config.RobotPlaceDuration + 500);
             Assert.IsTrue(robotmanger.Robots[0].IsHoldingSomething());
         }
 
@@ -178,7 +178,7 @@ namespace Simulatortests
                 }
             };
             robotmanger.Robots[0].SetGripsTasks(task);
-            Thread.Sleep(5000);
+            Thread.Sleep(config.RobotPlaceDuration);
             Assert.IsFalse(robotmanger.Robots[0].IsHoldingSomething());
         }
     }

@@ -21,6 +21,7 @@ namespace Simulator.TerminalGui
         private const string RotationString = "Rotation      [{0}]";
         private const string LightString = " ";
         private const string BeltString = "Belt:\n[{0}==={1}==={2}]\nInput            Output";
+        private const string SlideCount = "SldCnt:     [{0}]";
 
         private readonly Label TeamColor;
         private readonly Label TypeLabel;
@@ -36,6 +37,7 @@ namespace Simulator.TerminalGui
         private readonly Label YellowLabel;
         private readonly Label GreenLabel;
         private readonly Label BeltLabel;
+        private readonly Label SlideLabel;
 
         private readonly MPS.Mps Mps;
         private ColorScheme TeamColorScheme;
@@ -95,7 +97,10 @@ namespace Simulator.TerminalGui
             };
             y += 3;
             int x = 0;
-
+            SlideLabel = new Label(0, y++, String.Format(SlideCount, "0"))
+            {
+                AutoSize = true
+            };
             RedLabel = new Label(x++, y, LightString)
             {
                 ColorScheme = Config.RedLightColorScheme
@@ -112,7 +117,7 @@ namespace Simulator.TerminalGui
             {
                 AutoSize = true
             };
-            window.Add(TeamColor, TypeLabel, InDataLabel, InActionLabel, BasicDataLabel, BasicActionLabel, ZoneLabel, RotationLabel, StatusLabel, RedLabel, YellowLabel, GreenLabel, BeltLabel);
+            window.Add(TeamColor, TypeLabel, InDataLabel, InActionLabel, BasicDataLabel, BasicActionLabel, ZoneLabel, RotationLabel, StatusLabel, RedLabel, SlideLabel, YellowLabel, GreenLabel, BeltLabel);
             MpsWindow = window;
         }
 
@@ -144,6 +149,7 @@ namespace Simulator.TerminalGui
                                             Mps.ProductAtIn != null ? Mps.ProductAtIn.ProductDescription() : "Empty",
                                             Mps.ProductOnBelt != null ? Mps.ProductOnBelt.ProductDescription() : "Empty",
                                              Mps.ProductAtOut != null ? Mps.ProductAtOut.ProductDescription() : "Empty");
+            SlideLabel.Text = String.Format(SlideCount, Mps.InNodes.SlideCnt.Value);
             //Belt.Fraction = 1f;
             /*switch (Mps.Belt.Direction)
             {

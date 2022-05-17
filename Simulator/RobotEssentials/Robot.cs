@@ -51,12 +51,14 @@ namespace Simulator.RobotEssentials
             HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
             HeldProduct.AddPart(new CapElement(CapColor.CapBlack));
             
-            HeldProduct = new Products(BaseColor.BaseRed);
+
             HeldProduct.AddPart(new CapElement(CapColor.CapGrey));
             HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
             //HeldProduct.AddPart(new RingElement(RingColor.RingOrange));
             //HeldProduct.AddPart(new RingElement(RingColor.RingYellow));
             */
+            HeldProduct = new Products(BaseColor.BaseRed);
+
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
             MyLogger.Log("--------------------------------------------------------");
             MyLogger.Log(RobotName + " is ready for production!");
@@ -75,7 +77,12 @@ namespace Simulator.RobotEssentials
 
         }
 
-
+        ~Robot()
+        {
+            Console.WriteLine(RobotName + " stopping my threads!");
+            Refbox?.Stop();
+            Teamserver?.Stop();
+        }
         public string GetHeldProductString()
         {
             return HeldProduct == null ? "no Product" : HeldProduct.ProductDescription();
@@ -90,6 +97,7 @@ namespace Simulator.RobotEssentials
         }
         public Products? GetHeldProduct()
         {
+            //MyLogger.Log("Checking if a Product is held. Currently = " + (HeldProduct == null ? "null" : HeldProduct.ProductDescription()));
             return HeldProduct;
         }    
         public void DropItem()
@@ -267,6 +275,11 @@ namespace Simulator.RobotEssentials
         }
         private bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0)
         {
+            if (CurrentZone.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint))
+            {
+                MyLogger.Log("Unable to GRIP, not yet in position!");
+                return false;
+            }
             MyLogger.Log("At station starting the GRIP Action!");
             TaskDescription = "Grasping Product";
             var attempts = 0;
@@ -296,6 +309,48 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("Was not able to grasp the product!");
                 return false;
             }
+        }
+
+        private bool PlaceProduct(Mps mps, string machinePoint = "input", uint shelfNumber = 0)
+        {
+            if (!mps.EmptyMachinePoint(machinePoint))
+            {
+                MyLogger.Log("Something went wrong with placing. Seems there is already a product at " + machinePoint + " of machine " + mps.Name);
+                return false;
+            }
+            TaskDescription = "Placing product";
+            MyLogger.Log("Aligning and starting the place action");
+            Thread.Sleep(Config.RobotPlaceDuration);
+            switch (mps.Type)
+            {
+                case MPS.Mps.MpsType.RingStation:
+                {
+                    ((MPS_RS)mps).PlaceProduct(machinePoint, HeldProduct);
+                    if (!machinePoint.Equals("slide") && Config.SendPrepare)
+                    {
+                        PrepareMachine();
+                    }
+
+                    break;
+                }
+                case MPS.Mps.MpsType.DeliveryStation:
+                {
+                    mps.PlaceProduct(machinePoint, HeldProduct);
+                    if (Config.SendPrepare)
+                    {
+                        PrepareMachine();
+                    }
+
+                    break;
+                }
+                default:
+                    mps.PlaceProduct(machinePoint, HeldProduct);
+                    break;
+            }
+
+            HeldProduct = null;
+            TaskDescription = "Idle";
+            return true;
         }
 
         #endregion
@@ -474,36 +529,9 @@ namespace Simulator.RobotEssentials
             MyLogger.Log("Placing the product on the machine!");
             MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
-            switch (mps.Type)
-            {
-                case MPS.Mps.MpsType.RingStation:
-                    {
-                        ((MPS_RS)mps).PlaceProduct(target, HeldProduct);
-                        if(!target.Equals("slide") && Config.SendPrepare)
-                        {
-                            PrepareMachine();
-                        }
-                        break;
-                    }
-                case MPS.Mps.MpsType.DeliveryStation:
-                    {
-                        mps.PlaceProduct(target, HeldProduct);
-                        if(Config.SendPrepare)
-                        {
-                            PrepareMachine();
-                        }
-                        break;
-                    }
-                default:
-                    mps.PlaceProduct(target, HeldProduct);
-                    break;
-            }
-
-            HeldProduct = null;
-
+            CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
             {
-                CurrentTask.Successful = true;
                 var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
@@ -525,21 +553,18 @@ namespace Simulator.RobotEssentials
             }
 
             MyLogger.Log("Trying to place the currently held Product on the input side of the CS");
-            mps.PlaceProduct("input", HeldProduct);
+            CurrentTask.Successful = PlaceProduct(mps);
+
             MyLogger.Log("Next we need to send a prepare machine to the teamserver!");
             if(Config.SendPrepare)
             {
                 PrepareMachine();
             }
-            
-            MpsManager ??= MpsManager.GetInstance();
-
             if (CurrentTask == null)
             {
                 return;
             }
-            MyLogger.Log("Buffered the machine!");
-            CurrentTask.Successful = true;
+            MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
             var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
             if (message != null)
             {

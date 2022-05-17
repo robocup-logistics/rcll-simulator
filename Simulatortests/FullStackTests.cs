@@ -145,7 +145,7 @@ namespace Simulatortests
                 ShelfNumber = 1
             };
             rob.SetGripsTasks(buffertask);
-            Thread.Sleep(config.CSTaskDuration * 2);
+            Thread.Sleep(config.CSTaskDuration * 2 + config.RobotPlaceDuration + 100);
             //Assert.AreEqual(true, rob.IsHoldingSomething());
             movetask.MoveToWaypoint.Waypoint = "C-CS_output";
             rob.SetGripsTasks(movetask);
@@ -178,7 +178,7 @@ namespace Simulatortests
                 MachinePoint = "slide"
             };
             rob.SetGripsTasks(puttask);
-            Thread.Sleep(6000);
+            Thread.Sleep(config.RobotPlaceDuration * 2);
             Assert.AreEqual(1, machinemanager.Machines[3].InNodes.SlideCnt.Value);
             movetask.MoveToWaypoint.Waypoint = "C-BS_output";
             rob.SetGripsTasks(movetask);

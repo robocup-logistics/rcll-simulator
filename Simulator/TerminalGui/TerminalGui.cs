@@ -177,7 +177,8 @@ namespace Simulator.TerminalGui
         }
         private static void StopApplication()
         {
-            Environment.Exit(0);
+            Application.Shutdown();
+            MainClass.CloseApplication();
         }
 
         private void SendCommandPrompt()
@@ -189,6 +190,7 @@ namespace Simulator.TerminalGui
             cancel.Clicked += () => Application.RequestStop();
             var dialog = new Dialog("Send Command Prompt", 60, 18, ok, cancel);
             ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "Add Points to Cyan", "Robot drop item" };
+            ustring[] machinePoints = { "input", "output", "slide", "shelf1", "shelf2", "shelf3" };
             var taskGroup = new RadioGroup(taskOptions)
             {
                 X = 4,
@@ -219,6 +221,12 @@ namespace Simulator.TerminalGui
             {
                 X = 40,
                 Y = 2,
+                SelectedItem = 0
+            };
+            var machinePointGroup = new RadioGroup(machinePoints)
+            {
+                X = 40,
+                Y = 6,
                 SelectedItem = 0
             };
             var label = new Label(1, 1, "Zone: ");
@@ -276,7 +284,7 @@ namespace Simulator.TerminalGui
                             {
                                 newTask.MoveToWaypoint = new MoveToWaypoint
                                 {
-                                    Waypoint = mpsName
+                                    Waypoint = mpsName + "_" + machinePoints[machinePointGroup.SelectedItem].ToString()
                                 };
                             }
                             else
@@ -293,7 +301,7 @@ namespace Simulator.TerminalGui
                         newTask.GetFromStation = new GetFromStation()
                         {
                             MachineId = mpsName,
-                            MachinePoint = "shelf0"
+                            MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString()
                         };
                         RobotGuiList[0].Robot.SetGripsTasks(newTask);
                         //RobotGuiList[0].Robot.GetFromStation();
@@ -303,7 +311,7 @@ namespace Simulator.TerminalGui
                             newTask.DeliverToStation = new DeliverToStation()
                             {
                                 MachineId = mpsName,
-                                MachinePoint = "shelf0"
+                                MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString()
                             };
                             break;
                         }
@@ -321,7 +329,7 @@ namespace Simulator.TerminalGui
                             newTask.ExploreMachine = new ExploreMachine()
                             {
                                 MachineId = mpsName,
-                                MachinePoint = "shelf0",
+                                MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString(),
                                 Waypoint = mpsName
                             };
                             break;
@@ -351,7 +359,7 @@ namespace Simulator.TerminalGui
                 //ZonesManager.GetInstance().ShowNeighbourhood(ZonesManager.GetZoneFromString(entry.Text.ToString()));
                 Timer.GetInstance().ContinueTicking();
             };
-            dialog.Add(label, entry, taskGroup, machineGroup, robotGroup, timerButton);
+            dialog.Add(label, entry, taskGroup, machineGroup, robotGroup, machinePointGroup,  timerButton);
             Application.Run(dialog);
         }
     }

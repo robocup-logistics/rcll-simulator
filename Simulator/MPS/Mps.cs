@@ -74,7 +74,7 @@ namespace Simulator.MPS
             // Initializing simulated machine parts and logger
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
-            RedLight = new Light(LightColor.Red,LightEvent);
+            RedLight = new Light(LightColor.Red, LightEvent);
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
@@ -104,7 +104,7 @@ namespace Simulator.MPS
         public void ResetMachine()
         {
             TaskDescription = "Reseting!";
-            InNodes.StatusNodes.enable.Value = false;                                      
+            InNodes.StatusNodes.enable.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.enable);
             InNodes.StatusNodes.busy.Value = true;
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
@@ -113,7 +113,7 @@ namespace Simulator.MPS
             InNodes.Data0.Value = 0;
             Refbox.UpdateChanges(InNodes.Data0);
             InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1); 
+            Refbox.UpdateChanges(InNodes.Data1);
             InNodes.ByteError.Value = 0;
             Refbox.UpdateChanges(InNodes.ByteError);
             InNodes.StatusNodes.error.Value = false;
@@ -173,7 +173,7 @@ namespace Simulator.MPS
                     MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
                     break;
             }
-            
+
         }
         public void HandleLights()
         {
@@ -191,7 +191,7 @@ namespace Simulator.MPS
                     GreenLight.SetLight(LightState.Off);
                     break;
                 case (ushort)Actions.RedLight:
-                    MyLogger.Log("Handle Lights got a RedLight task with [" + LightState.ToString()+ "]!");
+                    MyLogger.Log("Handle Lights got a RedLight task with [" + LightState.ToString() + "]!");
                     RedLight.SetLight(LightState);
                     break;
                 case (ushort)Actions.YellowLight:
@@ -236,7 +236,7 @@ namespace Simulator.MPS
             {
                 case Positions.In:
                     ProductAtIn = ProductOnBelt;
-                    ProductOnBelt = null;     
+                    ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
                     InNodes.StatusNodes.ready.Value = true;
                     Refbox.UpdateChanges(InNodes.StatusNodes.ready);
@@ -249,7 +249,7 @@ namespace Simulator.MPS
                     Refbox.UpdateChanges(InNodes.StatusNodes.ready);
                     break;
                 case Positions.Mid:
-                    if(direction == Direction.FromInToOut)
+                    if (direction == Direction.FromInToOut)
                     {
                         ProductOnBelt = ProductAtIn;
                         ProductAtIn = null;
@@ -282,8 +282,8 @@ namespace Simulator.MPS
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
         }
 
-         public void PlaceProduct(string machinePoint, Products? heldProduct)
-         {
+        public void PlaceProduct(string machinePoint, Products? heldProduct)
+        {
             MyLogger.Log("Got a PlaceProduct!");
             switch (machinePoint)
             {
@@ -300,7 +300,7 @@ namespace Simulator.MPS
             }
             //if (!Configurations.GetInstance().MockUp)
             {
-                if(ProductAtOut != null)
+                if (ProductAtOut != null)
                 {
                     InNodes.StatusNodes.ready.Value = true;
                     Refbox.UpdateChanges(InNodes.StatusNodes.ready);
@@ -332,6 +332,20 @@ namespace Simulator.MPS
                 Refbox.UpdateChanges(InNodes.StatusNodes.ready);
             }
             return returnProduct;
+        }
+        public bool EmptyMachinePoint(string machinepoint)
+        {
+            switch (machinepoint)
+            {
+                case "input":
+                    return ProductAtIn == null;
+                case "output":
+                    return ProductAtOut == null;
+                case "slide":
+                    return true;
+                default:
+                    return false;
+            }
         }
     }
 }

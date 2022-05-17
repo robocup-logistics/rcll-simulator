@@ -45,6 +45,12 @@ namespace Simulator.MPS
             }
         }
 
+        ~MPSOPCUAServer()
+        {
+            MyLogger.Log("Closing the OPCUA Server for " + Name);
+            server.Stop();
+        }
+
         public void Start()
         {
             //TODO change the start of the Mps OPCUA server to either not use the event handlers or use them differently

@@ -32,8 +32,9 @@ namespace Simulator
 
         public bool IgnoreTeamColor { get; private set; } = true;
         public bool SendPrepare { get; private set; } = true;
-        public bool FixedMPSplacement {get; private set; } = false;
+        public bool FixedMPSplacement { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
+        public int RobotPlaceDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
@@ -54,6 +55,8 @@ namespace Simulator
             DSTaskDuration = 1000;
             RSTaskDuration = 1000;
             RobotMoveZoneDuration = 1000;
+            FixedMPSplacement = false;
+            RobotPlaceDuration = 4000;
         }
 
         //private member and getter for my singleton configurations class
