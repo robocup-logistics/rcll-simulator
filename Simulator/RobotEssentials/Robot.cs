@@ -82,8 +82,10 @@ namespace Simulator.RobotEssentials
             Console.WriteLine(RobotName + " stopping my threads!");
             Refbox?.Stop();
             Teamserver?.Stop();
-        }
-        public string GetHeldProductString()
+            WorkingRobotThread.Join();
+
+    }
+    public string GetHeldProductString()
         {
             return HeldProduct == null ? "no Product" : HeldProduct.ProductDescription();
         }
@@ -199,6 +201,8 @@ namespace Simulator.RobotEssentials
             {
                 Work();
             }
+            Refbox.Stop();
+            Teamserver.Stop();
         }
 
         public void Test()

@@ -34,9 +34,9 @@ namespace Simulator.Utility
             var ringString = "";
             foreach (var r in RingList)
             {
-                ringString += r.GetText() + "\n";
+                ringString += r.GetText() + " - ";
             }
-            return capString + "\n" + ringString + baseString;
+            return baseString + " - " + ringString + capString;
         }
         public Products(BaseColor color)
         {

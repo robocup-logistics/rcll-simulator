@@ -95,6 +95,7 @@ namespace Simulator
                 RobotManager = new RobotManager();
                 MachineManager = MpsManager.GetInstance();
                 ZoneManager = ZonesManager.GetInstance();
+                var teamdebug = new TeamserverDebuggingUnit();
                 if (Configurations.GetInstance().FixedMPSplacement)
                 {
                     var mi = new MachineInfo();
@@ -125,7 +126,10 @@ namespace Simulator
             }
             foreach (var robot in RobotManager.Robots)
             {
+                Mainlogger.Log("Starting the Cleanup....");
                 robot.RobotStop();
+                Mainlogger.Log("Finished the Cleanup....");
+
             }
             if (!ShowGui)
             {

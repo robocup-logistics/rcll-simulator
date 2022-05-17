@@ -346,7 +346,7 @@ namespace Simulator.TerminalGui
                         break;
                 }
 
-                if (taskGroup.SelectedItem > 1)
+                if (taskGroup.SelectedItem > 1 && taskGroup.SelectedItem < 7)
                 {
                     RobotManager.Robots[robotGroup.SelectedItem].SetGripsTasks(newTask);
                     //RobotManager.Robots[robotGroup.SelectedItem + 1].SetGripsTasks(newTask);

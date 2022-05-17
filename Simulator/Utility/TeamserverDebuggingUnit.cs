@@ -1,0 +1,75 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Net.Sockets;
+using System.Text;
+using System.Threading.Tasks;
+using Simulator.RobotEssentials;
+
+namespace Simulator.Utility
+{
+    class TeamserverDebuggingUnit
+    {
+        PBMessageFactory Factory;
+        PBMessageHandler Handler;
+        Configurations Config;
+        MyLogger MyLogger;
+        public IPEndPoint? SendEndpoint;
+        public IPEndPoint? RecvEndpoint;
+        private Thread? PublicRecvThread; 
+        private Thread? PrivateRecvThread;
+        private bool Running;
+        public TeamserverDebuggingUnit()
+        {
+            MyLogger = new MyLogger("Teamserver", true);
+            Factory = new PBMessageFactory(null, MyLogger);
+            Handler = new PBMessageHandler(null, MyLogger);
+            Config = Configurations.GetInstance();
+            if (Config == null || Config.Refbox == null) return;
+            Running = true;
+
+            MyLogger.Log("Starting the public receive thread");
+            PublicRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.PublicSendPort, "public"));
+            PublicRecvThread.Start();
+            MyLogger.Log("Starting the cyan receive thread");
+            PrivateRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.CyanSendPort, "private"));
+            PrivateRecvThread.Start();
+
+
+        }
+        public void ReceiveUdpMethod(int port, string prefix)
+        {
+            MyLogger.Log("Starting the " + prefix + " ReceiveUDPMethod!");
+            if (Config?.Refbox == null)
+            {
+                MyLogger.Log("No Refbox Configuration is found!");
+                return;
+            }
+            MyLogger.Log(prefix + " Waiting on message on port " + port);
+            var addr = IPAddress.Parse(Config.Refbox.IP);
+            SendEndpoint = new IPEndPoint(IPAddress.Any, port);
+            var udpServer = new UdpClient(port)
+            {
+                EnableBroadcast = true
+            };
+            MyLogger.Log("Broadcasts are = " + udpServer.EnableBroadcast);
+            while (Running)
+            {
+                try
+                {
+                    MyLogger.Log(prefix + "Waiting on message on port " + port);
+                    var message = udpServer.Receive(ref SendEndpoint);
+                    var payload = Handler.CheckMessageHeader(message);
+                    MyLogger.Log(prefix + "Received " + message.Length + " bytes and decoded the payload as being " + payload);
+                    Handler.HandleMessage(message);
+                }
+                catch (Exception e)
+                {
+                    MyLogger.Log(e + " - Something went wrong with the" + prefix + " ReceiveThread!");
+                }
+            }
+
+        }
+    }
+}

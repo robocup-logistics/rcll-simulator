@@ -488,7 +488,7 @@ namespace Simulator.TerminalGui
                 var product = Robot.GetHeldProduct();
                 BaseLabel.ColorScheme = GetBaseColorScheme(product!= null ? product.Base : null);
                 CapLabel.ColorScheme = GetCapColorScheme(product!= null ? product.Cap : null);
-
+                
                 var anchor = BaseLabel;
 
                 for (var i = 0; i < 3; i++)
@@ -506,9 +506,12 @@ namespace Simulator.TerminalGui
                     }
 
                 }
-
-
-                CapLabel.X = Pos.Right(anchor);
+                if (product.Cap == null)
+                    CapLabel.Visible = false;
+                else
+                {
+                    CapLabel.X = Pos.Right(anchor);
+                }
 
             }
 
@@ -533,7 +536,7 @@ namespace Simulator.TerminalGui
                 case BaseColor.BaseSilver:
                     return Config.ProductColorSchemeBase3;
                 default:
-                    return Config.ProductColorSchemeBase0;
+                    return Config.DefaultColorScheme;
             }
 
         }
@@ -550,7 +553,7 @@ namespace Simulator.TerminalGui
                 case RingColor.RingYellow:
                     return Config.ProductColorSchemeRing4;
                 default:
-                    return Config.ProductColorSchemeBase0;
+                    return Config.DefaultColorScheme;
             }
         }
         private ColorScheme GetCapColorScheme(CapElement? cap)
@@ -566,7 +569,7 @@ namespace Simulator.TerminalGui
                 case CapColor.CapGrey:
                     return Config.ProductColorSchemeCap2;
                 default:
-                    return Config.ProductColorSchemeBase0;
+                    return Config.DefaultColorScheme;
             }
         }
     }
