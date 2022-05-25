@@ -8,16 +8,14 @@ namespace Simulator.RobotEssentials
 {
     class RobotRefbox : ConnectorBase, IConnector
     {
-        private readonly PBMessageFactory Factory;
-        private readonly PBMessageHandler Handler;
+        private readonly PbMessageHandlerMachineManager PbHandler;
         //readonly IPAddress Address;
         private Configurations? Config;
         private Thread? PrivateRecvThread;
         public RobotRefbox(Robot? rob, MyLogger logger) : base(rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            Factory = new PBMessageFactory(null, MyLogger);
-            Handler = new PBMessageHandler(null, MyLogger);
+            PbHandler = new PbMessageHandlerMachineManager(MyLogger);
             Config = Configurations.GetInstance();
             if (Config == null || Config.Refbox == null) return;
             MyLogger.Log("Starting the public receive thread");
@@ -52,9 +50,9 @@ namespace Simulator.RobotEssentials
                 {
                     MyLogger.Log("Waiting on message on port " + port);
                     var message = udpServer.Receive(ref SendEndpoint);
-                    var payload = Handler.CheckMessageHeader(message);
+                    var payload = PbHandler.CheckMessageHeader(message);
                     MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
-                    Handler.HandleMessage(message);
+                    PbHandler.HandleMessage(message);
                 }
                 catch (Exception e)
                 {
@@ -66,7 +64,7 @@ namespace Simulator.RobotEssentials
 
         public void SendUdpMethod()
         {
-            if(Config.Refbox == null)
+            /*if(Config.Refbox == null)
             {
                 MyLogger.Log("No Refbox Configuration is found!");
                 return;
@@ -84,7 +82,7 @@ namespace Simulator.RobotEssentials
                 try
                 {
                     MyLogger.Log("Sending a message to "+ addr_string + ":" + port + "!");
-                    var message = Factory.CreateMessage(PBMessageFactory.MessageTypes.BeaconSignal);
+                    var message = FactoryBase.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                     if(message != null)
                     {
                         client.Send(message, message.Length,Config.Refbox.IP, port);
@@ -96,7 +94,7 @@ namespace Simulator.RobotEssentials
                 {
                     MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
                 }
-            }
+            }*/
 
         }
 

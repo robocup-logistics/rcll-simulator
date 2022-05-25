@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Opc.Ua;
 using Opc.UaFx;
 using Opc.UaFx.Server;
 using Opc.UaFx.Services;
@@ -85,36 +86,40 @@ namespace Simulator.MPS
         {
             const string prefix = "[HRP] ";
             //MyLogger.Log("------------------------------------------------");
-            MyLogger.Log(prefix + "Processing: " + e.Request + " type = [" + e.Request.GetType().FullName + "]");
+            //MyLogger.Log(prefix + "Processing: " + e.Request + " type = [" + e.Request.GetType().FullName + "]");
 
             switch (e.Request.ToString())
             {
                 case "Read":
-                    MyLogger.Log(prefix + "Trying to Read from the Server!");
+                    //MyLogger.Log(prefix + "Trying to Read from the Server!");
                     break;
                 case "Write":
-                    MyLogger.Log(prefix + "This is a Write Request");
+                    //MyLogger.Log(prefix + "This is a WriteRequest");
                     break;
                 case "Publish":
-                    MyLogger.Log(prefix + "This is a Publish Request");
+                    //MyLogger.Log(prefix + "This is a Publish Request");
                     break;
                 case "CreateSessionRequest":
-                    MyLogger.Log(prefix + "This is a CreateSessionRequest");
+                    //MyLogger.Log(prefix + "This is a CreateSessionRequest");
                     break;
                 case "GetEndpointsRequest":
-                    MyLogger.Log(prefix + "This is a GetEndpointsRequest");
+                    //MyLogger.Log(prefix + "This is a GetEndpointsRequest");
                     break;
                 case "BrowseRequest":
-                    MyLogger.Log(prefix + "This is a BrowseRequest");
+                    //MyLogger.Log(prefix + "This is a BrowseRequest");
                     break;
                 case "ActivateSessionRequest":
-                    MyLogger.Log(prefix + "This is a ActivateSessionRequest");
+                    //MyLogger.Log(prefix + "This is a ActivateSessionRequest");
                     break;
                 case "ReadRequest":
-                    MyLogger.Log(prefix + "This is a ReadRequest for the node ");
+                    //MyLogger.Log(prefix + "This is a ReadRequest for the node");
                     break;
                 case "WriteRequest":
-                    MyLogger.Log(prefix + "This is a WriteRequest");
+                    MyLogger.Log("WriteRequest!");
+                    var Request = e.Request.Header;
+                    var nodeName = "Request.Request.Header";// Request.Commands[0].Value.ToString()
+                    var nodeValue = "tests2";
+                    MyLogger.Log(prefix + "This is a Write Request for " + nodeName + " with value [" + nodeValue + "]");
                     break;
                 default:
                     MyLogger.Log(prefix + "Not a known Request! {" + e.Request + "}");
@@ -137,10 +142,22 @@ namespace Simulator.MPS
             var Request = (OpcWriteNodesRequest)e.Request; 
             //MyLogger.Log("We got a write for [" + Request.Commands[0].NodeId + "] -> [" + Request.Commands[0].Value + "] on the port [" + Port + "] an we wake up the corresponding machine!");
             var nodeName = Request.Commands[0].NodeId.ToString();
+            var parts = nodeName.Split("/");
             var nodeValue = Request.Commands[0].Value.ToString();
-            if (!nodeName.Contains("Enable") || !nodeValue.Equals("True")) return;
-            MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
-            WriteEvent.Set();
+            switch (parts.Last())
+            {
+                case "Enable":
+                    MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                    if (nodeValue.ToLower().Equals("true"))
+                        WriteEvent.Set();
+                    break;
+                case "ActionId":
+                    if(parts[^3].Equals("In"))
+                        MyLogger.Log("Got a new Value for " + parts.Last() + " [" + nodeValue + "]");
+                    break;
+                default:
+                    return;
+            }
         }
 
         void HandleRequestValidated(object sender, OpcRequestValidatedEventArgs e)

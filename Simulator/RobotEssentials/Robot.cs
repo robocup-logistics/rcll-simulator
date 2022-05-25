@@ -56,9 +56,9 @@ namespace Simulator.RobotEssentials
             HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
             //HeldProduct.AddPart(new RingElement(RingColor.RingOrange));
             //HeldProduct.AddPart(new RingElement(RingColor.RingYellow));
-            */
+            
             HeldProduct = new Products(BaseColor.BaseRed);
-
+            */
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
             MyLogger.Log("--------------------------------------------------------");
             MyLogger.Log(RobotName + " is ready for production!");
@@ -140,7 +140,7 @@ namespace Simulator.RobotEssentials
                     //TODO added canceling of tasks, need to evaluate if behaviour is now correct!
                     CurrentTask.Canceled = true;
                     CurrentTask.Successful = true;
-                    Teamserver.AddMessage(Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks));
+                    Teamserver.AddMessage(Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks));
                     return;
                 case true:
                 {
@@ -375,7 +375,7 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("Couldn't find the machine position!");
                 TaskDescription = "Idle";
                 CurrentTask.Successful = false;
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -401,7 +401,7 @@ namespace Simulator.RobotEssentials
 
             if (!Config.MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -456,7 +456,7 @@ namespace Simulator.RobotEssentials
                 if (!Configurations.GetInstance().MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                     if (message != null)
                     {
                         Teamserver?.AddMessage(message);
@@ -489,7 +489,7 @@ namespace Simulator.RobotEssentials
             CurrentTask.Successful = GripProduct(mps, target);
             if (!Configurations.GetInstance().MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -522,7 +522,7 @@ namespace Simulator.RobotEssentials
                 if (!Config.MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                     if (message != null)
                     {
                         Teamserver?.AddMessage(message);
@@ -536,7 +536,7 @@ namespace Simulator.RobotEssentials
             CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
             {
-                var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                 if (message != null)
                 {
                     Teamserver.AddMessage(message);
@@ -569,7 +569,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
-            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+            var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
             if (message != null)
             {
                 Teamserver?.AddMessage(message);
@@ -585,7 +585,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             CurrentTask.Successful = true;
-            var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+            var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
             if (message != null)
             {
                 Teamserver.AddMessage(message);
@@ -598,7 +598,7 @@ namespace Simulator.RobotEssentials
         }
         private void PrepareMachine()
         {
-            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
+            var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
             MyLogger.Log("Tried to create a GripPrepareMachineTask!");
             if (message != null)
             {
@@ -632,7 +632,7 @@ namespace Simulator.RobotEssentials
                             {
                                 MyLogger.Log("Got a Report all seen Machines flag!");
                                 //todo add a answer to report all seen machines
-                                var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.ReportAllMachines);
+                                var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.ReportAllMachines);
                                 if (message != null)
                                 {
                                     Teamserver.AddMessage(message);
@@ -681,7 +681,7 @@ namespace Simulator.RobotEssentials
                                 if (Configurations.GetInstance().IgnoreTeamColor)
                                 {
                                     /*
-                                    var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
+                                    var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
                                     if(message != null)
                                     {
                                         Teamserver.AddMessage(message);

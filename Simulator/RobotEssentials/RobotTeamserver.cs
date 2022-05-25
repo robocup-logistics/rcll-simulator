@@ -9,8 +9,8 @@ namespace Simulator.RobotEssentials
     class RobotTeamserver : ConnectorBase, IConnector
     {
         //TODO add second condition to assign team 2
-        PBMessageFactory Factory;
-        private PBMessageHandler Handler;
+        PBMessageFactoryRobot PbFactory;
+        private PBMessageHandlerRobot HandlerRobot;
         IPAddress Address;
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
@@ -46,9 +46,9 @@ namespace Simulator.RobotEssentials
                 }
             }
 
-            Factory = new PBMessageFactory(Owner, MyLogger);
+            PbFactory = new PBMessageFactoryRobot(Owner, MyLogger);
             WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            Handler = new PBMessageHandler(Owner, MyLogger);
+            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public bool Close()
@@ -143,7 +143,7 @@ namespace Simulator.RobotEssentials
                         if (Messages.Count == 0)
                         {
                             //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            msg = CreateMessage(PBMessageFactory.MessageTypes.GripsBeaconSignal);
+                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.GripsBeaconSignal);
                         }
                         else
                         {
@@ -173,11 +173,11 @@ namespace Simulator.RobotEssentials
         }
         public byte[]? GetTestMessage()
         {
-            return Factory.CreateMessage(PBMessageFactory.MessageTypes.RobotBeaconSignal);
+            return PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.RobotBeaconSignal);
         }
-        public byte[]? CreateMessage(PBMessageFactory.MessageTypes type)
+        public byte[]? CreateMessage(PBMessageFactoryBase.MessageTypes type)
         {
-            return Factory.CreateMessage(type);  
+            return PbFactory.CreateMessage(type);  
         }
 
         public void ReceiveThreadMethod(int port)
@@ -194,7 +194,7 @@ namespace Simulator.RobotEssentials
                     //MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = Socket.Receive(buffer,0,buffer.Length,SocketFlags.None);
-                    var payload = Handler.CheckMessageHeader(buffer);
+                    var payload = HandlerRobot.CheckMessageHeader(buffer);
                     if(payload == -1)
                     {
                         continue;
@@ -207,7 +207,7 @@ namespace Simulator.RobotEssentials
                         //MyLogger.Log("Lines Receive " + message);
                     }
                     //MyLogger.Log("Received a message!");
-                    Handler.HandleMessage(buffer);
+                    HandlerRobot.HandleMessage(buffer);
                     //MyLogger.Log("Handled the message!");
                     //MyLogger.Log(message.ToString());
                 }

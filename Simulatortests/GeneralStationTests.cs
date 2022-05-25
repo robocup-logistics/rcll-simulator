@@ -86,5 +86,28 @@ namespace Simulatortests
             Assert.AreEqual(testnode.Value, 0);
             testhelper.CloseConnection();
         }
+
+
+        [TestMethod]
+        public void OPC_SendTaskTwice()
+        {
+            var port = 5005;
+            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var thread = new Thread(machine.Run);
+            thread.Start();
+            Thread.Sleep(300);
+            var testnode = machine.InNodes.ActionId;
+            var testhelper = new TestHelper(port);
+            if (!testhelper.CreateConnection())
+                Assert.Fail();
+            testhelper.SendTask((ushort)200);
+            Assert.AreEqual(200, testnode.Value);
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.Reset);
+            Assert.AreEqual(100, testnode.Value);
+            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.Reset);
+            Thread.Sleep(1400);
+            Assert.AreEqual(testnode.Value, 0);
+            testhelper.CloseConnection();
+        }
     }
 }

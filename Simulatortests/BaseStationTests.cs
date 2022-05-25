@@ -82,5 +82,8 @@ namespace Simulatortests
             Assert.AreEqual(machine.InNodes.StatusNodes.ready.Value, true);
             testhelper.CloseConnection();
         }
+
+       
+
     }
 }

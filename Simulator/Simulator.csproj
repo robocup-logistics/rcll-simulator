@@ -35,8 +35,8 @@
     <Content Include="RobotEssentials\RobotManager.cs" />
     <Content Include="RobotEssentials\Robot.cs" />
     <Content Include="RobotEssentials\PBMessageLibrary.cs" />
-    <Content Include="RobotEssentials\PBMessageHandler.cs" />
-    <Content Include="RobotEssentials\PBMessageFactory.cs" />
+    <Content Include="RobotEssentials\PBMessageHandlerBase.cs" />
+    <Content Include="RobotEssentials\PBMessageFactoryBase.cs" />
     <Content Include="RobotEssentials\IConnector.cs" />
     <Content Include="protobuff\Zone.cs" />
     <Content Include="protobuff\WorkpieceInfo.cs" />

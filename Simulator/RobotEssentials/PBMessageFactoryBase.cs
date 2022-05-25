@@ -10,7 +10,7 @@ using Timer = Simulator.Utility.Timer;
 
 namespace Simulator.RobotEssentials
 {
-    class PBMessageFactory
+    class PBMessageFactoryBase
     {
         private readonly Robot? Peer;
         private ulong SequenzNr;
@@ -41,9 +41,8 @@ namespace Simulator.RobotEssentials
 
 
 
-        public PBMessageFactory(Robot? peer, MyLogger log)
+        public PBMessageFactoryBase(MyLogger log)
         {
-            Peer = peer;
             SequenzNr = 0;
             MyLogger = log;
             Timer = null;

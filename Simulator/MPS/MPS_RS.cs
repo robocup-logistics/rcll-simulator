@@ -28,11 +28,11 @@ namespace Simulator.MPS
                 Stock2.Enqueue(new RingElement(RingColor.RingOrange));
             }
             //if (Configurations.GetInstance().MockUp) return;
-            var prod = new Products(BaseColor.BaseBlack);
+            /*var prod = new Products(BaseColor.BaseBlack);
             prod.AddPart(new RingElement(RingColor.RingBlue));
             prod.AddPart(new RingElement(RingColor.RingGreen));
             prod.AddPart(new CapElement(CapColor.CapBlack));
-            ProductAtOut = prod;
+            ProductAtOut = prod;*/
         }
         public new void Run()
         {
