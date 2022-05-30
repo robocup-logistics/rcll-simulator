@@ -6,7 +6,10 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
 {
-    class RobotTeamserver : ConnectorBase, IConnector
+    /// <summary>
+    /// Class <c>TcpConnector</c> is used for communication with the Teamserver.
+    /// </summary>
+    class TcpConnector : ConnectorBase
     {
         //TODO add second condition to assign team 2
         PBMessageFactoryRobot PbFactory;
@@ -14,9 +17,9 @@ namespace Simulator.RobotEssentials
         IPAddress Address;
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
-        public RobotTeamserver(Robot rob, MyLogger logger) : base(rob, logger)
+        public TcpConnector(Robot rob, MyLogger logger) : base(rob, logger)
         {
-            MyLogger.Log("Starting connection RobotTeamserver!");
+            MyLogger.Log("Starting connection TcpConnector!");
             if (Owner == null)
             {
                 MyLogger.Log("Starting connection to "+ Configurations.GetInstance().Teams[0].Name);

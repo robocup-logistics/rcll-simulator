@@ -41,6 +41,7 @@ namespace Simulator
         public int BSTaskDuration { get; private set; }
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
+        public bool AppendLogging { get; private set; }
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -57,6 +58,7 @@ namespace Simulator
             RobotMoveZoneDuration = 1000;
             FixedMPSplacement = false;
             RobotPlaceDuration = 4000;
+            AppendLogging = false;
         }
 
         //private member and getter for my singleton configurations class

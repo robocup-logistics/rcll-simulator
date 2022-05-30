@@ -94,7 +94,7 @@ namespace Simulator.TerminalGui
         private TerminalConfig()
         {
             ColumnWidthMPS = 25;
-            ColumnWidthRobot = 60;
+            ColumnWidthRobot = 40;
             ColumnWidthGeneralInfo = 25;
 
             Background = Color.Black;

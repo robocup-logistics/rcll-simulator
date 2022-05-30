@@ -6,13 +6,16 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
 {
-    class RobotRefbox : ConnectorBase, IConnector
+    /// <summary>
+    /// Class <c>UdpConnector</c> is used for communication with the Refbox.
+    /// </summary>
+    class UdpConnector : ConnectorBase
     {
         private readonly PbMessageHandlerMachineManager PbHandler;
         //readonly IPAddress Address;
         private Configurations? Config;
         private Thread? PrivateRecvThread;
-        public RobotRefbox(Robot? rob, MyLogger logger) : base(rob, logger)
+        public UdpConnector(Robot? rob, MyLogger logger) : base(rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             PbHandler = new PbMessageHandlerMachineManager(MyLogger);
@@ -97,18 +100,7 @@ namespace Simulator.RobotEssentials
             }*/
 
         }
-
-        public bool Connect()
-        {
-            //UNUSED IN THE CASE OF UDP
-            return false;
-        }
-        public bool Close()
-        {
-            //UNUSED IN THE CASE OF UDP
-            return false;
-        }
-
+        
         public bool Start()
         {
             //PublicSendThread.Start();
@@ -118,31 +110,12 @@ namespace Simulator.RobotEssentials
             return true;
         }
 
-        public void StartSendThread()
+        public void Stop()
         {
-            //UNUSED IN THE CASE OF UDP
-            return;
-        }
-        public bool Stop()
-        {
-            //UNUSED IN THE CASE OF UDP
-            return false;
+            Running = false;
         }
 
-        public virtual void SendThreadMethod(int port)
-        {
-            //UNUSED IN THE CASE OF UDP
-            return;
-        }
-
-        public virtual void ReceiveThreadMethod(int port)
-        {
-            //UNUSED IN THE CASE OF UDP
-            return;
-        }
-
-
-        public virtual void AddRefboxMessage(byte[] message)
+        public virtual void AddUdpMessage(byte[] message)
         {
             Messages.Enqueue(message);
         }

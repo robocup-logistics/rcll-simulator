@@ -20,7 +20,7 @@ namespace Simulator.RobotEssentials
             Manager = MpsManager.GetInstance();
         }
 
-        public bool HandleMessage(byte[] stream)
+        public new bool HandleMessage(byte[] stream)
         {
 
             /*      Each row is 4 bytes

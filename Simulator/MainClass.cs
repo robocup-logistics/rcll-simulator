@@ -50,6 +50,21 @@ namespace Simulator
                 }
             }
 
+            var logfolder = "logs" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(logfolder))
+            {
+                Directory.CreateDirectory(logfolder);
+            }
+            else
+            {
+
+                var di = new DirectoryInfo(logfolder);
+                foreach (var file in di.GetFiles())
+                {
+                    file.Delete();
+                }
+            }
+
             if (path.Equals(""))
             {
                 Console.WriteLine("No path to the Configuration file is given!");

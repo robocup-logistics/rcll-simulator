@@ -16,7 +16,7 @@ namespace Simulator.Utility
         public float TimeFactor { get; private set; }
         private Thread? Tickthread;
         //private Logger Logger;
-        private RobotRefbox Refbox;
+        private UdpConnector Refbox;
         private readonly PBMessageFactoryBase FactoryBase;
         private MyLogger MyLogger;
         private Mutex TimerMutex;
@@ -38,7 +38,7 @@ namespace Simulator.Utility
             TimeFactor = Configurations.GetInstance().TimeFactor;
             MyLogger = new MyLogger("Timer", true);
             FactoryBase = new PBMessageFactoryBase(MyLogger);
-            //Refbox = new RobotRefbox(null, myLogger);
+            //Refbox = new UdpConnector(null, myLogger);
             //Refbox.StartSendThread();
             //Tickthread = new Thread(Tick);
             //Tickthread.Start();

@@ -11,8 +11,8 @@ namespace Simulator.Utility
 {
     class TeamserverDebuggingUnit
     {
-        PBMessageFactory Factory;
-        PBMessageHandler Handler;
+        PBMessageFactoryRobot Factory;
+        PBMessageHandlerRobot Handler;
         Configurations Config;
         MyLogger MyLogger;
         public IPEndPoint? SendEndpoint;
@@ -23,8 +23,8 @@ namespace Simulator.Utility
         public TeamserverDebuggingUnit()
         {
             MyLogger = new MyLogger("Teamserver", true);
-            Factory = new PBMessageFactory(null, MyLogger);
-            Handler = new PBMessageHandler(null, MyLogger);
+            Factory = new PBMessageFactoryRobot(null, MyLogger);
+            Handler = new PBMessageHandlerRobot(null, MyLogger);
             Config = Configurations.GetInstance();
             if (Config == null || Config.Refbox == null) return;
             Running = true;

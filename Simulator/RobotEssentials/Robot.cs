@@ -17,8 +17,8 @@ namespace Simulator.RobotEssentials
         public Team TeamColor { get; }
         public CPosition Position { get; set; }
         private readonly MyLogger MyLogger;
-        private readonly RobotTeamserver? Teamserver;
-        private readonly RobotRefbox? Refbox;
+        private readonly TcpConnector? Teamserver;
+        private readonly UdpConnector? Refbox;
         private bool Running;
         private Products? HeldProduct;
         private GameState.Types.State GameState;
@@ -36,6 +36,7 @@ namespace Simulator.RobotEssentials
         public string TaskDescription { get; private set; }
         public ManualResetEvent WaitForPrepare { get; private set; }
         private MpsManager? MpsManager;
+        public List<FinishedTasks> FinishedTasksList { get; }
         public Robot(string name, RobotManager manager, Team color, int jersey, bool debug = false)
         {
             Config = Configurations.GetInstance();
@@ -45,6 +46,7 @@ namespace Simulator.RobotEssentials
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = (uint)jersey;
+            FinishedTasksList = new List<FinishedTasks>();
             /*
             HeldProduct = new Products();
             HeldProduct.AddPart(new BaseElement(BaseColor.BaseBlack));
@@ -67,7 +69,7 @@ namespace Simulator.RobotEssentials
             WaitForPrepare = new ManualResetEvent(false);
             if (!Config.MockUp)
             {
-                Teamserver = new RobotTeamserver(this, MyLogger);
+                Teamserver = new TcpConnector(this, MyLogger);
             }
             CurrentZone = null;
             Tasks = new Queue<GripsMidlevelTasks>();
@@ -80,7 +82,6 @@ namespace Simulator.RobotEssentials
         ~Robot()
         {
             Console.WriteLine(RobotName + " stopping my threads!");
-            Refbox?.Stop();
             Teamserver?.Stop();
             WorkingRobotThread.Join();
 
@@ -188,20 +189,11 @@ namespace Simulator.RobotEssentials
         public void Run()
         {
             MyLogger.Log("Robot " + RobotName + " is starting!");
-            Refbox?.Start();
             Teamserver?.Start();
 
             MyLogger.Log("Starting " + RobotName + "'s working thread! Mockup = " +
                          Configurations.GetInstance().MockUp.ToString());
-            if (Config.MockUp)
-            {
-                WorkMockup();
-            }
-            else
-            {
-                Work();
-            }
-            Refbox.Stop();
+            Work();
             Teamserver.Stop();
         }
 
@@ -653,28 +645,23 @@ namespace Simulator.RobotEssentials
                             if (CurrentTask.MoveToWaypoint != null)
                             {
                                 MoveToWaypoint();
-                                CurrentTask = null;
                             }
                             else if (CurrentTask.GetFromStation != null)
                             {
-
                                 GetFromStation();
-                                CurrentTask = null;
                             }
                             else if (CurrentTask.DeliverToStation != null)
                             {
                                 DeliverToStation();
-                                CurrentTask = null;
                             }
                             else if (CurrentTask.BufferCapStation != null)
                             {
                                 BufferCapStation();
-                                CurrentTask = null;
                             }
                             else if (CurrentTask.ExploreMachine != null)
                             {
                                 ExploreMachine();
-                                CurrentTask = null;
+
                             }
                             else
                             {
@@ -687,17 +674,18 @@ namespace Simulator.RobotEssentials
                                         Teamserver.AddMessage(message);
                                     }
                                     */
-                                    CurrentTask = null;
+
                                 }
                                 else
                                 {
                                     if (CurrentTask.TeamColor != TeamColor)
                                     {
                                         MyLogger.Log("Got a task thats not for me. I ignore it!");
-                                        CurrentTask = null;
                                     }
                                 }
                             }
+                            FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
+                            CurrentTask = null;
                         }
                         else
                         {
@@ -732,62 +720,10 @@ namespace Simulator.RobotEssentials
 
                 MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring + "! Gamephase is [" +
                              GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
-                Thread.Sleep(1000);
+                Thread.Sleep(500);
             }
         }
 
-        public void WorkMockup()
-        {
-            MyLogger.Log("Entered WorkMockup! Running = " + Running.ToString());
-            while (Running)
-            {
-                //MyLogger.Log("is [" + RobotState.ToString() + "] and doing his job! Gamephase is [" +
-                //             GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
-                if (CurrentTask != null)
-                {
-                    if (CurrentTask.MoveToWaypoint != null)
-                    {
-                        MoveToWaypoint();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.GetFromStation != null)
-                    {
-                        GetFromStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.DeliverToStation != null)
-                    {
-                        DeliverToStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.BufferCapStation != null)
-                    {
-                        BufferCapStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.ExploreMachine != null)
-                    {
-                        ExploreMachine();
-                        CurrentTask = null;
-                    }
-                }
-                else
-                {
-                    if (Tasks.Count != 0)
-                    {
-                        MyLogger.Log("No Current task, fetching a new one from my task list!");
-                        CurrentTask = Tasks.Dequeue();
-                        MyLogger.Log("The new task = " + CurrentTask.ToString());
-                    }
-                    else
-                    {
-                        //MyLogger.Log("No Tasks currently!");
-                        //TestMove();
-                    }
-                }
-                Thread.Sleep(100);
-            }
-        }
 
         public void TestMove()
         {
@@ -820,7 +756,9 @@ namespace Simulator.RobotEssentials
         }
         public string GetDebugLog(int lines)
         {
-            return MyLogger.GetLines(lines);
+            var format = "Task {0} finished {1}\n";
+            return FinishedTasksList.Aggregate("", (current, task) => current + String.Format(format, task.TaskId, task.Successful ? "successful" : "unsuccessful"));
+            //return MyLogger.GetLines(lines);
         }
         public string GetConnectionState()
         {
@@ -850,6 +788,18 @@ namespace Simulator.RobotEssentials
             X = x;
             Y = y;
             Orientation = orientation;
+        }
+    }
+
+    public class FinishedTasks
+    {
+        public uint TaskId { get; }
+        public bool Successful { get; }
+
+        public FinishedTasks(uint taskid, bool success)
+        {
+            TaskId = taskid;
+            Successful = success;
         }
     }
 }

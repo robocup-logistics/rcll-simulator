@@ -29,8 +29,8 @@
     <Content Include="Utility\Logger.cs" />
     <Content Include="Utility\Timer.cs" />
     <Content Include="Utility\ZonesManager.cs" />
-    <Content Include="RobotEssentials\RobotTeamserver.cs" />
-    <Content Include="RobotEssentials\RobotRefbox.cs" />
+    <Content Include="RobotEssentials\TcpConnector.cs" />
+    <Content Include="RobotEssentials\UdpConnector.cs" />
     <Content Include="RobotEssentials\ConnectorBase.cs" />
     <Content Include="RobotEssentials\RobotManager.cs" />
     <Content Include="RobotEssentials\Robot.cs" />
