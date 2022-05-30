@@ -74,18 +74,18 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Cap Task!");
 
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
-
+            StartTask();
             switch (InNodes.Data0.Value)
             {
                 case (ushort)CSOp.RetrieveCap:
                 {
                     TaskDescription = "Cap Retrieve";
                     MyLogger.Log("Got a Retrieve CAP task!");
-                    if (ProductOnBelt == null)
+                    for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                    {
+                        Thread.Sleep(1000);
+                    }
+                    if (ProductOnBelt == null) 
                     {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
                         InNodes.StatusNodes.error.Value = true;
@@ -104,6 +104,10 @@ namespace Simulator.MPS
                 {
                     TaskDescription = "Cap Mount";
                     MyLogger.Log("Got a Mount Cap TASK!");
+                    for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                    {
+                        Thread.Sleep(1000);
+                    }
                     if (StoredCap != null && ProductOnBelt != null)
                     {
                         TaskDescription = "Mounting Cap";
@@ -120,11 +124,7 @@ namespace Simulator.MPS
                     break;
                 }
             }
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            TaskDescription = "Idle";
+            FinishedTask();
         }
         public new void PlaceProduct(string machinePoint, Products? heldProduct)
         {

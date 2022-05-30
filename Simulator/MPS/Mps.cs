@@ -116,8 +116,13 @@ namespace Simulator.MPS
             Refbox.UpdateChanges(InNodes.Data1);
             InNodes.ByteError.Value = 0;
             Refbox.UpdateChanges(InNodes.ByteError);
+            InNodes.StatusNodes.ready.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.ready);
             InNodes.StatusNodes.error.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.error);
+            ProductAtIn = null;
+            ProductAtOut = null;
+            ProductOnBelt = null;
             Thread.Sleep(1000);
             InNodes.StatusNodes.busy.Value = false;
             Refbox.UpdateChanges(InNodes.StatusNodes.busy);
@@ -135,6 +140,25 @@ namespace Simulator.MPS
             refbox.UpdateChanges(BasicNodes.Data0); */
         }
 
+        public void StartTask()
+        {
+            InNodes.StatusNodes.busy.Value = true;
+            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            InNodes.StatusNodes.enable.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+        }
+
+        public void FinishedTask()
+        {
+            InNodes.ActionId.Value = 0;
+            Refbox.UpdateChanges(InNodes.ActionId);
+            InNodes.Data0.Value = 0;
+            Refbox.UpdateChanges(InNodes.Data0);
+            InNodes.Data1.Value = 0;
+            Refbox.UpdateChanges(InNodes.Data1);
+            InNodes.StatusNodes.busy.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+        }
         public void HandleBasicTasks()
         {
             switch (BasicNodes.ActionId.Value)
@@ -223,12 +247,15 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Band on Task!");
             TaskDescription = "BandOnUntilTask";
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            StartTask();
             var target = (Positions)InNodes.Data0.Value;
             var direction = (Direction)InNodes.Data1.Value;
+            MyLogger.Log("Product on belt?");
+            for(var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++)
+            {
+                Thread.Sleep(200);
+            }
+            MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
@@ -238,8 +265,8 @@ namespace Simulator.MPS
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
-                    InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    /*InNodes.StatusNodes.ready.Value = true;
+                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.Out:
                     ProductAtOut = ProductOnBelt;
@@ -260,8 +287,8 @@ namespace Simulator.MPS
                         ProductAtOut = null;
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
-                    InNodes.StatusNodes.ready.Value = false;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    /*InNodes.StatusNodes.ready.Value = false;
+                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.NoTarget:
                     MyLogger.Log("Placing Product on NoTarget?");
@@ -271,15 +298,7 @@ namespace Simulator.MPS
                     break;
             }
             //Belt.SetTarget(target, direction);
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
         }
 
         public void PlaceProduct(string machinePoint, Products? heldProduct)

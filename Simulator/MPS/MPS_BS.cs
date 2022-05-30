@@ -48,10 +48,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a GetBase Task!");
             TaskDescription = "GetBaseTask";
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            StartTask();
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration);
             MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
             switch (InNodes.Data0.Value)
@@ -69,12 +66,7 @@ namespace Simulator.MPS
                     MyLogger.Log("Unknown Stock to get base from!");
                     break;
             }
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
             //State = EnumState.Working;
         }
         private void Work()

@@ -81,11 +81,11 @@ namespace Simulator.MPS
         private void DeliverToSlotTask()
         {
             MyLogger.Log("DeliverToSlotTask!");
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
-
+            StartTask();
+            for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+            {
+                Thread.Sleep(1000);
+            }
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
             Thread.Sleep(Configurations.GetInstance().DSTaskDuration);
@@ -102,14 +102,7 @@ namespace Simulator.MPS
                     break;
             }
             ProductAtIn = null;
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
         }
     }
 }

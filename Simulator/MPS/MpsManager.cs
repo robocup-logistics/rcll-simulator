@@ -32,8 +32,8 @@ namespace Simulator.MPS
             AllMachineSet = false;
             if (!Configurations.GetInstance().MockUp)
             {
-                /*var rf = new RobotRefbox(null, myLogger);
-                rf.Start();*/
+                var rf = new RobotRefbox(null, myLogger);
+                rf.Start();
             }
             Instance = this;
         }

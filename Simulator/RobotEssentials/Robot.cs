@@ -287,7 +287,7 @@ namespace Simulator.RobotEssentials
             MyLogger.Log("At station starting the GRIP Action!");
             TaskDescription = "Grasping Product";
             var attempts = 0;
-            while (HeldProduct == null && attempts < 60)
+            while (HeldProduct == null && attempts < 30)
             {
                 MyLogger.Log("[Attempt nr " + attempts + "] Trying to get a product from the machine!");
                 Thread.Sleep(1000);

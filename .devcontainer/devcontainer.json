@@ -13,7 +13,7 @@
 	"settings": {},
 	
 	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": ["ms-dotnettools.vscode-dotnet-pack", "DennisMaxJung.vscode-dotnet-auto-attach"],
+	"extensions": ["ms-dotnettools.vscode-dotnet-pack", "DennisMaxJung.vscode-dotnet-auto-attach","pbkit.vscode-pbkit"],
 	"containerEnv": { "DISPLAY": "${localEnv:DISPLAY}"},
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

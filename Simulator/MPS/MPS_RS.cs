@@ -95,10 +95,11 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            StartTask();
+            for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+            {
+                Thread.Sleep(1000);
+            }
             if (ProductOnBelt == null) return;
             RingElement ringToMount;
             switch (InNodes.Data0.Value)
@@ -114,8 +115,7 @@ namespace Simulator.MPS
             }
             Thread.Sleep(Configurations.GetInstance().RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
         }
     }
 }
