@@ -1,3 +1,5 @@
+syntax = "proto2";
+
 package llsf_msgs;
 
 import "Team.proto";
@@ -5,7 +7,7 @@ import "Team.proto";
 option java_package = "org.robocup_logistics.llsf_msgs";
 option java_outer_classname = "AgentTasksProtos";
 
-message AgentTasks {
+message AgentTask {
     enum CompType {
         COMP_ID = 8000;  // COMPONENT 8000 is Simulation
         MSG_TYPE = 502; 
@@ -22,7 +24,7 @@ message AgentTasks {
         Retrieve retrieve = 6;
         Deliver deliver = 7;
         Buffer buffer = 8;
-        ExploreMachine explore_machine = 9;
+        ExploreWaypoint explore_waypoint = 9;
      }
    
     // flags
@@ -63,7 +65,7 @@ message Buffer {
 }
 
 // Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
-message ExploreMachine {
+message ExploreWaypoint {
     required string machine_id    = 1;  // name of the machine 
     required string machine_point = 2;  // valid machine-points: input, output
     required string waypoint      = 3;

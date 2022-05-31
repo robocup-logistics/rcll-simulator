@@ -34,14 +34,14 @@
  * OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
- syntax = "proto3";
+ syntax = "proto2";
 
  package llsf_msgs;
  
  import "Time.proto";
  import "Team.proto";
  import "Pose2D.proto";
- import "GerneralizedTasks.proto";
+ import "AgentTask.proto";
  
  option java_package =
    "org.robocup_logistics.llsf_msgs";
@@ -60,7 +60,7 @@
    required uint64 seq = 2;
  
    // The robot's jersey number
-   required uint32 number = 8;
+   required uint32 number = 3;
    // The robot's team name
    required string team_name = 4;
    // The robot's name
@@ -73,6 +73,6 @@
    optional Pose2D pose = 7;
 
    // Maybe needed for future generalisation of beacon signal and tracking of robots current activity (used by GRIPS currently)
-   optional AgentTasks task = 8; // current task-id of robot 
+   optional AgentTask task = 8; // current task-id of robot 
  }
  
