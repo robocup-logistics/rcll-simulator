@@ -49,6 +49,7 @@ enum RingColor {
 }
 
 enum BaseColor {
+  BASE_COLORLESS = 0;
   BASE_RED = 1;
   BASE_BLACK = 2;
   BASE_SILVER = 3;
