@@ -12,7 +12,7 @@ namespace Simulator.MPS
     public class MpsManager
     {
         //private member and getter for my singleton configurations class
-        private static MpsManager? Instance;
+        private static MpsManager Instance;
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
