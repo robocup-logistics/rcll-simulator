@@ -25,30 +25,31 @@ namespace LlsfMsgs {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChhHcmlwc01pZGxldmVsVGFza3MucHJvdG8SCWxsc2ZfbXNncxoKVGVhbS5w",
-            "cm90byKRBAoSR3JpcHNNaWRsZXZlbFRhc2tzEg8KB3Rhc2tfaWQYAiACKA0S",
-            "EAoIcm9ib3RfaWQYAyACKA0SMwoQbW92ZV90b193YXlwb2ludBgFIAEoCzIZ",
-            "Lmxsc2ZfbXNncy5Nb3ZlVG9XYXlwb2ludBIzChBnZXRfZnJvbV9zdGF0aW9u",
-            "GAYgASgLMhkubGxzZl9tc2dzLkdldEZyb21TdGF0aW9uEjcKEmRlbGl2ZXJf",
-            "dG9fc3RhdGlvbhgHIAEoCzIbLmxsc2ZfbXNncy5EZWxpdmVyVG9TdGF0aW9u",
-            "EjcKEmJ1ZmZlcl9jYXBfc3RhdGlvbhgIIAEoCzIbLmxsc2ZfbXNncy5CdWZm",
-            "ZXJDYXBTdGF0aW9uEjIKD2V4cGxvcmVfbWFjaGluZRgJIAEoCzIZLmxsc2Zf",
-            "bXNncy5FeHBsb3JlTWFjaGluZRITCgtjYW5jZWxfdGFzaxgKIAEoCBISCgpw",
-            "YXVzZV90YXNrGAsgASgIEh0KFXJlY2VpdmVfbWFjaGluZV9pbmZvcxgMIAEo",
-            "CBIUCgxsb3N0X3Byb2R1Y3QYDSABKAgSEgoKc3VjY2Vzc2Z1bBgPIAEoCBIQ",
-            "CghjYW5jZWxlZBgRIAEoCBIbChNlcnJvcl9jb2RlX21pZGxldmVsGBAgASgN",
-            "IicKCENvbXBUeXBlEgwKB0NPTVBfSUQQiCcSDQoITVNHX1RZUEUQ9gMiIgoO",
-            "TW92ZVRvV2F5cG9pbnQSEAoId2F5cG9pbnQYASACKAkiOwoOR2V0RnJvbVN0",
-            "YXRpb24SEgoKbWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIg",
-            "AigJIj0KEERlbGl2ZXJUb1N0YXRpb24SEgoKbWFjaGluZV9pZBgBIAIoCRIV",
-            "Cg1tYWNoaW5lX3BvaW50GAIgAigJIjwKEEJ1ZmZlckNhcFN0YXRpb24SEgoK",
-            "bWFjaGluZV9pZBgBIAIoCRIUCgxzaGVsZl9udW1iZXIYAiACKA0iRgoORXhw",
-            "bG9yZU1hY2hpbmUSEAoId2F5cG9pbnQYASACKAkSDgoGcm90YXRlGAIgAigI",
-            "EhIKCm1hY2hpbmVfaWQYAyABKAlCOwofb3JnLnJvYm9jdXBfbG9naXN0aWNz",
-            "Lmxsc2ZfbXNnc0IYR3JpcHNNaWRsZXZlbFRhc2tzUHJvdG9z"));
+            "cm90byK2BAoSR3JpcHNNaWRsZXZlbFRhc2tzEiMKCnRlYW1fY29sb3IYASAC",
+            "KA4yDy5sbHNmX21zZ3MuVGVhbRIPCgd0YXNrX2lkGAIgAigNEhAKCHJvYm90",
+            "X2lkGAMgAigNEjMKEG1vdmVfdG9fd2F5cG9pbnQYBSABKAsyGS5sbHNmX21z",
+            "Z3MuTW92ZVRvV2F5cG9pbnQSMwoQZ2V0X2Zyb21fc3RhdGlvbhgGIAEoCzIZ",
+            "Lmxsc2ZfbXNncy5HZXRGcm9tU3RhdGlvbhI3ChJkZWxpdmVyX3RvX3N0YXRp",
+            "b24YByABKAsyGy5sbHNmX21zZ3MuRGVsaXZlclRvU3RhdGlvbhI3ChJidWZm",
+            "ZXJfY2FwX3N0YXRpb24YCCABKAsyGy5sbHNmX21zZ3MuQnVmZmVyQ2FwU3Rh",
+            "dGlvbhIyCg9leHBsb3JlX21hY2hpbmUYCSABKAsyGS5sbHNmX21zZ3MuRXhw",
+            "bG9yZU1hY2hpbmUSEwoLY2FuY2VsX3Rhc2sYCiABKAgSEgoKcGF1c2VfdGFz",
+            "axgLIAEoCBIdChVyZWNlaXZlX21hY2hpbmVfaW5mb3MYDCABKAgSFAoMbG9z",
+            "dF9wcm9kdWN0GA0gASgIEhIKCnN1Y2Nlc3NmdWwYDyABKAgSEAoIY2FuY2Vs",
+            "ZWQYESABKAgSGwoTZXJyb3JfY29kZV9taWRsZXZlbBgQIAEoDSInCghDb21w",
+            "VHlwZRIMCgdDT01QX0lEEIgnEg0KCE1TR19UWVBFEPYDIiIKDk1vdmVUb1dh",
+            "eXBvaW50EhAKCHdheXBvaW50GAEgAigJIjsKDkdldEZyb21TdGF0aW9uEhIK",
+            "Cm1hY2hpbmVfaWQYASACKAkSFQoNbWFjaGluZV9wb2ludBgCIAIoCSI9ChBE",
+            "ZWxpdmVyVG9TdGF0aW9uEhIKCm1hY2hpbmVfaWQYASACKAkSFQoNbWFjaGlu",
+            "ZV9wb2ludBgCIAIoCSI8ChBCdWZmZXJDYXBTdGF0aW9uEhIKCm1hY2hpbmVf",
+            "aWQYASACKAkSFAoMc2hlbGZfbnVtYmVyGAIgAigNIkYKDkV4cGxvcmVNYWNo",
+            "aW5lEhAKCHdheXBvaW50GAEgAigJEg4KBnJvdGF0ZRgCIAIoCBISCgptYWNo",
+            "aW5lX2lkGAMgASgJQjsKH29yZy5yb2JvY3VwX2xvZ2lzdGljcy5sbHNmX21z",
+            "Z3NCGEdyaXBzTWlkbGV2ZWxUYXNrc1Byb3Rvcw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.GripsMidlevelTasks), global::LlsfMsgs.GripsMidlevelTasks.Parser, new[]{ "TaskId", "RobotId", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "CancelTask", "PauseTask", "ReceiveMachineInfos", "LostProduct", "Successful", "Canceled", "ErrorCodeMidlevel" }, null, new[]{ typeof(global::LlsfMsgs.GripsMidlevelTasks.Types.CompType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.GripsMidlevelTasks), global::LlsfMsgs.GripsMidlevelTasks.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "CancelTask", "PauseTask", "ReceiveMachineInfos", "LostProduct", "Successful", "Canceled", "ErrorCodeMidlevel" }, null, new[]{ typeof(global::LlsfMsgs.GripsMidlevelTasks.Types.CompType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MoveToWaypoint), global::LlsfMsgs.MoveToWaypoint.Parser, new[]{ "Waypoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.GetFromStation), global::LlsfMsgs.GetFromStation.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.DeliverToStation), global::LlsfMsgs.DeliverToStation.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
@@ -87,6 +88,7 @@ namespace LlsfMsgs {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public GripsMidlevelTasks(GripsMidlevelTasks other) : this() {
       _hasBits0 = other._hasBits0;
+      teamColor_ = other.teamColor_;
       taskId_ = other.taskId_;
       robotId_ = other.robotId_;
       moveToWaypoint_ = other.moveToWaypoint_ != null ? other.moveToWaypoint_.Clone() : null;
@@ -109,31 +111,55 @@ namespace LlsfMsgs {
       return new GripsMidlevelTasks(this);
     }
 
+    /// <summary>Field number for the "team_color" field.</summary>
+    public const int TeamColorFieldNumber = 1;
+    private readonly static global::LlsfMsgs.Team TeamColorDefaultValue = global::LlsfMsgs.Team.Cyan;
+
+    private global::LlsfMsgs.Team teamColor_;
+    /// <summary>
+    /// general infos
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LlsfMsgs.Team TeamColor {
+      get { if ((_hasBits0 & 1) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        teamColor_ = value;
+      }
+    }
+    /// <summary>Gets whether the "team_color" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasTeamColor {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "team_color" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearTeamColor() {
+      _hasBits0 &= ~1;
+    }
+
     /// <summary>Field number for the "task_id" field.</summary>
     public const int TaskIdFieldNumber = 2;
     private readonly static uint TaskIdDefaultValue = 0;
 
     private uint taskId_;
-    /// <summary>
-    /// general infos
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint TaskId {
-      get { if ((_hasBits0 & 1) != 0) { return taskId_; } else { return TaskIdDefaultValue; } }
+      get { if ((_hasBits0 & 2) != 0) { return taskId_; } else { return TaskIdDefaultValue; } }
       set {
-        _hasBits0 |= 1;
+        _hasBits0 |= 2;
         taskId_ = value;
       }
     }
     /// <summary>Gets whether the "task_id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasTaskId {
-      get { return (_hasBits0 & 1) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "task_id" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearTaskId() {
-      _hasBits0 &= ~1;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "robot_id" field.</summary>
@@ -143,21 +169,21 @@ namespace LlsfMsgs {
     private uint robotId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint RobotId {
-      get { if ((_hasBits0 & 2) != 0) { return robotId_; } else { return RobotIdDefaultValue; } }
+      get { if ((_hasBits0 & 4) != 0) { return robotId_; } else { return RobotIdDefaultValue; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         robotId_ = value;
       }
     }
     /// <summary>Gets whether the "robot_id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasRobotId {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "robot_id" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearRobotId() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "move_to_waypoint" field.</summary>
@@ -228,21 +254,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool CancelTask {
-      get { if ((_hasBits0 & 4) != 0) { return cancelTask_; } else { return CancelTaskDefaultValue; } }
+      get { if ((_hasBits0 & 8) != 0) { return cancelTask_; } else { return CancelTaskDefaultValue; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 8;
         cancelTask_ = value;
       }
     }
     /// <summary>Gets whether the "cancel_task" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasCancelTask {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 8) != 0; }
     }
     /// <summary>Clears the value of the "cancel_task" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearCancelTask() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~8;
     }
 
     /// <summary>Field number for the "pause_task" field.</summary>
@@ -255,21 +281,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool PauseTask {
-      get { if ((_hasBits0 & 8) != 0) { return pauseTask_; } else { return PauseTaskDefaultValue; } }
+      get { if ((_hasBits0 & 16) != 0) { return pauseTask_; } else { return PauseTaskDefaultValue; } }
       set {
-        _hasBits0 |= 8;
+        _hasBits0 |= 16;
         pauseTask_ = value;
       }
     }
     /// <summary>Gets whether the "pause_task" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasPauseTask {
-      get { return (_hasBits0 & 8) != 0; }
+      get { return (_hasBits0 & 16) != 0; }
     }
     /// <summary>Clears the value of the "pause_task" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearPauseTask() {
-      _hasBits0 &= ~8;
+      _hasBits0 &= ~16;
     }
 
     /// <summary>Field number for the "receive_machine_infos" field.</summary>
@@ -282,21 +308,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool ReceiveMachineInfos {
-      get { if ((_hasBits0 & 16) != 0) { return receiveMachineInfos_; } else { return ReceiveMachineInfosDefaultValue; } }
+      get { if ((_hasBits0 & 32) != 0) { return receiveMachineInfos_; } else { return ReceiveMachineInfosDefaultValue; } }
       set {
-        _hasBits0 |= 16;
+        _hasBits0 |= 32;
         receiveMachineInfos_ = value;
       }
     }
     /// <summary>Gets whether the "receive_machine_infos" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasReceiveMachineInfos {
-      get { return (_hasBits0 & 16) != 0; }
+      get { return (_hasBits0 & 32) != 0; }
     }
     /// <summary>Clears the value of the "receive_machine_infos" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearReceiveMachineInfos() {
-      _hasBits0 &= ~16;
+      _hasBits0 &= ~32;
     }
 
     /// <summary>Field number for the "lost_product" field.</summary>
@@ -309,21 +335,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool LostProduct {
-      get { if ((_hasBits0 & 32) != 0) { return lostProduct_; } else { return LostProductDefaultValue; } }
+      get { if ((_hasBits0 & 64) != 0) { return lostProduct_; } else { return LostProductDefaultValue; } }
       set {
-        _hasBits0 |= 32;
+        _hasBits0 |= 64;
         lostProduct_ = value;
       }
     }
     /// <summary>Gets whether the "lost_product" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasLostProduct {
-      get { return (_hasBits0 & 32) != 0; }
+      get { return (_hasBits0 & 64) != 0; }
     }
     /// <summary>Clears the value of the "lost_product" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearLostProduct() {
-      _hasBits0 &= ~32;
+      _hasBits0 &= ~64;
     }
 
     /// <summary>Field number for the "successful" field.</summary>
@@ -336,21 +362,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Successful {
-      get { if ((_hasBits0 & 64) != 0) { return successful_; } else { return SuccessfulDefaultValue; } }
+      get { if ((_hasBits0 & 128) != 0) { return successful_; } else { return SuccessfulDefaultValue; } }
       set {
-        _hasBits0 |= 64;
+        _hasBits0 |= 128;
         successful_ = value;
       }
     }
     /// <summary>Gets whether the "successful" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasSuccessful {
-      get { return (_hasBits0 & 64) != 0; }
+      get { return (_hasBits0 & 128) != 0; }
     }
     /// <summary>Clears the value of the "successful" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearSuccessful() {
-      _hasBits0 &= ~64;
+      _hasBits0 &= ~128;
     }
 
     /// <summary>Field number for the "canceled" field.</summary>
@@ -360,21 +386,21 @@ namespace LlsfMsgs {
     private bool canceled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Canceled {
-      get { if ((_hasBits0 & 256) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
+      get { if ((_hasBits0 & 512) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
       set {
-        _hasBits0 |= 256;
+        _hasBits0 |= 512;
         canceled_ = value;
       }
     }
     /// <summary>Gets whether the "canceled" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasCanceled {
-      get { return (_hasBits0 & 256) != 0; }
+      get { return (_hasBits0 & 512) != 0; }
     }
     /// <summary>Clears the value of the "canceled" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearCanceled() {
-      _hasBits0 &= ~256;
+      _hasBits0 &= ~512;
     }
 
     /// <summary>Field number for the "error_code_midlevel" field.</summary>
@@ -387,21 +413,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint ErrorCodeMidlevel {
-      get { if ((_hasBits0 & 128) != 0) { return errorCodeMidlevel_; } else { return ErrorCodeMidlevelDefaultValue; } }
+      get { if ((_hasBits0 & 256) != 0) { return errorCodeMidlevel_; } else { return ErrorCodeMidlevelDefaultValue; } }
       set {
-        _hasBits0 |= 128;
+        _hasBits0 |= 256;
         errorCodeMidlevel_ = value;
       }
     }
     /// <summary>Gets whether the "error_code_midlevel" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasErrorCodeMidlevel {
-      get { return (_hasBits0 & 128) != 0; }
+      get { return (_hasBits0 & 256) != 0; }
     }
     /// <summary>Clears the value of the "error_code_midlevel" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearErrorCodeMidlevel() {
-      _hasBits0 &= ~128;
+      _hasBits0 &= ~256;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -417,6 +443,7 @@ namespace LlsfMsgs {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (TeamColor != other.TeamColor) return false;
       if (TaskId != other.TaskId) return false;
       if (RobotId != other.RobotId) return false;
       if (!object.Equals(MoveToWaypoint, other.MoveToWaypoint)) return false;
@@ -437,6 +464,7 @@ namespace LlsfMsgs {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (HasTeamColor) hash ^= TeamColor.GetHashCode();
       if (HasTaskId) hash ^= TaskId.GetHashCode();
       if (HasRobotId) hash ^= RobotId.GetHashCode();
       if (moveToWaypoint_ != null) hash ^= MoveToWaypoint.GetHashCode();
@@ -464,6 +492,10 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+      if (HasTeamColor) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) TeamColor);
+      }
       if (HasTaskId) {
         output.WriteRawTag(16);
         output.WriteUInt32(TaskId);
@@ -528,6 +560,9 @@ namespace LlsfMsgs {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (HasTeamColor) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TeamColor);
+      }
       if (HasTaskId) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(TaskId);
       }
@@ -580,6 +615,9 @@ namespace LlsfMsgs {
     public void MergeFrom(GripsMidlevelTasks other) {
       if (other == null) {
         return;
+      }
+      if (other.HasTeamColor) {
+        TeamColor = other.TeamColor;
       }
       if (other.HasTaskId) {
         TaskId = other.TaskId;
@@ -649,6 +687,10 @@ namespace LlsfMsgs {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
+          case 8: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
           case 16: {
             TaskId = input.ReadUInt32();
             break;
