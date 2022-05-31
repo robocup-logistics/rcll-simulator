@@ -1,5 +1,3 @@
-syntax = "proto2";
-
 package llsf_msgs;
 
 import "Team.proto";
@@ -14,7 +12,6 @@ message GripsMidlevelTasks {
     }
 
     // general infos
-    required Team team_color = 1;    // Color of the team
     required uint32 task_id  = 2;
     required uint32 robot_id = 3;
 
@@ -29,15 +26,12 @@ message GripsMidlevelTasks {
     optional bool cancel_task = 10; // cancels current task
     optional bool pause_task = 11; // if true current task is paused, if false again task is continued
     optional bool receive_machine_infos = 12; // true if robot requires machine-informations (can be set by robot and teamserver)
-    optional bool report_all_seen_machines = 13; // flag need for the exploration logic
-    optional bool lost_product = 14; // true if the product was lost
+    optional bool lost_product = 13; // true if the product was lost
     
-    // flags and result of the current task
-    optional bool cancel_task = 11; // cancels current task
-    optional bool pause_task = 12; // if true current task is paused, if false again task is continued
-    optional bool successful = 13;
-    optional bool canceled = 14;
-    optional uint32 error_code_midlevel = 15; // only set if failure, error-codes defined in GripsCommon
+    // result of the execution from the robot
+    optional bool successful = 15;
+    optional bool canceled = 17;
+    optional uint32 error_code_midlevel = 16; // only set if failure, error-codes defined in GripsCommon
 }
 
 // Move robot to stated waypoint
@@ -65,7 +59,7 @@ message BufferCapStation {
 
 // Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
 message ExploreMachine {
-    required string machine_id    = 1;
-    required string machine_point = 2;  // valid machine-points: input, output
-    required string waypoint      = 3;
+    required string waypoint    = 1;
+    required bool rotate        = 2;
+    optional string machine_id  = 3;
 }

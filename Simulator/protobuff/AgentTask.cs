@@ -24,36 +24,41 @@ namespace LlsfMsgs {
     static AgentTaskReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "Cg9BZ2VudFRhc2sucHJvdG8SCWxsc2ZfbXNncxoKVGVhbS5wcm90byKWBAoJ",
-            "QWdlbnRUYXNrEiMKCnRlYW1fY29sb3IYASACKA4yDy5sbHNmX21zZ3MuVGVh",
-            "bRIPCgd0YXNrX2lkGAIgAigNEhAKCHJvYm90X2lkGAMgAigNEh8KBG1vdmUY",
-            "BSABKAsyDy5sbHNmX21zZ3MuTW92ZUgAEicKCHJldHJpZXZlGAYgASgLMhMu",
-            "bGxzZl9tc2dzLlJldHJpZXZlSAASJQoHZGVsaXZlchgHIAEoCzISLmxsc2Zf",
-            "bXNncy5EZWxpdmVySAASIwoGYnVmZmVyGAggASgLMhEubGxzZl9tc2dzLkJ1",
-            "ZmZlckgAEjYKEGV4cGxvcmVfd2F5cG9pbnQYCSABKAsyGi5sbHNmX21zZ3Mu",
-            "RXhwbG9yZVdheXBvaW50SAASEwoLY2FuY2VsX3Rhc2sYCiABKAgSEgoKcGF1",
-            "c2VfdGFzaxgLIAEoCBIdChVyZWNlaXZlX21hY2hpbmVfaW5mb3MYDCABKAgS",
-            "IAoYcmVwb3J0X2FsbF9zZWVuX21hY2hpbmVzGA0gASgIEhQKDGxvc3RfcHJv",
-            "ZHVjdBgOIAEoCBISCgpzdWNjZXNzZnVsGA8gASgIEhAKCGNhbmNlbGVkGBEg",
-            "ASgIEhsKE2Vycm9yX2NvZGVfbWlkbGV2ZWwYECABKA0iJwoIQ29tcFR5cGUS",
-            "DAoHQ09NUF9JRBDAPhINCghNU0dfVFlQRRD2A0IHCgVUYXNrcyIvCgRNb3Zl",
-            "EhAKCHdheXBvaW50GAEgAigJEhUKDW1hY2hpbmVfcG9pbnQYAiABKAkiNQoI",
-            "UmV0cmlldmUSEgoKbWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50",
-            "GAIgAigJIjQKB0RlbGl2ZXISEgoKbWFjaGluZV9pZBgBIAIoCRIVCg1tYWNo",
-            "aW5lX3BvaW50GAIgAigJIjIKBkJ1ZmZlchISCgptYWNoaW5lX2lkGAEgAigJ",
-            "EhQKDHNoZWxmX251bWJlchgCIAIoDSJOCg9FeHBsb3JlV2F5cG9pbnQSEgoK",
-            "bWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIgAigJEhAKCHdh",
-            "eXBvaW50GAMgAigJQjMKH29yZy5yb2JvY3VwX2xvZ2lzdGljcy5sbHNmX21z",
-            "Z3NCEEFnZW50VGFza3NQcm90b3M="));
+            "Cg9BZ2VudFRhc2sucHJvdG8SCWxsc2ZfbXNncxoKVGVhbS5wcm90bxoSUHJv",
+            "ZHVjdENvbG9yLnByb3RvIoQECglBZ2VudFRhc2sSIwoKdGVhbV9jb2xvchgB",
+            "IAIoDjIPLmxsc2ZfbXNncy5UZWFtEg8KB3Rhc2tfaWQYAiACKA0SEAoIcm9i",
+            "b3RfaWQYAyACKA0SHQoEbW92ZRgEIAEoCzIPLmxsc2ZfbXNncy5Nb3ZlEiUK",
+            "CHJldHJpZXZlGAUgASgLMhMubGxzZl9tc2dzLlJldHJpZXZlEiMKB2RlbGl2",
+            "ZXIYBiABKAsyEi5sbHNmX21zZ3MuRGVsaXZlchIoCgZidWZmZXIYByABKAsy",
+            "GC5sbHNmX21zZ3MuQnVmZmVyU3RhdGlvbhIzCg9leHBsb3JlX21hY2hpbmUY",
+            "CCABKAsyGi5sbHNmX21zZ3MuRXhwbG9yZVdheXBvaW50Ej4KFXdvcmtwaWVj",
+            "ZV9kZXNjcmlwdGlvbhgJIAEoCzIfLmxsc2ZfbXNncy5Xb3JrcGllY2VEZXNj",
+            "cmlwdGlvbhIQCghvcmRlcl9pZBgKIAEoDRITCgtjYW5jZWxfdGFzaxgLIAEo",
+            "CBISCgpwYXVzZV90YXNrGAwgASgIEhIKCnN1Y2Nlc3NmdWwYDSABKAgSEAoI",
+            "Y2FuY2VsZWQYDiABKAgSGwoTZXJyb3JfY29kZV9taWRsZXZlbBgPIAEoDSIn",
+            "CghDb21wVHlwZRIMCgdDT01QX0lEEMA+Eg0KCE1TR19UWVBFEPYDIi8KBE1v",
+            "dmUSEAoId2F5cG9pbnQYASACKAkSFQoNbWFjaGluZV9wb2ludBgCIAEoCSI1",
+            "CghSZXRyaWV2ZRISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9p",
+            "bnQYAiACKAkiNAoHRGVsaXZlchISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1h",
+            "Y2hpbmVfcG9pbnQYAiACKAkiOQoNQnVmZmVyU3RhdGlvbhISCgptYWNoaW5l",
+            "X2lkGAEgAigJEhQKDHNoZWxmX251bWJlchgCIAIoDSJOCg9FeHBsb3JlV2F5",
+            "cG9pbnQSEgoKbWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIg",
+            "AigJEhAKCHdheXBvaW50GAMgAigJIrwBChRXb3JrcGllY2VEZXNjcmlwdGlv",
+            "bhIoCgpiYXNlX2NvbG9yGAMgAigOMhQubGxzZl9tc2dzLkJhc2VDb2xvchIp",
+            "CgtyaW5nX2NvbG9ycxgEIAMoDjIULmxsc2ZfbXNncy5SaW5nQ29sb3ISJgoJ",
+            "Y2FwX2NvbG9yGAUgASgOMhMubGxzZl9tc2dzLkNhcENvbG9yIicKCENvbXBU",
+            "eXBlEgwKB0NPTVBfSUQQwD4SDQoITVNHX1RZUEUQ/gNCMwofb3JnLnJvYm9j",
+            "dXBfbG9naXN0aWNzLmxsc2ZfbXNnc0IQQWdlbnRUYXNrc1Byb3Rvcw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.ProductColorReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.AgentTask), global::LlsfMsgs.AgentTask.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "Move", "Retrieve", "Deliver", "Buffer", "ExploreWaypoint", "CancelTask", "PauseTask", "ReceiveMachineInfos", "ReportAllSeenMachines", "LostProduct", "Successful", "Canceled", "ErrorCodeMidlevel" }, new[]{ "Tasks" }, new[]{ typeof(global::LlsfMsgs.AgentTask.Types.CompType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.AgentTask), global::LlsfMsgs.AgentTask.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "Move", "Retrieve", "Deliver", "Buffer", "ExploreMachine", "WorkpieceDescription", "OrderId", "CancelTask", "PauseTask", "Successful", "Canceled", "ErrorCodeMidlevel" }, null, new[]{ typeof(global::LlsfMsgs.AgentTask.Types.CompType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Move), global::LlsfMsgs.Move.Parser, new[]{ "Waypoint", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Retrieve), global::LlsfMsgs.Retrieve.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Deliver), global::LlsfMsgs.Deliver.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Buffer), global::LlsfMsgs.Buffer.Parser, new[]{ "MachineId", "ShelfNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.ExploreWaypoint), global::LlsfMsgs.ExploreWaypoint.Parser, new[]{ "MachineId", "MachinePoint", "Waypoint" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.BufferStation), global::LlsfMsgs.BufferStation.Parser, new[]{ "MachineId", "ShelfNumber" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.ExploreWaypoint), global::LlsfMsgs.ExploreWaypoint.Parser, new[]{ "MachineId", "MachinePoint", "Waypoint" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.WorkpieceDescription), global::LlsfMsgs.WorkpieceDescription.Parser, new[]{ "BaseColor", "RingColors", "CapColor" }, null, new[]{ typeof(global::LlsfMsgs.WorkpieceDescription.Types.CompType) }, null, null)
           }));
     }
     #endregion
@@ -90,32 +95,18 @@ namespace LlsfMsgs {
       teamColor_ = other.teamColor_;
       taskId_ = other.taskId_;
       robotId_ = other.robotId_;
+      move_ = other.move_ != null ? other.move_.Clone() : null;
+      retrieve_ = other.retrieve_ != null ? other.retrieve_.Clone() : null;
+      deliver_ = other.deliver_ != null ? other.deliver_.Clone() : null;
+      buffer_ = other.buffer_ != null ? other.buffer_.Clone() : null;
+      exploreMachine_ = other.exploreMachine_ != null ? other.exploreMachine_.Clone() : null;
+      workpieceDescription_ = other.workpieceDescription_ != null ? other.workpieceDescription_.Clone() : null;
+      orderId_ = other.orderId_;
       cancelTask_ = other.cancelTask_;
       pauseTask_ = other.pauseTask_;
-      receiveMachineInfos_ = other.receiveMachineInfos_;
-      reportAllSeenMachines_ = other.reportAllSeenMachines_;
-      lostProduct_ = other.lostProduct_;
       successful_ = other.successful_;
       canceled_ = other.canceled_;
       errorCodeMidlevel_ = other.errorCodeMidlevel_;
-      switch (other.TasksCase) {
-        case TasksOneofCase.Move:
-          Move = other.Move.Clone();
-          break;
-        case TasksOneofCase.Retrieve:
-          Retrieve = other.Retrieve.Clone();
-          break;
-        case TasksOneofCase.Deliver:
-          Deliver = other.Deliver.Clone();
-          break;
-        case TasksOneofCase.Buffer:
-          Buffer = other.Buffer.Clone();
-          break;
-        case TasksOneofCase.ExploreWaypoint:
-          ExploreWaypoint = other.ExploreWaypoint.Clone();
-          break;
-      }
-
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -203,89 +194,130 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "move" field.</summary>
-    public const int MoveFieldNumber = 5;
+    public const int MoveFieldNumber = 4;
+    private global::LlsfMsgs.Move move_;
+    /// <summary>
+    /// Tasks
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Move Move {
-      get { return tasksCase_ == TasksOneofCase.Move ? (global::LlsfMsgs.Move) tasks_ : null; }
+      get { return move_; }
       set {
-        tasks_ = value;
-        tasksCase_ = value == null ? TasksOneofCase.None : TasksOneofCase.Move;
+        move_ = value;
       }
     }
 
     /// <summary>Field number for the "retrieve" field.</summary>
-    public const int RetrieveFieldNumber = 6;
+    public const int RetrieveFieldNumber = 5;
+    private global::LlsfMsgs.Retrieve retrieve_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Retrieve Retrieve {
-      get { return tasksCase_ == TasksOneofCase.Retrieve ? (global::LlsfMsgs.Retrieve) tasks_ : null; }
+      get { return retrieve_; }
       set {
-        tasks_ = value;
-        tasksCase_ = value == null ? TasksOneofCase.None : TasksOneofCase.Retrieve;
+        retrieve_ = value;
       }
     }
 
     /// <summary>Field number for the "deliver" field.</summary>
-    public const int DeliverFieldNumber = 7;
+    public const int DeliverFieldNumber = 6;
+    private global::LlsfMsgs.Deliver deliver_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Deliver Deliver {
-      get { return tasksCase_ == TasksOneofCase.Deliver ? (global::LlsfMsgs.Deliver) tasks_ : null; }
+      get { return deliver_; }
       set {
-        tasks_ = value;
-        tasksCase_ = value == null ? TasksOneofCase.None : TasksOneofCase.Deliver;
+        deliver_ = value;
       }
     }
 
     /// <summary>Field number for the "buffer" field.</summary>
-    public const int BufferFieldNumber = 8;
+    public const int BufferFieldNumber = 7;
+    private global::LlsfMsgs.BufferStation buffer_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LlsfMsgs.Buffer Buffer {
-      get { return tasksCase_ == TasksOneofCase.Buffer ? (global::LlsfMsgs.Buffer) tasks_ : null; }
+    public global::LlsfMsgs.BufferStation Buffer {
+      get { return buffer_; }
       set {
-        tasks_ = value;
-        tasksCase_ = value == null ? TasksOneofCase.None : TasksOneofCase.Buffer;
+        buffer_ = value;
       }
     }
 
-    /// <summary>Field number for the "explore_waypoint" field.</summary>
-    public const int ExploreWaypointFieldNumber = 9;
+    /// <summary>Field number for the "explore_machine" field.</summary>
+    public const int ExploreMachineFieldNumber = 8;
+    private global::LlsfMsgs.ExploreWaypoint exploreMachine_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::LlsfMsgs.ExploreWaypoint ExploreWaypoint {
-      get { return tasksCase_ == TasksOneofCase.ExploreWaypoint ? (global::LlsfMsgs.ExploreWaypoint) tasks_ : null; }
+    public global::LlsfMsgs.ExploreWaypoint ExploreMachine {
+      get { return exploreMachine_; }
       set {
-        tasks_ = value;
-        tasksCase_ = value == null ? TasksOneofCase.None : TasksOneofCase.ExploreWaypoint;
+        exploreMachine_ = value;
       }
+    }
+
+    /// <summary>Field number for the "workpiece_description" field.</summary>
+    public const int WorkpieceDescriptionFieldNumber = 9;
+    private global::LlsfMsgs.WorkpieceDescription workpieceDescription_;
+    /// <summary>
+    /// additional info for the refbox
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LlsfMsgs.WorkpieceDescription WorkpieceDescription {
+      get { return workpieceDescription_; }
+      set {
+        workpieceDescription_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "order_id" field.</summary>
+    public const int OrderIdFieldNumber = 10;
+    private readonly static uint OrderIdDefaultValue = 0;
+
+    private uint orderId_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public uint OrderId {
+      get { if ((_hasBits0 & 8) != 0) { return orderId_; } else { return OrderIdDefaultValue; } }
+      set {
+        _hasBits0 |= 8;
+        orderId_ = value;
+      }
+    }
+    /// <summary>Gets whether the "order_id" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasOrderId {
+      get { return (_hasBits0 & 8) != 0; }
+    }
+    /// <summary>Clears the value of the "order_id" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearOrderId() {
+      _hasBits0 &= ~8;
     }
 
     /// <summary>Field number for the "cancel_task" field.</summary>
-    public const int CancelTaskFieldNumber = 10;
+    public const int CancelTaskFieldNumber = 11;
     private readonly static bool CancelTaskDefaultValue = false;
 
     private bool cancelTask_;
     /// <summary>
-    /// flags
+    /// flags and result of the current task
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool CancelTask {
-      get { if ((_hasBits0 & 8) != 0) { return cancelTask_; } else { return CancelTaskDefaultValue; } }
+      get { if ((_hasBits0 & 16) != 0) { return cancelTask_; } else { return CancelTaskDefaultValue; } }
       set {
-        _hasBits0 |= 8;
+        _hasBits0 |= 16;
         cancelTask_ = value;
       }
     }
     /// <summary>Gets whether the "cancel_task" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasCancelTask {
-      get { return (_hasBits0 & 8) != 0; }
+      get { return (_hasBits0 & 16) != 0; }
     }
     /// <summary>Clears the value of the "cancel_task" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearCancelTask() {
-      _hasBits0 &= ~8;
+      _hasBits0 &= ~16;
     }
 
     /// <summary>Field number for the "pause_task" field.</summary>
-    public const int PauseTaskFieldNumber = 11;
+    public const int PauseTaskFieldNumber = 12;
     private readonly static bool PauseTaskDefaultValue = false;
 
     private bool pauseTask_;
@@ -294,157 +326,73 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool PauseTask {
-      get { if ((_hasBits0 & 16) != 0) { return pauseTask_; } else { return PauseTaskDefaultValue; } }
+      get { if ((_hasBits0 & 32) != 0) { return pauseTask_; } else { return PauseTaskDefaultValue; } }
       set {
-        _hasBits0 |= 16;
+        _hasBits0 |= 32;
         pauseTask_ = value;
       }
     }
     /// <summary>Gets whether the "pause_task" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasPauseTask {
-      get { return (_hasBits0 & 16) != 0; }
+      get { return (_hasBits0 & 32) != 0; }
     }
     /// <summary>Clears the value of the "pause_task" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearPauseTask() {
-      _hasBits0 &= ~16;
-    }
-
-    /// <summary>Field number for the "receive_machine_infos" field.</summary>
-    public const int ReceiveMachineInfosFieldNumber = 12;
-    private readonly static bool ReceiveMachineInfosDefaultValue = false;
-
-    private bool receiveMachineInfos_;
-    /// <summary>
-    /// true if robot requires machine-informations (can be set by robot and teamserver)
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool ReceiveMachineInfos {
-      get { if ((_hasBits0 & 32) != 0) { return receiveMachineInfos_; } else { return ReceiveMachineInfosDefaultValue; } }
-      set {
-        _hasBits0 |= 32;
-        receiveMachineInfos_ = value;
-      }
-    }
-    /// <summary>Gets whether the "receive_machine_infos" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasReceiveMachineInfos {
-      get { return (_hasBits0 & 32) != 0; }
-    }
-    /// <summary>Clears the value of the "receive_machine_infos" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearReceiveMachineInfos() {
       _hasBits0 &= ~32;
     }
 
-    /// <summary>Field number for the "report_all_seen_machines" field.</summary>
-    public const int ReportAllSeenMachinesFieldNumber = 13;
-    private readonly static bool ReportAllSeenMachinesDefaultValue = false;
-
-    private bool reportAllSeenMachines_;
-    /// <summary>
-    /// flag need for the exploration logic
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool ReportAllSeenMachines {
-      get { if ((_hasBits0 & 64) != 0) { return reportAllSeenMachines_; } else { return ReportAllSeenMachinesDefaultValue; } }
-      set {
-        _hasBits0 |= 64;
-        reportAllSeenMachines_ = value;
-      }
-    }
-    /// <summary>Gets whether the "report_all_seen_machines" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasReportAllSeenMachines {
-      get { return (_hasBits0 & 64) != 0; }
-    }
-    /// <summary>Clears the value of the "report_all_seen_machines" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearReportAllSeenMachines() {
-      _hasBits0 &= ~64;
-    }
-
-    /// <summary>Field number for the "lost_product" field.</summary>
-    public const int LostProductFieldNumber = 14;
-    private readonly static bool LostProductDefaultValue = false;
-
-    private bool lostProduct_;
-    /// <summary>
-    /// true if the product was lost
-    /// </summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool LostProduct {
-      get { if ((_hasBits0 & 128) != 0) { return lostProduct_; } else { return LostProductDefaultValue; } }
-      set {
-        _hasBits0 |= 128;
-        lostProduct_ = value;
-      }
-    }
-    /// <summary>Gets whether the "lost_product" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasLostProduct {
-      get { return (_hasBits0 & 128) != 0; }
-    }
-    /// <summary>Clears the value of the "lost_product" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearLostProduct() {
-      _hasBits0 &= ~128;
-    }
-
     /// <summary>Field number for the "successful" field.</summary>
-    public const int SuccessfulFieldNumber = 15;
+    public const int SuccessfulFieldNumber = 13;
     private readonly static bool SuccessfulDefaultValue = false;
 
     private bool successful_;
-    /// <summary>
-    /// result of the execution from the robot
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Successful {
-      get { if ((_hasBits0 & 256) != 0) { return successful_; } else { return SuccessfulDefaultValue; } }
+      get { if ((_hasBits0 & 64) != 0) { return successful_; } else { return SuccessfulDefaultValue; } }
       set {
-        _hasBits0 |= 256;
+        _hasBits0 |= 64;
         successful_ = value;
       }
     }
     /// <summary>Gets whether the "successful" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasSuccessful {
-      get { return (_hasBits0 & 256) != 0; }
+      get { return (_hasBits0 & 64) != 0; }
     }
     /// <summary>Clears the value of the "successful" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearSuccessful() {
-      _hasBits0 &= ~256;
+      _hasBits0 &= ~64;
     }
 
     /// <summary>Field number for the "canceled" field.</summary>
-    public const int CanceledFieldNumber = 17;
+    public const int CanceledFieldNumber = 14;
     private readonly static bool CanceledDefaultValue = false;
 
     private bool canceled_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Canceled {
-      get { if ((_hasBits0 & 1024) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
+      get { if ((_hasBits0 & 128) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
       set {
-        _hasBits0 |= 1024;
+        _hasBits0 |= 128;
         canceled_ = value;
       }
     }
     /// <summary>Gets whether the "canceled" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasCanceled {
-      get { return (_hasBits0 & 1024) != 0; }
+      get { return (_hasBits0 & 128) != 0; }
     }
     /// <summary>Clears the value of the "canceled" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearCanceled() {
-      _hasBits0 &= ~1024;
+      _hasBits0 &= ~128;
     }
 
     /// <summary>Field number for the "error_code_midlevel" field.</summary>
-    public const int ErrorCodeMidlevelFieldNumber = 16;
+    public const int ErrorCodeMidlevelFieldNumber = 15;
     private readonly static uint ErrorCodeMidlevelDefaultValue = 0;
 
     private uint errorCodeMidlevel_;
@@ -453,43 +401,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint ErrorCodeMidlevel {
-      get { if ((_hasBits0 & 512) != 0) { return errorCodeMidlevel_; } else { return ErrorCodeMidlevelDefaultValue; } }
+      get { if ((_hasBits0 & 256) != 0) { return errorCodeMidlevel_; } else { return ErrorCodeMidlevelDefaultValue; } }
       set {
-        _hasBits0 |= 512;
+        _hasBits0 |= 256;
         errorCodeMidlevel_ = value;
       }
     }
     /// <summary>Gets whether the "error_code_midlevel" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasErrorCodeMidlevel {
-      get { return (_hasBits0 & 512) != 0; }
+      get { return (_hasBits0 & 256) != 0; }
     }
     /// <summary>Clears the value of the "error_code_midlevel" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearErrorCodeMidlevel() {
-      _hasBits0 &= ~512;
-    }
-
-    private object tasks_;
-    /// <summary>Enum of possible cases for the "Tasks" oneof.</summary>
-    public enum TasksOneofCase {
-      None = 0,
-      Move = 5,
-      Retrieve = 6,
-      Deliver = 7,
-      Buffer = 8,
-      ExploreWaypoint = 9,
-    }
-    private TasksOneofCase tasksCase_ = TasksOneofCase.None;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public TasksOneofCase TasksCase {
-      get { return tasksCase_; }
-    }
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearTasks() {
-      tasksCase_ = TasksOneofCase.None;
-      tasks_ = null;
+      _hasBits0 &= ~256;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -512,16 +438,14 @@ namespace LlsfMsgs {
       if (!object.Equals(Retrieve, other.Retrieve)) return false;
       if (!object.Equals(Deliver, other.Deliver)) return false;
       if (!object.Equals(Buffer, other.Buffer)) return false;
-      if (!object.Equals(ExploreWaypoint, other.ExploreWaypoint)) return false;
+      if (!object.Equals(ExploreMachine, other.ExploreMachine)) return false;
+      if (!object.Equals(WorkpieceDescription, other.WorkpieceDescription)) return false;
+      if (OrderId != other.OrderId) return false;
       if (CancelTask != other.CancelTask) return false;
       if (PauseTask != other.PauseTask) return false;
-      if (ReceiveMachineInfos != other.ReceiveMachineInfos) return false;
-      if (ReportAllSeenMachines != other.ReportAllSeenMachines) return false;
-      if (LostProduct != other.LostProduct) return false;
       if (Successful != other.Successful) return false;
       if (Canceled != other.Canceled) return false;
       if (ErrorCodeMidlevel != other.ErrorCodeMidlevel) return false;
-      if (TasksCase != other.TasksCase) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -531,20 +455,18 @@ namespace LlsfMsgs {
       if (HasTeamColor) hash ^= TeamColor.GetHashCode();
       if (HasTaskId) hash ^= TaskId.GetHashCode();
       if (HasRobotId) hash ^= RobotId.GetHashCode();
-      if (tasksCase_ == TasksOneofCase.Move) hash ^= Move.GetHashCode();
-      if (tasksCase_ == TasksOneofCase.Retrieve) hash ^= Retrieve.GetHashCode();
-      if (tasksCase_ == TasksOneofCase.Deliver) hash ^= Deliver.GetHashCode();
-      if (tasksCase_ == TasksOneofCase.Buffer) hash ^= Buffer.GetHashCode();
-      if (tasksCase_ == TasksOneofCase.ExploreWaypoint) hash ^= ExploreWaypoint.GetHashCode();
+      if (move_ != null) hash ^= Move.GetHashCode();
+      if (retrieve_ != null) hash ^= Retrieve.GetHashCode();
+      if (deliver_ != null) hash ^= Deliver.GetHashCode();
+      if (buffer_ != null) hash ^= Buffer.GetHashCode();
+      if (exploreMachine_ != null) hash ^= ExploreMachine.GetHashCode();
+      if (workpieceDescription_ != null) hash ^= WorkpieceDescription.GetHashCode();
+      if (HasOrderId) hash ^= OrderId.GetHashCode();
       if (HasCancelTask) hash ^= CancelTask.GetHashCode();
       if (HasPauseTask) hash ^= PauseTask.GetHashCode();
-      if (HasReceiveMachineInfos) hash ^= ReceiveMachineInfos.GetHashCode();
-      if (HasReportAllSeenMachines) hash ^= ReportAllSeenMachines.GetHashCode();
-      if (HasLostProduct) hash ^= LostProduct.GetHashCode();
       if (HasSuccessful) hash ^= Successful.GetHashCode();
       if (HasCanceled) hash ^= Canceled.GetHashCode();
       if (HasErrorCodeMidlevel) hash ^= ErrorCodeMidlevel.GetHashCode();
-      hash ^= (int) tasksCase_;
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -570,57 +492,53 @@ namespace LlsfMsgs {
         output.WriteRawTag(24);
         output.WriteUInt32(RobotId);
       }
-      if (tasksCase_ == TasksOneofCase.Move) {
-        output.WriteRawTag(42);
+      if (move_ != null) {
+        output.WriteRawTag(34);
         output.WriteMessage(Move);
       }
-      if (tasksCase_ == TasksOneofCase.Retrieve) {
-        output.WriteRawTag(50);
+      if (retrieve_ != null) {
+        output.WriteRawTag(42);
         output.WriteMessage(Retrieve);
       }
-      if (tasksCase_ == TasksOneofCase.Deliver) {
-        output.WriteRawTag(58);
+      if (deliver_ != null) {
+        output.WriteRawTag(50);
         output.WriteMessage(Deliver);
       }
-      if (tasksCase_ == TasksOneofCase.Buffer) {
-        output.WriteRawTag(66);
+      if (buffer_ != null) {
+        output.WriteRawTag(58);
         output.WriteMessage(Buffer);
       }
-      if (tasksCase_ == TasksOneofCase.ExploreWaypoint) {
+      if (exploreMachine_ != null) {
+        output.WriteRawTag(66);
+        output.WriteMessage(ExploreMachine);
+      }
+      if (workpieceDescription_ != null) {
         output.WriteRawTag(74);
-        output.WriteMessage(ExploreWaypoint);
+        output.WriteMessage(WorkpieceDescription);
+      }
+      if (HasOrderId) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(OrderId);
       }
       if (HasCancelTask) {
-        output.WriteRawTag(80);
+        output.WriteRawTag(88);
         output.WriteBool(CancelTask);
       }
       if (HasPauseTask) {
-        output.WriteRawTag(88);
+        output.WriteRawTag(96);
         output.WriteBool(PauseTask);
       }
-      if (HasReceiveMachineInfos) {
-        output.WriteRawTag(96);
-        output.WriteBool(ReceiveMachineInfos);
-      }
-      if (HasReportAllSeenMachines) {
-        output.WriteRawTag(104);
-        output.WriteBool(ReportAllSeenMachines);
-      }
-      if (HasLostProduct) {
-        output.WriteRawTag(112);
-        output.WriteBool(LostProduct);
-      }
       if (HasSuccessful) {
-        output.WriteRawTag(120);
+        output.WriteRawTag(104);
         output.WriteBool(Successful);
       }
-      if (HasErrorCodeMidlevel) {
-        output.WriteRawTag(128, 1);
-        output.WriteUInt32(ErrorCodeMidlevel);
-      }
       if (HasCanceled) {
-        output.WriteRawTag(136, 1);
+        output.WriteRawTag(112);
         output.WriteBool(Canceled);
+      }
+      if (HasErrorCodeMidlevel) {
+        output.WriteRawTag(120);
+        output.WriteUInt32(ErrorCodeMidlevel);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -639,20 +557,26 @@ namespace LlsfMsgs {
       if (HasRobotId) {
         size += 1 + pb::CodedOutputStream.ComputeUInt32Size(RobotId);
       }
-      if (tasksCase_ == TasksOneofCase.Move) {
+      if (move_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Move);
       }
-      if (tasksCase_ == TasksOneofCase.Retrieve) {
+      if (retrieve_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Retrieve);
       }
-      if (tasksCase_ == TasksOneofCase.Deliver) {
+      if (deliver_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Deliver);
       }
-      if (tasksCase_ == TasksOneofCase.Buffer) {
+      if (buffer_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Buffer);
       }
-      if (tasksCase_ == TasksOneofCase.ExploreWaypoint) {
-        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreWaypoint);
+      if (exploreMachine_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(ExploreMachine);
+      }
+      if (workpieceDescription_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(WorkpieceDescription);
+      }
+      if (HasOrderId) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(OrderId);
       }
       if (HasCancelTask) {
         size += 1 + 1;
@@ -660,23 +584,14 @@ namespace LlsfMsgs {
       if (HasPauseTask) {
         size += 1 + 1;
       }
-      if (HasReceiveMachineInfos) {
-        size += 1 + 1;
-      }
-      if (HasReportAllSeenMachines) {
-        size += 1 + 1;
-      }
-      if (HasLostProduct) {
-        size += 1 + 1;
-      }
       if (HasSuccessful) {
         size += 1 + 1;
       }
       if (HasCanceled) {
-        size += 2 + 1;
+        size += 1 + 1;
       }
       if (HasErrorCodeMidlevel) {
-        size += 2 + pb::CodedOutputStream.ComputeUInt32Size(ErrorCodeMidlevel);
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(ErrorCodeMidlevel);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -698,20 +613,50 @@ namespace LlsfMsgs {
       if (other.HasRobotId) {
         RobotId = other.RobotId;
       }
+      if (other.move_ != null) {
+        if (move_ == null) {
+          Move = new global::LlsfMsgs.Move();
+        }
+        Move.MergeFrom(other.Move);
+      }
+      if (other.retrieve_ != null) {
+        if (retrieve_ == null) {
+          Retrieve = new global::LlsfMsgs.Retrieve();
+        }
+        Retrieve.MergeFrom(other.Retrieve);
+      }
+      if (other.deliver_ != null) {
+        if (deliver_ == null) {
+          Deliver = new global::LlsfMsgs.Deliver();
+        }
+        Deliver.MergeFrom(other.Deliver);
+      }
+      if (other.buffer_ != null) {
+        if (buffer_ == null) {
+          Buffer = new global::LlsfMsgs.BufferStation();
+        }
+        Buffer.MergeFrom(other.Buffer);
+      }
+      if (other.exploreMachine_ != null) {
+        if (exploreMachine_ == null) {
+          ExploreMachine = new global::LlsfMsgs.ExploreWaypoint();
+        }
+        ExploreMachine.MergeFrom(other.ExploreMachine);
+      }
+      if (other.workpieceDescription_ != null) {
+        if (workpieceDescription_ == null) {
+          WorkpieceDescription = new global::LlsfMsgs.WorkpieceDescription();
+        }
+        WorkpieceDescription.MergeFrom(other.WorkpieceDescription);
+      }
+      if (other.HasOrderId) {
+        OrderId = other.OrderId;
+      }
       if (other.HasCancelTask) {
         CancelTask = other.CancelTask;
       }
       if (other.HasPauseTask) {
         PauseTask = other.PauseTask;
-      }
-      if (other.HasReceiveMachineInfos) {
-        ReceiveMachineInfos = other.ReceiveMachineInfos;
-      }
-      if (other.HasReportAllSeenMachines) {
-        ReportAllSeenMachines = other.ReportAllSeenMachines;
-      }
-      if (other.HasLostProduct) {
-        LostProduct = other.LostProduct;
       }
       if (other.HasSuccessful) {
         Successful = other.Successful;
@@ -722,39 +667,6 @@ namespace LlsfMsgs {
       if (other.HasErrorCodeMidlevel) {
         ErrorCodeMidlevel = other.ErrorCodeMidlevel;
       }
-      switch (other.TasksCase) {
-        case TasksOneofCase.Move:
-          if (Move == null) {
-            Move = new global::LlsfMsgs.Move();
-          }
-          Move.MergeFrom(other.Move);
-          break;
-        case TasksOneofCase.Retrieve:
-          if (Retrieve == null) {
-            Retrieve = new global::LlsfMsgs.Retrieve();
-          }
-          Retrieve.MergeFrom(other.Retrieve);
-          break;
-        case TasksOneofCase.Deliver:
-          if (Deliver == null) {
-            Deliver = new global::LlsfMsgs.Deliver();
-          }
-          Deliver.MergeFrom(other.Deliver);
-          break;
-        case TasksOneofCase.Buffer:
-          if (Buffer == null) {
-            Buffer = new global::LlsfMsgs.Buffer();
-          }
-          Buffer.MergeFrom(other.Buffer);
-          break;
-        case TasksOneofCase.ExploreWaypoint:
-          if (ExploreWaypoint == null) {
-            ExploreWaypoint = new global::LlsfMsgs.ExploreWaypoint();
-          }
-          ExploreWaypoint.MergeFrom(other.ExploreWaypoint);
-          break;
-      }
-
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
@@ -778,81 +690,70 @@ namespace LlsfMsgs {
             RobotId = input.ReadUInt32();
             break;
           }
-          case 42: {
-            global::LlsfMsgs.Move subBuilder = new global::LlsfMsgs.Move();
-            if (tasksCase_ == TasksOneofCase.Move) {
-              subBuilder.MergeFrom(Move);
+          case 34: {
+            if (move_ == null) {
+              Move = new global::LlsfMsgs.Move();
             }
-            input.ReadMessage(subBuilder);
-            Move = subBuilder;
+            input.ReadMessage(Move);
+            break;
+          }
+          case 42: {
+            if (retrieve_ == null) {
+              Retrieve = new global::LlsfMsgs.Retrieve();
+            }
+            input.ReadMessage(Retrieve);
             break;
           }
           case 50: {
-            global::LlsfMsgs.Retrieve subBuilder = new global::LlsfMsgs.Retrieve();
-            if (tasksCase_ == TasksOneofCase.Retrieve) {
-              subBuilder.MergeFrom(Retrieve);
+            if (deliver_ == null) {
+              Deliver = new global::LlsfMsgs.Deliver();
             }
-            input.ReadMessage(subBuilder);
-            Retrieve = subBuilder;
+            input.ReadMessage(Deliver);
             break;
           }
           case 58: {
-            global::LlsfMsgs.Deliver subBuilder = new global::LlsfMsgs.Deliver();
-            if (tasksCase_ == TasksOneofCase.Deliver) {
-              subBuilder.MergeFrom(Deliver);
+            if (buffer_ == null) {
+              Buffer = new global::LlsfMsgs.BufferStation();
             }
-            input.ReadMessage(subBuilder);
-            Deliver = subBuilder;
+            input.ReadMessage(Buffer);
             break;
           }
           case 66: {
-            global::LlsfMsgs.Buffer subBuilder = new global::LlsfMsgs.Buffer();
-            if (tasksCase_ == TasksOneofCase.Buffer) {
-              subBuilder.MergeFrom(Buffer);
+            if (exploreMachine_ == null) {
+              ExploreMachine = new global::LlsfMsgs.ExploreWaypoint();
             }
-            input.ReadMessage(subBuilder);
-            Buffer = subBuilder;
+            input.ReadMessage(ExploreMachine);
             break;
           }
           case 74: {
-            global::LlsfMsgs.ExploreWaypoint subBuilder = new global::LlsfMsgs.ExploreWaypoint();
-            if (tasksCase_ == TasksOneofCase.ExploreWaypoint) {
-              subBuilder.MergeFrom(ExploreWaypoint);
+            if (workpieceDescription_ == null) {
+              WorkpieceDescription = new global::LlsfMsgs.WorkpieceDescription();
             }
-            input.ReadMessage(subBuilder);
-            ExploreWaypoint = subBuilder;
+            input.ReadMessage(WorkpieceDescription);
             break;
           }
           case 80: {
-            CancelTask = input.ReadBool();
+            OrderId = input.ReadUInt32();
             break;
           }
           case 88: {
-            PauseTask = input.ReadBool();
+            CancelTask = input.ReadBool();
             break;
           }
           case 96: {
-            ReceiveMachineInfos = input.ReadBool();
+            PauseTask = input.ReadBool();
             break;
           }
           case 104: {
-            ReportAllSeenMachines = input.ReadBool();
-            break;
-          }
-          case 112: {
-            LostProduct = input.ReadBool();
-            break;
-          }
-          case 120: {
             Successful = input.ReadBool();
             break;
           }
-          case 128: {
-            ErrorCodeMidlevel = input.ReadUInt32();
+          case 112: {
+            Canceled = input.ReadBool();
             break;
           }
-          case 136: {
-            Canceled = input.ReadBool();
+          case 120: {
+            ErrorCodeMidlevel = input.ReadUInt32();
             break;
           }
         }
@@ -1449,12 +1350,12 @@ namespace LlsfMsgs {
   /// <summary>
   /// Get product from shelf and place it immediately afterwards on the conveyor
   /// </summary>
-  public sealed partial class Buffer : pb::IMessage<Buffer> {
-    private static readonly pb::MessageParser<Buffer> _parser = new pb::MessageParser<Buffer>(() => new Buffer());
+  public sealed partial class BufferStation : pb::IMessage<BufferStation> {
+    private static readonly pb::MessageParser<BufferStation> _parser = new pb::MessageParser<BufferStation>(() => new BufferStation());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public static pb::MessageParser<Buffer> Parser { get { return _parser; } }
+    public static pb::MessageParser<BufferStation> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public static pbr::MessageDescriptor Descriptor {
@@ -1467,14 +1368,14 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Buffer() {
+    public BufferStation() {
       OnConstruction();
     }
 
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Buffer(Buffer other) : this() {
+    public BufferStation(BufferStation other) : this() {
       _hasBits0 = other._hasBits0;
       machineId_ = other.machineId_;
       shelfNumber_ = other.shelfNumber_;
@@ -1482,8 +1383,8 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public Buffer Clone() {
-      return new Buffer(this);
+    public BufferStation Clone() {
+      return new BufferStation(this);
     }
 
     /// <summary>Field number for the "machine_id" field.</summary>
@@ -1541,11 +1442,11 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
-      return Equals(other as Buffer);
+      return Equals(other as BufferStation);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool Equals(Buffer other) {
+    public bool Equals(BufferStation other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -1604,7 +1505,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void MergeFrom(Buffer other) {
+    public void MergeFrom(BufferStation other) {
       if (other == null) {
         return;
       }
@@ -1866,6 +1767,233 @@ namespace LlsfMsgs {
         }
       }
     }
+
+  }
+
+  public sealed partial class WorkpieceDescription : pb::IMessage<WorkpieceDescription> {
+    private static readonly pb::MessageParser<WorkpieceDescription> _parser = new pb::MessageParser<WorkpieceDescription>(() => new WorkpieceDescription());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pb::MessageParser<WorkpieceDescription> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LlsfMsgs.AgentTaskReflection.Descriptor.MessageTypes[6]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public WorkpieceDescription() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public WorkpieceDescription(WorkpieceDescription other) : this() {
+      _hasBits0 = other._hasBits0;
+      baseColor_ = other.baseColor_;
+      ringColors_ = other.ringColors_.Clone();
+      capColor_ = other.capColor_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public WorkpieceDescription Clone() {
+      return new WorkpieceDescription(this);
+    }
+
+    /// <summary>Field number for the "base_color" field.</summary>
+    public const int BaseColorFieldNumber = 3;
+    private readonly static global::LlsfMsgs.BaseColor BaseColorDefaultValue = global::LlsfMsgs.BaseColor.BaseRed;
+
+    private global::LlsfMsgs.BaseColor baseColor_;
+    /// <summary>
+    /// description fo the current workpiece the robot has gripped                                                                  
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LlsfMsgs.BaseColor BaseColor {
+      get { if ((_hasBits0 & 1) != 0) { return baseColor_; } else { return BaseColorDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        baseColor_ = value;
+      }
+    }
+    /// <summary>Gets whether the "base_color" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasBaseColor {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "base_color" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearBaseColor() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "ring_colors" field.</summary>
+    public const int RingColorsFieldNumber = 4;
+    private static readonly pb::FieldCodec<global::LlsfMsgs.RingColor> _repeated_ringColors_codec
+        = pb::FieldCodec.ForEnum(32, x => (int) x, x => (global::LlsfMsgs.RingColor) x);
+    private readonly pbc::RepeatedField<global::LlsfMsgs.RingColor> ringColors_ = new pbc::RepeatedField<global::LlsfMsgs.RingColor>();
+    /// <summary>
+    /// description fo the current workpiece the robot has gripped                                                    
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public pbc::RepeatedField<global::LlsfMsgs.RingColor> RingColors {
+      get { return ringColors_; }
+    }
+
+    /// <summary>Field number for the "cap_color" field.</summary>
+    public const int CapColorFieldNumber = 5;
+    private readonly static global::LlsfMsgs.CapColor CapColorDefaultValue = global::LlsfMsgs.CapColor.CapBlack;
+
+    private global::LlsfMsgs.CapColor capColor_;
+    /// <summary>
+    /// description fo the current workpiece the robot has gripped                                                                                  
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public global::LlsfMsgs.CapColor CapColor {
+      get { if ((_hasBits0 & 2) != 0) { return capColor_; } else { return CapColorDefaultValue; } }
+      set {
+        _hasBits0 |= 2;
+        capColor_ = value;
+      }
+    }
+    /// <summary>Gets whether the "cap_color" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasCapColor {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "cap_color" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearCapColor() {
+      _hasBits0 &= ~2;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override bool Equals(object other) {
+      return Equals(other as WorkpieceDescription);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool Equals(WorkpieceDescription other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (BaseColor != other.BaseColor) return false;
+      if(!ringColors_.Equals(other.ringColors_)) return false;
+      if (CapColor != other.CapColor) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasBaseColor) hash ^= BaseColor.GetHashCode();
+      hash ^= ringColors_.GetHashCode();
+      if (HasCapColor) hash ^= CapColor.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void WriteTo(pb::CodedOutputStream output) {
+      if (HasBaseColor) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) BaseColor);
+      }
+      ringColors_.WriteTo(output, _repeated_ringColors_codec);
+      if (HasCapColor) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) CapColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasBaseColor) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) BaseColor);
+      }
+      size += ringColors_.CalculateSize(_repeated_ringColors_codec);
+      if (HasCapColor) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) CapColor);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(WorkpieceDescription other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasBaseColor) {
+        BaseColor = other.BaseColor;
+      }
+      ringColors_.Add(other.ringColors_);
+      if (other.HasCapColor) {
+        CapColor = other.CapColor;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void MergeFrom(pb::CodedInputStream input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 24: {
+            BaseColor = (global::LlsfMsgs.BaseColor) input.ReadEnum();
+            break;
+          }
+          case 34:
+          case 32: {
+            ringColors_.AddEntriesFrom(input, _repeated_ringColors_codec);
+            break;
+          }
+          case 40: {
+            CapColor = (global::LlsfMsgs.CapColor) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the WorkpieceDescription message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public static partial class Types {
+      public enum CompType {
+        [pbr::OriginalName("COMP_ID")] CompId = 8000,
+        [pbr::OriginalName("MSG_TYPE")] MsgType = 510,
+      }
+
+    }
+    #endregion
 
   }
 
