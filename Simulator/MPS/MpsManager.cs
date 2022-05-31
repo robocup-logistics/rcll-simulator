@@ -32,7 +32,7 @@ namespace Simulator.MPS
             AllMachineSet = false;
             if (!Configurations.GetInstance().MockUp)
             {
-                var rf = new RobotRefbox(null, myLogger);
+                var rf = new UdpConnector(null, myLogger);
                 rf.Start();
             }
             Instance = this;

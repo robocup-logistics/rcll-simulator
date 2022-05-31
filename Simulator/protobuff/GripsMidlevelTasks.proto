@@ -12,6 +12,7 @@ message GripsMidlevelTasks {
     }
 
     // general infos
+    required Team team_color = 1;    // Color of the team
     required uint32 task_id  = 2;
     required uint32 robot_id = 3;
 
