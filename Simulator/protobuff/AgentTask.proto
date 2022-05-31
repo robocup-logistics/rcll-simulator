@@ -23,7 +23,7 @@ message AgentTask {
     optional Move move = 4;
     optional Retrieve retrieve = 5;
     optional Deliver deliver = 6;
-    optional Buffer buffer = 7;
+    optional BufferStation buffer = 7;
     optional ExploreWaypoint explore_machine = 8;
      
     // additional info for the refbox
@@ -57,7 +57,7 @@ message Deliver {
 }
 
 // Get product from shelf and place it immediately afterwards on the conveyor
-message Buffer {
+message BufferStation {
     required string machine_id   = 1;  // machine-id because need to know if CS1 or CS2
     optional uint32 shelf_number = 2;  // valid shelf-numbers: 1, 2, 3
 }
@@ -65,7 +65,7 @@ message Buffer {
 // Move to the given waypoint and explore it
 message ExploreWaypoint {
     required string waypoint      = 1;  // waypoint that should be explored by the robot
-    optional string machine_id    = 2;  // name of the machine 
+    optional string machine_id    = 2;  // name of the machine that can be navigated to 
     optional string machine_point = 3;  // valid machine-points: input, output
 }
 
