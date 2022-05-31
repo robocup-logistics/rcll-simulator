@@ -40,32 +40,24 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class GripsBeaconSignal : pb::IMessage<GripsBeaconSignal>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class GripsBeaconSignal : pb::IMessage<GripsBeaconSignal> {
     private static readonly pb::MessageParser<GripsBeaconSignal> _parser = new pb::MessageParser<GripsBeaconSignal>(() => new GripsBeaconSignal());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<GripsBeaconSignal> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.GripsBeaconSignalReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsBeaconSignal() {
       OnConstruction();
     }
@@ -73,7 +65,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsBeaconSignal(GripsBeaconSignal other) : this() {
       _hasBits0 = other._hasBits0;
       beaconSignal_ = other.beaconSignal_ != null ? other.beaconSignal_.Clone() : null;
@@ -82,7 +73,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsBeaconSignal Clone() {
       return new GripsBeaconSignal(this);
     }
@@ -94,7 +84,6 @@ namespace LlsfMsgs {
     /// beacon for refbox
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.BeaconSignal BeaconSignal {
       get { return beaconSignal_; }
       set {
@@ -111,7 +100,6 @@ namespace LlsfMsgs {
     /// current task-id of robot 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int TaskId {
       get { if ((_hasBits0 & 1) != 0) { return taskId_; } else { return TaskIdDefaultValue; } }
       set {
@@ -121,25 +109,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "task_id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTaskId {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "task_id" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTaskId() {
       _hasBits0 &= ~1;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as GripsBeaconSignal);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(GripsBeaconSignal other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -153,7 +137,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (beaconSignal_ != null) hash ^= BeaconSignal.GetHashCode();
@@ -165,17 +148,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (beaconSignal_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(BeaconSignal);
@@ -187,29 +165,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (beaconSignal_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(BeaconSignal);
-      }
-      if (HasTaskId) {
-        output.WriteRawTag(16);
-        output.WriteInt32(TaskId);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (beaconSignal_ != null) {
@@ -225,7 +183,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(GripsBeaconSignal other) {
       if (other == null) {
         return;
@@ -243,11 +200,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -267,39 +220,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            if (beaconSignal_ == null) {
-              BeaconSignal = new global::LlsfMsgs.BeaconSignal();
-            }
-            input.ReadMessage(BeaconSignal);
-            break;
-          }
-          case 16: {
-            TaskId = input.ReadInt32();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the GripsBeaconSignal message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 5000,

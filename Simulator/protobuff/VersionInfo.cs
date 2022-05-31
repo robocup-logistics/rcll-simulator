@@ -40,32 +40,24 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class VersionInfo : pb::IMessage<VersionInfo>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class VersionInfo : pb::IMessage<VersionInfo> {
     private static readonly pb::MessageParser<VersionInfo> _parser = new pb::MessageParser<VersionInfo>(() => new VersionInfo());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<VersionInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.VersionInfoReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public VersionInfo() {
       OnConstruction();
     }
@@ -73,7 +65,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public VersionInfo(VersionInfo other) : this() {
       _hasBits0 = other._hasBits0;
       versionMajor_ = other.versionMajor_;
@@ -84,7 +75,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public VersionInfo Clone() {
       return new VersionInfo(this);
     }
@@ -95,7 +85,6 @@ namespace LlsfMsgs {
 
     private uint versionMajor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint VersionMajor {
       get { if ((_hasBits0 & 1) != 0) { return versionMajor_; } else { return VersionMajorDefaultValue; } }
       set {
@@ -105,13 +94,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "version_major" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVersionMajor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "version_major" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVersionMajor() {
       _hasBits0 &= ~1;
     }
@@ -122,7 +109,6 @@ namespace LlsfMsgs {
 
     private uint versionMinor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint VersionMinor {
       get { if ((_hasBits0 & 2) != 0) { return versionMinor_; } else { return VersionMinorDefaultValue; } }
       set {
@@ -132,13 +118,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "version_minor" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVersionMinor {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "version_minor" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVersionMinor() {
       _hasBits0 &= ~2;
     }
@@ -149,7 +133,6 @@ namespace LlsfMsgs {
 
     private uint versionMicro_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint VersionMicro {
       get { if ((_hasBits0 & 4) != 0) { return versionMicro_; } else { return VersionMicroDefaultValue; } }
       set {
@@ -159,13 +142,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "version_micro" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVersionMicro {
       get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "version_micro" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVersionMicro() {
       _hasBits0 &= ~4;
     }
@@ -176,7 +157,6 @@ namespace LlsfMsgs {
 
     private string versionString_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string VersionString {
       get { return versionString_ ?? VersionStringDefaultValue; }
       set {
@@ -185,25 +165,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "version_string" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVersionString {
       get { return versionString_ != null; }
     }
     /// <summary>Clears the value of the "version_string" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVersionString() {
       versionString_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as VersionInfo);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(VersionInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -219,7 +195,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasVersionMajor) hash ^= VersionMajor.GetHashCode();
@@ -233,17 +208,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasVersionMajor) {
         output.WriteRawTag(8);
         output.WriteUInt32(VersionMajor);
@@ -263,37 +233,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasVersionMajor) {
-        output.WriteRawTag(8);
-        output.WriteUInt32(VersionMajor);
-      }
-      if (HasVersionMinor) {
-        output.WriteRawTag(16);
-        output.WriteUInt32(VersionMinor);
-      }
-      if (HasVersionMicro) {
-        output.WriteRawTag(24);
-        output.WriteUInt32(VersionMicro);
-      }
-      if (HasVersionString) {
-        output.WriteRawTag(34);
-        output.WriteString(VersionString);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasVersionMajor) {
@@ -315,7 +257,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(VersionInfo other) {
       if (other == null) {
         return;
@@ -336,11 +277,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -365,44 +302,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            VersionMajor = input.ReadUInt32();
-            break;
-          }
-          case 16: {
-            VersionMinor = input.ReadUInt32();
-            break;
-          }
-          case 24: {
-            VersionMicro = input.ReadUInt32();
-            break;
-          }
-          case 34: {
-            VersionString = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the VersionInfo message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,

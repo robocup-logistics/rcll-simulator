@@ -43,32 +43,24 @@ namespace LlsfMsgs {
   /// <summary>
   /// Instructs the Teamserver to prepare the machine
   /// </summary>
-  public sealed partial class GripsPrepareMachine : pb::IMessage<GripsPrepareMachine>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class GripsPrepareMachine : pb::IMessage<GripsPrepareMachine> {
     private static readonly pb::MessageParser<GripsPrepareMachine> _parser = new pb::MessageParser<GripsPrepareMachine>(() => new GripsPrepareMachine());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<GripsPrepareMachine> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.GripsPrepareMachineReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsPrepareMachine() {
       OnConstruction();
     }
@@ -76,7 +68,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsPrepareMachine(GripsPrepareMachine other) : this() {
       _hasBits0 = other._hasBits0;
       robotId_ = other.robotId_;
@@ -87,7 +78,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public GripsPrepareMachine Clone() {
       return new GripsPrepareMachine(this);
     }
@@ -98,7 +88,6 @@ namespace LlsfMsgs {
 
     private uint robotId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint RobotId {
       get { if ((_hasBits0 & 1) != 0) { return robotId_; } else { return RobotIdDefaultValue; } }
       set {
@@ -108,13 +97,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "robot_id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasRobotId {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "robot_id" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearRobotId() {
       _hasBits0 &= ~1;
     }
@@ -125,7 +112,6 @@ namespace LlsfMsgs {
 
     private string machineId_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string MachineId {
       get { return machineId_ ?? MachineIdDefaultValue; }
       set {
@@ -134,13 +120,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "machine_id" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasMachineId {
       get { return machineId_ != null; }
     }
     /// <summary>Clears the value of the "machine_id" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearMachineId() {
       machineId_ = null;
     }
@@ -151,7 +135,6 @@ namespace LlsfMsgs {
 
     private string machinePoint_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string MachinePoint {
       get { return machinePoint_ ?? MachinePointDefaultValue; }
       set {
@@ -160,13 +143,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "machine_point" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasMachinePoint {
       get { return machinePoint_ != null; }
     }
     /// <summary>Clears the value of the "machine_point" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearMachinePoint() {
       machinePoint_ = null;
     }
@@ -180,7 +161,6 @@ namespace LlsfMsgs {
     /// true if machine successfully prepared from teamserver
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool MachinePrepared {
       get { if ((_hasBits0 & 2) != 0) { return machinePrepared_; } else { return MachinePreparedDefaultValue; } }
       set {
@@ -190,25 +170,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "machine_prepared" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasMachinePrepared {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "machine_prepared" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearMachinePrepared() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as GripsPrepareMachine);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(GripsPrepareMachine other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -224,7 +200,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasRobotId) hash ^= RobotId.GetHashCode();
@@ -238,17 +213,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasRobotId) {
         output.WriteRawTag(8);
         output.WriteUInt32(RobotId);
@@ -268,37 +238,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasRobotId) {
-        output.WriteRawTag(8);
-        output.WriteUInt32(RobotId);
-      }
-      if (HasMachineId) {
-        output.WriteRawTag(18);
-        output.WriteString(MachineId);
-      }
-      if (HasMachinePoint) {
-        output.WriteRawTag(26);
-        output.WriteString(MachinePoint);
-      }
-      if (HasMachinePrepared) {
-        output.WriteRawTag(32);
-        output.WriteBool(MachinePrepared);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasRobotId) {
@@ -320,7 +262,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(GripsPrepareMachine other) {
       if (other == null) {
         return;
@@ -341,11 +282,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -370,44 +307,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            RobotId = input.ReadUInt32();
-            break;
-          }
-          case 18: {
-            MachineId = input.ReadString();
-            break;
-          }
-          case 26: {
-            MachinePoint = input.ReadString();
-            break;
-          }
-          case 32: {
-            MachinePrepared = input.ReadBool();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the GripsPrepareMachine message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 5000,

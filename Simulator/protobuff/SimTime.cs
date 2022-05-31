@@ -38,32 +38,24 @@ namespace GazsimMsgs {
 
   }
   #region Messages
-  public sealed partial class SimTime : pb::IMessage<SimTime>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class SimTime : pb::IMessage<SimTime> {
     private static readonly pb::MessageParser<SimTime> _parser = new pb::MessageParser<SimTime>(() => new SimTime());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<SimTime> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::GazsimMsgs.SimTimeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTime() {
       OnConstruction();
     }
@@ -71,7 +63,6 @@ namespace GazsimMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTime(SimTime other) : this() {
       _hasBits0 = other._hasBits0;
       simTimeSec_ = other.simTimeSec_;
@@ -82,7 +73,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTime Clone() {
       return new SimTime(this);
     }
@@ -93,7 +83,6 @@ namespace GazsimMsgs {
 
     private long simTimeSec_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long SimTimeSec {
       get { if ((_hasBits0 & 1) != 0) { return simTimeSec_; } else { return SimTimeSecDefaultValue; } }
       set {
@@ -103,13 +92,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "sim_time_sec" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasSimTimeSec {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "sim_time_sec" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearSimTimeSec() {
       _hasBits0 &= ~1;
     }
@@ -120,7 +107,6 @@ namespace GazsimMsgs {
 
     private long simTimeNsec_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long SimTimeNsec {
       get { if ((_hasBits0 & 2) != 0) { return simTimeNsec_; } else { return SimTimeNsecDefaultValue; } }
       set {
@@ -130,13 +116,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "sim_time_nsec" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasSimTimeNsec {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "sim_time_nsec" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearSimTimeNsec() {
       _hasBits0 &= ~2;
     }
@@ -147,7 +131,6 @@ namespace GazsimMsgs {
 
     private float realTimeFactor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float RealTimeFactor {
       get { if ((_hasBits0 & 4) != 0) { return realTimeFactor_; } else { return RealTimeFactorDefaultValue; } }
       set {
@@ -157,13 +140,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "real_time_factor" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasRealTimeFactor {
       get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "real_time_factor" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearRealTimeFactor() {
       _hasBits0 &= ~4;
     }
@@ -174,7 +155,6 @@ namespace GazsimMsgs {
 
     private bool paused_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Paused {
       get { if ((_hasBits0 & 8) != 0) { return paused_; } else { return PausedDefaultValue; } }
       set {
@@ -184,25 +164,21 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "paused" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasPaused {
       get { return (_hasBits0 & 8) != 0; }
     }
     /// <summary>Clears the value of the "paused" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearPaused() {
       _hasBits0 &= ~8;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as SimTime);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(SimTime other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -218,7 +194,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasSimTimeSec) hash ^= SimTimeSec.GetHashCode();
@@ -232,17 +207,12 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasSimTimeSec) {
         output.WriteRawTag(8);
         output.WriteInt64(SimTimeSec);
@@ -262,37 +232,9 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasSimTimeSec) {
-        output.WriteRawTag(8);
-        output.WriteInt64(SimTimeSec);
-      }
-      if (HasSimTimeNsec) {
-        output.WriteRawTag(16);
-        output.WriteInt64(SimTimeNsec);
-      }
-      if (HasRealTimeFactor) {
-        output.WriteRawTag(29);
-        output.WriteFloat(RealTimeFactor);
-      }
-      if (HasPaused) {
-        output.WriteRawTag(32);
-        output.WriteBool(Paused);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasSimTimeSec) {
@@ -314,7 +256,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(SimTime other) {
       if (other == null) {
         return;
@@ -335,11 +276,7 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -364,44 +301,11 @@ namespace GazsimMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            SimTimeSec = input.ReadInt64();
-            break;
-          }
-          case 16: {
-            SimTimeNsec = input.ReadInt64();
-            break;
-          }
-          case 29: {
-            RealTimeFactor = input.ReadFloat();
-            break;
-          }
-          case 32: {
-            Paused = input.ReadBool();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the SimTime message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,

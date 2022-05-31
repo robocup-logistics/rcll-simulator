@@ -25,49 +25,42 @@ namespace LlsfMsgs {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChJCZWFjb25TaWduYWwucHJvdG8SCWxsc2ZfbXNncxoKVGltZS5wcm90bxoK",
-            "VGVhbS5wcm90bxoMUG9zZTJELnByb3RvIt4BCgxCZWFjb25TaWduYWwSHQoE",
-            "dGltZRgBIAIoCzIPLmxsc2ZfbXNncy5UaW1lEgsKA3NlcRgCIAIoBBIOCgZu",
-            "dW1iZXIYCCACKA0SEQoJdGVhbV9uYW1lGAQgAigJEhEKCXBlZXJfbmFtZRgF",
-            "IAIoCRIjCgp0ZWFtX2NvbG9yGAYgASgOMg8ubGxzZl9tc2dzLlRlYW0SHwoE",
-            "cG9zZRgHIAEoCzIRLmxsc2ZfbXNncy5Qb3NlMkQiJgoIQ29tcFR5cGUSDAoH",
-            "Q09NUF9JRBDQDxIMCghNU0dfVFlQRRABQjUKH29yZy5yb2JvY3VwX2xvZ2lz",
-            "dGljcy5sbHNmX21zZ3NCEkJlYWNvblNpZ25hbFByb3Rvcw=="));
+            "VGVhbS5wcm90bxoMUG9zZTJELnByb3RvGg9BZ2VudFRhc2sucHJvdG8iggIK",
+            "DEJlYWNvblNpZ25hbBIdCgR0aW1lGAEgAigLMg8ubGxzZl9tc2dzLlRpbWUS",
+            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgDIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
+            "KAkSEQoJcGVlcl9uYW1lGAUgAigJEiMKCnRlYW1fY29sb3IYBiABKA4yDy5s",
+            "bHNmX21zZ3MuVGVhbRIfCgRwb3NlGAcgASgLMhEubGxzZl9tc2dzLlBvc2Uy",
+            "RBIiCgR0YXNrGAggASgLMhQubGxzZl9tc2dzLkFnZW50VGFzayImCghDb21w",
+            "VHlwZRIMCgdDT01QX0lEENAPEgwKCE1TR19UWVBFEAFCNQofb3JnLnJvYm9j",
+            "dXBfbG9naXN0aWNzLmxsc2ZfbXNnc0ISQmVhY29uU2lnbmFsUHJvdG9z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Llsfmsgs.TimeReflection.Descriptor, global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.Pose2DReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::Llsfmsgs.TimeReflection.Descriptor, global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.Pose2DReflection.Descriptor, global::LlsfMsgs.AgentTaskReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.BeaconSignal), global::LlsfMsgs.BeaconSignal.Parser, new[]{ "Time", "Seq", "Number", "TeamName", "PeerName", "TeamColor", "Pose" }, null, new[]{ typeof(global::LlsfMsgs.BeaconSignal.Types.CompType) }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.BeaconSignal), global::LlsfMsgs.BeaconSignal.Parser, new[]{ "Time", "Seq", "Number", "TeamName", "PeerName", "TeamColor", "Pose", "Task" }, null, new[]{ typeof(global::LlsfMsgs.BeaconSignal.Types.CompType) }, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class BeaconSignal : pb::IMessage<BeaconSignal>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class BeaconSignal : pb::IMessage<BeaconSignal> {
     private static readonly pb::MessageParser<BeaconSignal> _parser = new pb::MessageParser<BeaconSignal>(() => new BeaconSignal());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<BeaconSignal> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.BeaconSignalReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public BeaconSignal() {
       OnConstruction();
     }
@@ -75,7 +68,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public BeaconSignal(BeaconSignal other) : this() {
       _hasBits0 = other._hasBits0;
       time_ = other.time_ != null ? other.time_.Clone() : null;
@@ -85,11 +77,11 @@ namespace LlsfMsgs {
       peerName_ = other.peerName_;
       teamColor_ = other.teamColor_;
       pose_ = other.pose_ != null ? other.pose_.Clone() : null;
+      task_ = other.task_ != null ? other.task_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public BeaconSignal Clone() {
       return new BeaconSignal(this);
     }
@@ -101,7 +93,6 @@ namespace LlsfMsgs {
     /// Local time in UTC
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::Llsfmsgs.Time Time {
       get { return time_; }
       set {
@@ -118,7 +109,6 @@ namespace LlsfMsgs {
     /// Sequence number
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public ulong Seq {
       get { if ((_hasBits0 & 1) != 0) { return seq_; } else { return SeqDefaultValue; } }
       set {
@@ -128,19 +118,17 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "seq" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasSeq {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "seq" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearSeq() {
       _hasBits0 &= ~1;
     }
 
     /// <summary>Field number for the "number" field.</summary>
-    public const int NumberFieldNumber = 8;
+    public const int NumberFieldNumber = 3;
     private readonly static uint NumberDefaultValue = 0;
 
     private uint number_;
@@ -148,25 +136,22 @@ namespace LlsfMsgs {
     /// The robot's jersey number
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint Number {
-      get { if ((_hasBits0 & 4) != 0) { return number_; } else { return NumberDefaultValue; } }
+      get { if ((_hasBits0 & 2) != 0) { return number_; } else { return NumberDefaultValue; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         number_ = value;
       }
     }
     /// <summary>Gets whether the "number" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasNumber {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "number" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearNumber() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "team_name" field.</summary>
@@ -178,7 +163,6 @@ namespace LlsfMsgs {
     /// The robot's team name
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string TeamName {
       get { return teamName_ ?? TeamNameDefaultValue; }
       set {
@@ -187,13 +171,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "team_name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamName {
       get { return teamName_ != null; }
     }
     /// <summary>Clears the value of the "team_name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamName() {
       teamName_ = null;
     }
@@ -207,7 +189,6 @@ namespace LlsfMsgs {
     /// The robot's name
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string PeerName {
       get { return peerName_ ?? PeerNameDefaultValue; }
       set {
@@ -216,13 +197,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "peer_name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasPeerName {
       get { return peerName_ != null; }
     }
     /// <summary>Clears the value of the "peer_name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearPeerName() {
       peerName_ = null;
     }
@@ -236,25 +215,22 @@ namespace LlsfMsgs {
     /// Team color, teams MUST sent this
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Team TeamColor {
-      get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      get { if ((_hasBits0 & 4) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         teamColor_ = value;
       }
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "pose" field.</summary>
@@ -265,7 +241,6 @@ namespace LlsfMsgs {
     /// robot on the LLSF playing field
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Pose2D Pose {
       get { return pose_; }
       set {
@@ -273,14 +248,26 @@ namespace LlsfMsgs {
       }
     }
 
+    /// <summary>Field number for the "task" field.</summary>
+    public const int TaskFieldNumber = 8;
+    private global::LlsfMsgs.AgentTask task_;
+    /// <summary>
+    /// Maybe needed for future generalisation of beacon signal and tracking of robots current activity (used by GRIPS currently)
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LlsfMsgs.AgentTask Task {
+      get { return task_; }
+      set {
+        task_ = value;
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as BeaconSignal);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(BeaconSignal other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -295,11 +282,11 @@ namespace LlsfMsgs {
       if (PeerName != other.PeerName) return false;
       if (TeamColor != other.TeamColor) return false;
       if (!object.Equals(Pose, other.Pose)) return false;
+      if (!object.Equals(Task, other.Task)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (time_ != null) hash ^= Time.GetHashCode();
@@ -309,6 +296,7 @@ namespace LlsfMsgs {
       if (HasPeerName) hash ^= PeerName.GetHashCode();
       if (HasTeamColor) hash ^= TeamColor.GetHashCode();
       if (pose_ != null) hash ^= Pose.GetHashCode();
+      if (task_ != null) hash ^= Task.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -316,17 +304,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (time_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(Time);
@@ -334,6 +317,10 @@ namespace LlsfMsgs {
       if (HasSeq) {
         output.WriteRawTag(16);
         output.WriteUInt64(Seq);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(Number);
       }
       if (HasTeamName) {
         output.WriteRawTag(34);
@@ -351,56 +338,16 @@ namespace LlsfMsgs {
         output.WriteRawTag(58);
         output.WriteMessage(Pose);
       }
-      if (HasNumber) {
-        output.WriteRawTag(64);
-        output.WriteUInt32(Number);
+      if (task_ != null) {
+        output.WriteRawTag(66);
+        output.WriteMessage(Task);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (time_ != null) {
-        output.WriteRawTag(10);
-        output.WriteMessage(Time);
-      }
-      if (HasSeq) {
-        output.WriteRawTag(16);
-        output.WriteUInt64(Seq);
-      }
-      if (HasTeamName) {
-        output.WriteRawTag(34);
-        output.WriteString(TeamName);
-      }
-      if (HasPeerName) {
-        output.WriteRawTag(42);
-        output.WriteString(PeerName);
-      }
-      if (HasTeamColor) {
-        output.WriteRawTag(48);
-        output.WriteEnum((int) TeamColor);
-      }
-      if (pose_ != null) {
-        output.WriteRawTag(58);
-        output.WriteMessage(Pose);
-      }
-      if (HasNumber) {
-        output.WriteRawTag(64);
-        output.WriteUInt32(Number);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (time_ != null) {
@@ -424,6 +371,9 @@ namespace LlsfMsgs {
       if (pose_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Pose);
       }
+      if (task_ != null) {
+        size += 1 + pb::CodedOutputStream.ComputeMessageSize(Task);
+      }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -431,7 +381,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(BeaconSignal other) {
       if (other == null) {
         return;
@@ -463,15 +412,17 @@ namespace LlsfMsgs {
         }
         Pose.MergeFrom(other.Pose);
       }
+      if (other.task_ != null) {
+        if (task_ == null) {
+          Task = new global::LlsfMsgs.AgentTask();
+        }
+        Task.MergeFrom(other.Task);
+      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -489,53 +440,8 @@ namespace LlsfMsgs {
             Seq = input.ReadUInt64();
             break;
           }
-          case 34: {
-            TeamName = input.ReadString();
-            break;
-          }
-          case 42: {
-            PeerName = input.ReadString();
-            break;
-          }
-          case 48: {
-            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
-            break;
-          }
-          case 58: {
-            if (pose_ == null) {
-              Pose = new global::LlsfMsgs.Pose2D();
-            }
-            input.ReadMessage(Pose);
-            break;
-          }
-          case 64: {
+          case 24: {
             Number = input.ReadUInt32();
-            break;
-          }
-        }
-      }
-    #endif
-    }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            if (time_ == null) {
-              Time = new global::Llsfmsgs.Time();
-            }
-            input.ReadMessage(Time);
-            break;
-          }
-          case 16: {
-            Seq = input.ReadUInt64();
             break;
           }
           case 34: {
@@ -557,19 +463,20 @@ namespace LlsfMsgs {
             input.ReadMessage(Pose);
             break;
           }
-          case 64: {
-            Number = input.ReadUInt32();
+          case 66: {
+            if (task_ == null) {
+              Task = new global::LlsfMsgs.AgentTask();
+            }
+            input.ReadMessage(Task);
             break;
           }
         }
       }
     }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the BeaconSignal message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,

@@ -74,32 +74,24 @@ namespace LlsfMsgs {
   #endregion
 
   #region Messages
-  public sealed partial class LightSpec : pb::IMessage<LightSpec>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class LightSpec : pb::IMessage<LightSpec> {
     private static readonly pb::MessageParser<LightSpec> _parser = new pb::MessageParser<LightSpec>(() => new LightSpec());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<LightSpec> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineInfoReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSpec() {
       OnConstruction();
     }
@@ -107,7 +99,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSpec(LightSpec other) : this() {
       _hasBits0 = other._hasBits0;
       color_ = other.color_;
@@ -116,7 +107,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSpec Clone() {
       return new LightSpec(this);
     }
@@ -130,7 +120,6 @@ namespace LlsfMsgs {
     /// Color and state of described light
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.LightColor Color {
       get { if ((_hasBits0 & 1) != 0) { return color_; } else { return ColorDefaultValue; } }
       set {
@@ -140,13 +129,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasColor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearColor() {
       _hasBits0 &= ~1;
     }
@@ -157,7 +144,6 @@ namespace LlsfMsgs {
 
     private global::LlsfMsgs.LightState state_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.LightState State {
       get { if ((_hasBits0 & 2) != 0) { return state_; } else { return StateDefaultValue; } }
       set {
@@ -167,25 +153,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "state" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasState {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "state" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearState() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as LightSpec);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(LightSpec other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -199,7 +181,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasColor) hash ^= Color.GetHashCode();
@@ -211,17 +192,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Color);
@@ -233,29 +209,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasColor) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Color);
-      }
-      if (HasState) {
-        output.WriteRawTag(16);
-        output.WriteEnum((int) State);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasColor) {
@@ -271,7 +227,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(LightSpec other) {
       if (other == null) {
         return;
@@ -286,11 +241,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -307,36 +258,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Color = (global::LlsfMsgs.LightColor) input.ReadEnum();
-            break;
-          }
-          case 16: {
-            State = (global::LlsfMsgs.LightState) input.ReadEnum();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the LightSpec message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,
@@ -348,32 +274,24 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class Machine : pb::IMessage<Machine>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class Machine : pb::IMessage<Machine> {
     private static readonly pb::MessageParser<Machine> _parser = new pb::MessageParser<Machine>(() => new Machine());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Machine> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineInfoReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Machine() {
       OnConstruction();
     }
@@ -381,7 +299,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Machine(Machine other) : this() {
       _hasBits0 = other._hasBits0;
       name_ = other.name_;
@@ -406,7 +323,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Machine Clone() {
       return new Machine(this);
     }
@@ -420,7 +336,6 @@ namespace LlsfMsgs {
     /// Machine name, type, and team
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_ ?? NameDefaultValue; }
       set {
@@ -429,13 +344,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasName {
       get { return name_ != null; }
     }
     /// <summary>Clears the value of the "name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearName() {
       name_ = null;
     }
@@ -446,7 +359,6 @@ namespace LlsfMsgs {
 
     private string type_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Type {
       get { return type_ ?? TypeDefaultValue; }
       set {
@@ -455,13 +367,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "type" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasType {
       get { return type_ != null; }
     }
     /// <summary>Clears the value of the "type" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearType() {
       type_ = null;
     }
@@ -472,7 +382,6 @@ namespace LlsfMsgs {
 
     private string state_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string State {
       get { return state_ ?? StateDefaultValue; }
       set {
@@ -481,13 +390,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "state" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasState {
       get { return state_ != null; }
     }
     /// <summary>Clears the value of the "state" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearState() {
       state_ = null;
     }
@@ -498,7 +405,6 @@ namespace LlsfMsgs {
 
     private global::LlsfMsgs.Team teamColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Team TeamColor {
       get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
@@ -508,13 +414,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
       _hasBits0 &= ~2;
     }
@@ -528,7 +432,6 @@ namespace LlsfMsgs {
     /// Current state of the lights
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::LlsfMsgs.LightSpec> Lights {
       get { return lights_; }
     }
@@ -540,7 +443,6 @@ namespace LlsfMsgs {
     /// Optional pose if known to refbox
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Pose2D Pose {
       get { return pose_; }
       set {
@@ -557,7 +459,6 @@ namespace LlsfMsgs {
     /// Which zone the machine is in
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Zone Zone {
       get { if ((_hasBits0 & 4) != 0) { return zone_; } else { return ZoneDefaultValue; } }
       set {
@@ -567,13 +468,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "zone" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasZone {
       get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "zone" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearZone() {
       _hasBits0 &= ~4;
     }
@@ -584,7 +483,6 @@ namespace LlsfMsgs {
 
     private uint rotation_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint Rotation {
       get { if ((_hasBits0 & 8) != 0) { return rotation_; } else { return RotationDefaultValue; } }
       set {
@@ -594,13 +492,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "rotation" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasRotation {
       get { return (_hasBits0 & 8) != 0; }
     }
     /// <summary>Clears the value of the "rotation" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearRotation() {
       _hasBits0 &= ~8;
     }
@@ -615,7 +511,6 @@ namespace LlsfMsgs {
     /// Correctly reported? (zone and type correct)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool CorrectlyReported {
       get { if ((_hasBits0 & 1) != 0) { return correctlyReported_; } else { return CorrectlyReportedDefaultValue; } }
       set {
@@ -625,13 +520,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "correctly_reported" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasCorrectlyReported {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "correctly_reported" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearCorrectlyReported() {
       _hasBits0 &= ~1;
     }
@@ -645,7 +538,6 @@ namespace LlsfMsgs {
     /// Number of bases loaded
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint LoadedWith {
       get { if ((_hasBits0 & 16) != 0) { return loadedWith_; } else { return LoadedWithDefaultValue; } }
       set {
@@ -655,13 +547,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "loaded_with" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasLoadedWith {
       get { return (_hasBits0 & 16) != 0; }
     }
     /// <summary>Clears the value of the "loaded_with" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearLoadedWith() {
       _hasBits0 &= ~16;
     }
@@ -672,7 +562,6 @@ namespace LlsfMsgs {
         = pb::FieldCodec.ForEnum(112, x => (int) x, x => (global::LlsfMsgs.RingColor) x);
     private readonly pbc::RepeatedField<global::LlsfMsgs.RingColor> ringColors_ = new pbc::RepeatedField<global::LlsfMsgs.RingColor>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::LlsfMsgs.RingColor> RingColors {
       get { return ringColors_; }
     }
@@ -684,7 +573,6 @@ namespace LlsfMsgs {
     /// Instruction information (only clients)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.PrepareInstructionBS InstructionBs {
       get { return instructionBs_; }
       set {
@@ -696,7 +584,6 @@ namespace LlsfMsgs {
     public const int InstructionDsFieldNumber = 17;
     private global::LlsfMsgs.PrepareInstructionDS instructionDs_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.PrepareInstructionDS InstructionDs {
       get { return instructionDs_; }
       set {
@@ -708,7 +595,6 @@ namespace LlsfMsgs {
     public const int InstructionSsFieldNumber = 20;
     private global::LlsfMsgs.PrepareInstructionSS instructionSs_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.PrepareInstructionSS InstructionSs {
       get { return instructionSs_; }
       set {
@@ -720,7 +606,6 @@ namespace LlsfMsgs {
     public const int InstructionRsFieldNumber = 18;
     private global::LlsfMsgs.PrepareInstructionRS instructionRs_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.PrepareInstructionRS InstructionRs {
       get { return instructionRs_; }
       set {
@@ -732,7 +617,6 @@ namespace LlsfMsgs {
     public const int InstructionCsFieldNumber = 19;
     private global::LlsfMsgs.PrepareInstructionCS instructionCs_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.PrepareInstructionCS InstructionCs {
       get { return instructionCs_; }
       set {
@@ -749,7 +633,6 @@ namespace LlsfMsgs {
     /// more fine-grained exploration (only clients)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.ExplorationState ExplorationZoneState {
       get { if ((_hasBits0 & 64) != 0) { return explorationZoneState_; } else { return ExplorationZoneStateDefaultValue; } }
       set {
@@ -759,13 +642,11 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "exploration_zone_state" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasExplorationZoneState {
       get { return (_hasBits0 & 64) != 0; }
     }
     /// <summary>Clears the value of the "exploration_zone_state" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearExplorationZoneState() {
       _hasBits0 &= ~64;
     }
@@ -776,7 +657,6 @@ namespace LlsfMsgs {
 
     private global::LlsfMsgs.ExplorationState explorationRotationState_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.ExplorationState ExplorationRotationState {
       get { if ((_hasBits0 & 32) != 0) { return explorationRotationState_; } else { return ExplorationRotationStateDefaultValue; } }
       set {
@@ -786,25 +666,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "exploration_rotation_state" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasExplorationRotationState {
       get { return (_hasBits0 & 32) != 0; }
     }
     /// <summary>Clears the value of the "exploration_rotation_state" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearExplorationRotationState() {
       _hasBits0 &= ~32;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Machine);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Machine other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -834,7 +710,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasName) hash ^= Name.GetHashCode();
@@ -862,17 +737,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasName) {
         output.WriteRawTag(10);
         output.WriteString(Name);
@@ -942,87 +812,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasName) {
-        output.WriteRawTag(10);
-        output.WriteString(Name);
-      }
-      if (HasType) {
-        output.WriteRawTag(18);
-        output.WriteString(Type);
-      }
-      if (HasState) {
-        output.WriteRawTag(26);
-        output.WriteString(State);
-      }
-      lights_.WriteTo(ref output, _repeated_lights_codec);
-      if (pose_ != null) {
-        output.WriteRawTag(66);
-        output.WriteMessage(Pose);
-      }
-      if (HasCorrectlyReported) {
-        output.WriteRawTag(72);
-        output.WriteBool(CorrectlyReported);
-      }
-      if (HasTeamColor) {
-        output.WriteRawTag(80);
-        output.WriteEnum((int) TeamColor);
-      }
-      if (HasZone) {
-        output.WriteRawTag(88);
-        output.WriteEnum((int) Zone);
-      }
-      if (HasRotation) {
-        output.WriteRawTag(96);
-        output.WriteUInt32(Rotation);
-      }
-      if (HasLoadedWith) {
-        output.WriteRawTag(104);
-        output.WriteUInt32(LoadedWith);
-      }
-      ringColors_.WriteTo(ref output, _repeated_ringColors_codec);
-      if (instructionBs_ != null) {
-        output.WriteRawTag(130, 1);
-        output.WriteMessage(InstructionBs);
-      }
-      if (instructionDs_ != null) {
-        output.WriteRawTag(138, 1);
-        output.WriteMessage(InstructionDs);
-      }
-      if (instructionRs_ != null) {
-        output.WriteRawTag(146, 1);
-        output.WriteMessage(InstructionRs);
-      }
-      if (instructionCs_ != null) {
-        output.WriteRawTag(154, 1);
-        output.WriteMessage(InstructionCs);
-      }
-      if (instructionSs_ != null) {
-        output.WriteRawTag(162, 1);
-        output.WriteMessage(InstructionSs);
-      }
-      if (HasExplorationRotationState) {
-        output.WriteRawTag(168, 1);
-        output.WriteEnum((int) ExplorationRotationState);
-      }
-      if (HasExplorationZoneState) {
-        output.WriteRawTag(176, 1);
-        output.WriteEnum((int) ExplorationZoneState);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasName) {
@@ -1082,7 +874,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Machine other) {
       if (other == null) {
         return;
@@ -1159,11 +950,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1263,119 +1050,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            Name = input.ReadString();
-            break;
-          }
-          case 18: {
-            Type = input.ReadString();
-            break;
-          }
-          case 26: {
-            State = input.ReadString();
-            break;
-          }
-          case 58: {
-            lights_.AddEntriesFrom(ref input, _repeated_lights_codec);
-            break;
-          }
-          case 66: {
-            if (pose_ == null) {
-              Pose = new global::LlsfMsgs.Pose2D();
-            }
-            input.ReadMessage(Pose);
-            break;
-          }
-          case 72: {
-            CorrectlyReported = input.ReadBool();
-            break;
-          }
-          case 80: {
-            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
-            break;
-          }
-          case 88: {
-            Zone = (global::LlsfMsgs.Zone) input.ReadEnum();
-            break;
-          }
-          case 96: {
-            Rotation = input.ReadUInt32();
-            break;
-          }
-          case 104: {
-            LoadedWith = input.ReadUInt32();
-            break;
-          }
-          case 114:
-          case 112: {
-            ringColors_.AddEntriesFrom(ref input, _repeated_ringColors_codec);
-            break;
-          }
-          case 130: {
-            if (instructionBs_ == null) {
-              InstructionBs = new global::LlsfMsgs.PrepareInstructionBS();
-            }
-            input.ReadMessage(InstructionBs);
-            break;
-          }
-          case 138: {
-            if (instructionDs_ == null) {
-              InstructionDs = new global::LlsfMsgs.PrepareInstructionDS();
-            }
-            input.ReadMessage(InstructionDs);
-            break;
-          }
-          case 146: {
-            if (instructionRs_ == null) {
-              InstructionRs = new global::LlsfMsgs.PrepareInstructionRS();
-            }
-            input.ReadMessage(InstructionRs);
-            break;
-          }
-          case 154: {
-            if (instructionCs_ == null) {
-              InstructionCs = new global::LlsfMsgs.PrepareInstructionCS();
-            }
-            input.ReadMessage(InstructionCs);
-            break;
-          }
-          case 162: {
-            if (instructionSs_ == null) {
-              InstructionSs = new global::LlsfMsgs.PrepareInstructionSS();
-            }
-            input.ReadMessage(InstructionSs);
-            break;
-          }
-          case 168: {
-            ExplorationRotationState = (global::LlsfMsgs.ExplorationState) input.ReadEnum();
-            break;
-          }
-          case 176: {
-            ExplorationZoneState = (global::LlsfMsgs.ExplorationState) input.ReadEnum();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the Machine message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,
@@ -1387,32 +1066,24 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class MachineInfo : pb::IMessage<MachineInfo>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class MachineInfo : pb::IMessage<MachineInfo> {
     private static readonly pb::MessageParser<MachineInfo> _parser = new pb::MessageParser<MachineInfo>(() => new MachineInfo());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<MachineInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineInfoReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineInfo() {
       OnConstruction();
     }
@@ -1420,7 +1091,6 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineInfo(MachineInfo other) : this() {
       _hasBits0 = other._hasBits0;
       machines_ = other.machines_.Clone();
@@ -1429,7 +1099,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineInfo Clone() {
       return new MachineInfo(this);
     }
@@ -1443,7 +1112,6 @@ namespace LlsfMsgs {
     /// List of machines states
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::LlsfMsgs.Machine> Machines {
       get { return machines_; }
     }
@@ -1457,7 +1125,6 @@ namespace LlsfMsgs {
     /// Team color (only broadcast)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Team TeamColor {
       get { if ((_hasBits0 & 1) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
@@ -1467,25 +1134,21 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
       _hasBits0 &= ~1;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as MachineInfo);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(MachineInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -1499,7 +1162,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= machines_.GetHashCode();
@@ -1511,17 +1173,12 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       machines_.WriteTo(output, _repeated_machines_codec);
       if (HasTeamColor) {
         output.WriteRawTag(16);
@@ -1530,26 +1187,9 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      machines_.WriteTo(ref output, _repeated_machines_codec);
-      if (HasTeamColor) {
-        output.WriteRawTag(16);
-        output.WriteEnum((int) TeamColor);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       size += machines_.CalculateSize(_repeated_machines_codec);
@@ -1563,7 +1203,6 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(MachineInfo other) {
       if (other == null) {
         return;
@@ -1576,11 +1215,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1597,36 +1232,11 @@ namespace LlsfMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 10: {
-            machines_.AddEntriesFrom(ref input, _repeated_machines_codec);
-            break;
-          }
-          case 16: {
-            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineInfo message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,

@@ -81,32 +81,24 @@ namespace GazsimMsgs {
   /// Can be used for absolute times or
   /// durations alike.
   /// </summary>
-  public sealed partial class WorkpieceCommand : pb::IMessage<WorkpieceCommand>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class WorkpieceCommand : pb::IMessage<WorkpieceCommand> {
     private static readonly pb::MessageParser<WorkpieceCommand> _parser = new pb::MessageParser<WorkpieceCommand>(() => new WorkpieceCommand());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<WorkpieceCommand> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::GazsimMsgs.WorkpieceCommandReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceCommand() {
       OnConstruction();
     }
@@ -114,7 +106,6 @@ namespace GazsimMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceCommand(WorkpieceCommand other) : this() {
       _hasBits0 = other._hasBits0;
       command_ = other.command_;
@@ -125,7 +116,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceCommand Clone() {
       return new WorkpieceCommand(this);
     }
@@ -136,7 +126,6 @@ namespace GazsimMsgs {
 
     private global::GazsimMsgs.Command command_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::GazsimMsgs.Command Command {
       get { if ((_hasBits0 & 1) != 0) { return command_; } else { return CommandDefaultValue; } }
       set {
@@ -146,13 +135,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "command" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasCommand {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "command" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearCommand() {
       _hasBits0 &= ~1;
     }
@@ -163,7 +150,6 @@ namespace GazsimMsgs {
         = pb::FieldCodec.ForEnum(16, x => (int) x, x => (global::GazsimMsgs.Color) x);
     private readonly pbc::RepeatedField<global::GazsimMsgs.Color> color_ = new pbc::RepeatedField<global::GazsimMsgs.Color>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::GazsimMsgs.Color> Color {
       get { return color_; }
     }
@@ -174,7 +160,6 @@ namespace GazsimMsgs {
 
     private string puckName_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string PuckName {
       get { return puckName_ ?? PuckNameDefaultValue; }
       set {
@@ -183,13 +168,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "puck_name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasPuckName {
       get { return puckName_ != null; }
     }
     /// <summary>Clears the value of the "puck_name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearPuckName() {
       puckName_ = null;
     }
@@ -200,7 +183,6 @@ namespace GazsimMsgs {
 
     private global::GazsimMsgs.Team teamColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::GazsimMsgs.Team TeamColor {
       get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
@@ -210,25 +192,21 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as WorkpieceCommand);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(WorkpieceCommand other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -244,7 +222,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasCommand) hash ^= Command.GetHashCode();
@@ -258,17 +235,12 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasCommand) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Command);
@@ -285,34 +257,9 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasCommand) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Command);
-      }
-      color_.WriteTo(ref output, _repeated_color_codec);
-      if (HasPuckName) {
-        output.WriteRawTag(26);
-        output.WriteString(PuckName);
-      }
-      if (HasTeamColor) {
-        output.WriteRawTag(32);
-        output.WriteEnum((int) TeamColor);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasCommand) {
@@ -332,7 +279,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(WorkpieceCommand other) {
       if (other == null) {
         return;
@@ -351,11 +297,7 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -381,69 +323,28 @@ namespace GazsimMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Command = (global::GazsimMsgs.Command) input.ReadEnum();
-            break;
-          }
-          case 18:
-          case 16: {
-            color_.AddEntriesFrom(ref input, _repeated_color_codec);
-            break;
-          }
-          case 26: {
-            PuckName = input.ReadString();
-            break;
-          }
-          case 32: {
-            TeamColor = (global::GazsimMsgs.Team) input.ReadEnum();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 
-  public sealed partial class WorkpieceResult : pb::IMessage<WorkpieceResult>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class WorkpieceResult : pb::IMessage<WorkpieceResult> {
     private static readonly pb::MessageParser<WorkpieceResult> _parser = new pb::MessageParser<WorkpieceResult>(() => new WorkpieceResult());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<WorkpieceResult> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::GazsimMsgs.WorkpieceCommandReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceResult() {
       OnConstruction();
     }
@@ -451,7 +352,6 @@ namespace GazsimMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceResult(WorkpieceResult other) : this() {
       _hasBits0 = other._hasBits0;
       color_ = other.color_;
@@ -460,7 +360,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public WorkpieceResult Clone() {
       return new WorkpieceResult(this);
     }
@@ -471,7 +370,6 @@ namespace GazsimMsgs {
 
     private global::GazsimMsgs.Color color_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::GazsimMsgs.Color Color {
       get { if ((_hasBits0 & 1) != 0) { return color_; } else { return ColorDefaultValue; } }
       set {
@@ -481,13 +379,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasColor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearColor() {
       _hasBits0 &= ~1;
     }
@@ -498,7 +394,6 @@ namespace GazsimMsgs {
 
     private string puckName_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string PuckName {
       get { return puckName_ ?? PuckNameDefaultValue; }
       set {
@@ -507,25 +402,21 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "puck_name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasPuckName {
       get { return puckName_ != null; }
     }
     /// <summary>Clears the value of the "puck_name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearPuckName() {
       puckName_ = null;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as WorkpieceResult);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(WorkpieceResult other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -539,7 +430,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasColor) hash ^= Color.GetHashCode();
@@ -551,17 +441,12 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Color);
@@ -573,29 +458,9 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasColor) {
-        output.WriteRawTag(8);
-        output.WriteEnum((int) Color);
-      }
-      if (HasPuckName) {
-        output.WriteRawTag(18);
-        output.WriteString(PuckName);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasColor) {
@@ -611,7 +476,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(WorkpieceResult other) {
       if (other == null) {
         return;
@@ -626,11 +490,7 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -647,31 +507,7 @@ namespace GazsimMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Color = (global::GazsimMsgs.Color) input.ReadEnum();
-            break;
-          }
-          case 18: {
-            PuckName = input.ReadString();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
   }
 

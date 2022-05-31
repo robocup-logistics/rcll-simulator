@@ -44,32 +44,24 @@ namespace GazsimMsgs {
 
   }
   #region Messages
-  public sealed partial class LightSignalDetection : pb::IMessage<LightSignalDetection>
-  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      , pb::IBufferMessage
-  #endif
-  {
+  public sealed partial class LightSignalDetection : pb::IMessage<LightSignalDetection> {
     private static readonly pb::MessageParser<LightSignalDetection> _parser = new pb::MessageParser<LightSignalDetection>(() => new LightSignalDetection());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<LightSignalDetection> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::GazsimMsgs.LightSignalDetectionReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSignalDetection() {
       OnConstruction();
     }
@@ -77,7 +69,6 @@ namespace GazsimMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSignalDetection(LightSignalDetection other) : this() {
       _hasBits0 = other._hasBits0;
       visible_ = other.visible_;
@@ -87,7 +78,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public LightSignalDetection Clone() {
       return new LightSignalDetection(this);
     }
@@ -101,7 +91,6 @@ namespace GazsimMsgs {
     /// Is the light currently visible?
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Visible {
       get { if ((_hasBits0 & 1) != 0) { return visible_; } else { return VisibleDefaultValue; } }
       set {
@@ -111,13 +100,11 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "visible" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVisible {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "visible" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVisible() {
       _hasBits0 &= ~1;
     }
@@ -131,7 +118,6 @@ namespace GazsimMsgs {
     /// Current state of the lights (empty when not visible)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::GazsimMsgs.LightSignalDetection.Types.LightSpec> Lights {
       get { return lights_; }
     }
@@ -145,7 +131,6 @@ namespace GazsimMsgs {
     /// How long has the light been visible and steady?
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int VisibilityHistory {
       get { if ((_hasBits0 & 2) != 0) { return visibilityHistory_; } else { return VisibilityHistoryDefaultValue; } }
       set {
@@ -155,25 +140,21 @@ namespace GazsimMsgs {
     }
     /// <summary>Gets whether the "visibility_history" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasVisibilityHistory {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "visibility_history" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearVisibilityHistory() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as LightSignalDetection);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(LightSignalDetection other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -188,7 +169,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasVisible) hash ^= Visible.GetHashCode();
@@ -201,17 +181,12 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      output.WriteRawMessage(this);
-    #else
       if (HasVisible) {
         output.WriteRawTag(8);
         output.WriteBool(Visible);
@@ -224,30 +199,9 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
-    #endif
     }
 
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (HasVisible) {
-        output.WriteRawTag(8);
-        output.WriteBool(Visible);
-      }
-      lights_.WriteTo(ref output, _repeated_lights_codec);
-      if (HasVisibilityHistory) {
-        output.WriteRawTag(24);
-        output.WriteInt32(VisibilityHistory);
-      }
-      if (_unknownFields != null) {
-        _unknownFields.WriteTo(ref output);
-      }
-    }
-    #endif
-
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasVisible) {
@@ -264,7 +218,6 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(LightSignalDetection other) {
       if (other == null) {
         return;
@@ -280,11 +233,7 @@ namespace GazsimMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-      input.ReadRawMessage(this);
-    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -305,40 +254,11 @@ namespace GazsimMsgs {
           }
         }
       }
-    #endif
     }
-
-    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-      uint tag;
-      while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
-          default:
-            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-            break;
-          case 8: {
-            Visible = input.ReadBool();
-            break;
-          }
-          case 18: {
-            lights_.AddEntriesFrom(ref input, _repeated_lights_codec);
-            break;
-          }
-          case 24: {
-            VisibilityHistory = input.ReadInt32();
-            break;
-          }
-        }
-      }
-    }
-    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the LightSignalDetection message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum LightColor {
         [pbr::OriginalName("RED")] Red = 0,
@@ -352,32 +272,24 @@ namespace GazsimMsgs {
         [pbr::OriginalName("BLINK")] Blink = 2,
       }
 
-      public sealed partial class LightSpec : pb::IMessage<LightSpec>
-      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          , pb::IBufferMessage
-      #endif
-      {
+      public sealed partial class LightSpec : pb::IMessage<LightSpec> {
         private static readonly pb::MessageParser<LightSpec> _parser = new pb::MessageParser<LightSpec>(() => new LightSpec());
         private pb::UnknownFieldSet _unknownFields;
         private int _hasBits0;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static pb::MessageParser<LightSpec> Parser { get { return _parser; } }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static pbr::MessageDescriptor Descriptor {
           get { return global::GazsimMsgs.LightSignalDetection.Descriptor.NestedTypes[0]; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         pbr::MessageDescriptor pb::IMessage.Descriptor {
           get { return Descriptor; }
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public LightSpec() {
           OnConstruction();
         }
@@ -385,7 +297,6 @@ namespace GazsimMsgs {
         partial void OnConstruction();
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public LightSpec(LightSpec other) : this() {
           _hasBits0 = other._hasBits0;
           color_ = other.color_;
@@ -394,7 +305,6 @@ namespace GazsimMsgs {
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public LightSpec Clone() {
           return new LightSpec(this);
         }
@@ -408,7 +318,6 @@ namespace GazsimMsgs {
         /// Color and state of described light
         /// </summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public global::GazsimMsgs.LightSignalDetection.Types.LightColor Color {
           get { if ((_hasBits0 & 1) != 0) { return color_; } else { return ColorDefaultValue; } }
           set {
@@ -418,13 +327,11 @@ namespace GazsimMsgs {
         }
         /// <summary>Gets whether the "color" field is set</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool HasColor {
           get { return (_hasBits0 & 1) != 0; }
         }
         /// <summary>Clears the value of the "color" field</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void ClearColor() {
           _hasBits0 &= ~1;
         }
@@ -435,7 +342,6 @@ namespace GazsimMsgs {
 
         private global::GazsimMsgs.LightSignalDetection.Types.LightState state_;
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public global::GazsimMsgs.LightSignalDetection.Types.LightState State {
           get { if ((_hasBits0 & 2) != 0) { return state_; } else { return StateDefaultValue; } }
           set {
@@ -445,25 +351,21 @@ namespace GazsimMsgs {
         }
         /// <summary>Gets whether the "state" field is set</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool HasState {
           get { return (_hasBits0 & 2) != 0; }
         }
         /// <summary>Clears the value of the "state" field</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void ClearState() {
           _hasBits0 &= ~2;
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override bool Equals(object other) {
           return Equals(other as LightSpec);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public bool Equals(LightSpec other) {
           if (ReferenceEquals(other, null)) {
             return false;
@@ -477,7 +379,6 @@ namespace GazsimMsgs {
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override int GetHashCode() {
           int hash = 1;
           if (HasColor) hash ^= Color.GetHashCode();
@@ -489,17 +390,12 @@ namespace GazsimMsgs {
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public override string ToString() {
           return pb::JsonFormatter.ToDiagnosticString(this);
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void WriteTo(pb::CodedOutputStream output) {
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          output.WriteRawMessage(this);
-        #else
           if (HasColor) {
             output.WriteRawTag(8);
             output.WriteEnum((int) Color);
@@ -511,29 +407,9 @@ namespace GazsimMsgs {
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
-        #endif
         }
 
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-          if (HasColor) {
-            output.WriteRawTag(8);
-            output.WriteEnum((int) Color);
-          }
-          if (HasState) {
-            output.WriteRawTag(16);
-            output.WriteEnum((int) State);
-          }
-          if (_unknownFields != null) {
-            _unknownFields.WriteTo(ref output);
-          }
-        }
-        #endif
-
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public int CalculateSize() {
           int size = 0;
           if (HasColor) {
@@ -549,7 +425,6 @@ namespace GazsimMsgs {
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void MergeFrom(LightSpec other) {
           if (other == null) {
             return;
@@ -564,11 +439,7 @@ namespace GazsimMsgs {
         }
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public void MergeFrom(pb::CodedInputStream input) {
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-          input.ReadRawMessage(this);
-        #else
           uint tag;
           while ((tag = input.ReadTag()) != 0) {
             switch(tag) {
@@ -585,36 +456,11 @@ namespace GazsimMsgs {
               }
             }
           }
-        #endif
         }
-
-        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
-          uint tag;
-          while ((tag = input.ReadTag()) != 0) {
-            switch(tag) {
-              default:
-                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
-                break;
-              case 8: {
-                Color = (global::GazsimMsgs.LightSignalDetection.Types.LightColor) input.ReadEnum();
-                break;
-              }
-              case 16: {
-                State = (global::GazsimMsgs.LightSignalDetection.Types.LightState) input.ReadEnum();
-                break;
-              }
-            }
-          }
-        }
-        #endif
 
         #region Nested types
         /// <summary>Container for nested types declared in the LightSpec message type.</summary>
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-        [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
         public static partial class Types {
           public enum CompType {
             [pbr::OriginalName("COMP_ID")] CompId = 2000,
