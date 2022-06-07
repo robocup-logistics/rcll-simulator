@@ -17,7 +17,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", 5001, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
             testnode.Value = 10;
             Assert.AreNotEqual(testnode.Value, 0);
@@ -33,7 +33,7 @@ namespace Simulatortests
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
@@ -56,7 +56,7 @@ namespace Simulatortests
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var value = true;
             var bs = new TestHelper(port);
             if (!bs.CreateConnection())
@@ -73,7 +73,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())
@@ -95,7 +95,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())

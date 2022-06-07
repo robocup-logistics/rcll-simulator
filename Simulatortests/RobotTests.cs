@@ -23,17 +23,18 @@ namespace Simulatortests
             var zone = zonesManager.GetZone(Zone.CZ22);
             robot.SetZone(zone);
             Assert.AreEqual(robot.GetZone().ZoneId, zone.ZoneId);
-            var task = new GripsMidlevelTasks()
+            var task = new AgentTask()
             {
                 TaskId = 0,
                 TeamColor = Team.Cyan,
                 RobotId = 1,
-                MoveToWaypoint = new MoveToWaypoint
+                Move = new Move
                 {
-                    Waypoint = "C_Z21"
+                    Waypoint = "C_Z21",
+                    MachinePoint = ""
                 }
             };
-            robot.SetGripsTasks(task);
+            robot.SetAgentTasks(task);
             Thread.Sleep(Configurations.GetInstance().RobotMoveZoneDuration + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
         }
@@ -51,17 +52,18 @@ namespace Simulatortests
             var zone = zonesManager.GetZone(Zone.CZ72);
             robot.SetZone(zone);
             Assert.AreEqual(robot.GetZone().ZoneId, zone.ZoneId);
-            var task = new GripsMidlevelTasks()
+            var task = new AgentTask()
             {
                 TaskId = 0,
                 TeamColor = Team.Cyan,
                 RobotId = 1,
-                MoveToWaypoint = new MoveToWaypoint
+                Move = new Move
                 {
-                    Waypoint = "M_Z78"
+                    Waypoint = "M_Z78",
+                    MachinePoint = ""
                 }
             };
-            robot.SetGripsTasks(task);
+            robot.SetAgentTasks(task);
             Thread.Sleep((15 * Configurations.GetInstance().RobotMoveZoneDuration) + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
         }
@@ -113,19 +115,19 @@ namespace Simulatortests
             Thread.Sleep(config.BSTaskDuration+300);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
             Thread.Sleep(config.BeltActionDuration+300);
-            var task = new GripsMidlevelTasks
+            var task = new AgentTask
             {
                 RobotId = (uint)jersey,
                 TeamColor = team,
                 TaskId = 1,
-                GetFromStation = new GetFromStation
+                Retrieve = new Retrieve
                 {
                     MachineId = "C-BS",
                     MachinePoint = "output"
                 }
             };
-            robotmanger.Robots[0].SetGripsTasks(task);
-            Thread.Sleep(config.RobotPlaceDuration + 500);
+            robotmanger.Robots[0].SetAgentTasks(task);
+            Thread.Sleep(config.RobotPlaceDuration + 1000);
             Assert.IsTrue(robotmanger.Robots[0].IsHoldingSomething());
         }
 
@@ -166,18 +168,18 @@ namespace Simulatortests
             Thread.Sleep(config.BSTaskDuration + 300);
             bs.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
             Thread.Sleep(config.BeltActionDuration + 300);
-            var task = new GripsMidlevelTasks
+            var task = new AgentTask
             {
                 RobotId = (uint)jersey,
                 TeamColor = team,
                 TaskId = 1,
-                GetFromStation = new GetFromStation
+                Retrieve = new Retrieve
                 {
                     MachineId = "C-CS",
                     MachinePoint = "output"
                 }
             };
-            robotmanger.Robots[0].SetGripsTasks(task);
+            robotmanger.Robots[0].SetAgentTasks(task);
             Thread.Sleep(config.RobotPlaceDuration);
             Assert.IsFalse(robotmanger.Robots[0].IsHoldingSomething());
         }

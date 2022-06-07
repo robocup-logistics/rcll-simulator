@@ -149,7 +149,7 @@ namespace Simulator.TerminalGui
                                             Mps.ProductAtIn != null ? Mps.ProductAtIn.ProductDescription() : "Empty",
                                             Mps.ProductOnBelt != null ? Mps.ProductOnBelt.ProductDescription() : "Empty",
                                              Mps.ProductAtOut != null ? Mps.ProductAtOut.ProductDescription() : "Empty");
-            SlideLabel.Text = String.Format(SlideCount, Mps.InNodes.SlideCnt.Value);
+            SlideLabel.Text = String.Format(SlideCount, Mps.InNodes?.SlideCnt.Value);
             //Belt.Fraction = 1f;
             /*switch (Mps.Belt.Direction)
             {

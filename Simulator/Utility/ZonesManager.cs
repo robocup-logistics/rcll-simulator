@@ -85,7 +85,7 @@ namespace Simulator.Utility
         }
         public Zone GetWaypoint(string target, string machinepoint = "")
         {
-            MyLogger.Log("GetWayPoint with target ["+target+"]!");
+            MyLogger.Log("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
             Zone result;
             try
             {
@@ -94,13 +94,13 @@ namespace Simulator.Utility
                     result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 5));
                 else
                     result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 4));*/
-                result = (Zone)Enum.Parse(typeof(Zone), target[..5].Replace("_",""));
+                result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
                 MyLogger.Log("Is a Zone Waypoint!");
             }
             catch (Exception )
             {
                 MyLogger.Log("Is not a Zone Waypoint!");
-                return GetZoneNextToMachine(target,machinepoint); ;
+                return GetZoneNextToMachine(target, machinepoint); ;
             }
             return result;
         }

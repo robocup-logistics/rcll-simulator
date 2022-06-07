@@ -33,9 +33,22 @@ namespace Simulator.RobotEssentials
             {
                 if (Owner.TeamColor.Equals(LlsfMsgs.Team.Cyan))
                 {
-                    Address = IPAddress.Parse(Configurations.GetInstance().Teams[0].Ip);
-                    SendEndpoint = new IPEndPoint(Address, Configurations.GetInstance().Teams[0].Port);
-                    Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    IPAddress ip = IPAddress.Any;
+                    while(ip == IPAddress.Any)
+                    {
+                        try{
+                            ip = Dns.GetHostAddresses(Configurations.GetInstance().Teams[0].Ip)[0];
+                        }
+                        catch(Exception e)
+                        {
+                            MyLogger.Log("Not able to get DNS? Retrying");
+                            Thread.Sleep(1000);
+                        }
+                    }
+                   
+                    //Address = IPAddress.Parse(ip);
+                    SendEndpoint = new IPEndPoint(ip, Configurations.GetInstance().Teams[0].Port);
+                    Socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                     TeamRecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
                     TeamSendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
                 }
@@ -146,7 +159,7 @@ namespace Simulator.RobotEssentials
                         if (Messages.Count == 0)
                         {
                             //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.GripsBeaconSignal);
+                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                         }
                         else
                         {
@@ -176,7 +189,7 @@ namespace Simulator.RobotEssentials
         }
         public byte[]? GetTestMessage()
         {
-            return PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.RobotBeaconSignal);
+            return PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
         }
         public byte[]? CreateMessage(PBMessageFactoryBase.MessageTypes type)
         {

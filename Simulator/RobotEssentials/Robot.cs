@@ -25,8 +25,8 @@ namespace Simulator.RobotEssentials
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
         private Zones? CurrentZone;
-        private readonly Queue<GripsMidlevelTasks> Tasks;
-        public GripsMidlevelTasks? CurrentTask { get; set; }
+        private readonly Queue<AgentTask> Tasks;
+        public AgentTask? CurrentTask { get; set; }
         private DateTime MoveStart = DateTime.MinValue;
         public List<RobotMachineReportEntry> Machines { get; set; }
         public Thread? WorkingRobotThread { get; set; }
@@ -72,7 +72,7 @@ namespace Simulator.RobotEssentials
                 Teamserver = new TcpConnector(this, MyLogger);
             }
             CurrentZone = null;
-            Tasks = new Queue<GripsMidlevelTasks>();
+            Tasks = new Queue<AgentTask>();
             Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
             MpsManager = null;
@@ -132,7 +132,7 @@ namespace Simulator.RobotEssentials
             }
         }
 
-        public void SetGripsTasks(GripsMidlevelTasks task)
+        public void SetAgentTasks(AgentTask task)
         {
             switch (Config.IgnoreTeamColor)
             {
@@ -141,7 +141,7 @@ namespace Simulator.RobotEssentials
                     //TODO added canceling of tasks, need to evaluate if behaviour is now correct!
                     CurrentTask.Canceled = true;
                     CurrentTask.Successful = true;
-                    Teamserver.AddMessage(Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks));
+                    Teamserver.AddMessage(Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     return;
                 case true:
                 {
@@ -360,14 +360,15 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("MoveToWayPoint -> current task is NULL!");
                 return;
             }
-            var Waypoint = CurrentTask.MoveToWaypoint.Waypoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint);
+            var Waypoint = CurrentTask.Move.Waypoint;
+            var MachinePoint = CurrentTask.Move.MachinePoint;
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint, MachinePoint);
             if (targetZone == 0)
             {
                 MyLogger.Log("Couldn't find the machine position!");
                 TaskDescription = "Idle";
                 CurrentTask.Successful = false;
-                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -393,7 +394,7 @@ namespace Simulator.RobotEssentials
 
             if (!Config.MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -414,10 +415,10 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("GetFromStation -> the current task is NULL!");
                 return;
             }
-            var machine = CurrentTask.GetFromStation.MachineId;
+            var machine = CurrentTask.Retrieve.MachineId;
             MpsManager ??= MpsManager.GetInstance();
-            var mps = MpsManager.GetMachineViaId(CurrentTask.GetFromStation.MachineId);
-            var target = CurrentTask.GetFromStation.MachinePoint;
+            var mps = MpsManager.GetMachineViaId(CurrentTask.Retrieve.MachineId);
+            var target = CurrentTask.Retrieve.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             if(targetZone == 0)
             {
@@ -448,7 +449,7 @@ namespace Simulator.RobotEssentials
                 if (!Configurations.GetInstance().MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                     if (message != null)
                     {
                         Teamserver?.AddMessage(message);
@@ -481,7 +482,7 @@ namespace Simulator.RobotEssentials
             CurrentTask.Successful = GripProduct(mps, target);
             if (!Configurations.GetInstance().MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 if (message != null)
                 {
                     Teamserver?.AddMessage(message);
@@ -499,8 +500,8 @@ namespace Simulator.RobotEssentials
             {
                 return;
             }
-            var machine = CurrentTask.DeliverToStation.MachineId;
-            var target = CurrentTask.DeliverToStation.MachinePoint;
+            var machine = CurrentTask.Deliver.MachineId;
+            var target = CurrentTask.Deliver.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);
 
@@ -514,7 +515,7 @@ namespace Simulator.RobotEssentials
                 if (!Config.MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                    var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                     if (message != null)
                     {
                         Teamserver?.AddMessage(message);
@@ -528,7 +529,7 @@ namespace Simulator.RobotEssentials
             CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
             {
-                var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 if (message != null)
                 {
                     Teamserver.AddMessage(message);
@@ -539,8 +540,8 @@ namespace Simulator.RobotEssentials
         private void BufferCapStation()
         {
             MyLogger.Log("BufferCapStation!");
-            var machine = CurrentTask?.BufferCapStation.MachineId;
-            var target = CurrentTask?.BufferCapStation.ShelfNumber;
+            var machine = CurrentTask?.Buffer.MachineId;
+            var target = CurrentTask?.Buffer.ShelfNumber;
             MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
             if (GripProduct(mps, "shelf" + target.ToString()))
@@ -561,7 +562,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
-            var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+            var message = Teamserver?.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             if (message != null)
             {
                 Teamserver?.AddMessage(message);
@@ -577,7 +578,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             CurrentTask.Successful = true;
-            var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+            var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             if (message != null)
             {
                 Teamserver.AddMessage(message);
@@ -620,17 +621,7 @@ namespace Simulator.RobotEssentials
                             MyLogger.Log("#######################################################################");
                             MyLogger.Log("The current task = " + CurrentTask.ToString());
                             MyLogger.Log("#######################################################################");
-                            if (CurrentTask.ReportAllSeenMachines)
-                            {
-                                MyLogger.Log("Got a Report all seen Machines flag!");
-                                //todo add a answer to report all seen machines
-                                var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.ReportAllMachines);
-                                if (message != null)
-                                {
-                                    Teamserver.AddMessage(message);
-                                }
 
-                            }
 
                             if (CurrentTask.PauseTask)
                             {
@@ -642,19 +633,19 @@ namespace Simulator.RobotEssentials
                                 MyLogger.Log("Got a Cancel Task!");
                             }
 
-                            if (CurrentTask.MoveToWaypoint != null)
+                            if (CurrentTask.Move != null)
                             {
                                 MoveToWaypoint();
                             }
-                            else if (CurrentTask.GetFromStation != null)
+                            else if (CurrentTask.Retrieve != null)
                             {
                                 GetFromStation();
                             }
-                            else if (CurrentTask.DeliverToStation != null)
+                            else if (CurrentTask.Deliver != null)
                             {
                                 DeliverToStation();
                             }
-                            else if (CurrentTask.BufferCapStation != null)
+                            else if (CurrentTask.Buffer != null)
                             {
                                 BufferCapStation();
                             }
@@ -727,14 +718,14 @@ namespace Simulator.RobotEssentials
 
         public void TestMove()
         {
-            GripsMidlevelTasks task = new GripsMidlevelTasks()
+            AgentTask task = new AgentTask()
             {
                 RobotId = 0,
                 TaskId = 1,
                 TeamColor = TeamColor,
-                MoveToWaypoint = new MoveToWaypoint
+                Move = new Move
                 {
-                    Waypoint = "Test Zone"
+                    Waypoint = "C_Z11"
                 }
             };
             CurrentTask = task;

@@ -27,7 +27,8 @@ message GripsMidlevelTasks {
     optional bool cancel_task = 10; // cancels current task
     optional bool pause_task = 11; // if true current task is paused, if false again task is continued
     optional bool receive_machine_infos = 12; // true if robot requires machine-informations (can be set by robot and teamserver)
-    optional bool lost_product = 13; // true if the product was lost
+    optional bool report_all_seen_machines = 13; // flag need for the exploration logic
+    optional bool lost_product = 14; // true if the product was lost
     
     // result of the execution from the robot
     optional bool successful = 15;
@@ -60,7 +61,7 @@ message BufferCapStation {
 
 // Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
 message ExploreMachine {
-    required string waypoint    = 1;
-    required bool rotate        = 2;
-    optional string machine_id  = 3;
+    required string machine_id    = 1;
+    required string machine_point = 2;  // valid machine-points: input, output
+    required string waypoint      = 3;
 }

@@ -19,18 +19,14 @@ namespace Simulator.RobotEssentials
         public enum MessageTypes
         {
             BeaconSignal, // Sending periodcally to detect refbox and robots
-            RobotBeaconSignal,
             RobotInfo,
             ReportAllMachines,
             MachineOrientation,
             PrsTask,
             PrepareMachine,
             SimulationTime,
-            GripsBeaconSignal,
-            GripsReportAllMachines,
-            GripsReportMachine,
             GripsPrepareMachine,
-            GripsMidlevelTasks,
+            AgentTask,
             SimSynchTime,
             ExplorationInfo, //send from the refbox to the robot
             GameState, // send from the refbox to the robot
@@ -57,7 +53,7 @@ namespace Simulator.RobotEssentials
             byte[] bytes;
             var time = new Time();
             // Insert the Time for Message-Types Beacon,Robot,Machine
-            if (mtype is MessageTypes.RobotBeaconSignal or MessageTypes.RobotInfo or MessageTypes.MachineReport)
+            if (mtype is MessageTypes.RobotInfo or MessageTypes.MachineReport)
             {
                 time.Nsec = Timer.Nsec;
                 time.Sec = Timer.Sec;
@@ -67,89 +63,14 @@ namespace Simulator.RobotEssentials
             {
                 case MessageTypes.BeaconSignal:
                     {
-                        var bs = CreateBeaconSignal();
+                        var Signal = new BeaconSignal();
+                        Signal = CreateBeaconSignal();
                         cmp = (ushort)BeaconSignal.Types.CompType.CompId;
                         msg = (ushort)BeaconSignal.Types.CompType.MsgType;
-                        payloadsize = (uint)bs.CalculateSize() + 4;
-                        bytes = bs.ToByteArray();
-                        break;
-                    }
-                case MessageTypes.RobotBeaconSignal:
-                    {
-                        var Signal = new RobotBeaconSignal();
-                        var bs = CreateBeaconSignal();
-                        Signal.BeaconSignal = bs;
-                        Signal.Running = true;
-                        cmp = (ushort)RobotBeaconSignal.Types.CompType.CompId;
-                        msg = (ushort)RobotBeaconSignal.Types.CompType.MsgType;
                         payloadsize = (uint)Signal.CalculateSize() + 4;
                         bytes = Signal.ToByteArray();
                         break;
                     }
-                case MessageTypes.GripsBeaconSignal:
-                    {
-                        var Signal = new GripsBeaconSignal();
-                        var bs = CreateBeaconSignal();
-                        Signal.BeaconSignal = bs;
-                        cmp = (ushort)GripsBeaconSignal.Types.CompType.CompId;
-                        msg = (ushort)GripsBeaconSignal.Types.CompType.MsgType;
-                        payloadsize = (uint)Signal.CalculateSize() + 4;
-                        bytes = Signal.ToByteArray();
-                        break;
-                    }
-                case MessageTypes.MachineReport:
-
-                    /*
-                    machineReport.Machines.Add(peer_.GetMachines());
-                    bytes = machineReport.ToByteArray();
-                    cmp = (ushort)MachineReport.Types.CompType.CompId;
-                    msg = (ushort)MachineReport.Types.CompType.MsgType;
-                    MyLogger.Log("Machinereport looks like: ");
-                    MyLogger.Log(machineReport.ToString());
-                    payloadsize = (uint)machineReport.CalculateSize() + 4;
-                    break;
-                     */
-                    return null;
-
-                case MessageTypes.RobotInfo:
-                    /* Robot robot = new  Robot
-                    {
-                        
-                    }
-
-                     RobotInfo robotInfo = new  RobotInfo
-                    {
-                        Robots = 
-                    }*/
-                    return null;
-                case MessageTypes.ReportAllMachines:
-                    if (Peer == null)
-                    {
-                        MyLogger.Log("Can't create ReportAllMachines if no peer is set!");
-                        return null;
-                    }
-                    var reportAll = new ReportAllMachines
-                    {
-                        RobotID = Peer.JerseyNumber
-                    };
-                    reportAll.Machines.Add(Peer.Machines);
-                    cmp = (ushort)ReportAllMachines.Types.CompType.CompId;
-                    msg = (ushort)ReportAllMachines.Types.CompType.MsgType;
-                    payloadsize = (uint)reportAll.CalculateSize() + 4;
-                    bytes = reportAll.ToByteArray();
-                    break;
-                case MessageTypes.MachineOrientation:
-                    var machineOrientationState = new MachineOrientationState
-                    {
-
-                    };
-                    return null;
-                case MessageTypes.PrsTask:
-                    var prsTask = new PrsTask
-                    {
-
-                    };
-                    return null;
                 case MessageTypes.PrepareMachine:
                 case MessageTypes.GripsPrepareMachine:
                     var machineId = "";
@@ -157,20 +78,20 @@ namespace Simulator.RobotEssentials
                     if (Peer is { CurrentTask: { } })
                     {
                         var robotId = Peer.JerseyNumber;
-                        if(Peer.CurrentTask.DeliverToStation != null)
+                        if(Peer.CurrentTask.Deliver != null)
                         {
-                            machineId = Peer.CurrentTask.DeliverToStation.MachineId;
-                            machinePoint = Peer.CurrentTask.DeliverToStation.MachinePoint;
+                            machineId = Peer.CurrentTask.Deliver.MachineId;
+                            machinePoint = Peer.CurrentTask.Deliver.MachinePoint;
                         }
-                        else if(Peer.CurrentTask.BufferCapStation != null)
+                        else if(Peer.CurrentTask.Buffer != null)
                         {
-                            machineId = Peer.CurrentTask.BufferCapStation.MachineId;
+                            machineId = Peer.CurrentTask.Buffer.MachineId;
                             machinePoint = "input"; // Peer.CurrentTask.BufferCapStation.ShelfNumber.ToString();
                         }
-                        else if (Peer.CurrentTask.GetFromStation != null)
+                        else if (Peer.CurrentTask.Retrieve != null)
                         {
-                            machineId = Peer.CurrentTask.GetFromStation.MachineId;
-                            machinePoint = Peer.CurrentTask.GetFromStation.MachinePoint;
+                            machineId = Peer.CurrentTask.Retrieve.MachineId;
+                            machinePoint = Peer.CurrentTask.Retrieve.MachinePoint;
                         }
                         var machine = new GripsPrepareMachine()
                         {
@@ -187,7 +108,6 @@ namespace Simulator.RobotEssentials
                         MyLogger.Log(machine.ToString());
                         break;
                     }
-                    
                     MyLogger.Log("Cant't create the GripPrepareMachineTask as the Peer is not set or there is no task");
                     return null;
                 case MessageTypes.SimSynchTime:
@@ -220,34 +140,31 @@ namespace Simulator.RobotEssentials
                     payloadsize = (uint)gamestate.CalculateSize() + 4;
                     bytes = gamestate.ToByteArray();
                     break;
-                case MessageTypes.GripsMidlevelTasks:
+                case MessageTypes.AgentTask:
                     if(Peer == null)
                     {
                         return null;
                     }
-                    var answer = new GripsMidlevelTasks()
+                    var answer = new AgentTask()
                     {
                         TeamColor = Peer.TeamColor,
                         TaskId = Peer.CurrentTask.TaskId,
                         RobotId = Peer.JerseyNumber,
-                        MoveToWaypoint = Peer.CurrentTask.MoveToWaypoint,
-                        GetFromStation = Peer.CurrentTask.GetFromStation,
-                        DeliverToStation = Peer.CurrentTask.DeliverToStation,
-                        BufferCapStation = Peer.CurrentTask.BufferCapStation,
+                        Move = Peer.CurrentTask.Move,
+                        Retrieve = Peer.CurrentTask.Retrieve,
+                        Deliver = Peer.CurrentTask.Deliver,
+                        Buffer = Peer.CurrentTask.Buffer,
                         ExploreMachine = Peer.CurrentTask.ExploreMachine,
                         CancelTask = Peer.CurrentTask.CancelTask,
                         PauseTask = Peer.CurrentTask.PauseTask,
-                        ReceiveMachineInfos = Peer.CurrentTask.ReceiveMachineInfos,
-                        ReportAllSeenMachines = Peer.CurrentTask.ReportAllSeenMachines,
-                        LostProduct = Peer.CurrentTask.LostProduct,
                         Successful = Peer.CurrentTask.Successful,
                         Canceled = Peer.CurrentTask.Canceled
                     };
-                    cmp = (ushort)GripsMidlevelTasks.Types.CompType.CompId;
-                    msg = (ushort)GripsMidlevelTasks.Types.CompType.MsgType;
+                    cmp = (ushort)AgentTask.Types.CompType.CompId;
+                    msg = (ushort)AgentTask.Types.CompType.MsgType;
                     payloadsize = (uint)answer.CalculateSize() + 4;
                     bytes = answer.ToByteArray();
-                    MyLogger.Log("The Created GripsMidLeveltask = " + answer.ToString());
+                    MyLogger.Log("The Created AgentTask = " + answer.ToString());
                     break;
                 default:
                     return null;
@@ -273,6 +190,17 @@ namespace Simulator.RobotEssentials
             bs.Seq = ++SequenzNr;
             bs.Number = Peer?.JerseyNumber ?? 0;
             bs.Pose = pose;
+            bs.FinishedTasks.Clear();
+            foreach( var t in Peer.FinishedTasksList)
+            {
+                var task = new FinishedTask{
+                    TaskId = t.TaskId,
+                    Successful = t.Successful
+                };
+                bs.FinishedTasks.Add(task);
+            }
+            bs.Task = Peer.CurrentTask;
+
             //MyLogger.Log(bs.ToString());
             return bs;
         }

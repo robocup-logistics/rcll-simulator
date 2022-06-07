@@ -148,8 +148,8 @@ refbox:
     recv: 4447
 general:
   timefactor: 1.0
-  fixed-mps-position: false
-  mockup-connections: false
+  fixed-mps-position: true
+  mockup-connections: true
   ignore-teamcolor: true
   robot-prepare-mps: true # robot is responsible to send prepare machine messages
   robot-move-zone-duration: 2 # in seconds

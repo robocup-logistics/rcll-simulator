@@ -110,7 +110,6 @@ namespace Simulator
                 RobotManager = new RobotManager();
                 MachineManager = MpsManager.GetInstance();
                 ZoneManager = ZonesManager.GetInstance();
-                var teamdebug = new TeamserverDebuggingUnit();
                 if (Configurations.GetInstance().FixedMPSplacement)
                 {
                     var mi = new MachineInfo();

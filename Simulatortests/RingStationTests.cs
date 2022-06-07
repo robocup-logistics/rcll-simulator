@@ -17,7 +17,7 @@ namespace Simulatortests
             var machine = new MPS_RS("C-RS", 5300, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testnode = machine.InNodes.SlideCnt;
             //Setting the shelf number to dispense a base
             var product = new Products(BaseColor.BaseBlack);
@@ -33,7 +33,7 @@ namespace Simulatortests
             var machine = new MPS_RS("C-RS", 5301, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
 
             var baseProduct = new Products(BaseColor.BaseBlack);
             var complexity = baseProduct.Complexity;
@@ -51,7 +51,7 @@ namespace Simulatortests
             var machine = new MPS_RS("C-RS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
 
             var baseProduct = new Products(BaseColor.BaseBlack);
             var complexity = baseProduct.Complexity;

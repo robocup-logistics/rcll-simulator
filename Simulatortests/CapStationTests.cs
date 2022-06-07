@@ -19,7 +19,7 @@ namespace Simulatortests
             var machine = new MPS_CS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
             //Setting the shelf number to dispense a base
             var product = new Products(CapColor.CapBlack);
@@ -46,7 +46,7 @@ namespace Simulatortests
             var machine = new MPS_CS("C-CS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var cs = new TestHelper(port);
             if (!cs.CreateConnection())
                 Assert.Fail();
@@ -68,7 +68,7 @@ namespace Simulatortests
             var machine = new MPS_CS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();

@@ -189,7 +189,7 @@ namespace Simulator.TerminalGui
             var cancel = new Button(10, 14, "Cancel");
             cancel.Clicked += () => Application.RequestStop();
             var dialog = new Dialog("Send Command Prompt", 60, 18, ok, cancel);
-            ustring[] taskOptions = { "Place ...", "Report", "MoveToWaypoint", "GetFromStation", "DeliverToStation", "BufferCapStation", "ExploreMachine", "Add Points to Cyan", "Robot drop item" };
+            ustring[] taskOptions = { "Place ...", "Move", "Retrieve", "Deliver", "BufferStation", "ExploreWaypoint", "Add Points to Cyan", "Robot drop item" };
             ustring[] machinePoints = { "input", "output", "slide", "shelf1", "shelf2", "shelf3" };
             var taskGroup = new RadioGroup(taskOptions)
             {
@@ -239,19 +239,18 @@ namespace Simulator.TerminalGui
             };
             ok.Clicked += () =>
             {
-                var newTask = new GripsMidlevelTasks
+                var newTask = new AgentTask
                 {
                     CancelTask = false,
-                    DeliverToStation = null,
+                    Deliver = null,
                     Successful = false,
                     ExploreMachine = null,
-                    GetFromStation = null,
-                    MoveToWaypoint = null,
-                    ReportAllSeenMachines = false,
-                    RobotId = 1,
-                    ReceiveMachineInfos = false
+                    Retrieve = null,
+                    Move = null,
+                    RobotId = (uint) robotGroup.SelectedItem + 1
                 };
                 string? mpsName = machineOptions[machineGroup.SelectedItem].ToString();
+                string? machinepoint = machinePoints[machinePointGroup.SelectedItem].ToString();
                 switch (taskGroup.SelectedItem)
                 {
                     case 0:// Place CBS
@@ -273,23 +272,19 @@ namespace Simulator.TerminalGui
                             }
                             break;
                         }
-                    case 1: // Report
-                        {
-                            newTask.ReportAllSeenMachines = true;
-                            break;
-                        }
-                    case 2: // MoveToWaypoint
+                    case 1: // MoveToWaypoint
                         {
                             if (entry.Text.IsEmpty)
                             {
-                                newTask.MoveToWaypoint = new MoveToWaypoint
+                                newTask.Move = new Move
                                 {
-                                    Waypoint = mpsName + "_" + machinePoints[machinePointGroup.SelectedItem].ToString()
+                                    Waypoint = mpsName,
+                                    MachinePoint = machinepoint
                                 };
                             }
                             else
                             {
-                                newTask.MoveToWaypoint = new MoveToWaypoint
+                                newTask.Move = new Move
                                 {
                                     Waypoint = entry.Text.ToString()
                                 };
@@ -297,58 +292,58 @@ namespace Simulator.TerminalGui
 
                             break;
                         }
-                    case 3: // GetFromStation
-                        newTask.GetFromStation = new GetFromStation()
+                    case 2: // GetFromStation
+                        newTask.Retrieve = new Retrieve()
                         {
                             MachineId = mpsName,
-                            MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString()
+                            MachinePoint = machinepoint
                         };
-                        RobotGuiList[0].Robot.SetGripsTasks(newTask);
+                        RobotGuiList[0].Robot.SetAgentTasks(newTask);
                         //RobotGuiList[0].Robot.GetFromStation();
                         break;
-                    case 4: // DeliverToStation
+                    case 3: // DeliverToStation
                         {
-                            newTask.DeliverToStation = new DeliverToStation()
+                            newTask.Deliver = new Deliver()
                             {
                                 MachineId = mpsName,
-                                MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString()
+                                MachinePoint = machinepoint
                             };
                             break;
                         }
-                    case 5:// BufferCapStation
+                    case 4:// BufferCapStation
                         {
-                            newTask.BufferCapStation = new BufferCapStation()
+                            newTask.Buffer = new BufferStation()
                             {
                                 MachineId = mpsName,
                                 ShelfNumber = 1
                             };
                             break;
                         }
-                    case 6: // ExploreMachine
+                    case 5: // ExploreMachine
                         {
-                            newTask.ExploreMachine = new ExploreMachine()
+                            newTask.ExploreMachine = new ExploreWaypoint()
                             {
                                 MachineId = mpsName,
-                                MachinePoint = machinePoints[machinePointGroup.SelectedItem].ToString(),
+                                MachinePoint = machinepoint,
                                 Waypoint = mpsName
                             };
                             break;
                         }
-                    case 7:
+                    case 6:
                     {
                         Configurations.GetInstance().Teams[0].Points += 1;
                         break;
                     }
-                    case 8:
+                    case 7:
                         RobotManager.Robots[robotGroup.SelectedItem].DropItem();
                         break;
                     default:
                         break;
                 }
 
-                if (taskGroup.SelectedItem > 1 && taskGroup.SelectedItem < 7)
+                if (taskGroup.SelectedItem > 0 && taskGroup.SelectedItem < 6)
                 {
-                    RobotManager.Robots[robotGroup.SelectedItem].SetGripsTasks(newTask);
+                    RobotManager.Robots[robotGroup.SelectedItem].SetAgentTasks(newTask);
                     //RobotManager.Robots[robotGroup.SelectedItem + 1].SetGripsTasks(newTask);
                 }
                 Application.RequestStop();

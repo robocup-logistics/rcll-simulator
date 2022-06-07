@@ -151,16 +151,16 @@ namespace Simulator.RobotEssentials
                         msg = ri.ToString();
                         break;
                     }
-                case (int)GripsMidlevelTasks.Types.CompType.MsgType:
+                case (int)AgentTask.Types.CompType.MsgType:
                     {
-                        MessageParser<GripsMidlevelTasks> midlevelParser =
-                            new(() => new GripsMidlevelTasks());
+                        MessageParser<AgentTask> taskParser =
+                            new(() => new AgentTask());
 
-                        GripsMidlevelTasks task = midlevelParser.ParseFrom(Stream, 12, payloadsize - 4);
+                        AgentTask task = taskParser.ParseFrom(Stream, 12, payloadsize - 4);
                         MyLogger.Log("Parsing of the GripsMidLevelTasks was successful!");
                         if (Owner != null)
                         {
-                            Owner.SetGripsTasks(task);
+                            Owner.SetAgentTasks(task);
                         }
                         else
                         {

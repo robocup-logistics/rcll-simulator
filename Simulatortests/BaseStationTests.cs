@@ -19,7 +19,7 @@ namespace Simulatortests
             var thread = new Thread(machine.Run);
             var testnode = machine.InNodes.ActionId;
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             //Setting the shelf number to dispense a base
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
@@ -33,7 +33,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())
@@ -50,7 +50,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())
@@ -66,7 +66,7 @@ namespace Simulatortests
             var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
-            Thread.Sleep(300);
+            Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
             var testhelper = new TestHelper(port);
             if (!testhelper.CreateConnection())
