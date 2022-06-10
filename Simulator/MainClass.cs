@@ -18,10 +18,10 @@ namespace Simulator
 {
     internal class MainClass
     {
-        private static MyLogger Mainlogger;
-        private static RobotManager RobotManager;
-        private static MpsManager MachineManager;
-        private static ZonesManager ZoneManager;
+        private static MyLogger? Mainlogger;
+        private static RobotManager? RobotManager;
+        private static MpsManager? MachineManager;
+        private static ZonesManager? ZoneManager;
         private static bool ShowGui;
         private static void Main(string[] args)
         {
@@ -138,13 +138,17 @@ namespace Simulator
             {
                 Console.Write("Starting the cleanup ..");
             }
-            foreach (var robot in RobotManager.Robots)
+            if(RobotManager != null)
             {
-                Mainlogger.Log("Starting the Cleanup....");
-                robot.RobotStop();
-                Mainlogger.Log("Finished the Cleanup....");
+                foreach (var robot in RobotManager.Robots)
+                {
+                    Mainlogger?.Log("Starting the Cleanup....");
+                    robot.RobotStop();
+                    Mainlogger?.Log("Finished the Cleanup....");
 
+                }
             }
+
             if (!ShowGui)
             {
                 Console.Write(".. cleanup done");

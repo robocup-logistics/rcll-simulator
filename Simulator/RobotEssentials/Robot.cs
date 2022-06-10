@@ -37,6 +37,16 @@ namespace Simulator.RobotEssentials
         public ManualResetEvent WaitForPrepare { get; private set; }
         private MpsManager? MpsManager;
         public List<FinishedTasks> FinishedTasksList { get; }
+        private enum TaskEnum : int
+        {
+            None,
+            Move,
+            Deliver,
+            Retrieve,
+            Buffer,
+            Explore
+        }
+
         public Robot(string name, RobotManager manager, Team color, int jersey, bool debug = false)
         {
             Config = Configurations.GetInstance();
@@ -622,7 +632,6 @@ namespace Simulator.RobotEssentials
                             MyLogger.Log("The current task = " + CurrentTask.ToString());
                             MyLogger.Log("#######################################################################");
 
-
                             if (CurrentTask.PauseTask)
                             {
                                 MyLogger.Log("Got a pause robot task [" + CurrentTask.PauseTask.ToString() +
@@ -632,48 +641,46 @@ namespace Simulator.RobotEssentials
                             {
                                 MyLogger.Log("Got a Cancel Task!");
                             }
+                            switch(CheckTaskType())
+                            {
+                                case TaskEnum.Move:
+                                    MoveToWaypoint();
+                                    break;
+                                case TaskEnum.Retrieve:
+                                    GetFromStation();
+                                    break;
+                                case TaskEnum.Deliver:
+                                    DeliverToStation();
+                                    break;
+                                case TaskEnum.Buffer:
+                                    BufferCapStation();
+                                    break;
+                                case TaskEnum.Explore:
+                                    ExploreMachine();
+                                    break;
+                                case TaskEnum.None:
+                                default:
+                                    MyLogger.Log("Somehow an empty task was added?");
 
-                            if (CurrentTask.Move != null)
-                            {
-                                MoveToWaypoint();
-                            }
-                            else if (CurrentTask.Retrieve != null)
-                            {
-                                GetFromStation();
-                            }
-                            else if (CurrentTask.Deliver != null)
-                            {
-                                DeliverToStation();
-                            }
-                            else if (CurrentTask.Buffer != null)
-                            {
-                                BufferCapStation();
-                            }
-                            else if (CurrentTask.ExploreMachine != null)
-                            {
-                                ExploreMachine();
-
-                            }
-                            else
-                            {
-                                if (Configurations.GetInstance().IgnoreTeamColor)
-                                {
-                                    /*
-                                    var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
-                                    if(message != null)
+                                    if (Configurations.GetInstance().IgnoreTeamColor)
                                     {
-                                        Teamserver.AddMessage(message);
-                                    }
-                                    */
+                                        /*
+                                        var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                                        if(message != null)
+                                        {
+                                            Teamserver.AddMessage(message);
+                                        }
+                                        */
 
-                                }
-                                else
-                                {
-                                    if (CurrentTask.TeamColor != TeamColor)
-                                    {
-                                        MyLogger.Log("Got a task thats not for me. I ignore it!");
                                     }
-                                }
+                                    else
+                                    {
+                                        if (CurrentTask.TeamColor != TeamColor)
+                                        {
+                                            MyLogger.Log("Got a task thats not for me. I ignore it!");
+                                        }
+                                    }
+                                    break;
                             }
                             FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
                             CurrentTask = null;
@@ -692,8 +699,6 @@ namespace Simulator.RobotEssentials
                                 //TestMove();
                             }
                         }
-
-
                         break;
                     case RobotState.Disqualified:
                         break;
@@ -714,7 +719,21 @@ namespace Simulator.RobotEssentials
                 Thread.Sleep(500);
             }
         }
-
+        private TaskEnum CheckTaskType()
+        {
+            if (CurrentTask.Move != null)
+                return TaskEnum.Move;
+            else if (CurrentTask.Retrieve != null)
+                return TaskEnum.Retrieve;
+            else if (CurrentTask.Deliver != null)
+                return TaskEnum.Deliver;
+            else if (CurrentTask.Buffer != null)
+                return TaskEnum.Buffer;
+            else if(CurrentTask.ExploreMachine != null)
+                return TaskEnum.Explore;
+            else
+                return TaskEnum.None;
+        }
 
         public void TestMove()
         {

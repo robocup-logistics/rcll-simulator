@@ -159,7 +159,8 @@ namespace Simulator.RobotEssentials
                         if (Messages.Count == 0)
                         {
                             //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                            //msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.GripsBeaconSignal);
                         }
                         else
                         {

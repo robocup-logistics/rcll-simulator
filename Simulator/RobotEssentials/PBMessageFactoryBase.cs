@@ -26,6 +26,7 @@ namespace Simulator.RobotEssentials
             PrepareMachine,
             SimulationTime,
             GripsPrepareMachine,
+            GripsBeaconSignal,
             AgentTask,
             SimSynchTime,
             ExplorationInfo, //send from the refbox to the robot
@@ -67,6 +68,17 @@ namespace Simulator.RobotEssentials
                         Signal = CreateBeaconSignal();
                         cmp = (ushort)BeaconSignal.Types.CompType.CompId;
                         msg = (ushort)BeaconSignal.Types.CompType.MsgType;
+                        payloadsize = (uint)Signal.CalculateSize() + 4;
+                        bytes = Signal.ToByteArray();
+                        break;
+                    }
+                case MessageTypes.GripsBeaconSignal:
+                    {
+                        var Signal = new GripsBeaconSignal();
+                        var bs = CreateBeaconSignal();
+                        Signal.BeaconSignal = bs;
+                        cmp = (ushort)GripsBeaconSignal.Types.CompType.CompId;
+                        msg = (ushort)GripsBeaconSignal.Types.CompType.MsgType;
                         payloadsize = (uint)Signal.CalculateSize() + 4;
                         bytes = Signal.ToByteArray();
                         break;
@@ -191,16 +203,18 @@ namespace Simulator.RobotEssentials
             bs.Number = Peer?.JerseyNumber ?? 0;
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
-            foreach( var t in Peer.FinishedTasksList)
+            bs.Task = Peer?.CurrentTask;
+            if(Peer != null && Peer.FinishedTasksList.Count != 0)
             {
-                var task = new FinishedTask{
-                    TaskId = t.TaskId,
-                    Successful = t.Successful
-                };
-                bs.FinishedTasks.Add(task);
+                foreach( var t in Peer.FinishedTasksList)
+                {
+                    var task = new FinishedTask{
+                        TaskId = t.TaskId,
+                        Successful = t.Successful
+                    };
+                    bs.FinishedTasks.Add(task);
+                }
             }
-            bs.Task = Peer.CurrentTask;
-
             //MyLogger.Log(bs.ToString());
             return bs;
         }
