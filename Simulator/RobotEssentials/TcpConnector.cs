@@ -160,7 +160,7 @@ namespace Simulator.RobotEssentials
                         {
                             //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
                             //msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.GripsBeaconSignal);
+                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                         }
                         else
                         {
@@ -171,7 +171,7 @@ namespace Simulator.RobotEssentials
                             Socket.Send(msg);
                         }
 
-                        Thread.Sleep(1000);
+                        Thread.Sleep(5000);
                     }
                 }
                 catch (Exception e)

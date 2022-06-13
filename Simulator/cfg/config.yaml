@@ -2,49 +2,49 @@
 # Color of machine gets taken from a prefix of C-xxx or M-xxx
 stations:
   C-BS: 
-    active: true
+    active: false
     debug: true
     type: BS
     port: 4840
     position: MZ28
     orientation: 180
   C-CS1:
-    active: true
+    active: false
     debug: true
     port:  4841
     type: CS
     position: CZ47
     orientation: 0
   C-CS2:
-    active: true
+    active: false
     debug: true
     port:  4842
     type: CS
     position: CZ76
     orientation: 90
   C-RS1:
-    active: true
+    active: false
     debug: true
     port:  4843
     type: RS
     position: MZ55
     orientation: 225
   C-RS2:
-    active: true
+    active: false
     debug: true
     port:  4844
     type: RS
     position: CZ14
     orientation: 270
   C-DS:
-    active: true
+    active: false
     debug: true
     port:  4845
     type: DS
     position: CZ33
     orientation: 225
   C-SS:
-    active: true
+    active: false
     debug: true
     port:  4846
     type: SS
@@ -105,11 +105,11 @@ robots:
     jersey: 1
     team: cyan
   Wolf:
-    active: true
+    active: false
     jersey: 2
     team: cyan
   Uke:
-    active: true
+    active: false
     jersey: 3
     team: cyan
   Heinz:
@@ -128,7 +128,7 @@ teams:
   CYAN:
     name: GRIPS
     active: true
-    host: 172.26.105.49
+    host: 127.0.0.1
     port: 2016
   MAGENTA:
     name: Carologistics
@@ -148,8 +148,8 @@ refbox:
     recv: 4447
 general:
   timefactor: 1.0
-  fixed-mps-position: true
-  mockup-connections: true
+  fixed-mps-position: false
+  mockup-connections: false
   ignore-teamcolor: true
   robot-prepare-mps: true # robot is responsible to send prepare machine messages
   robot-move-zone-duration: 2 # in seconds
