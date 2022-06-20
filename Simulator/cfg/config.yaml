@@ -105,11 +105,11 @@ robots:
     jersey: 1
     team: cyan
   Wolf:
-    active: false
+    active: true
     jersey: 2
     team: cyan
   Uke:
-    active: false
+    active: true
     jersey: 3
     team: cyan
   Heinz:
@@ -137,7 +137,7 @@ teams:
     port: 12345
 refbox:
   public:
-    ip: 172.26.108.51
+    ip: 172.0.0.1
     send: 4445
     recv: 4444
   cyan:
@@ -150,9 +150,10 @@ general:
   timefactor: 1.0
   fixed-mps-position: false
   mockup-connections: false
-  robot-connection-type: udp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
+  robot-connection-type: tcp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
   ignore-teamcolor: true
   robot-prepare-mps: true # robot is responsible to send prepare machine messages, option might be removed in future as teams tend to send prepare via their main control unit
+  robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
   robot-move-zone-duration: 2 # in seconds
   belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
   bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo

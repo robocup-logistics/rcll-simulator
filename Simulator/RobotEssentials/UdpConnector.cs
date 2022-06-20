@@ -13,49 +13,39 @@ namespace Simulator.RobotEssentials
     {
         private readonly PbMessageHandlerMachineManager PbHandler;
         private Configurations Config;
-        private Thread PrivateRecvThread;
-        private Thread PrivateSendThread;
+        private bool OnlySending;
+        private UdpClient Client;
 
-        public UdpConnector(Robot? rob, MyLogger logger) : base(rob, logger)
+        public UdpConnector(string ip, int port, Robot? rob, MyLogger logger , bool onlySend) : base(ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             PbHandler = new PbMessageHandlerMachineManager(MyLogger);
             Config = Configurations.GetInstance();
-            if (Config == null || Config.Refbox == null) return;
-            MyLogger.Log("Starting the public receive thread");
-            PublicRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.PublicRecvPort));
-            MyLogger.Log("Starting the cyan receive thread");
-            PrivateRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.CyanRecvPort));
-            ResolveIpAddress();
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
-            //PublicSendThread = new Thread(SendUdpMethod);
-            //TeamRecvThread = new Thread(() => RecvThreadMethod(Configurations.GetInstance().Refbox.CyanSendPort));
-            //TeamSendThread = new Thread(() => SendThreadMethod(Configurations.RefboxCyanRecvPort));
+            
+            ResolveIpAddress(ip);
+            Endpoint = new IPEndPoint(Address, Port);
+            RecvThread = new Thread(() => ReceiveUdpMethod());
+            SendThread = new Thread(() => SendUdpMethod());
 
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+            Client = new UdpClient();
+            Client.EnableBroadcast = true;
+            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
+            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
-        public void ReceiveUdpMethod(int port)
+        public void ReceiveUdpMethod()
         {
             MyLogger.Log("Starting the ReceiveUDPMethod!");
-            if(Config?.Refbox == null)
-            {
-                MyLogger.Log("No Refbox Configuration is found!");
-                return;
-            }
-            MyLogger.Log("Waiting on message on port " + port);
-            var addr = IPAddress.Parse(Config.Refbox.IP);
-            SendEndpoint = new IPEndPoint(IPAddress.Any, port);
-            var udpServer = new UdpClient(port)
-            {
-                EnableBroadcast = true
-            };
-            MyLogger.Log("Broadcasts are = " + udpServer.EnableBroadcast);
+            MyLogger.Log("Waiting on message on port " + Port);
+            Endpoint = new IPEndPoint(Address, Port);
+            MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
             while (Running)
             {
                 try
                 {
-                    MyLogger.Log("Waiting on message on port " + port);
-                    var message = udpServer.Receive(ref SendEndpoint);
+                    MyLogger.Log("Waiting on message on port " + Port);
+                    var message = Client.Receive(ref Endpoint);
                     var payload = PbHandler.CheckMessageHeader(message);
                     MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
                     PbHandler.HandleMessage(message);
@@ -70,46 +60,41 @@ namespace Simulator.RobotEssentials
 
         public void SendUdpMethod()
         {
-            /*if(Config.Refbox == null)
-            {
-                MyLogger.Log("No Refbox Configuration is found!");
-                return;
-            }
-            var port = Config.Refbox.CyanSendPort;
-            var addr_string = Config.Refbox.IP;
-            MyLogger.Log("Sending message to port " + port);
-            var addr = IPAddress.Parse(addr_string);
-            SendEndpoint = new IPEndPoint(addr, port);
+            MyLogger.Log("Sending message to port " + Port);
             //SendEndpoint = new IPEndPoint(IPAddress.Any, port);
             //UdpClient client = new UdpClient(SendEndpoint);
-            var client = new UdpClient();
+            
             while (Running)
             {
                 try
                 {
-                    MyLogger.Log("Sending a message to "+ addr_string + ":" + port + "!");
-                    var message = FactoryBase.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                    if(message != null)
+                    MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
+                    var message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                    if(message != Array.Empty<byte>())
                     {
-                        client.Send(message, message.Length,Config.Refbox.IP, port);
+                        Client.Send(message, message.Length,Address.ToString(), Port);
                     }
 
                     Thread.Sleep(1000);
                 }
                 catch (Exception e)
                 {
-                    MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
+                    MyLogger.Log(e + " - Something went wrong with the SendThread!");
                 }
-            }*/
+            }
 
         }
         
         public bool Start()
         {
             //PublicSendThread.Start();
-            PrivateRecvThread.Start();
-            PublicRecvThread.Start();
             Running = true;
+            SendThread.Start();
+            Thread.Sleep(400);
+            if (!OnlySending)
+            {
+                RecvThread.Start();
+            }
             return true;
         }
 
@@ -117,12 +102,5 @@ namespace Simulator.RobotEssentials
         {
             Running = false;
         }
-
-        public virtual void AddUdpMessage(byte[] message)
-        {
-            Messages.Enqueue(message);
-        }
-
-
     }
 }

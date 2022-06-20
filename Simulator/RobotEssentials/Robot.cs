@@ -17,8 +17,9 @@ namespace Simulator.RobotEssentials
         public Team TeamColor { get; }
         public CPosition Position { get; set; }
         private readonly MyLogger MyLogger;
-        private TcpConnector? TcpConnection;
-        private UdpConnector? UdpConnection;
+        private TcpConnector? TcpConnectionTeamserver;
+        private UdpConnector? UdpConnectionTeamserver;
+        private UdpConnector? UdpConnectionRefbox;
         private bool Running;
         private Products? HeldProduct;
         private GameState.Types.State GameState;
@@ -70,7 +71,9 @@ namespace Simulator.RobotEssentials
             Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
             MpsManager = null;
-
+            TcpConnectionTeamserver = null;
+            UdpConnectionTeamserver = null;
+            UdpConnectionRefbox = null;
         }
 
         public string GetHeldProductString()
@@ -130,11 +133,11 @@ namespace Simulator.RobotEssentials
                     CurrentTask.Successful = true;
                     if (Config.RobotConnectionType.Equals("udp"))
                     {
-                        UdpConnection.AddMessage(UdpConnection.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
+                        UdpConnectionTeamserver.AddMessage(UdpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
                     else
                     {
-                        
+                        TcpConnectionTeamserver.AddMessage(TcpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
                     return;
                 case true:
@@ -186,17 +189,22 @@ namespace Simulator.RobotEssentials
 
             if (!Config.MockUp)
             {
+                if (Config.RobotDirectBeaconSignals)
+                {
+                    UdpConnectionRefbox =
+                        new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
+                    UdpConnectionRefbox.Start();
+                }
                 if (Config.RobotConnectionType.Equals("udp"))
                 {
-                    UdpConnection = new UdpConnector(this, MyLogger);
-                    UdpConnection.Start();
+                    UdpConnectionTeamserver = new UdpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger, true);
+                    UdpConnectionTeamserver.Start();
                 }
                 else
                 {
-                    TcpConnection = new TcpConnector(this, MyLogger);
-                    TcpConnection?.Start();
+                    TcpConnectionTeamserver = new TcpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger);
+                    TcpConnectionTeamserver.Start();
                 }
-
             }
 
 
@@ -205,12 +213,12 @@ namespace Simulator.RobotEssentials
             Work();
             if (Config.RobotConnectionType.Equals("udp"))
             {
-                UdpConnection.Stop();
+                UdpConnectionTeamserver.Stop();
             }
             else
             {
 
-                TcpConnection?.Stop();
+                TcpConnectionTeamserver?.Stop();
             }
         }
 
@@ -220,10 +228,10 @@ namespace Simulator.RobotEssentials
 
             if (Config.RobotConnectionType.Equals("udp"))
             {
-                var message = UdpConnection?.CreateMessage(type);
+                var message = UdpConnectionTeamserver?.CreateMessage(type);
                 if (message != Array.Empty<byte>())
                 {
-                    UdpConnection?.AddMessage(message);
+                    UdpConnectionTeamserver?.AddMessage(message);
                 }
                 else
                 {
@@ -232,10 +240,10 @@ namespace Simulator.RobotEssentials
             }
             else
             {
-                var message = TcpConnection?.CreateMessage(type);
+                var message = TcpConnectionTeamserver?.CreateMessage(type);
                 if (message != Array.Empty<byte>())
                 {
-                    TcpConnection?.AddMessage(message);
+                    TcpConnectionTeamserver?.AddMessage(message);
                 }
                 else
                 {
@@ -246,9 +254,9 @@ namespace Simulator.RobotEssentials
 
 
 
-    #region BasicBehaviour
+        #region BasicBehaviour
 
-    private bool Move(Zone TargetZone)
+        private bool Move(Zone TargetZone)
         {
             var attempt = 0;
 
@@ -417,12 +425,12 @@ namespace Simulator.RobotEssentials
             //todo add check why task was unsuccessful and if pathing failed replan the path
             if (Move(targetZone))
             {
-                MyLogger.Log("Finished the move to waypoint successfull!");
+                MyLogger.Log("Finished the move to waypoint successful!");
                 CurrentTask.Successful = true;
             }
             else
             {
-                MyLogger.Log("Finished the move to waypoint unsuccessfull!");
+                MyLogger.Log("Finished the move to waypoint unsuccessful!");
                 if (CurrentTask.Canceled)
                 {
                     TaskDescription = "Idle";
@@ -514,7 +522,6 @@ namespace Simulator.RobotEssentials
             {
                 AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             }
-            CurrentTask = null;
             TaskDescription = "Idle";
         }
 
@@ -767,7 +774,15 @@ namespace Simulator.RobotEssentials
 
             if (Config.RobotConnectionType.Equals("tcp"))
             {
-                return TcpConnection.GetConnected().ToString() ?? string.Empty;
+                if (TcpConnectionTeamserver != null)
+                {
+                    return TcpConnectionTeamserver.GetConnected().ToString() ?? string.Empty;
+
+                }
+                else
+                {
+                    return "starting";
+                }
             }
             else
             {

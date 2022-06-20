@@ -43,6 +43,7 @@ namespace Simulator
         public int RSTaskDuration { get; private set; }
         public bool AppendLogging { get; private set; }
         public string RobotConnectionType { get; private set; }
+        public bool RobotDirectBeaconSignals { get; private set; }
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -61,7 +62,7 @@ namespace Simulator
             RobotPlaceDuration = 4000;
             AppendLogging = false;
             RobotConnectionType = "tcp";
-
+            RobotDirectBeaconSignals = false;
         }
 
         //private member and getter for my singleton configurations class
@@ -160,6 +161,9 @@ namespace Simulator
                         break;
                     case "robot-connection-type":
                         RobotConnectionType = value.ToString().ToLower();
+                        break;
+                    case "robot-direct-beacon":
+                        RobotDirectBeaconSignals = bool.Parse(value.ToString());
                         break;
                 }
             }
