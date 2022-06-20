@@ -17,9 +17,10 @@ namespace Simulator.RobotEssentials
         
         public PBMessageFactoryRobot(Robot peer, MyLogger log) :base(log)
         {
+            log.Info("Created a PBMessageFactoryRobot!");
             Peer = peer;
         }
-        public byte[]? CreateMessage(MessageTypes mtype)
+        public byte[] CreateMessage(MessageTypes mtype)
         {
             Timer ??= Utility.Timer.GetInstance();
             ushort cmp = 0;
@@ -89,7 +90,7 @@ namespace Simulator.RobotEssentials
                         break;
                     }
                     MyLogger.Log("Cant't create the GripPrepareMachineTask as the Peer is not set or there is no task");
-                    return null;
+                    return Array.Empty<byte>();
                 case MessageTypes.GameState:
                     var gamestate = new GameState()
                     {
@@ -107,10 +108,6 @@ namespace Simulator.RobotEssentials
                     bytes = gamestate.ToByteArray();
                     break;
                 case MessageTypes.AgentTask:
-                    if (Peer == null)
-                    {
-                        return null;
-                    }
                     var answer = new AgentTask()
                     {
                         TeamColor = Peer.TeamColor,
@@ -133,7 +130,7 @@ namespace Simulator.RobotEssentials
                     MyLogger.Log("The Created AgentTask = " + answer.ToString());
                     break;
                 default:
-                    return null;
+                    return Array.Empty<byte>();
             }
             var fh = new FrameHeader(payloadsize);
             var mh = new MessageHeader(cmp, msg);

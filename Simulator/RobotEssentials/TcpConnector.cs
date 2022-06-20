@@ -12,9 +12,9 @@ namespace Simulator.RobotEssentials
     class TcpConnector : ConnectorBase
     {
         //TODO add second condition to assign team 2
-        PBMessageFactoryRobot PbFactory;
+
         private PBMessageHandlerRobot HandlerRobot;
-        IPAddress Address;
+
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
         public TcpConnector(Robot rob, MyLogger logger) : base(rob, logger)
@@ -33,22 +33,11 @@ namespace Simulator.RobotEssentials
             {
                 if (Owner.TeamColor.Equals(LlsfMsgs.Team.Cyan))
                 {
-                    IPAddress ip = IPAddress.Any;
-                    while(ip == IPAddress.Any)
-                    {
-                        try{
-                            ip = Dns.GetHostAddresses(Configurations.GetInstance().Teams[0].Ip)[0];
-                        }
-                        catch(Exception e)
-                        {
-                            MyLogger.Log("Not able to get DNS? Retrying");
-                            Thread.Sleep(1000);
-                        }
-                    }
-                   
+
+                    ResolveIpAddress();
                     //Address = IPAddress.Parse(ip);
-                    SendEndpoint = new IPEndPoint(ip, Configurations.GetInstance().Teams[0].Port);
-                    Socket = new Socket(ip.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                    SendEndpoint = new IPEndPoint(Address, Configurations.GetInstance().Teams[0].Port);
+                    Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
                     TeamRecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
                     TeamSendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
                 }
@@ -62,7 +51,8 @@ namespace Simulator.RobotEssentials
                 }
             }
 
-            PbFactory = new PBMessageFactoryRobot(Owner, MyLogger);
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+
             WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
             HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
@@ -116,6 +106,10 @@ namespace Simulator.RobotEssentials
                 Running = false;
                 return false;
             }
+            finally
+            {
+                Socket?.Close();
+            }
             return true;
         }
 
@@ -133,12 +127,7 @@ namespace Simulator.RobotEssentials
             }
             return true;
         }
-        public void AddMessage(byte[] msg)
-        {
-            MyLogger.Log("Added a Message to the List!");
-            Messages.Enqueue(msg);
-            //WaitSend.Set();
-        }
+
         public void SendThreadMethod(int port)
         {
             MyLogger.Log("Starting the SendThread!");
@@ -166,12 +155,12 @@ namespace Simulator.RobotEssentials
                         {
                             msg = Messages.Dequeue();
                         }
-                        if(msg!= null)
+                        if(msg != null)
                         {
                             Socket.Send(msg);
                         }
 
-                        Thread.Sleep(5000);
+                        Thread.Sleep(1000);
                     }
                 }
                 catch (Exception e)
@@ -188,14 +177,8 @@ namespace Simulator.RobotEssentials
                 }
             }
         }
-        public byte[]? GetTestMessage()
-        {
-            return PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-        }
-        public byte[]? CreateMessage(PBMessageFactoryBase.MessageTypes type)
-        {
-            return PbFactory.CreateMessage(type);  
-        }
+
+
 
         public void ReceiveThreadMethod(int port)
         {

@@ -39,12 +39,13 @@ namespace Simulator.RobotEssentials
 
         public PBMessageFactoryBase(MyLogger log)
         {
+            log.Info("Created a PBMessageFactoryBase!");
             SequenzNr = 0;
             MyLogger = log;
             Timer = null;
         }
 
-        public byte[]? CreateMessage(MessageTypes mtype)
+        public byte[] CreateMessage(MessageTypes mtype)
         {
             Timer ??= Timer.GetInstance();
             ushort cmp = 0;
@@ -107,7 +108,7 @@ namespace Simulator.RobotEssentials
                     bytes = gamestate.ToByteArray();
                     break;
                 default:
-                    return null;
+                    return Array.Empty<byte>(); ;
             }
             var fh = new FrameHeader(payloadsize);
             var mh = new MessageHeader(cmp, msg);

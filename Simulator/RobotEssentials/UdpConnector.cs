@@ -12,9 +12,10 @@ namespace Simulator.RobotEssentials
     class UdpConnector : ConnectorBase
     {
         private readonly PbMessageHandlerMachineManager PbHandler;
-        //readonly IPAddress Address;
-        private Configurations? Config;
-        private Thread? PrivateRecvThread;
+        private Configurations Config;
+        private Thread PrivateRecvThread;
+        private Thread PrivateSendThread;
+
         public UdpConnector(Robot? rob, MyLogger logger) : base(rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
@@ -25,6 +26,8 @@ namespace Simulator.RobotEssentials
             PublicRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.PublicRecvPort));
             MyLogger.Log("Starting the cyan receive thread");
             PrivateRecvThread = new Thread(() => ReceiveUdpMethod(Config.Refbox.CyanRecvPort));
+            ResolveIpAddress();
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
             //PublicSendThread = new Thread(SendUdpMethod);
             //TeamRecvThread = new Thread(() => RecvThreadMethod(Configurations.GetInstance().Refbox.CyanSendPort));
             //TeamSendThread = new Thread(() => SendThreadMethod(Configurations.RefboxCyanRecvPort));
@@ -119,6 +122,7 @@ namespace Simulator.RobotEssentials
         {
             Messages.Enqueue(message);
         }
+
 
     }
 }

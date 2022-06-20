@@ -42,6 +42,7 @@ namespace Simulator
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
         public bool AppendLogging { get; private set; }
+        public string RobotConnectionType { get; private set; }
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -59,6 +60,8 @@ namespace Simulator
             FixedMPSplacement = false;
             RobotPlaceDuration = 4000;
             AppendLogging = false;
+            RobotConnectionType = "tcp";
+
         }
 
         //private member and getter for my singleton configurations class
@@ -155,7 +158,9 @@ namespace Simulator
                     case "fixed-mps-position":
                         FixedMPSplacement = bool.Parse(value.ToString());
                         break;
-
+                    case "robot-connection-type":
+                        RobotConnectionType = value.ToString().ToLower();
+                        break;
                 }
             }
         }
