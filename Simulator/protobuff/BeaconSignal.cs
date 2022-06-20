@@ -27,11 +27,11 @@ namespace LlsfMsgs {
             "ChJCZWFjb25TaWduYWwucHJvdG8SCWxsc2ZfbXNncxoKVGltZS5wcm90bxoK",
             "VGVhbS5wcm90bxoMUG9zZTJELnByb3RvGg9BZ2VudFRhc2sucHJvdG8iswIK",
             "DEJlYWNvblNpZ25hbBIdCgR0aW1lGAEgAigLMg8ubGxzZl9tc2dzLlRpbWUS",
-            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgDIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
+            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgIIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
             "KAkSEQoJcGVlcl9uYW1lGAUgAigJEiMKCnRlYW1fY29sb3IYBiABKA4yDy5s",
             "bHNmX21zZ3MuVGVhbRIfCgRwb3NlGAcgASgLMhEubGxzZl9tc2dzLlBvc2Uy",
-            "RBIiCgR0YXNrGAggASgLMhQubGxzZl9tc2dzLkFnZW50VGFzaxIvCg5maW5p",
-            "c2hlZF90YXNrcxgJIAMoCzIXLmxsc2ZfbXNncy5GaW5pc2hlZFRhc2siJgoI",
+            "RBIiCgR0YXNrGAkgASgLMhQubGxzZl9tc2dzLkFnZW50VGFzaxIvCg5maW5p",
+            "c2hlZF90YXNrcxgKIAMoCzIXLmxsc2ZfbXNncy5GaW5pc2hlZFRhc2siJgoI",
             "Q29tcFR5cGUSDAoHQ09NUF9JRBDQDxIMCghNU0dfVFlQRRABIjIKDEZpbmlz",
             "aGVkVGFzaxIOCgZUYXNrSWQYASACKA0SEgoKc3VjY2Vzc2Z1bBgCIAIoCEI1",
             "Ch9vcmcucm9ib2N1cF9sb2dpc3RpY3MubGxzZl9tc2dzQhJCZWFjb25TaWdu",
@@ -133,7 +133,7 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "number" field.</summary>
-    public const int NumberFieldNumber = 3;
+    public const int NumberFieldNumber = 8;
     private readonly static uint NumberDefaultValue = 0;
 
     private uint number_;
@@ -142,21 +142,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint Number {
-      get { if ((_hasBits0 & 2) != 0) { return number_; } else { return NumberDefaultValue; } }
+      get { if ((_hasBits0 & 4) != 0) { return number_; } else { return NumberDefaultValue; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         number_ = value;
       }
     }
     /// <summary>Gets whether the "number" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasNumber {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "number" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearNumber() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "team_name" field.</summary>
@@ -221,21 +221,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Team TeamColor {
-      get { if ((_hasBits0 & 4) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         teamColor_ = value;
       }
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasTeamColor {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearTeamColor() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "pose" field.</summary>
@@ -254,7 +254,7 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "task" field.</summary>
-    public const int TaskFieldNumber = 8;
+    public const int TaskFieldNumber = 9;
     private global::LlsfMsgs.AgentTask task_;
     /// <summary>
     /// Maybe needed for future generalisation of beacon signal and tracking of robots current activity (used by GRIPS currently)
@@ -268,9 +268,9 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "finished_tasks" field.</summary>
-    public const int FinishedTasksFieldNumber = 9;
+    public const int FinishedTasksFieldNumber = 10;
     private static readonly pb::FieldCodec<global::LlsfMsgs.FinishedTask> _repeated_finishedTasks_codec
-        = pb::FieldCodec.ForMessage(74, global::LlsfMsgs.FinishedTask.Parser);
+        = pb::FieldCodec.ForMessage(82, global::LlsfMsgs.FinishedTask.Parser);
     private readonly pbc::RepeatedField<global::LlsfMsgs.FinishedTask> finishedTasks_ = new pbc::RepeatedField<global::LlsfMsgs.FinishedTask>();
     /// <summary>
     /// a list of all the tasks that the robot has done. Contains the ID of the task and the result
@@ -338,10 +338,6 @@ namespace LlsfMsgs {
         output.WriteRawTag(16);
         output.WriteUInt64(Seq);
       }
-      if (HasNumber) {
-        output.WriteRawTag(24);
-        output.WriteUInt32(Number);
-      }
       if (HasTeamName) {
         output.WriteRawTag(34);
         output.WriteString(TeamName);
@@ -358,8 +354,12 @@ namespace LlsfMsgs {
         output.WriteRawTag(58);
         output.WriteMessage(Pose);
       }
+      if (HasNumber) {
+        output.WriteRawTag(64);
+        output.WriteUInt32(Number);
+      }
       if (task_ != null) {
-        output.WriteRawTag(66);
+        output.WriteRawTag(74);
         output.WriteMessage(Task);
       }
       finishedTasks_.WriteTo(output, _repeated_finishedTasks_codec);
@@ -463,10 +463,6 @@ namespace LlsfMsgs {
             Seq = input.ReadUInt64();
             break;
           }
-          case 24: {
-            Number = input.ReadUInt32();
-            break;
-          }
           case 34: {
             TeamName = input.ReadString();
             break;
@@ -486,14 +482,18 @@ namespace LlsfMsgs {
             input.ReadMessage(Pose);
             break;
           }
-          case 66: {
+          case 64: {
+            Number = input.ReadUInt32();
+            break;
+          }
+          case 74: {
             if (task_ == null) {
               Task = new global::LlsfMsgs.AgentTask();
             }
             input.ReadMessage(Task);
             break;
           }
-          case 74: {
+          case 82: {
             finishedTasks_.AddEntriesFrom(input, _repeated_finishedTasks_codec);
             break;
           }

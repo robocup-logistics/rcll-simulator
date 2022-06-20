@@ -80,7 +80,7 @@ namespace Simulator.Utility
         }
         public BaseElement()
         {
-            BaseColor = 0;
+            BaseColor = BaseColor.BaseUncolored;
         }
         public BaseColor GetBaseColor()
         {

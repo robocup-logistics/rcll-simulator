@@ -26,10 +26,11 @@ namespace LlsfMsgs {
           string.Concat(
             "ChJQcm9kdWN0Q29sb3IucHJvdG8SCWxsc2ZfbXNncypMCglSaW5nQ29sb3IS",
             "DQoJUklOR19CTFVFEAESDgoKUklOR19HUkVFThACEg8KC1JJTkdfT1JBTkdF",
-            "EAMSDwoLUklOR19ZRUxMT1cQBCo6CglCYXNlQ29sb3ISDAoIQkFTRV9SRUQQ",
-            "ARIOCgpCQVNFX0JMQUNLEAISDwoLQkFTRV9TSUxWRVIQAyonCghDYXBDb2xv",
-            "chINCglDQVBfQkxBQ0sQARIMCghDQVBfR1JFWRACQjUKH29yZy5yb2JvY3Vw",
-            "X2xvZ2lzdGljcy5sbHNmX21zZ3NCElByb2R1Y3RDb2xvclByb3Rvcw=="));
+            "EAMSDwoLUklOR19ZRUxMT1cQBCpOCglCYXNlQ29sb3ISEgoOQkFTRV9VTkNP",
+            "TE9SRUQQABIMCghCQVNFX1JFRBABEg4KCkJBU0VfQkxBQ0sQAhIPCgtCQVNF",
+            "X1NJTFZFUhADKicKCENhcENvbG9yEg0KCUNBUF9CTEFDSxABEgwKCENBUF9H",
+            "UkVZEAJCNQofb3JnLnJvYm9jdXBfbG9naXN0aWNzLmxsc2ZfbXNnc0ISUHJv",
+            "ZHVjdENvbG9yUHJvdG9z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::LlsfMsgs.RingColor), typeof(global::LlsfMsgs.BaseColor), typeof(global::LlsfMsgs.CapColor), }, null, null));
@@ -46,6 +47,7 @@ namespace LlsfMsgs {
   }
 
   public enum BaseColor {
+    [pbr::OriginalName("BASE_UNCOLORED")] BaseUncolored = 0,
     [pbr::OriginalName("BASE_RED")] BaseRed = 1,
     [pbr::OriginalName("BASE_BLACK")] BaseBlack = 2,
     [pbr::OriginalName("BASE_SILVER")] BaseSilver = 3,

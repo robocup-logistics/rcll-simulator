@@ -27,6 +27,7 @@ namespace Simulator.TerminalGui
         private Window TaskSubWindow;
         private ColorScheme RobotTeamColorScheme;
         private Label DebugLog;
+        
         public RobotGuiView(Robot rob,int x_offset, int width_, Team team)
         {
             Robot = rob;

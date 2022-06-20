@@ -28,7 +28,7 @@ namespace Simulator.RobotEssentials
             uint payloadsize = 0;
             byte[] bytes;
 
-            MyLogger.Log("Creating a : " + mtype + " message!");
+            MyLogger.Log("[RobotMessageFactory] Creating a : " + mtype + " message!");
             switch (mtype)
             {
                 case MessageTypes.BeaconSignal:

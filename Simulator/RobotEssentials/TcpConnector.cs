@@ -155,7 +155,7 @@ namespace Simulator.RobotEssentials
                         {
                             msg = Messages.Dequeue();
                         }
-                        if(msg != null)
+                        if(msg != Array.Empty<byte>())
                         {
                             Socket.Send(msg);
                         }

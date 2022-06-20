@@ -59,7 +59,7 @@ namespace Simulator.RobotEssentials
                 time.Nsec = Timer.Nsec;
                 time.Sec = Timer.Sec;
             }
-            MyLogger.Log("Creating a : " + mtype + " message!");
+            MyLogger.Log("[BaseMessageFactory] Creating a : " + mtype + " message!");
             switch (mtype)
             {
                 case MessageTypes.BeaconSignal:
@@ -108,7 +108,7 @@ namespace Simulator.RobotEssentials
                     bytes = gamestate.ToByteArray();
                     break;
                 default:
-                    return Array.Empty<byte>(); ;
+                    return Array.Empty<byte>();
             }
             var fh = new FrameHeader(payloadsize);
             var mh = new MessageHeader(cmp, msg);

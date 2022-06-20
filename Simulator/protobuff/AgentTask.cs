@@ -25,7 +25,7 @@ namespace LlsfMsgs {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "Cg9BZ2VudFRhc2sucHJvdG8SCWxsc2ZfbXNncxoKVGVhbS5wcm90bxoSUHJv",
-            "ZHVjdENvbG9yLnByb3RvIoQECglBZ2VudFRhc2sSIwoKdGVhbV9jb2xvchgB",
+            "ZHVjdENvbG9yLnByb3RvIvsDCglBZ2VudFRhc2sSIwoKdGVhbV9jb2xvchgB",
             "IAIoDjIPLmxsc2ZfbXNncy5UZWFtEg8KB3Rhc2tfaWQYAiACKA0SEAoIcm9i",
             "b3RfaWQYAyACKA0SHQoEbW92ZRgEIAEoCzIPLmxsc2ZfbXNncy5Nb3ZlEiUK",
             "CHJldHJpZXZlGAUgASgLMhMubGxzZl9tc2dzLlJldHJpZXZlEiMKB2RlbGl2",
@@ -35,24 +35,24 @@ namespace LlsfMsgs {
             "ZV9kZXNjcmlwdGlvbhgJIAEoCzIfLmxsc2ZfbXNncy5Xb3JrcGllY2VEZXNj",
             "cmlwdGlvbhIQCghvcmRlcl9pZBgKIAEoDRITCgtjYW5jZWxfdGFzaxgLIAEo",
             "CBISCgpwYXVzZV90YXNrGAwgASgIEhIKCnN1Y2Nlc3NmdWwYDSABKAgSEAoI",
-            "Y2FuY2VsZWQYDiABKAgSGwoTZXJyb3JfY29kZV9taWRsZXZlbBgPIAEoDSIn",
-            "CghDb21wVHlwZRIMCgdDT01QX0lEEMA+Eg0KCE1TR19UWVBFEPYDIi8KBE1v",
-            "dmUSEAoId2F5cG9pbnQYASACKAkSFQoNbWFjaGluZV9wb2ludBgCIAEoCSI1",
-            "CghSZXRyaWV2ZRISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9p",
-            "bnQYAiACKAkiNAoHRGVsaXZlchISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1h",
-            "Y2hpbmVfcG9pbnQYAiACKAkiOQoNQnVmZmVyU3RhdGlvbhISCgptYWNoaW5l",
-            "X2lkGAEgAigJEhQKDHNoZWxmX251bWJlchgCIAIoDSJOCg9FeHBsb3JlV2F5",
-            "cG9pbnQSEgoKbWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIg",
-            "AigJEhAKCHdheXBvaW50GAMgAigJIrwBChRXb3JrcGllY2VEZXNjcmlwdGlv",
-            "bhIoCgpiYXNlX2NvbG9yGAMgAigOMhQubGxzZl9tc2dzLkJhc2VDb2xvchIp",
-            "CgtyaW5nX2NvbG9ycxgEIAMoDjIULmxsc2ZfbXNncy5SaW5nQ29sb3ISJgoJ",
-            "Y2FwX2NvbG9yGAUgASgOMhMubGxzZl9tc2dzLkNhcENvbG9yIicKCENvbXBU",
-            "eXBlEgwKB0NPTVBfSUQQwD4SDQoITVNHX1RZUEUQ/gNCMwofb3JnLnJvYm9j",
-            "dXBfbG9naXN0aWNzLmxsc2ZfbXNnc0IQQWdlbnRUYXNrc1Byb3Rvcw=="));
+            "Y2FuY2VsZWQYDiABKAgSEgoKZXJyb3JfY29kZRgPIAEoDSInCghDb21wVHlw",
+            "ZRIMCgdDT01QX0lEEMA+Eg0KCE1TR19UWVBFEPYDIi8KBE1vdmUSEAoId2F5",
+            "cG9pbnQYASACKAkSFQoNbWFjaGluZV9wb2ludBgCIAEoCSI1CghSZXRyaWV2",
+            "ZRISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9pbnQYAiACKAki",
+            "NAoHRGVsaXZlchISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9p",
+            "bnQYAiACKAkiOQoNQnVmZmVyU3RhdGlvbhISCgptYWNoaW5lX2lkGAEgAigJ",
+            "EhQKDHNoZWxmX251bWJlchgCIAIoDSJOCg9FeHBsb3JlV2F5cG9pbnQSEgoK",
+            "bWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIgAigJEhAKCHdh",
+            "eXBvaW50GAMgAigJIrwBChRXb3JrcGllY2VEZXNjcmlwdGlvbhIoCgpiYXNl",
+            "X2NvbG9yGAMgAigOMhQubGxzZl9tc2dzLkJhc2VDb2xvchIpCgtyaW5nX2Nv",
+            "bG9ycxgEIAMoDjIULmxsc2ZfbXNncy5SaW5nQ29sb3ISJgoJY2FwX2NvbG9y",
+            "GAUgASgOMhMubGxzZl9tc2dzLkNhcENvbG9yIicKCENvbXBUeXBlEgwKB0NP",
+            "TVBfSUQQwD4SDQoITVNHX1RZUEUQ/gNCMwofb3JnLnJvYm9jdXBfbG9naXN0",
+            "aWNzLmxsc2ZfbXNnc0IQQWdlbnRUYXNrc1Byb3Rvcw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.ProductColorReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.AgentTask), global::LlsfMsgs.AgentTask.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "Move", "Retrieve", "Deliver", "Buffer", "ExploreMachine", "WorkpieceDescription", "OrderId", "CancelTask", "PauseTask", "Successful", "Canceled", "ErrorCodeMidlevel" }, null, new[]{ typeof(global::LlsfMsgs.AgentTask.Types.CompType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.AgentTask), global::LlsfMsgs.AgentTask.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "Move", "Retrieve", "Deliver", "Buffer", "ExploreMachine", "WorkpieceDescription", "OrderId", "CancelTask", "PauseTask", "Successful", "Canceled", "ErrorCode" }, null, new[]{ typeof(global::LlsfMsgs.AgentTask.Types.CompType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Move), global::LlsfMsgs.Move.Parser, new[]{ "Waypoint", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Retrieve), global::LlsfMsgs.Retrieve.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Deliver), global::LlsfMsgs.Deliver.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
@@ -106,7 +106,7 @@ namespace LlsfMsgs {
       pauseTask_ = other.pauseTask_;
       successful_ = other.successful_;
       canceled_ = other.canceled_;
-      errorCodeMidlevel_ = other.errorCodeMidlevel_;
+      errorCode_ = other.errorCode_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -348,6 +348,9 @@ namespace LlsfMsgs {
     private readonly static bool SuccessfulDefaultValue = false;
 
     private bool successful_;
+    /// <summary>
+    /// was the task finished successful?
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Successful {
       get { if ((_hasBits0 & 64) != 0) { return successful_; } else { return SuccessfulDefaultValue; } }
@@ -372,6 +375,9 @@ namespace LlsfMsgs {
     private readonly static bool CanceledDefaultValue = false;
 
     private bool canceled_;
+    /// <summary>
+    /// the task was successfully cancled from the agent
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Canceled {
       get { if ((_hasBits0 & 128) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
@@ -391,30 +397,30 @@ namespace LlsfMsgs {
       _hasBits0 &= ~128;
     }
 
-    /// <summary>Field number for the "error_code_midlevel" field.</summary>
-    public const int ErrorCodeMidlevelFieldNumber = 15;
-    private readonly static uint ErrorCodeMidlevelDefaultValue = 0;
+    /// <summary>Field number for the "error_code" field.</summary>
+    public const int ErrorCodeFieldNumber = 15;
+    private readonly static uint ErrorCodeDefaultValue = 0;
 
-    private uint errorCodeMidlevel_;
+    private uint errorCode_;
     /// <summary>
-    /// only set if failure, error-codes defined in GripsCommon
+    /// only set if failure, error-codes not yet defined, might be changed to an enum
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public uint ErrorCodeMidlevel {
-      get { if ((_hasBits0 & 256) != 0) { return errorCodeMidlevel_; } else { return ErrorCodeMidlevelDefaultValue; } }
+    public uint ErrorCode {
+      get { if ((_hasBits0 & 256) != 0) { return errorCode_; } else { return ErrorCodeDefaultValue; } }
       set {
         _hasBits0 |= 256;
-        errorCodeMidlevel_ = value;
+        errorCode_ = value;
       }
     }
-    /// <summary>Gets whether the "error_code_midlevel" field is set</summary>
+    /// <summary>Gets whether the "error_code" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasErrorCodeMidlevel {
+    public bool HasErrorCode {
       get { return (_hasBits0 & 256) != 0; }
     }
-    /// <summary>Clears the value of the "error_code_midlevel" field</summary>
+    /// <summary>Clears the value of the "error_code" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearErrorCodeMidlevel() {
+    public void ClearErrorCode() {
       _hasBits0 &= ~256;
     }
 
@@ -445,7 +451,7 @@ namespace LlsfMsgs {
       if (PauseTask != other.PauseTask) return false;
       if (Successful != other.Successful) return false;
       if (Canceled != other.Canceled) return false;
-      if (ErrorCodeMidlevel != other.ErrorCodeMidlevel) return false;
+      if (ErrorCode != other.ErrorCode) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -466,7 +472,7 @@ namespace LlsfMsgs {
       if (HasPauseTask) hash ^= PauseTask.GetHashCode();
       if (HasSuccessful) hash ^= Successful.GetHashCode();
       if (HasCanceled) hash ^= Canceled.GetHashCode();
-      if (HasErrorCodeMidlevel) hash ^= ErrorCodeMidlevel.GetHashCode();
+      if (HasErrorCode) hash ^= ErrorCode.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -536,9 +542,9 @@ namespace LlsfMsgs {
         output.WriteRawTag(112);
         output.WriteBool(Canceled);
       }
-      if (HasErrorCodeMidlevel) {
+      if (HasErrorCode) {
         output.WriteRawTag(120);
-        output.WriteUInt32(ErrorCodeMidlevel);
+        output.WriteUInt32(ErrorCode);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -590,8 +596,8 @@ namespace LlsfMsgs {
       if (HasCanceled) {
         size += 1 + 1;
       }
-      if (HasErrorCodeMidlevel) {
-        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(ErrorCodeMidlevel);
+      if (HasErrorCode) {
+        size += 1 + pb::CodedOutputStream.ComputeUInt32Size(ErrorCode);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -664,8 +670,8 @@ namespace LlsfMsgs {
       if (other.HasCanceled) {
         Canceled = other.Canceled;
       }
-      if (other.HasErrorCodeMidlevel) {
-        ErrorCodeMidlevel = other.ErrorCodeMidlevel;
+      if (other.HasErrorCode) {
+        ErrorCode = other.ErrorCode;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -753,7 +759,7 @@ namespace LlsfMsgs {
             break;
           }
           case 120: {
-            ErrorCodeMidlevel = input.ReadUInt32();
+            ErrorCode = input.ReadUInt32();
             break;
           }
         }
@@ -1810,7 +1816,7 @@ namespace LlsfMsgs {
 
     /// <summary>Field number for the "base_color" field.</summary>
     public const int BaseColorFieldNumber = 3;
-    private readonly static global::LlsfMsgs.BaseColor BaseColorDefaultValue = global::LlsfMsgs.BaseColor.BaseRed;
+    private readonly static global::LlsfMsgs.BaseColor BaseColorDefaultValue = global::LlsfMsgs.BaseColor.BaseUncolored;
 
     private global::LlsfMsgs.BaseColor baseColor_;
     /// <summary>

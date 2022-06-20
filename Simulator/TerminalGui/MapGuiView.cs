@@ -527,7 +527,7 @@ namespace Simulator.TerminalGui
             }
             switch (bottom.GetBaseColor())
             {
-                case 0:
+                case BaseColor.BaseUncolored:
                     return Config.ProductColorSchemeBase0;
                 case BaseColor.BaseRed:
                     return Config.ProductColorSchemeBase1;
