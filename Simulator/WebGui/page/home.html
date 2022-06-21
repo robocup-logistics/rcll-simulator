@@ -1,0 +1,34 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+
+
+    <meta charset="UTF-8">
+    <link rel="stylesheet"  href="styles.css" type="text/css" />
+    <!--<link rel="stylesheet" type="text/css" href="./styles.css" />-->
+    <title>Simulator WebOverview</title>
+</head>
+
+<body>
+    
+    <h1>Simulator Web Overview!</h1>
+    <div >
+        {0} <!-- here we insert the map of the game! -->
+    </div>
+    <div>
+        <h1>Robots!</h1>
+        {1} <!-- Here we insert all the robot divs-->
+    </div>
+    <div >
+        <h1>Mps!</h1>
+        {2} <!-- Here we insert all the mps divs-->
+    </div>
+    <div>
+        <h1>Debug!</h1>
+        
+        <form method="post" action="shutdown">
+            <input type="submit" value="Shutdown" />
+        </form> 
+    </div>
+</body>
+</html>
