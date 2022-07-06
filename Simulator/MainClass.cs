@@ -76,11 +76,11 @@ namespace Simulator
             Mainlogger = new MyLogger("MainClass", true);
             if (!ShowGui)
             {
-                Console.Write("Starting the Robots ... ");
-                RobotManager = new RobotManager();
-                Console.WriteLine("done!");
                 Console.Write("Starting the Machines ... ");
                 MachineManager = MpsManager.GetInstance();
+                Console.WriteLine("done!");
+                Console.Write("Starting the Robots ... ");
+                RobotManager = new RobotManager();
                 Console.WriteLine("done!");
                 Console.Write("Creating the Zones ... ");
                 ZoneManager = ZonesManager.GetInstance();

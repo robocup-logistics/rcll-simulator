@@ -9,7 +9,7 @@ stations:
     position: MZ28
     orientation: 180
   C-CS1:
-    active: false
+    active: true
     debug: true
     port:  4841
     type: CS

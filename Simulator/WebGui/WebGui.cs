@@ -24,6 +24,8 @@ namespace Simulator.WebGui
         private Configurations Config;
         public WebGui(RobotManager robotManager = null, MpsManager machine = null)
         {
+            var path = Directory.GetCurrentDirectory();
+            Console.WriteLine(path);
             listener = new HttpListener();
             Config = Configurations.GetInstance();
             Url = Config.WebguiPrefix + "://localhost:" + Config.WebguiPort + "/";
@@ -112,10 +114,10 @@ namespace Simulator.WebGui
                                 case "robot.html":
                                     {
                                         int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
-                                        id -= 1;
-                                        pageData = File.ReadAllText(Path + req.Url.Segments[1]);
+                                        pageData = File.ReadAllText("/simulator/WebGui/page/" + req.Url.Segments[1]);
                                         if (_robotManager != null)
                                         {
+                                            id -= 1;
                                             MyLogger.Log("The Robot we get is : " + id);
                                             Robot rob = _robotManager.Robots[id];
                                             var text = String.Format(pageData, rob.RobotName, rob.JerseyNumber, rob.TeamColor.ToString());

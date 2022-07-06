@@ -30,11 +30,6 @@ namespace Simulator.MPS
             Machines = new List<Mps>();
             CreateMachines();
             AllMachineSet = false;
-            if (!Configurations.GetInstance().MockUp)
-            {
-                //var rf = new UdpConnector(null, myLogger);
-                //rf.Start();
-            }
             Instance = this;
         }
         private void CreateMachines()
@@ -151,7 +146,14 @@ namespace Simulator.MPS
                 AllMachineSet = true;
             }
         }
-
+        public void StartRefboxConnection()
+        {
+            if (!Configurations.GetInstance().MockUp)
+            {
+                var rf = new UdpConnector(Configurations.GetInstance().Refbox.IP,Configurations.GetInstance().Refbox.CyanRecvPort, myLogger);
+                rf.Start();
+            }
+        }
         internal bool FindMachine(string machine, ref Zone Target)
         {
             foreach (var m in Machines)

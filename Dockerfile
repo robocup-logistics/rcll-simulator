@@ -8,5 +8,6 @@ COPY Simulator/Utility/ /simulator/Utility
 COPY Simulator/Configurations.cs /simulator/
 COPY Simulator/MainClass.cs /simulator/
 COPY Simulator/Simulator.csproj /simulator/
+COPY Simulator/WebGui/ /simulator/WebGui/
 COPY Simulator/cfg/ /simulator/cfg/
 WORKDIR /simulator

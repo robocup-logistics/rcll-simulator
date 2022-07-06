@@ -9,6 +9,7 @@ COPY /Configurations.cs /simulator/
 COPY /MainClass.cs /simulator/
 COPY /Simulator.csproj /simulator/
 COPY /cfg/ /simulator/cfg/
+COPY /WebGui/ /simulator/WebGui/
 WORKDIR /simulator
 RUN dotnet restore
 RUN dotnet build

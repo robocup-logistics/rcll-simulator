@@ -76,6 +76,7 @@
     <Content Include="protobuff\Time.cs" />
     <Content Include="protobuff\VersionInfo.cs" />
     <Content Include="protobuff\WorkpieceCommand.cs" />
+    <Content Include="WebGui\WebGui.cs" />
 
   </ItemGroup>
   <ItemGroup>
