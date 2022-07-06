@@ -12,19 +12,30 @@ namespace Simulator.WebGui
     class WebGui
     {
         public HttpListener listener;
-        public string url = "http://localhost:8000/";
+        //public string url = "http://localhost:8000/";
+        //public string Url = "https://localhost:8000/";
+        public string Url;
         public int pageViews = 0;
         public int requestCount = 0;
         private MyLogger MyLogger;
         private RobotManager _robotManager;
         private MpsManager _mpsManager;
+        private string Path;
+        private Configurations Config;
         public WebGui(RobotManager robotManager = null, MpsManager machine = null)
         {
             listener = new HttpListener();
-            listener.Prefixes.Add(url);
+            Config = Configurations.GetInstance();
+            Url = Config.WebguiPrefix + "://localhost:" + Config.WebguiPort + "/";
+            listener.Prefixes.Add(Url);
+            //listener.Prefixes.Add(url2);
+
             listener.Start();
             MyLogger = new MyLogger("Web", true);
-            MyLogger.Log($"Listening for connections on {url}");
+
+            Path = "C:\\Users\\lumpi\\source\\repos\\rcll-simulation\\Simulator\\WebGui\\page\\";
+            MyLogger.Log($"Listening for connections on {Url}");
+            Console.WriteLine($"Listening for connections on {Url}");
             _robotManager = robotManager;
             _mpsManager = machine;
             // Handle requests
@@ -32,6 +43,7 @@ namespace Simulator.WebGui
             listenTask.GetAwaiter().GetResult();
             // Close the listener
             listener.Close();
+
         }
 
         public async Task HandleIncomingConnections()
@@ -72,6 +84,15 @@ namespace Simulator.WebGui
                             var disableSubmit = !runServer ? "disabled" : "";
                             resp.ContentType = "text/html";
                             resp.ContentEncoding = Encoding.UTF8;
+                            var cookie = new Cookie("connection", "1");
+                            resp.AppendCookie(cookie);
+                            if (req.HttpMethod == "OPTIONS")
+                            {
+                                resp.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
+                                resp.AddHeader("Access-Control-Allow-Methods", "GET, POST");
+                                resp.AddHeader("Access-Control-Max-Age", "1728000");
+                            }
+                            resp.AppendHeader("Access-Control-Allow-Origin", "*");
                             byte[] data;
                             MyLogger.Log("Switching with the segment: " + segment);
 
@@ -80,18 +101,19 @@ namespace Simulator.WebGui
                                 case "styles.css":
                                     MyLogger.Log("Requested the CSS File!");
                                     resp.ContentType = "text/css";
-                                    pageData = File.ReadAllText("../../webgui/page/" + req.Url.Segments[1]);
+                                    pageData = File.ReadAllText(Path +  req.Url.Segments[1]);
                                     data = Encoding.UTF8.GetBytes(pageData);
                                     MyLogger.Log("The css = " + data);
                                     break;
                                 case "map.html":
-                                    pageData = File.ReadAllText("../../webgui/page/" + req.Url.Segments[1]);
+                                    pageData = File.ReadAllText(Path +  req.Url.Segments[1]);
                                     data = Encoding.UTF8.GetBytes(String.Format(pageData));
                                     break;
                                 case "robot.html":
                                     {
                                         int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
-                                        pageData = File.ReadAllText("../../webgui/page/" + req.Url.Segments[1]);
+                                        id -= 1;
+                                        pageData = File.ReadAllText(Path + req.Url.Segments[1]);
                                         if (_robotManager != null)
                                         {
                                             MyLogger.Log("The Robot we get is : " + id);
@@ -111,7 +133,7 @@ namespace Simulator.WebGui
                                         int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
 
                                         MyLogger.Log("Loading HMTL file : " + req.Url.Segments[1]);
-                                        pageData = File.ReadAllText("../../webgui/page/" + req.Url.Segments[1]);
+                                        pageData = File.ReadAllText(Path + req.Url.Segments[1]);
                                         if (_mpsManager != null)
                                         {
                                             MPS.Mps mp = _mpsManager.Machines[id];
@@ -126,13 +148,17 @@ namespace Simulator.WebGui
                                     }
                                     break;
                                 case "debug.html":
-                                    pageData = File.ReadAllText("../../webgui/page/debug.html");
+                                    pageData = File.ReadAllText(Path + "debug.html");
                                     data = Encoding.UTF8.GetBytes(String.Format(pageData));
                                     break;
                                 case "favicon.ico":
-                                    return;
+                                    continue;
+                                case "json.html":
+                                    resp.ContentType = "json";
+                                    data = Encoding.UTF8.GetBytes("{\"test\" : \"answer\"}");
+                                    break;
                                 default:
-                                    pageData = File.ReadAllText("../../webgui/page/home.html");
+                                    pageData = File.ReadAllText(Path + "home.html");
                                     var MapFields = CreateMapFields();
                                     var RobotFields = CreateRobotFields();
                                     var MpsField = CreateMpsFields();

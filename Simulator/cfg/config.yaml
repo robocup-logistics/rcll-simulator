@@ -2,7 +2,7 @@
 # Color of machine gets taken from a prefix of C-xxx or M-xxx
 stations:
   C-BS: 
-    active: false
+    active: true
     debug: true
     type: BS
     port: 4840
@@ -105,11 +105,11 @@ robots:
     jersey: 1
     team: cyan
   Wolf:
-    active: true
+    active: false
     jersey: 2
     team: cyan
   Uke:
-    active: true
+    active: false
     jersey: 3
     team: cyan
   Heinz:
@@ -146,9 +146,12 @@ refbox:
   magenta:
     send: 4442
     recv: 4447
+webui:
+  prefix: https  
+  port: 8000
 general:
   timefactor: 1.0
-  fixed-mps-position: false
+  fixed-mps-position: true
   mockup-connections: false
   robot-connection-type: tcp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
   ignore-teamcolor: true

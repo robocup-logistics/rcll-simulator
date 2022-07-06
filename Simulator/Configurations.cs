@@ -44,6 +44,8 @@ namespace Simulator
         public bool AppendLogging { get; private set; }
         public string RobotConnectionType { get; private set; }
         public bool RobotDirectBeaconSignals { get; private set; }
+        public string WebguiPrefix { get; private set;}
+        public uint WebguiPort { get; private set;}
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -89,6 +91,8 @@ namespace Simulator
             var teams = (YamlMappingNode)mapping.Children[new YamlScalarNode("teams")];
             var refbox = (YamlMappingNode)mapping.Children[new YamlScalarNode("refbox")];
             var general = (YamlMappingNode)mapping.Children[new YamlScalarNode("general")];
+            var webgui = (YamlMappingNode)mapping.Children[new YamlScalarNode("webui")];
+
             foreach (var keyPair in stations.Children)
             {
                 var config = CreateMachineConfig(keyPair);
@@ -97,6 +101,7 @@ namespace Simulator
                     MpsConfigs.Add(config);
                 }
             }
+
             foreach (var keyPair in robots.Children)
             {
                 var config = CreateRobotConfig(keyPair);
@@ -105,6 +110,7 @@ namespace Simulator
                     RobotConfigs.Add(config);
                 }
             }
+
             foreach (var keyPair in teams.Children)
             {
                 var config = CreateTeamConfig(keyPair);
@@ -113,6 +119,7 @@ namespace Simulator
                     Teams.Add(config);
                 }
             }
+
             Refbox = CreateRefboxConfig(refbox);
             foreach (var (key, value) in general.Children)
             {
@@ -139,7 +146,9 @@ namespace Simulator
                         MockUp = bool.Parse(value.ToString());
                         break;
                     case "robot-move-zone-duration":
-                        RobotMoveZoneDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000); // convert from seconds to milliseconds
+                        RobotMoveZoneDuration =
+                            (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
+                                  1000); // convert from seconds to milliseconds
                         break;
                     case "belt-action-duration":
                         BeltActionDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
@@ -164,6 +173,23 @@ namespace Simulator
                         break;
                     case "robot-direct-beacon":
                         RobotDirectBeaconSignals = bool.Parse(value.ToString());
+                        break;
+                }
+            }
+
+            foreach (var (key, value) in webgui.Children)
+            {
+
+                switch (key.ToString())
+                {
+                    case "prefix":
+                        WebguiPrefix = value.ToString().ToLower();
+                        break;
+                    case "port":
+                        WebguiPort = uint.Parse(value.ToString());
+                        break;
+                    default:
+                        Console.WriteLine("Test!");
                         break;
                 }
             }

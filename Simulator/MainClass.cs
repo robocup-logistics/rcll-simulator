@@ -103,6 +103,8 @@ namespace Simulator
                     MachineManager.PlaceMachines(mi);
                     Console.WriteLine("done!");
                 }
+
+                var web = new WebGui.WebGui(RobotManager,MachineManager);
                 Console.WriteLine("Everything is set up! Waiting for connections!");
             }
             else
