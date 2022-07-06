@@ -52,7 +52,7 @@ message Retrieve {
 
 // Deliver the holding product to the given station
 message Deliver {
-    required string machine_id    = 1; // name of the machine 
+    required string waypoint    = 1; // name of a machine or of the waypoint if you want to drop a piece
     required string machine_point = 2; // valid machine-points: input, slide
 }
 
