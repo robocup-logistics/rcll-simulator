@@ -17,7 +17,7 @@ namespace Simulator.RobotEssentials
         private UdpClient Client;
         
         private string IpString;
-        public UdpConnector(string ip, int port, Robot? rob, MyLogger logger , bool onlySend) : base(ip, port, rob, logger)
+        public UdpConnector(string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             PbHandler = new PbMessageHandlerMachineManager(MyLogger);
@@ -38,6 +38,7 @@ namespace Simulator.RobotEssentials
         public UdpConnector(string ip, int port, MyLogger logger) : base(ip, port, null, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
+            MyLogger.Log("Starting UdpConnector without a robot!");
             PbHandler = new PbMessageHandlerMachineManager(MyLogger);
             Config = Configurations.GetInstance();
             IpString = ip;
@@ -54,10 +55,11 @@ namespace Simulator.RobotEssentials
         public void ReceiveUdpMethod()
         {
             MyLogger.Log("Starting the ReceiveUDPMethod!");
-            MyLogger.Log("Waiting on message on port " + Port);
             ResolveIpAddress(IpString);
             Endpoint = new IPEndPoint(Address, Port);
             MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
+            Client.Connect(Endpoint);
+
             while (Running)
             {
                 try

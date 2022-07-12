@@ -147,9 +147,13 @@ namespace Simulator.MPS
             switch (parts.Last())
             {
                 case "Enable":
-                    MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
                     if (nodeValue.ToLower().Equals("true"))
+                    {
+                        MyLogger.Log(nodeName);
+                        MyLogger.Log("Enabled: in=" + m1.InNodes.StatusNodes.enable.Value + " basic="+m1.BasicNodes.StatusNodes.enable.Value);
+                        MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
                         WriteEvent.Set();
+                    }
                     break;
                 case "ActionId":
                     if(parts[^3].Equals("In"))

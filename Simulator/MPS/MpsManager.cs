@@ -23,6 +23,8 @@ namespace Simulator.MPS
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
+        private UdpConnector Refbox;
+        private Configurations Config;
         private MpsManager()
         {
             myLogger = new MyLogger("MpsManager", true);
@@ -31,6 +33,12 @@ namespace Simulator.MPS
             CreateMachines();
             AllMachineSet = false;
             Instance = this;
+            Config = Configurations.GetInstance();
+            if(!Config.MockUp)
+            {
+                Refbox = new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanRecvPort, myLogger);
+                Refbox.Start();
+            }
         }
         private void CreateMachines()
         {

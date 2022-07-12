@@ -112,7 +112,7 @@ namespace Simulator.RobotEssentials
                         MachineInfo mi;
                         string str = Encoding.Default.GetString(Stream);
                         //MyLogger.Log("String = " + str);
-                        MyLogger.Log("Parsing of MachineInfo Message! cmpId = " + cmpId + " msg type = " + msgtype);
+                        MyLogger.Log("[RobotHandler] Parsing of MachineInfo Message! cmpId = " + cmpId + " msg type = " + msgtype);
                         try
                         {
                             mi = mip.ParseFrom(Stream, 12, payloadsize - 4);
@@ -122,7 +122,10 @@ namespace Simulator.RobotEssentials
                             MyLogger.Log(e.ToString());
                             return false;
                         }
-
+                        if(!MpsManager.GetInstance().AllMachineSet)
+                        {
+                            MpsManager.GetInstance().PlaceMachines(mi);
+                        }
                         MyLogger.Log("Parsing of MachineInfo Message was successful!");
                         msg = mi.ToString();
                         MyLogger.Log("The Parsed message = " + msg);
