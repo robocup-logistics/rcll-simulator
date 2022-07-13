@@ -40,18 +40,18 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         private void Work()
-        {
-            StartOpc(Type);
-            
+        {           
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -95,6 +95,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
+            var ringNumber = InNodes.Data0.Value;
             StartTask();
             for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
             {
@@ -102,7 +103,7 @@ namespace Simulator.MPS
             }
             if (ProductOnBelt == null) return;
             RingElement ringToMount;
-            switch (InNodes.Data0.Value)
+            switch (ringNumber)
             {
                 case 1:
                     ringToMount = Stock1.Dequeue();

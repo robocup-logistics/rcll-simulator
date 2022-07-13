@@ -131,7 +131,7 @@ namespace Simulator.TerminalGui
             }
             TeamColor.Text = String.Format(TeamColorString, Mps.Team);
             TypeLabel.Text = String.Format(TypeString, GetTypeString(Mps.Type));
-            if (!Configurations.GetInstance().MockUp)
+            if (!Configurations.GetInstance().MockUp && Mps.InNodes != null)
             {
                 InDataLabel.Text = String.Format(InDataString, Mps.InNodes.Data0.Value.ToString(), Mps.InNodes.Data1.Value.ToString());
                 InActionLabel.Text = String.Format(InActionString, Mps.InNodes.ActionId.Value.ToString());

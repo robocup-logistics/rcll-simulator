@@ -16,19 +16,21 @@ namespace Simulator.MPS
         private readonly string URL;
         private readonly OpcServer server;
         private readonly MPSNodeManager m1;
-        private readonly ManualResetEvent WriteEvent;
+        private readonly ManualResetEvent BasicEvent;
+        private readonly ManualResetEvent InEvent;
         //private readonly static Dictionary<OpcNodeId, int> nodesPerSession = new Dictionary<OpcNodeId, int>();
 
-        public MPSOPCUAServer(string name, int port, ManualResetEvent mre, MyLogger log)
+        public MPSOPCUAServer(string name, int port, ManualResetEvent basicEvent, ManualResetEvent inEvent, MyLogger log)
         {
             MyLogger = log;
             Name = name;
             Port = port;
             URL = "opc.tcp://localhost:" + Convert.ToString(Port) + "/";
             MyLogger.Info("Created Mps " + Name + " with URL = " + URL);
-            WriteEvent = mre;
+            BasicEvent = basicEvent;
+            InEvent = inEvent;
             string[] Namespaces =
-{
+            {
                 "urn:DESKTOP-7TJKAL0:3S%20-%20Smart%20Software%20Solutions%20GmbH:CODESYS%20Control%20Win%20V3:OPCUA:Server",
                 "http://PLCopen.org/OpcUa/IEC61131-3/",
                 "CODESYSSPV3/3S/IecVarAccess"
@@ -67,8 +69,15 @@ namespace Simulator.MPS
             {
                 //MyLogger.Info("Doing stuff with the Refbox!");
                 //MyLogger.Info("The Refbox connector is still running!");
+                m1.InNodes.StatusNodes.busy.Value = !m1.InNodes.StatusNodes.busy.Value;
+                m1.InNodes.StatusNodes.busy.Value = !m1.InNodes.StatusNodes.busy.Value;
+                var buffer = m1.InNodes.SlideCnt.Value;
+                m1.InNodes.SlideCnt.Value = 0;
+                m1.InNodes.SlideCnt.Value = buffer;
 
-                Thread.Sleep(500);
+                m1.InNodes.StatusNodes.busy.ApplyChanges(server.SystemContext);
+                m1.InNodes.SlideCnt.ApplyChanges(server.SystemContext);
+                Thread.Sleep(100);
             }
         }
 
@@ -79,6 +88,15 @@ namespace Simulator.MPS
         public void UpdateChanges(OpcNode node)
         {
             node.UpdateChanges(server.SystemContext, OpcNodeChanges.Value);
+        }
+        public void ApplyChanges(OpcNode node)
+        {
+            node.ApplyChanges(server.SystemContext);
+        }
+
+        public void BunchUpdateChanges(OpcNode node)
+        {
+            node.ApplyChanges(server.SystemContext,true);
         }
 
         #region MessageHandler
@@ -150,9 +168,16 @@ namespace Simulator.MPS
                     if (nodeValue.ToLower().Equals("true"))
                     {
                         MyLogger.Log(nodeName);
-                        MyLogger.Log("Enabled: in=" + m1.InNodes.StatusNodes.enable.Value + " basic="+m1.BasicNodes.StatusNodes.enable.Value);
-                        MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
-                        WriteEvent.Set();
+                        if (nodeName.ToLower().Contains("basic"))
+                        {
+                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + m1.BasicNodes.ActionId.Value + "] D0[" + m1.BasicNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            BasicEvent.Set();
+                        }
+                        if(nodeName.ToLower().Contains("in"))
+                        {
+                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            InEvent.Set();
+                        }
                     }
                     break;
                 case "ActionId":
@@ -184,8 +209,8 @@ namespace Simulator.MPS
             }*/
             bool v = e.Request.GetType() == typeof(OpcWriteNodesRequest);
             if (!v) return;
-            MyLogger.Log(e.Request.ToString());
-            WriteEvent.Set();
+            //MyLogger.Log(e.Request.ToString());
+            InEvent.Set();
 
             //WriteEvent.Set();
 

@@ -42,16 +42,20 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
+
         }
         public void DispenseBase()
         {
             MyLogger.Log("Got a GetBase Task!");
             TaskDescription = "GetBaseTask";
+            var stock = InNodes.Data0.Value;
             StartTask();
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration);
             MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
-            switch (InNodes.Data0.Value)
+            switch (stock)
             {
                 case 1:
                     ProductOnBelt = Stock1.Dequeue();
@@ -66,21 +70,20 @@ namespace Simulator.MPS
                     MyLogger.Log("Unknown Stock to get base from!");
                     break;
             }
+            InNodes.StatusNodes.ready.Value = true;
+            Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             FinishedTask();
-            //State = EnumState.Working;
         }
         private void Work()
         {
-            StartOpc(Type);
-
             while (true)
             {
                 //MyLogger.Info("We will wait for a Signal!");
-                WriteEvent.WaitOne();
+                InEvent.WaitOne();
                 //MyLogger.Info("We got a write and reset the wait!");
-                WriteEvent.Reset();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)Actions.NoJob:

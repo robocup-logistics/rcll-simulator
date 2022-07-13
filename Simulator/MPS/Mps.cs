@@ -26,7 +26,8 @@ namespace Simulator.MPS
         public Light GreenLight;
         public Light YellowLight;
         //public Belt Belt;
-        public ManualResetEvent WriteEvent;
+        public ManualResetEvent InEvent;
+        public ManualResetEvent BasicEvent;
         public ManualResetEvent LightEvent;
         public ManualResetEvent BeltEvent;
         public bool GotConnection;
@@ -65,7 +66,8 @@ namespace Simulator.MPS
             Team = team;
             GotConnection = false;
             GotPlaced = false;
-            WriteEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            InEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
             LightEvent = new ManualResetEvent(false); // block threads till a write event occurs
             BeltEvent = new ManualResetEvent(false); // block threads till a write event occurs
             ProductAtOut = null;
@@ -84,7 +86,7 @@ namespace Simulator.MPS
                 return;*/
             try
             {
-                Refbox = new MPSOPCUAServer(Name, Port, WriteEvent, MyLogger);
+                Refbox = new MPSOPCUAServer(Name, Port, BasicEvent, InEvent, MyLogger);
                 InNodes = Refbox.GetNodeCollection(true);
                 BasicNodes = Refbox.GetNodeCollection(false);
                 var th = new Thread(Refbox.Start);
@@ -104,98 +106,85 @@ namespace Simulator.MPS
         public void ResetMachine()
         {
             TaskDescription = "Reseting!";
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
             InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+            InNodes.StatusNodes.enable.Value = false;
+            Refbox.ApplyChanges(InNodes.StatusNodes.enable);
+            Thread.Sleep(1000);
             InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
+            //Refbox.UpdateChanges(InNodes.ActionId);
             InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
+            //Refbox.UpdateChanges(InNodes.Data0);
             InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1);
+            //Refbox.UpdateChanges(InNodes.Data1);
             InNodes.ByteError.Value = 0;
-            Refbox.UpdateChanges(InNodes.ByteError);
+            //Refbox.UpdateChanges(InNodes.ByteError);
             InNodes.StatusNodes.ready.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+            //Refbox.UpdateChanges(InNodes.StatusNodes.ready);
             InNodes.StatusNodes.error.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.error);
+            //Refbox.UpdateChanges(InNodes.StatusNodes.error);
             ProductAtIn = null;
             ProductAtOut = null;
             ProductOnBelt = null;
-            Thread.Sleep(1000);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-        }
 
-        public void StartOpc(MpsType Station)
-        {
-            /*InNodes.ActionId.Value = (ushort)Actions.MachineTyp;
-            refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = (ushort) ((int)Station / 100);
-            refbox.UpdateChanges(InNodes.Data0); */
-            /*BasicNodes.ActionId.Value = (ushort)Actions.MachineTyp;
-            refbox.UpdateChanges(BasicNodes.ActionId);
-            BasicNodes.Data0.Value = (ushort)((int)Station / 100);
-            refbox.UpdateChanges(BasicNodes.Data0); */
+            InNodes.StatusNodes.busy.Value = false;
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
 
         public void StartTask()
         {
             InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
 
         public void FinishedTask()
         {
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1);
+            int i = 0;
+            MyLogger.Log("Resending busy flag!");
+            PrintStatus();
             InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+
         }
         public void HandleBasicTasks()
         {
-            switch (BasicNodes.ActionId.Value)
+            while(true)
             {
-                case (ushort)Actions.RedLight:
-                case (ushort)Actions.YellowLight:
-                case (ushort)Actions.GreenLight:
-                case (ushort)Actions.RYGLight:
-                case (ushort)Actions.ResetLights:
-                    HandleLights();
-                    break;
-                case (ushort)Actions.NoJob:
-                    MyLogger.Log("No Basic Job!");
-                    break;
-                case (ushort)Actions.MachineTyp:
-                    MyLogger.Log("MachineTyp!");
-                    TaskDescription = "MachineType!";
-                    if (BasicNodes.StatusNodes.enable.Value)
-                    {
+                BasicEvent.WaitOne();
+                //MyLogger.Info("We got a write and reset the wait!");
+                BasicEvent.Reset();
+                switch (BasicNodes.ActionId.Value)
+                {
+                    case (ushort)Actions.RedLight:
+                    case (ushort)Actions.YellowLight:
+                    case (ushort)Actions.GreenLight:
+                    case (ushort)Actions.RYGLight:
+                    case (ushort)Actions.ResetLights:
+                        HandleLights();
+                        break;
+                    case (ushort)Actions.NoJob:
+                        MyLogger.Log("No Basic Job!");
+                        break;
+                    case (ushort)Actions.MachineTyp:
+                        MyLogger.Log("MachineTyp!");
+                        //TaskDescription = "MachineType!";
                         BasicNodes.StatusNodes.busy.Value = true;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+                        //Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+                        Thread.Sleep(400);
                         BasicNodes.Data0.Value = 0;
-                        Refbox.UpdateChanges(InNodes.Data0);
+                        BasicNodes.Data1.Value = 0;
+                        //Refbox.UpdateChanges(InNodes.Data0);
                         BasicNodes.StatusNodes.enable.Value = false;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+                        //Refbox.UpdateChanges(InNodes.StatusNodes.enable);
                         //Thread.Sleep(20);
                         BasicNodes.StatusNodes.busy.Value = false;
                         Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
-                    }
-                    else
-                    {
-                        MyLogger.Log("Called Handle Machinetype but enable is false");
-                    }
-                    break;
-                default:
-                    MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
-                    break;
+                        break;
+                    default:
+                        MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
+                        break;
+                }
+                
             }
 
         }
@@ -247,9 +236,9 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Band on Task!");
             TaskDescription = "BandOnUntilTask";
-            StartTask();
             var target = (Positions)InNodes.Data0.Value;
             var direction = (Direction)InNodes.Data1.Value;
+            StartTask();
             MyLogger.Log("Product on belt?");
             for(var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++)
             {
@@ -257,6 +246,8 @@ namespace Simulator.MPS
             }
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
+            InNodes.StatusNodes.ready.Value = false;
+            Refbox.UpdateChanges(InNodes.StatusNodes.ready);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
@@ -287,6 +278,8 @@ namespace Simulator.MPS
                         ProductAtOut = null;
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
+                    InNodes.StatusNodes.ready.Value = true;
+                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
                     /*InNodes.StatusNodes.ready.Value = false;
                     Refbox.UpdateChanges(InNodes.StatusNodes.ready);*/
                     break;
@@ -365,6 +358,17 @@ namespace Simulator.MPS
                 default:
                     return false;
             }
+        }
+
+        public void PrintStatus()
+        {
+            MyLogger.Log("-----------------------------------------");
+            MyLogger.Log(String.Format("InBusy     {0} BasicBusy     {1}",InNodes.StatusNodes.busy.Value,BasicNodes.StatusNodes.busy.Value));
+            MyLogger.Log(String.Format("InActionId {0} BasicActionId {1}",InNodes.ActionId.Value,BasicNodes.ActionId.Value));
+            MyLogger.Log(String.Format("InEnabled  {0} BasicEnabled  {1}",InNodes.StatusNodes.enable.Value,BasicNodes.StatusNodes.enable.Value));
+            MyLogger.Log(String.Format("InData0    {0} BasicData0    {1}",InNodes.Data0.Value,BasicNodes.Data0.Value));
+            MyLogger.Log(String.Format("InData1    {0} BasicData1    {1}",InNodes.Data1.Value,BasicNodes.Data1.Value));
+            MyLogger.Log("-----------------------------------------");
         }
     }
 }

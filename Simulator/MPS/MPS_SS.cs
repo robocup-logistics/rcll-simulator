@@ -22,18 +22,18 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         private void Work()
         {
-            StartOpc(Type);
-            
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:

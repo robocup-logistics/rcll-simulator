@@ -26,6 +26,8 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         public bool ProductAtSlot(int slot)
@@ -52,14 +54,12 @@ namespace Simulator.MPS
         }
         private void Work()
         {
-            StartOpc(Type);
-
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -81,6 +81,7 @@ namespace Simulator.MPS
         private void DeliverToSlotTask()
         {
             MyLogger.Log("DeliverToSlotTask!");
+            var slot = InNodes.Data0.Value;
             StartTask();
             for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
             {
@@ -89,7 +90,7 @@ namespace Simulator.MPS
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
             Thread.Sleep(Configurations.GetInstance().DSTaskDuration);
-            switch (InNodes.Data0.Value)
+            switch (slot)
             {
                 case 1:
                     Slot1 = ProductAtIn;

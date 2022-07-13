@@ -16,28 +16,28 @@ stations:
     position: CZ47
     orientation: 0
   C-CS2:
-    active: false
+    active: true
     debug: true
     port:  4842
     type: CS
     position: CZ76
     orientation: 90
   C-RS1:
-    active: false
+    active: true
     debug: true
     port:  4843
     type: RS
     position: MZ55
     orientation: 225
   C-RS2:
-    active: false
+    active: true
     debug: true
     port:  4844
     type: RS
     position: CZ14
     orientation: 270
   C-DS:
-    active: false
+    active: true
     debug: true
     port:  4845
     type: DS

@@ -38,17 +38,18 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         private void Work()
         {
-            StartOpc(Type);
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -73,7 +74,6 @@ namespace Simulator.MPS
         public void CapTask()
         {
             MyLogger.Log("Got a Cap Task!");
-
             StartTask();
             switch (InNodes.Data0.Value)
             {
@@ -81,10 +81,10 @@ namespace Simulator.MPS
                 {
                     TaskDescription = "Cap Retrieve";
                     MyLogger.Log("Got a Retrieve CAP task!");
-                    for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                    /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                     {
                         Thread.Sleep(1000);
-                    }
+                    }*/
                     if (ProductOnBelt == null) 
                     {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
@@ -97,17 +97,16 @@ namespace Simulator.MPS
                         Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
                         StoredCap = ProductOnBelt.RetrieveCap();
                     }
-
                     break;
                 }
                 case (ushort)CSOp.MountCap:
                 {
                     TaskDescription = "Cap Mount";
                     MyLogger.Log("Got a Mount Cap TASK!");
-                    for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                    /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                     {
                         Thread.Sleep(1000);
-                    }
+                    }*/
                     if (StoredCap != null && ProductOnBelt != null)
                     {
                         TaskDescription = "Mounting Cap";

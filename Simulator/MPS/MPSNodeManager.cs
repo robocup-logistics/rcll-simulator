@@ -140,12 +140,13 @@ namespace Simulator.MPS
         public OpcDataVariableNode<ushort> Data1;
         public OpcDataVariableNode<ushort> SlideCnt;
         public OpcDataVariableNode<byte> ByteError;
+        public OpcFolderNode ParentNode;
         public OpcFolderNode Status;
         public Status StatusNodes;
         public NodeCollection(OpcFolderNode Parent, int ns, OpcNodeReferenceCollection reference)
         {
             //ActionId = new OpcNode();
-            
+            ParentNode = Parent;
             ActionId = new OpcDataVariableNode<ushort>(Parent, new OpcName("ActionId", ns), 0);
             
             //ActionId
