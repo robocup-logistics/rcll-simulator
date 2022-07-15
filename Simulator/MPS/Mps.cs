@@ -112,17 +112,17 @@ namespace Simulator.MPS
             Refbox.ApplyChanges(InNodes.StatusNodes.enable);
             Thread.Sleep(1000);
             InNodes.ActionId.Value = 0;
-            //Refbox.UpdateChanges(InNodes.ActionId);
+            //Refbox.ApplyChanges(InNodes.ActionId);
             InNodes.Data0.Value = 0;
-            //Refbox.UpdateChanges(InNodes.Data0);
+            //Refbox.ApplyChanges(InNodes.Data0);
             InNodes.Data1.Value = 0;
-            //Refbox.UpdateChanges(InNodes.Data1);
+            //Refbox.ApplyChanges(InNodes.Data1);
             InNodes.ByteError.Value = 0;
-            //Refbox.UpdateChanges(InNodes.ByteError);
+            //Refbox.ApplyChanges(InNodes.ByteError);
             InNodes.StatusNodes.ready.Value = false;
-            //Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+            //Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             InNodes.StatusNodes.error.Value = false;
-            //Refbox.UpdateChanges(InNodes.StatusNodes.error);
+            //Refbox.ApplyChanges(InNodes.StatusNodes.error);
             ProductAtIn = null;
             ProductAtOut = null;
             ProductOnBelt = null;
@@ -140,11 +140,9 @@ namespace Simulator.MPS
         public void FinishedTask()
         {
             int i = 0;
-            MyLogger.Log("Resending busy flag!");
             PrintStatus();
             InNodes.StatusNodes.busy.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-
         }
         public void HandleBasicTasks()
         {
@@ -169,16 +167,16 @@ namespace Simulator.MPS
                         MyLogger.Log("MachineTyp!");
                         //TaskDescription = "MachineType!";
                         BasicNodes.StatusNodes.busy.Value = true;
-                        //Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+                        //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
                         Thread.Sleep(400);
                         BasicNodes.Data0.Value = 0;
                         BasicNodes.Data1.Value = 0;
-                        //Refbox.UpdateChanges(InNodes.Data0);
+                        //Refbox.ApplyChanges(InNodes.Data0);
                         BasicNodes.StatusNodes.enable.Value = false;
-                        //Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+                        //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
                         //Thread.Sleep(20);
                         BasicNodes.StatusNodes.busy.Value = false;
-                        Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
+                        Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
                         break;
                     default:
                         MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
@@ -191,7 +189,7 @@ namespace Simulator.MPS
         public void HandleLights()
         {
             BasicNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
             var state = BasicNodes.Data0.Value.ToString();
             var time = BasicNodes.Data1.Value; // not in use currently
             var LightState = (LightState)Enum.Parse(typeof(LightState), state);
@@ -225,17 +223,17 @@ namespace Simulator.MPS
                     break;
             }
             BasicNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(BasicNodes.ActionId);
+            Refbox.ApplyChanges(BasicNodes.ActionId);
             BasicNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.enable);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.enable);
             BasicNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
         }
 
         public void HandleBelt()
         {
             MyLogger.Log("Got a Band on Task!");
-            TaskDescription = "BandOnUntilTask";
+            TaskDescription = "Move via Belt";
             var target = (Positions)InNodes.Data0.Value;
             var direction = (Direction)InNodes.Data1.Value;
             StartTask();
@@ -247,7 +245,7 @@ namespace Simulator.MPS
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
             InNodes.StatusNodes.ready.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+            Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
@@ -257,14 +255,14 @@ namespace Simulator.MPS
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
                     /*InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);*/
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.Out:
                     ProductAtOut = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the OutBeltPosition");
                     InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                     break;
                 case Positions.Mid:
                     if (direction == Direction.FromInToOut)
@@ -279,9 +277,9 @@ namespace Simulator.MPS
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
                     InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                     /*InNodes.StatusNodes.ready.Value = false;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);*/
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.NoTarget:
                     MyLogger.Log("Placing Product on NoTarget?");
@@ -315,7 +313,7 @@ namespace Simulator.MPS
                 if (ProductAtOut != null)
                 {
                     InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                 }
             }
         }
@@ -341,7 +339,7 @@ namespace Simulator.MPS
             //if (!Configurations.GetInstance().MockUp)
             {
                 InNodes.StatusNodes.ready.Value = false;
-                Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             }
             return returnProduct;
         }

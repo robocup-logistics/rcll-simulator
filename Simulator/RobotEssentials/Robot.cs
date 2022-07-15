@@ -375,7 +375,6 @@ namespace Simulator.RobotEssentials
                         {
                             AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
                         }
-
                         break;
                     }
                 case MPS.Mps.MpsType.DeliveryStation:
@@ -388,6 +387,13 @@ namespace Simulator.RobotEssentials
 
                         break;
                     }
+                case MPS.Mps.MpsType.CapStation:
+                        ((MPS_CS)mps).PlaceProduct(machinePoint, HeldProduct);
+                        if (Config.SendPrepare)
+                        {
+                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        }
+                        break;
                 default:
                     mps.PlaceProduct(machinePoint, HeldProduct);
                     break;

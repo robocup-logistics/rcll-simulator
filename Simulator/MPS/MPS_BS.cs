@@ -50,7 +50,7 @@ namespace Simulator.MPS
         public void DispenseBase()
         {
             MyLogger.Log("Got a GetBase Task!");
-            TaskDescription = "GetBaseTask";
+            TaskDescription = "Dispensing a Base";
             var stock = InNodes.Data0.Value;
             StartTask();
             Thread.Sleep(Configurations.GetInstance().BSTaskDuration);

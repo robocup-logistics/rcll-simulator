@@ -89,7 +89,7 @@ namespace Simulator.MPS
                     {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
                         InNodes.StatusNodes.error.Value = true;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.error);
+                        Refbox.ApplyChanges(InNodes.StatusNodes.error);
                     }
                     else
                     {
@@ -117,7 +117,7 @@ namespace Simulator.MPS
                     {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
                         InNodes.StatusNodes.error.Value = true;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.error);
+                        Refbox.ApplyChanges(InNodes.StatusNodes.error);
                     }
 
                     break;
@@ -133,7 +133,7 @@ namespace Simulator.MPS
                 MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
                 MyLogger.Log("Added a Base to the slide!");
                 InNodes.SlideCnt.Value += 1;
-                Refbox.UpdateChanges(InNodes.SlideCnt);
+                Refbox.ApplyChanges(InNodes.SlideCnt);
                 MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
             }
             else
@@ -175,7 +175,7 @@ namespace Simulator.MPS
             //if (!Configurations.GetInstance().MockUp)
             {
                 InNodes.StatusNodes.ready.Value = false;
-                Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             }
             return returnProduct;
         }

@@ -131,19 +131,19 @@ namespace Simulator
                       rs-mount-duration: 3.5  # mounting a ring 3.5 seconds - taken from gazebo
                       ds-deliver-duration: 3.5  # time it takes to deliver - taken from gazebo
                  */
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
                     case "robot-prepare-mps":
-                        SendPrepare = bool.Parse(value.ToString());
+                        SendPrepare = bool.Parse(value.ToString().ToLower());
                         break;
                     case "ignore-teamcolor":
-                        IgnoreTeamColor = bool.Parse(value.ToString());
+                        IgnoreTeamColor = bool.Parse(value.ToString().ToLower());
                         break;
                     case "mockup-connections":
-                        MockUp = bool.Parse(value.ToString());
+                        MockUp = bool.Parse(value.ToString().ToLower());
                         break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
@@ -166,13 +166,13 @@ namespace Simulator
                         DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "fixed-mps-position":
-                        FixedMPSplacement = bool.Parse(value.ToString());
+                        FixedMPSplacement = bool.Parse(value.ToString().ToUpper());
                         break;
                     case "robot-connection-type":
                         RobotConnectionType = value.ToString().ToLower();
                         break;
                     case "robot-direct-beacon":
-                        RobotDirectBeaconSignals = bool.Parse(value.ToString());
+                        RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
                         break;
                 }
             }
@@ -180,7 +180,7 @@ namespace Simulator
             foreach (var (key, value) in webgui.Children)
             {
 
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     case "prefix":
                         WebguiPrefix = value.ToString().ToLower();
@@ -208,14 +208,14 @@ namespace Simulator
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("This has to be skipped!");
                         return null;
                     case "debug":
-                        switch (value.ToString())
+                        switch (value.ToString().ToLower())
                         {
                             case "true":
                                 debug = true;
@@ -230,7 +230,7 @@ namespace Simulator
 
                         break;
                     case "type":
-                        type = value.ToString() switch
+                        type = value.ToString().ToUpper() switch
                         {
                             "BS" => MpsType.BaseStation,
                             "CS" => MpsType.CapStation,
@@ -265,16 +265,16 @@ namespace Simulator
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "jersey":
                         jersey = int.Parse(value.ToString());
                         break;
-                    case "team" when yamlNode1.ToString().Contains("magenta"):
+                    case "team" when yamlNode1.ToString().ToLower().Contains("magenta"):
                         color = Team.Magenta;
                         break;
                     case "team":
@@ -313,10 +313,10 @@ namespace Simulator
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "name":
@@ -354,7 +354,7 @@ namespace Simulator
                         var publicChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in publicChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "ip":
                                     ip = yamlNode1.ToString();
@@ -376,7 +376,7 @@ namespace Simulator
                         var cyanChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in cyanChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "send":
                                     cyanSendPort = int.Parse(yamlNode1.ToString());
@@ -394,7 +394,7 @@ namespace Simulator
                         var magentaChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in magentaChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "send":
                                     magentaSendPort = int.Parse(yamlNode1.ToString());

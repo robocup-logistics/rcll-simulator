@@ -83,7 +83,7 @@ namespace Simulator.MPS
                 MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
                 MyLogger.Log("Added a Base to the slide!");
                 InNodes.SlideCnt.Value += 1;
-                Refbox.UpdateChanges(InNodes.SlideCnt);
+                Refbox.ApplyChanges(InNodes.SlideCnt);
                 MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
             }
             else{

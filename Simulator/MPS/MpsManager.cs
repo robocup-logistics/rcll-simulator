@@ -79,7 +79,6 @@ namespace Simulator.MPS
                         currentMps = null;
                         break;
                 }
-
                 thread?.Start();
                 if(currentMps==null)
                 {

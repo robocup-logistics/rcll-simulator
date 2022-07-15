@@ -9,35 +9,35 @@ stations:
     position: MZ28
     orientation: 180
   C-CS1:
-    active: true
+    active: False
     debug: true
     port:  4841
     type: CS
     position: CZ47
     orientation: 0
   C-CS2:
-    active: true
+    active: False
     debug: true
     port:  4842
     type: CS
     position: CZ76
     orientation: 90
   C-RS1:
-    active: true
+    active: False
     debug: true
     port:  4843
     type: RS
     position: MZ55
     orientation: 225
   C-RS2:
-    active: true
+    active: False
     debug: true
     port:  4844
     type: RS
     position: CZ14
     orientation: 270
   C-DS:
-    active: true
+    active: False
     debug: true
     port:  4845
     type: DS
@@ -101,7 +101,7 @@ stations:
     orientation: 0
 robots:
   Klaus:
-    active: true
+    active: False
     jersey: 1
     team: cyan
   Wolf:
@@ -127,12 +127,12 @@ robots:
 teams:
   CYAN:
     name: GRIPS
-    active: true
+    active: False
     host: 127.0.0.1
     port: 2016
   MAGENTA:
     name: Carologistics
-    active: true
+    active: False
     host: 192.169.0.94
     port: 12345
 refbox:
