@@ -81,9 +81,10 @@ namespace Simulator.MPS
         private void DeliverToSlotTask()
         {
             MyLogger.Log("DeliverToSlotTask!");
+            TaskDescription = "Delivering Product";
             var slot = InNodes.Data0.Value;
             StartTask();
-            for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+            for(var count = 0; count  < 45 && ProductAtIn == null; count++)
             {
                 Thread.Sleep(1000);
             }
