@@ -2,6 +2,7 @@
 using LlsfMsgs;
 using Simulator.Utility;
 using System.Threading;
+using System.Text.Json;
 
 
 namespace Simulator.MPS
@@ -76,6 +77,8 @@ namespace Simulator.MPS
         }
         private void Work()
         {
+            StartOpc(Type);
+            SerializeMachineToJson();
             while (true)
             {
                 //MyLogger.Info("We will wait for a Signal!");
@@ -106,6 +109,15 @@ namespace Simulator.MPS
                 TaskDescription = "Idle";
                 // Thread.Sleep(1000);
             }
+        }
+        public void SerializeMachineToJson()
+        {
+            var options = new JsonSerializerOptions
+            {
+                WriteIndented = true
+            };
+            JsonInformation = JsonSerializer.Serialize<MPS_BS>(this, options);
+            Console.WriteLine(JsonInformation);
         }
     }
 

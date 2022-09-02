@@ -1,4 +1,5 @@
-﻿using LlsfMsgs;
+﻿using System.Text.Json;
+using LlsfMsgs;
 
 namespace Simulator.MPS
 {
@@ -28,6 +29,8 @@ namespace Simulator.MPS
         }
         private void Work()
         {
+            StartOpc(Type);
+            SerializeMachineToJson();
             while (true)
             {
                 InEvent.WaitOne();
@@ -50,6 +53,11 @@ namespace Simulator.MPS
                 TaskDescription = "Idle";                
                 MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
             }
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }

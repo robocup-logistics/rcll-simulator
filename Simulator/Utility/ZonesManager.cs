@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime;
 using System.Security.Cryptography.X509Certificates;
+using System.Text.Json.Serialization;
 using System.Threading;
 using Opc.Ua;
 using Robot = Simulator.RobotEssentials.Robot;
@@ -14,7 +15,7 @@ namespace Simulator.Utility
 {
     public class ZonesManager
     {
-        private List<Zones> ZoneList;
+        public List<Zones> ZoneList { get; private set; }
         private readonly Dictionary<Zone, Zones> Dictionary;
         private static ZonesManager? Instance;
         public Mutex ZoneManagerMutex;
@@ -48,7 +49,7 @@ namespace Simulator.Utility
                 }
 
                 Zones zone;
-                zone = color == Team.Cyan ? new Zones(y, x, 0, color, z) : new Zones(-y+1, -x+1, 0, color, z);
+                zone = color == Team.Cyan ? new Zones(x + 6, y, 0, color, z) : new Zones(7 - x, y, 0, color, z);
                 Dictionary.Add(z, zone);
                 ZoneList.Add(zone);
             }
@@ -58,9 +59,9 @@ namespace Simulator.Utility
             for (int i = 0; i < 3; i++)
             {
                 var DeployZoneCyan = (Zone)((5 + i) * 10 + 1);
-                var deploymentZoneCyan = new Zones(1, 5 + i, 0, Team.Cyan, DeployZoneCyan);
+                var deploymentZoneCyan = new Zones(5 + i + 6, 1, 0, Team.Cyan, DeployZoneCyan);
                 var DeployZoneMagenta = (Zone)(1000 + (5 + i) * 10 + 1);
-                var deploymentZoneMagenta = new Zones(1, 5 + i, 0, Team.Magenta, DeployZoneMagenta);
+                var deploymentZoneMagenta = new Zones(7 - 5 - i, 1, 0, Team.Magenta, DeployZoneMagenta);
                 ZoneList.Add(deploymentZoneMagenta);
                 ZoneList.Add(deploymentZoneCyan);
                 Dictionary.Add(DeployZoneCyan, deploymentZoneCyan);
@@ -126,6 +127,17 @@ namespace Simulator.Utility
             machine.Zone = zone;
         }
 
+        public void DeployRobot(Robot robot)
+        {
+            if (robot.TeamColor == Team.Cyan)
+            {
+                var DeployZoneCyan = (Zone)((5 + 0) * 10 + 1);
+                if (Dictionary.ContainsKey(DeployZoneCyan) || Dictionary[DeployZoneCyan].Robot != null)
+                {
+                    Dictionary[DeployZoneCyan].PlaceRobot(robot,0);
+                }
+            }
+        }
         public bool PlaceRobot(Zone zone, uint orientation, Robot robot)
         {
             if (!Dictionary.ContainsKey(zone) || Dictionary[zone].Robot != null) return false;
@@ -451,16 +463,23 @@ namespace Simulator.Utility
 
     public class Zones
     {
-        public readonly int X;
-        public readonly int Y;
+
         private readonly Team ZoneColor;
 
         private readonly List<Zones> NeighborsList;
+        
+        [JsonIgnore]
         public Mps? Machine { get; private set; }
+        
+        [JsonIgnore]
         public Robot? Robot { get; private set; }
         public uint Orientation { get; private set; }
         public Zone ZoneId { get; private set; }
+        public int X { get; private set; }
+        public int Y { get; private set; }
         public bool GetsMovedTo { get; set; }
+        
+        [JsonIgnore]
         public Mutex ZoneMutex {get; private set;}
         public Zones(int x, int y, uint orientation, Team color, Zone zoneId)
         {

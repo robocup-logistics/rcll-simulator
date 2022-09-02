@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -9,16 +10,16 @@ namespace Simulator.MPS
     {
         public readonly MyLogger MyLogger;
         public readonly MPSOPCUAServer Refbox;
-        public readonly string Name;
-        public readonly int Port;
+        public string Name { get; private set; }
+        public int Port { get; private set; }
         public MpsType Type;
         public NodeCollection InNodes;
         public NodeCollection BasicNodes;
         public MachineState MachineState;
         public ExplorationState ExplorationState;
         public MachineSide MachineSide;
-        public Zone Zone;
-        public uint Rotation;
+        public Zone Zone { get; set; }
+        public uint Rotation { get; set; }
         public bool Debug;
         public int InternalId { get; }
         public Team Team;
@@ -36,6 +37,7 @@ namespace Simulator.MPS
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
+        public string JsonInformation;
         public enum MpsType
         {
             BaseStation = 100,
@@ -357,16 +359,10 @@ namespace Simulator.MPS
                     return false;
             }
         }
-
-        public void PrintStatus()
+        public void SerializeMachineToJson()
         {
-            MyLogger.Log("-----------------------------------------");
-            MyLogger.Log(String.Format("InBusy     {0} BasicBusy     {1}",InNodes.StatusNodes.busy.Value,BasicNodes.StatusNodes.busy.Value));
-            MyLogger.Log(String.Format("InActionId {0} BasicActionId {1}",InNodes.ActionId.Value,BasicNodes.ActionId.Value));
-            MyLogger.Log(String.Format("InEnabled  {0} BasicEnabled  {1}",InNodes.StatusNodes.enable.Value,BasicNodes.StatusNodes.enable.Value));
-            MyLogger.Log(String.Format("InData0    {0} BasicData0    {1}",InNodes.Data0.Value,BasicNodes.Data0.Value));
-            MyLogger.Log(String.Format("InData1    {0} BasicData1    {1}",InNodes.Data1.Value,BasicNodes.Data1.Value));
-            MyLogger.Log("-----------------------------------------");
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }

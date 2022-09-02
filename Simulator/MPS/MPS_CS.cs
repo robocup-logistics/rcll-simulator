@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Text.Json;
 using LlsfMsgs;
 using System.Threading;
 using Simulator.Utility;
@@ -44,6 +45,8 @@ namespace Simulator.MPS
         }
         private void Work()
         {
+            StartOpc(Type);
+            SerializeMachineToJson();
             while (true)
             {
                 InEvent.WaitOne();
@@ -178,6 +181,11 @@ namespace Simulator.MPS
                 Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             }
             return returnProduct;
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }

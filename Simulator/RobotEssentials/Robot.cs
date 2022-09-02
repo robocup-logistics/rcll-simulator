@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -25,19 +27,25 @@ namespace Simulator.RobotEssentials
         private GameState.Types.State GameState;
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
-        private Zones? CurrentZone;
+        public Zones? CurrentZone { get; private set; }
         private readonly Queue<AgentTask> Tasks;
+
         public AgentTask? CurrentTask { get; set; }
         private DateTime MoveStart = DateTime.MinValue;
         public List<RobotMachineReportEntry> Machines { get; set; }
+        [JsonIgnore]
         public Thread? WorkingRobotThread { get; set; }
         private RobotManager MyManager;
-        public Window? RobotView { get; set; }
+        //public Window? RobotView { get; set; }
         private readonly Configurations Config;
         public string TaskDescription { get; private set; }
+        [JsonIgnore]
         public ManualResetEvent WaitForPrepare { get; private set; }
         private MpsManager? MpsManager;
+        [JsonIgnore]
         public List<FinishedTasks> FinishedTasksList { get; }
+
+        private string JsonInformation;
         private enum TaskEnum : int
         {
             None,
@@ -54,6 +62,7 @@ namespace Simulator.RobotEssentials
             RobotName = name;
             TeamName = Config.Teams[0].Name;
             TeamColor = color;
+
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = (uint)jersey;
@@ -327,6 +336,7 @@ namespace Simulator.RobotEssentials
             }
             MyLogger.Log("At station starting the GRIP Action!");
             TaskDescription = "Grasping Product";
+            SerializeRobotToJson();
             var attempts = 0;
             while (HeldProduct == null && attempts < 30)
             {
@@ -364,6 +374,7 @@ namespace Simulator.RobotEssentials
                 return false;
             }
             TaskDescription = "Placing product";
+            SerializeRobotToJson();
             MyLogger.Log("Aligning and starting the place action");
             Thread.Sleep(Config.RobotPlaceDuration);
             switch (mps.Type)
@@ -412,6 +423,7 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Move To Waypoint task!");
             TaskDescription = "Moving to Waypoint";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 MyLogger.Log("MoveToWayPoint -> current task is NULL!");
@@ -459,6 +471,7 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Get From Station task!");
             TaskDescription = "GetFromStationTask";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 MyLogger.Log("GetFromStation -> the current task is NULL!");
@@ -535,6 +548,7 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("DeliverToStation!");
             TaskDescription = "DeliverToStationTask";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 return;
@@ -616,6 +630,7 @@ namespace Simulator.RobotEssentials
         #endregion
         public void Work()
         {
+            SerializeRobotToJson();
             while (Running)
             {
                 switch (RobotState)
@@ -684,6 +699,7 @@ namespace Simulator.RobotEssentials
                                     break;
                             }
                             FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
+                            SerializeRobotToJson();
                             CurrentTask = null;
                         }
                         else
@@ -717,6 +733,7 @@ namespace Simulator.RobotEssentials
 
                 MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring + "! Gamephase is [" +
                              GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
+
                 Thread.Sleep(500);
             }
         }
@@ -795,6 +812,12 @@ namespace Simulator.RobotEssentials
                 return "UDP";
             }
 
+        }
+
+        public void SerializeRobotToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 

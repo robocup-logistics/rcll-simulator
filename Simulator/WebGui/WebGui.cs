@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
+using System.Text.Json;
 
 namespace Simulator.WebGui
 {
@@ -65,9 +66,14 @@ namespace Simulator.WebGui
                 // Print out some info about the request
                 Console.WriteLine("Request #: {0}", ++requestCount);
                 MyLogger.Log(req.Url.ToString());
+                Console.WriteLine(req.Url.ToString());
                 MyLogger.Log(req.HttpMethod);
+                Console.WriteLine(req.HttpMethod);
                 MyLogger.Log(req.UserHostName);
+                Console.WriteLine(req.UserHostName);
                 MyLogger.Log(req.UserAgent);
+                Console.WriteLine(req.UserAgent);
+
                 MyLogger.Log(" ");
 
                 switch (req.HttpMethod)
@@ -77,6 +83,27 @@ namespace Simulator.WebGui
                         MyLogger.Log("Shutdown requested");
                         runServer = false;
                         break;
+                    case "OPTIONS":
+                        {
+                            Console.WriteLine("Got options!");
+                            resp.StatusCode = (byte)HttpStatusCode.OK;
+                            resp.ContentType = "application/json";
+                            resp.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization");
+                            //resp.AddHeader("Access-Control-Request-Method", "GET");
+                            //resp.AddHeader("Access-Control-Request-Headers", "authorization");
+                            resp.AddHeader("Access-Control-Allow-Methods", "GET, POST");
+                            resp.AddHeader("Access-Control-Max-Age", "1728000");
+                            resp.AppendHeader("Access-Control-Allow-Origin", "*");
+                            /*
+                                response.setHeader("Access-Control-Allow-Origin", "*");
+                                response.setHeader("Access-Control-Allow-Credentials", "true");
+                                response.setHeader("Access-Control-Allow-Methods", "GET,HEAD,OPTIONS,POST,PUT");
+                                response.setHeader("Access-Control-Allow-Headers", "Access-Control-Allow-Headers, Origin,Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers");
+                             */
+                            resp.ContentLength64 = 0;
+                            resp.Close();
+                            break;
+                        }
                     case "GET":
                         {
                             var pageData = "";
@@ -88,12 +115,10 @@ namespace Simulator.WebGui
                             resp.ContentEncoding = Encoding.UTF8;
                             var cookie = new Cookie("connection", "1");
                             resp.AppendCookie(cookie);
-                            if (req.HttpMethod == "OPTIONS")
-                            {
-                                resp.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With");
-                                resp.AddHeader("Access-Control-Allow-Methods", "GET, POST");
-                                resp.AddHeader("Access-Control-Max-Age", "1728000");
-                            }
+                            resp.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization");
+                            resp.AddHeader("Access-Control-Allow-Methods", "GET, POST");
+                            resp.AddHeader("Access-Control-Max-Age", "1728000");
+
                             resp.AppendHeader("Access-Control-Allow-Origin", "*");
                             byte[] data;
                             MyLogger.Log("Switching with the segment: " + segment);
@@ -103,14 +128,43 @@ namespace Simulator.WebGui
                                 case "styles.css":
                                     MyLogger.Log("Requested the CSS File!");
                                     resp.ContentType = "text/css";
-                                    pageData = File.ReadAllText(Path +  req.Url.Segments[1]);
+                                    pageData = File.ReadAllText(Path + req.Url.Segments[1]);
                                     data = Encoding.UTF8.GetBytes(pageData);
                                     MyLogger.Log("The css = " + data);
                                     break;
                                 case "map.html":
-                                    pageData = File.ReadAllText(Path +  req.Url.Segments[1]);
+                                    pageData = File.ReadAllText(Path + req.Url.Segments[1]);
                                     data = Encoding.UTF8.GetBytes(String.Format(pageData));
                                     break;
+                                case "zones":
+                                    {
+                                        resp.ContentType = "JSON";
+                                        var jsonString = JsonSerializer.Serialize(ZonesManager.GetInstance().ZoneList);
+                                        //Console.WriteLine(jsonString);
+                                        data = Encoding.UTF8.GetBytes(jsonString);
+                                        break;
+                                    }
+                                case "robots":
+                                {
+                                    resp.ContentType = "JSON";
+                                    Console.WriteLine("Creating the json of robots!");
+                                    //var text = _robotManager.Robots[0].SerializeRobotToJson();
+                                    var jsonString = JsonSerializer.Serialize(_robotManager?.Robots);
+                                    Console.WriteLine(jsonString);
+                                    data = Encoding.UTF8.GetBytes(jsonString);
+                                    break;
+                                }
+                                case "machines":
+                                {
+                                    resp.ContentType = "JSON";
+                                    Console.WriteLine("Creating the json of machines!");
+
+                                        var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
+                                    Console.WriteLine(jsonString);
+                                    data = Encoding.UTF8.GetBytes(jsonString);
+                                    break;
+
+                                }
                                 case "robot.html":
                                     {
                                         int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
@@ -139,8 +193,8 @@ namespace Simulator.WebGui
                                         if (_mpsManager != null)
                                         {
                                             MPS.Mps mp = _mpsManager.Machines[id];
-                                            MyLogger.Log("Mps Nr" + mp.InternalId + " is of type " + mp.Type+ " with a machine state of : " + mp.MachineState);
-                                            var text = String.Format(pageData, mp.Name, mp.Type.ToString(), mp.MachineState.ToString(),"4","5","6","7","8");
+                                            MyLogger.Log("Mps Nr" + mp.InternalId + " is of type " + mp.Type + " with a machine state of : " + mp.MachineState);
+                                            var text = String.Format(pageData, mp.Name, mp.Type.ToString(), mp.MachineState.ToString(), "4", "5", "6", "7", "8");
                                             data = Encoding.UTF8.GetBytes(text);
                                         }
                                         else
@@ -156,9 +210,15 @@ namespace Simulator.WebGui
                                 case "favicon.ico":
                                     continue;
                                 case "json.html":
-                                    resp.ContentType = "json";
-                                    data = Encoding.UTF8.GetBytes("{\"test\" : \"answer\"}");
-                                    break;
+                                    {
+                                        resp.ContentType = "JSON";
+                                        var test = new TestJson("Test1", "Val2");
+                                        string jsonString = JsonSerializer.Serialize(test);
+                                        Console.WriteLine(jsonString);
+                                        data = Encoding.UTF8.GetBytes(jsonString);
+                                        Console.WriteLine(JsonSerializer.Serialize(MpsManager.GetInstance().Machines));
+                                        break;
+                                    }
                                 default:
                                     pageData = File.ReadAllText(Path + "home.html");
                                     var MapFields = CreateMapFields();
@@ -189,7 +249,7 @@ namespace Simulator.WebGui
             {
                 RobotFields +=
                     " <iframe src=\"/robot.html?id=" + rob.JerseyNumber + "\" title=\"Robot test\"></iframe>\n";
-                    //" <iframe src=\"/robot.html?id=" + rob.JerseyNumber + "\" title=\"Robot test\" width = \"300\" height=\"300\" style=\"border: 1px solid black;\" ></iframe>\n";
+                //" <iframe src=\"/robot.html?id=" + rob.JerseyNumber + "\" title=\"Robot test\" width = \"300\" height=\"300\" style=\"border: 1px solid black;\" ></iframe>\n";
             }
             MyLogger.Log(RobotFields);
             return RobotFields;
@@ -212,6 +272,18 @@ namespace Simulator.WebGui
         {
             MyLogger.Log("CreateMapFields got called!");
             return " <iframe src=\"/map.html\" title=\"Mps test\" ></iframe>\n";
+        }
+    }
+
+    internal class TestJson
+    {
+        public string Test { get; set; }
+        public string Value1 { get; set; }
+
+        public TestJson(string val1, string val2)
+        {
+            Test = val1;
+            Value1 = val2;
         }
     }
 }

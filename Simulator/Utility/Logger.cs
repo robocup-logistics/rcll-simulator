@@ -26,6 +26,7 @@ namespace Simulator.Utility
             Prefix = "";
             LogsFolder = "logs" + Path.DirectorySeparatorChar;
             Filename = LogsFolder + prefix + ".log";
+            //Console.WriteLine(Directory.GetCurrentDirectory() + "Writing to  : " + Filename);
             Logger = new LoggerConfiguration()
                 .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();

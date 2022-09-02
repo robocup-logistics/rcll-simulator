@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -45,7 +46,9 @@ namespace Simulator.MPS
             Work();
         }
         private void Work()
-        {           
+        {
+            StartOpc(Type);
+            SerializeMachineToJson();
             while (true)
             {
                 InEvent.WaitOne();
@@ -117,6 +120,11 @@ namespace Simulator.MPS
             Thread.Sleep(Configurations.GetInstance().RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
             FinishedTask();
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }
