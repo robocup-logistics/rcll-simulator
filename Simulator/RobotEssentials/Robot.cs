@@ -28,6 +28,8 @@ namespace Simulator.RobotEssentials
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
         public Zones? CurrentZone { get; private set; }
+        public Zones? nextZone { get; private set; }
+
         private readonly Queue<AgentTask> Tasks;
 
         public AgentTask? CurrentTask { get; set; }
@@ -83,6 +85,7 @@ namespace Simulator.RobotEssentials
             TcpConnectionTeamserver = null;
             UdpConnectionTeamserver = null;
             UdpConnectionRefbox = null;
+            nextZone = null;
         }
 
         public string GetHeldProductString()
@@ -279,6 +282,7 @@ namespace Simulator.RobotEssentials
             foreach (var z in path)
             {
                 TaskDescription = "Moving to " + z.ZoneId;
+                nextZone = z;
                 MyLogger.Log("Doing a step towards + " + z.ZoneId);
                 MyLogger.Log("Getting the Mutex from zone " + z.ZoneId.ToString());
                 z.ZoneMutex.WaitOne();
@@ -317,12 +321,14 @@ namespace Simulator.RobotEssentials
             if (attempt != 4)
             {
                 MyLogger.Log("Failed due to exceding amount of try's");
+                nextZone = null;
                 CurrentTask.Successful = false;
                 return false;
             }
             else
             {
                 MyLogger.Log("Finishing the move command");
+                nextZone = null;
                 return true;
             }
 

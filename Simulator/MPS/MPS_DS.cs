@@ -55,7 +55,6 @@ namespace Simulator.MPS
         }
         private void Work()
         {
-            StartOpc(Type);
             SerializeMachineToJson();
             while (true)
             {

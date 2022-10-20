@@ -7,6 +7,8 @@ using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
 using System.Text.Json;
+using LlsfMsgs;
+using Robot = Simulator.RobotEssentials.Robot;
 
 namespace Simulator.WebGui
 {
@@ -66,12 +68,12 @@ namespace Simulator.WebGui
                 // Print out some info about the request
                 Console.WriteLine("Request #: {0}", ++requestCount);
                 MyLogger.Log(req.Url.ToString());
-                Console.WriteLine(req.Url.ToString());
+                //Console.WriteLine(req.Url.ToString());
                 MyLogger.Log(req.HttpMethod);
-                Console.WriteLine(req.HttpMethod);
-                MyLogger.Log(req.UserHostName);
+                //Console.WriteLine(req.HttpMethod);
+                //MyLogger.Log(req.UserHostName);
                 Console.WriteLine(req.UserHostName);
-                MyLogger.Log(req.UserAgent);
+                //MyLogger.Log(req.UserAgent);
                 Console.WriteLine(req.UserAgent);
 
                 MyLogger.Log(" ");
@@ -83,6 +85,20 @@ namespace Simulator.WebGui
                         MyLogger.Log("Shutdown requested");
                         runServer = false;
                         break;
+                    case "PUT":
+                    {
+                        var task = new AgentTask();
+                        task.Move = new Move
+                        {
+                            Waypoint = "C-BS",
+                            MachinePoint = ""
+                        };
+                        _robotManager.Robots[0].SetAgentTasks(task);
+                        resp.StatusCode = (byte)HttpStatusCode.OK;
+                        resp.ContentLength64 = 0;
+                        resp.Close();
+                            break;
+                    }
                     case "OPTIONS":
                         {
                             Console.WriteLine("Got options!");

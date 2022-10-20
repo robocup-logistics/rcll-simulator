@@ -142,7 +142,6 @@ namespace Simulator.MPS
         public void FinishedTask()
         {
             int i = 0;
-            PrintStatus();
             InNodes.StatusNodes.busy.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
@@ -362,7 +361,7 @@ namespace Simulator.MPS
         public void SerializeMachineToJson()
         {
             JsonInformation = JsonSerializer.Serialize(this);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 }

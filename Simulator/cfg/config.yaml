@@ -101,7 +101,7 @@ stations:
     orientation: 0
 robots:
   Klaus:
-    active: False
+    active: true
     jersey: 1
     team: cyan
   Wolf:
@@ -127,7 +127,7 @@ robots:
 teams:
   CYAN:
     name: GRIPS
-    active: False
+    active: True
     host: 127.0.0.1
     port: 2016
   MAGENTA:
