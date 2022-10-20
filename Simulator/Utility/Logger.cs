@@ -11,76 +11,77 @@ namespace Simulator.Utility
 {
     public class MyLogger
     {
-        private readonly bool debug_;
-        private readonly string prefix_;
-        private readonly string filename;
-        private readonly string logsFolder;
-        private static Mutex mutex = new Mutex();
+        private readonly bool Debug;
+        private readonly string Prefix;
+        private readonly string Filename;
+        private readonly string LogsFolder;
+        private readonly Mutex Mutex = new Mutex();
         private Serilog.Core.Logger? Logger;
         public enum LogTypes { Info, Error, Warning
         }
         public MyLogger(string prefix, bool debug)
         {
-            debug_ = debug;
-            prefix_ = "[" + prefix +"] ";
-            prefix_ = "";
-            logsFolder = "logs" + Path.DirectorySeparatorChar;
-            filename = logsFolder + prefix + ".txt";
+            Debug = debug;
+            Prefix = "[" + prefix +"] ";
+            Prefix = "";
+            LogsFolder = "logs" + Path.DirectorySeparatorChar;
+            Filename = LogsFolder + prefix + ".log";
+            //Console.WriteLine(Directory.GetCurrentDirectory() + "Writing to  : " + Filename);
             Logger = new LoggerConfiguration()
-                .WriteTo.File(filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+                .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
         }
         public void Log(OpcNode node)
         {
-            if (debug_)
+            if (Debug)
             {
-                mutex.WaitOne();
-                WriteLine(prefix_, node.Name + " " + node.Id);
-                mutex.ReleaseMutex();
+                Mutex.WaitOne();
+                WriteLine(Prefix, node.Name + " " + node.Id);
+                Mutex.ReleaseMutex();
             }
         }
 
         public void Log(string text)
         {
-            if (debug_)
+            if (Debug)
             {
-                mutex.WaitOne();
+                Mutex.WaitOne();
                 Logger.Information(text);
-                mutex.ReleaseMutex();
+                Mutex.ReleaseMutex();
             }
         }
 
         public void Log(byte[] text)
         {
-            if (debug_)
+            if (Debug)
             {
-                mutex.WaitOne();
+                Mutex.WaitOne();
                 foreach (var b in text)
                 {
                     Write(b);
                 }
-                mutex.ReleaseMutex();
+                Mutex.ReleaseMutex();
             }
         }
         public void Info(string text)
         {
-            if (debug_)
+            if (Debug)
             {
-                mutex.WaitOne();
+                Mutex.WaitOne();
                 Logger.Information(text);
-                mutex.ReleaseMutex();
+                Mutex.ReleaseMutex();
             }
         }
 
         private void WriteLine(string prefix, string text)
         {
-            mutex.WaitOne();
-            using (var w = File.AppendText(filename))
+            Mutex.WaitOne();
+            using (var w = File.AppendText(Filename))
             {
                 Log(prefix, text, w);
                 //Console.WriteLine(prefix + text);
             }
-            mutex.ReleaseMutex();
+            Mutex.ReleaseMutex();
             /*using (StreamReader r = File.OpenText("log.txt"))
             {
                 DumpLog(r);
@@ -88,7 +89,7 @@ namespace Simulator.Utility
         }
         private void Write(byte text)
         {
-            using (var w = File.AppendText(filename))
+            using (var w = File.AppendText(Filename))
             {
                 Log("", text.ToString(), w);
                 //Console.Write(text);

@@ -60,7 +60,7 @@
    required uint64 seq = 2;
  
    // The robot's jersey number
-   required uint32 number = 3;
+   required uint32 number = 8;
    // The robot's team name
    required string team_name = 4;
    // The robot's name
@@ -73,8 +73,8 @@
    optional Pose2D pose = 7;
 
    // Maybe needed for future generalisation of beacon signal and tracking of robots current activity (used by GRIPS currently)
-   optional AgentTask task = 8; // current task-id of robot 
-   repeated FinishedTask finished_tasks = 9; // a list of all the tasks that the robot has done. Contains the ID of the task and the result
+   optional AgentTask task = 9; // current task-id of robot 
+   repeated FinishedTask finished_tasks = 10; // a list of all the tasks that the robot has done. Contains the ID of the task and the result
 }
  
 message FinishedTask{

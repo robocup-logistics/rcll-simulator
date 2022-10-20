@@ -1,52 +1,26 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using System.Threading;
+using System.Threading.Tasks;
 using Google.Protobuf;
 using LlsfMsgs;
-using Org.BouncyCastle.Math.EC;
 using Simulator.MPS;
 using Simulator.Utility;
 using Timer = Simulator.Utility.Timer;
 
 namespace Simulator.RobotEssentials
 {
-    class PBMessageHandler
+    class PBMessageHandlerRobot : PBMessageHandlerBase
     {
-        private readonly MyLogger MyLogger;
-        private readonly Robot? Owner;
-        private readonly PBMessageFactory Fact;
-        private MpsManager? Manager { get; set; }
-
-        public PBMessageHandler(Robot? owner, MyLogger log)
+        private Robot Owner;
+        private readonly PBMessageFactoryBase Fact;
+        public PBMessageHandlerRobot(Robot owner, MyLogger log) : base(log)
         {
-            MyLogger = log;
             Owner = owner;
-            Fact = new PBMessageFactory(Owner, log);
-            Manager = null;
+            Fact = new PBMessageFactoryRobot(Owner, log);
         }
-
-        public int CheckMessageHeader(byte[] Stream)
-        {
-            if (Stream.Length < 4)
-            {
-                MyLogger.Log("The received Message is to short to be parsed!");
-                return -1;
-            }
-            if (FrameHeader.Version != Stream[0])
-            {
-                MyLogger.Log("Version is different!");
-                return -1;
-            }
-            if (FrameHeader.Cipher != Stream[1])
-            {
-                MyLogger.Log("Cipher is different!");
-                return -1;
-            }
-            var payloadsize = BytesToInt(Stream, 4, 4);
-
-            return payloadsize;
-        }
-        public bool HandleMessage(byte[] Stream)
+        public new bool HandleMessage(byte[] Stream)
         {
 
             /*      Each row is 4 bytes
@@ -81,7 +55,7 @@ namespace Simulator.RobotEssentials
             string msg = "";
             //MyLogger.Log("The Recieved message is from component : " + cmpId.ToString() + " and the message type is = " + msgtype.ToString() + " and payloadsize = " + payloadsize);
             //MyLogger.Log("Length of the stream = " + Stream.Length);
-            Manager ??= MpsManager.GetInstance();
+            
             if (payloadsize == 0)
             {
                 MyLogger.Log("The payload is " + payloadsize + " so we stop here!");
@@ -138,7 +112,7 @@ namespace Simulator.RobotEssentials
                         MachineInfo mi;
                         string str = Encoding.Default.GetString(Stream);
                         //MyLogger.Log("String = " + str);
-                        MyLogger.Log("Parsing of MachineInfo Message! cmpId = " + cmpId + " msg type = " + msgtype);
+                        MyLogger.Log("[RobotHandler] Parsing of MachineInfo Message! cmpId = " + cmpId + " msg type = " + msgtype);
                         try
                         {
                             mi = mip.ParseFrom(Stream, 12, payloadsize - 4);
@@ -148,24 +122,14 @@ namespace Simulator.RobotEssentials
                             MyLogger.Log(e.ToString());
                             return false;
                         }
-
+                        if(!MpsManager.GetInstance().AllMachineSet)
+                        {
+                            MpsManager.GetInstance().PlaceMachines(mi);
+                        }
                         MyLogger.Log("Parsing of MachineInfo Message was successful!");
                         msg = mi.ToString();
-                        ZonesManager.GetInstance().ZoneManagerMutex.WaitOne();
-                        if (Manager.AllMachineSet)
-                        {
-                            //MyLogger.Log("All machines already placed! (after parsed)");
-                            ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
-                            return true;
-                        }
-
-                        Manager.PlaceMachines(mi);
-                        /*foreach (var m in mi.Machines)
-                        {
-                            m.R
-                        }*/
-    
-                        ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
+                        MyLogger.Log("The Parsed message = " + msg);
+                        
                         break;
                     }
                 case (int)GameState.Types.CompType.MsgType:
@@ -173,9 +137,9 @@ namespace Simulator.RobotEssentials
                         MessageParser<GameState> gsp = new(() => new GameState());
                         GameState gs = gsp.ParseFrom(Stream, 12, payloadsize - 4);
                         Timer.GetInstance().UpdateTime(gs.GameTime);
-                        if(gs.HasPointsCyan)
+                        if (gs.HasPointsCyan)
                             Configurations.GetInstance().Teams[0].Points = gs.PointsCyan;
-                        if(gs.HasPointsMagenta)
+                        if (gs.HasPointsMagenta)
                             Configurations.GetInstance().Teams[0].Points = gs.PointsMagenta;
                         MyLogger.Log("Parsing of GameState Message was successful!");
                         msg = gs.ToString();
@@ -190,16 +154,16 @@ namespace Simulator.RobotEssentials
                         msg = ri.ToString();
                         break;
                     }
-                case (int)GripsMidlevelTasks.Types.CompType.MsgType:
+                case (int)AgentTask.Types.CompType.MsgType:
                     {
-                        MessageParser<GripsMidlevelTasks> midlevelParser =
-                            new(() => new GripsMidlevelTasks());
+                        MessageParser<AgentTask> taskParser =
+                            new(() => new AgentTask());
 
-                        GripsMidlevelTasks task = midlevelParser.ParseFrom(Stream, 12, payloadsize - 4);
+                        AgentTask task = taskParser.ParseFrom(Stream, 12, payloadsize - 4);
                         MyLogger.Log("Parsing of the GripsMidLevelTasks was successful!");
                         if (Owner != null)
                         {
-                            Owner.SetGripsTasks(task);
+                            Owner.SetAgentTasks(task);
                         }
                         else
                         {
@@ -216,25 +180,8 @@ namespace Simulator.RobotEssentials
                         GripsPrepareMachine prepareTask = prepareParser.ParseFrom(Stream, 12, payloadsize - 4);
                         MyLogger.Log("Parsing of PrepareMachineTask was successful");
                         MyLogger.Log(prepareTask.ToString());
-                        /*if (prepareTask.MachinePrepared)
-                        {
-                            MyLogger.Log("Waking up the waiting Owner!");
-                            if(Owner!=null)
-                            {
-                                Owner.WaitForPrepare.Set();
-                            }
-
-                        }*/
                         break;
                     }
-                //TODO Delete old PRS task message type
-                /*case (int)PrsTask.Types.CompType.MsgType:
-                    MessageParser<PrsTask> taskp = new MessageParser<PrsTask>(() => new PrsTask());
-                    PrsTask task = taskp.ParseFrom(Stream, 12, payloadsize - 4);
-                    MyLogger.Log("Parsing of the PrsTask Message was successful!");
-                    msg = task.ToString();
-                    owner.SetPRSTasks(task);
-                    break;*/
                 case (int)AttentionMessage.Types.CompType.MsgType:
                     MessageParser<AttentionMessage> attentionParser =
                         new(() => new AttentionMessage());
@@ -251,35 +198,6 @@ namespace Simulator.RobotEssentials
             }
             MyLogger.Log("Parsed message = " + msg);
             return true;
-        }
-        private static int BytesToInt(byte[] bytes, int start, int length)
-        {
-
-            var ret = 0;
-            switch (length)
-            {
-                case 2:
-                    ret += (bytes[start] << 8);
-                    ret += bytes[start + 1];
-                    break;
-                case 4:
-                    //MyLogger.Log("Bytes to int!");
-
-                    ret += (bytes[start] << 24);
-                    //MyLogger.Log("Current byte = " + bytes[start] + " and we calculated the sum = " + ret);
-                    ret += (bytes[start + 1] << 16);
-                    //MyLogger.Log("Current byte = " + bytes[start+1] + " and we calculated the sum = " + ret);
-                    ret += (bytes[start + 2] << 8);
-                    //MyLogger.Log("Current byte = " + bytes[start+2] + " and we calculated the sum = " + ret);
-                    ret += (bytes[start + 3]);
-
-                    //MyLogger.Log("Bytes to int!");
-                    break;
-                default:
-
-                    break;
-            }
-            return ret;
         }
 
     }

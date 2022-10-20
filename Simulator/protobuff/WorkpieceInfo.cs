@@ -201,7 +201,7 @@ namespace LlsfMsgs {
 
     /// <summary>Field number for the "base_color" field.</summary>
     public const int BaseColorFieldNumber = 5;
-    private readonly static global::LlsfMsgs.BaseColor BaseColorDefaultValue = global::LlsfMsgs.BaseColor.BaseRed;
+    private readonly static global::LlsfMsgs.BaseColor BaseColorDefaultValue = global::LlsfMsgs.BaseColor.BaseUncolored;
 
     private global::LlsfMsgs.BaseColor baseColor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]

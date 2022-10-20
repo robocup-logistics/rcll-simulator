@@ -18,11 +18,16 @@ namespace Simulator
 {
     internal class MainClass
     {
+        private static MyLogger? Mainlogger;
+        private static RobotManager? RobotManager;
+        private static MpsManager? MachineManager;
+        private static ZonesManager? ZoneManager;
+        private static bool ShowGui;
         private static void Main(string[] args)
         {
             var next = false;
             var path = "";
-            var showGui = false;
+            ShowGui = false;
             foreach (var argument in args)
             {
                 switch (argument.ToLower())
@@ -31,17 +36,32 @@ namespace Simulator
                         next = true;
                         continue;
                     case "-gui":
-                        showGui = true;
+                        ShowGui = true;
                         break;
                     default:
-                    {
-                        if (next)
                         {
-                            path = argument;
-                            next = false;
+                            if (next)
+                            {
+                                path = argument;
+                                next = false;
+                            }
+                            break;
                         }
-                        break;
-                    }
+                }
+            }
+
+            var logfolder = "logs" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(logfolder))
+            {
+                Directory.CreateDirectory(logfolder);
+            }
+            else
+            {
+
+                var di = new DirectoryInfo(logfolder);
+                foreach (var file in di.GetFiles())
+                {
+                    file.Delete();
                 }
             }
 
@@ -53,29 +73,88 @@ namespace Simulator
                 return;
             }
             Configurations.GetInstance().LoadConfig(path);
-            var mainlogger = new MyLogger("MainClass", true);
-            if (!showGui)
+            Mainlogger = new MyLogger("MainClass", true);
+            if (!ShowGui)
             {
-                Console.Write("Starting the Robots ... ");
-                var managerRobot = new RobotManager();
-                Console.WriteLine("done!");
                 Console.Write("Starting the Machines ... ");
-                var managerMachines = MpsManager.GetInstance();
+                MachineManager = MpsManager.GetInstance();
+                Console.WriteLine("done!");
+                Console.Write("Starting the Robots ... ");
+                RobotManager = new RobotManager();
                 Console.WriteLine("done!");
                 Console.Write("Creating the Zones ... ");
-                var zonesManager = ZonesManager.GetInstance();
+                ZoneManager = ZonesManager.GetInstance();
                 Console.WriteLine("done!");
+                if (Configurations.GetInstance().FixedMPSplacement)
+                {
+                    Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
+                    var mi = new MachineInfo();
+                    foreach (var m in Configurations.GetInstance().MpsConfigs)
+                    {
+                        var machine = new Machine()
+                        {
+                            Name = m.Name,
+                            Zone = m.Zone,
+                            Rotation = (uint)m.Orientation
+
+                        };
+                        mi.Machines.Add(machine);
+                    }
+                    MachineManager.PlaceMachines(mi);
+                    Console.WriteLine("done!");
+                }
+
+                var web = new WebGui.WebGui(RobotManager,MachineManager);
                 Console.WriteLine("Everything is set up! Waiting for connections!");
             }
             else
             {
-                var managerRobot = new RobotManager();
-                var managerMachines = MpsManager.GetInstance();
-                var zonesManager = ZonesManager.GetInstance();
-                //zonesManager.Astar(zonesManager.GetZone(Zone.CZ11), zonesManager.GetZone(Zone.MZ78));
+                RobotManager = new RobotManager();
+                MachineManager = MpsManager.GetInstance();
+                ZoneManager = ZonesManager.GetInstance();
+                if (Configurations.GetInstance().FixedMPSplacement)
+                {
+                    var mi = new MachineInfo();
+                    foreach (var m in Configurations.GetInstance().MpsConfigs)
+                    {
+                        var machine = new Machine()
+                        {
+                            Name = m.Name,
+                            Zone = m.Zone,
+                            Rotation = (uint)m.Orientation
 
-                var gui = new TerminalGui.TerminalGui(managerRobot, managerMachines, zonesManager);
+                        };
+                        mi.Machines.Add(machine);
+                    }
+                    MachineManager.PlaceMachines(mi);
+                }
+                //zonesManager.Astar(zonesManager.GetZone(Zone.CZ11), zonesManager.GetZone(Zone.MZ78));
+                var gui = new TerminalGui.TerminalGui(RobotManager, MachineManager, ZoneManager);
             }
+        }
+
+        public static void CloseApplication()
+        {
+            if (!ShowGui)
+            {
+                Console.Write("Starting the cleanup ..");
+            }
+            if(RobotManager != null)
+            {
+                foreach (var robot in RobotManager.Robots)
+                {
+                    Mainlogger?.Log("Starting the Cleanup....");
+                    robot.RobotStop();
+                    Mainlogger?.Log("Finished the Cleanup....");
+
+                }
+            }
+
+            if (!ShowGui)
+            {
+                Console.Write(".. cleanup done");
+            }
+            Environment.Exit(0);
         }
     }
 }

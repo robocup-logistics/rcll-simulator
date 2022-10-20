@@ -10,24 +10,57 @@ namespace Simulator.RobotEssentials
     {
         public Robot? Owner;
         public bool Running;
-        public Socket? Socket;
-        public IPEndPoint? SendEndpoint;
-        public IPEndPoint? RecvEndpoint;
+        public IPEndPoint Endpoint;
         public MyLogger MyLogger;
         public Queue<byte[]> Messages;
-        public Thread? PublicRecvThread;
-        public Thread? PublicSendThread;
-        public Thread? TeamRecvThread;
-        public Thread? TeamSendThread;
+        public Thread SendThread;
+        public Thread RecvThread;
+        public IPAddress Address;
+        public PBMessageFactoryBase PbFactory;
+        protected PBMessageHandlerRobot HandlerRobot;
+
+        public string IP;
+        public int Port;
+
         //public UdpClient UdpSender;
         //public UdpClient UdpReciever;
-        public ConnectorBase(Robot? rob, MyLogger logger)
+        public ConnectorBase(string ip, int port, Robot? rob, MyLogger logger)
         {
             Messages = new Queue<byte[]>();
-            
             MyLogger = logger;
+            IP = ip;
+            Port = port;
             this.Owner = rob;
+            Address = IPAddress.Any;
+            //PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
         }
-        
+
+        public bool ResolveIpAddress(string ip)
+        {
+            MyLogger.Log("Starting the ResolveIpFunction");
+            while (Address.Equals(IPAddress.Any))
+            {
+                try
+                {
+                    Address = Dns.GetHostAddresses(ip)[0];
+                }
+                catch (Exception)
+                {
+                    MyLogger.Log("Not able to get DNS? Retrying");
+                    Thread.Sleep(1000);
+                }
+            }
+            return true;
+        }
+        public void AddMessage(byte[] msg)
+        {
+            MyLogger.Log("Added a Message to the List!");
+            Messages.Enqueue(msg);
+            //WaitSend.Set();
+        }
+        public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type)
+        {
+            return ((PBMessageFactoryRobot)PbFactory).CreateMessage(type);
+        }
     }
 }

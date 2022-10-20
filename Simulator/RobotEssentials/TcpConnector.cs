@@ -6,49 +6,31 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
 {
-    class RobotTeamserver : ConnectorBase, IConnector
+    /// <summary>
+    /// Class <c>TcpConnector</c> is used for communication with the Teamserver.
+    /// </summary>
+    class TcpConnector : ConnectorBase
     {
         //TODO add second condition to assign team 2
-        PBMessageFactory Factory;
-        private PBMessageHandler Handler;
-        IPAddress Address;
+
+        private Socket Socket;
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
-        public RobotTeamserver(Robot rob, MyLogger logger) : base(rob, logger)
+        public TcpConnector(string ip, int port, Robot rob, MyLogger logger) : base(ip, port, rob, logger)
         {
-            MyLogger.Log("Starting connection RobotTeamserver!");
-            if (Owner == null)
-            {
-                MyLogger.Log("Starting connection to "+ Configurations.GetInstance().Teams[0].Name);
-                Address = IPAddress.Parse(Configurations.GetInstance().Teams[0].Ip);
-                SendEndpoint = new IPEndPoint(Address, Configurations.GetInstance().Teams[0].Port);
-                Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                TeamRecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
-                TeamSendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
-            }
-            else
-            {
-                if (Owner.TeamColor.Equals(LlsfMsgs.Team.Cyan))
-                {
-                    Address = IPAddress.Parse(Configurations.GetInstance().Teams[0].Ip);
-                    SendEndpoint = new IPEndPoint(Address, Configurations.GetInstance().Teams[0].Port);
-                    Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    TeamRecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
-                    TeamSendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
-                }
-                else
-                {
-                    Address = IPAddress.Parse(Configurations.GetInstance().Teams[1].Ip);
-                    SendEndpoint = new IPEndPoint(Address, Configurations.GetInstance().Teams[1].Port);
-                    Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                    TeamRecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[1].Port));
-                    TeamSendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[1].Port));
-                }
-            }
+            MyLogger.Log("Starting TcpConnector for " + ip + ":" + port + "!");
 
-            Factory = new PBMessageFactory(Owner, MyLogger);
-            WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            Handler = new PBMessageHandler(Owner, MyLogger);
+
+            ResolveIpAddress(ip);
+            Endpoint = new IPEndPoint(Address, Port);
+            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            RecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
+            SendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
+
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+
+            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
+            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public bool Close()
@@ -64,12 +46,12 @@ namespace Simulator.RobotEssentials
             {
                 try
                 {
-                    Socket.Connect(SendEndpoint);
+                    Socket.Connect(Endpoint);
                     MyLogger.Log(".... connected!");
                 }
                 catch (SocketException)
                 {
-                    MyLogger.Log("Wasn't able to CONNECT to the teamserver retrying in a few seconds!");
+                    MyLogger.Log("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
                     Thread.Sleep(10000);
                 }
             }
@@ -85,8 +67,8 @@ namespace Simulator.RobotEssentials
                 {
                     Running = true;
                     MyLogger.Log(".... Started");
-                    TeamRecvThread.Start();
-                    TeamSendThread.Start();
+                    SendThread.Start();
+                    RecvThread.Start();
                 }
                 else
                 {
@@ -100,6 +82,10 @@ namespace Simulator.RobotEssentials
                 Running = false;
                 return false;
             }
+            /*finally
+            {
+                Socket?.Close();
+            }*/
             return true;
         }
 
@@ -117,16 +103,11 @@ namespace Simulator.RobotEssentials
             }
             return true;
         }
-        public void AddMessage(byte[] msg)
-        {
-            MyLogger.Log("Added a Message to the List!");
-            Messages.Enqueue(msg);
-            //WaitSend.Set();
-        }
+
         public void SendThreadMethod(int port)
         {
             MyLogger.Log("Starting the SendThread!");
-            if(Socket==null)
+            if (Socket == null)
             {
                 return;
             }
@@ -137,19 +118,20 @@ namespace Simulator.RobotEssentials
                     //MyLogger.Log("Waiting for a send!");
                     //WaitSend.WaitOne();
                     //MyLogger.Log("Got a new Message to send!");
-                    while(true)
+                    while (true)
                     {
                         byte[] msg;
                         if (Messages.Count == 0)
                         {
                             //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            msg = CreateMessage(PBMessageFactory.MessageTypes.GripsBeaconSignal);
+                            //msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                         }
                         else
                         {
                             msg = Messages.Dequeue();
                         }
-                        if(msg!= null)
+                        if (msg != Array.Empty<byte>())
                         {
                             Socket.Send(msg);
                         }
@@ -160,25 +142,19 @@ namespace Simulator.RobotEssentials
                 catch (Exception e)
                 {
                     MyLogger.Log(e + " - Something went wrong with the sending to the Teamserver!");
-                    if(!Socket.Connected)
+                    if (!Socket.Connected)
                     {
                         MyLogger.Log("the connection is lost retry to connect!");
-                        while(!Socket.Connected)
+                        while (!Socket.Connected)
                         {
-                            Socket.Connect(SendEndpoint);
+                            Socket.Connect(Endpoint);
                         }
                     }
                 }
             }
         }
-        public byte[]? GetTestMessage()
-        {
-            return Factory.CreateMessage(PBMessageFactory.MessageTypes.RobotBeaconSignal);
-        }
-        public byte[]? CreateMessage(PBMessageFactory.MessageTypes type)
-        {
-            return Factory.CreateMessage(type);  
-        }
+
+
 
         public void ReceiveThreadMethod(int port)
         {
@@ -187,15 +163,15 @@ namespace Simulator.RobotEssentials
             {
                 try
                 {
-                    if(Socket.Available == 0)
+                    if (Socket.Available == 0)
                     {
                         continue;
                     }
                     //MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
-                    var message = Socket.Receive(buffer,0,buffer.Length,SocketFlags.None);
-                    var payload = Handler.CheckMessageHeader(buffer);
-                    if(payload == -1)
+                    var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    var payload = HandlerRobot.CheckMessageHeader(buffer);
+                    if (payload == -1)
                     {
                         continue;
                     }
@@ -207,7 +183,7 @@ namespace Simulator.RobotEssentials
                         //MyLogger.Log("Lines Receive " + message);
                     }
                     //MyLogger.Log("Received a message!");
-                    Handler.HandleMessage(buffer);
+                    HandlerRobot.HandleMessage(buffer);
                     //MyLogger.Log("Handled the message!");
                     //MyLogger.Log(message.ToString());
                 }
@@ -224,7 +200,7 @@ namespace Simulator.RobotEssentials
         }
         public void HandleMessage(IAsyncResult res)
         {
-            
+
         }
 
         public void SetWakeUpEvent(ManualResetEvent mre)

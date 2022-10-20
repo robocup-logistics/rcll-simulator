@@ -134,23 +134,24 @@ namespace Simulator.MPS
     public class NodeCollection
     {
         public OpcDataVariableNode<ushort> ActionId;
-        public OpcDataVariableNode<ushort> BarCode;
+        public OpcDataVariableNode<uint> BarCode;
         public OpcDataVariableNode<ushort> Data;
         public OpcDataVariableNode<ushort> Data0;
         public OpcDataVariableNode<ushort> Data1;
         public OpcDataVariableNode<ushort> SlideCnt;
         public OpcDataVariableNode<byte> ByteError;
+        public OpcFolderNode ParentNode;
         public OpcFolderNode Status;
         public Status StatusNodes;
         public NodeCollection(OpcFolderNode Parent, int ns, OpcNodeReferenceCollection reference)
         {
             //ActionId = new OpcNode();
-            
+            ParentNode = Parent;
             ActionId = new OpcDataVariableNode<ushort>(Parent, new OpcName("ActionId", ns), 0);
             
-            //ActionId
+            //ActionId 
             //OpcText()
-            BarCode = new OpcDataVariableNode<ushort>(Parent, new OpcName("BarCode", ns), 0);
+            BarCode = new OpcDataVariableNode<uint>(Parent, new OpcName("BarCode", ns), (uint)0);
             Data = new OpcDataVariableNode<ushort>(Parent, new OpcName("Data", ns), 0);
             Data0 = new OpcDataVariableNode<ushort>(Data, new OpcName("Data[0]", ns), 0);
             Data1 = new OpcDataVariableNode<ushort>(Data, new OpcName("Data[1]", ns), 0);

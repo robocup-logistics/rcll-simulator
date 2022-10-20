@@ -7,6 +7,8 @@ using View = Terminal.Gui.View;
 using Timer = Simulator.Utility.Timer;
 using Robot = Simulator.RobotEssentials.Robot;
 using LlsfMsgs;
+using Simulator.MPS;
+using Simulator.RobotEssentials;
 
 namespace Simulator.TerminalGui
 {
@@ -18,17 +20,18 @@ namespace Simulator.TerminalGui
         public Window GeneralWindow;
         public Window GeneralInformation;
         private Label? TimeLabel;
-        private Label? CyanTeamLabel;
-        private Label? CyanTeamPointsLabel;
-        private Label? MagentaTeamLabel;
-        private Label? MagentaTeamPointsLabel;
-        private const string TeamString = "{0}";
-        private const string PointString = "{0,3}";
         private const string TimeString = "{0:D4}:{1:D2}:{2:D3}";
         private Timer time;
         private List<MapField> MapFieldList;
+        private List<MpsInfoField> MpsInfoFieldList;
+        private List<RobotInfoField> RobotInfoFieldList;
         private TerminalConfig Config;
-        public MapGuiView(int height, int width)
+        private Label? TeamLabel;
+        private Label? TeamPointsLabel;
+        private const string TeamString = "{0}";
+        private const string PointString = "{0,3}";
+        private RobotManager RobotManager;
+        public MapGuiView(int height, int width, RobotManager manager)
         {
             var height_without_border = height - 2;
             var width_without_border = width - 2;
@@ -38,9 +41,13 @@ namespace Simulator.TerminalGui
             var pixel_width = width_without_border / field_width;
             var height_percent = 100.0f / field_height;
             var widht_percent = 100.0f / field_width;
+            RobotManager = manager;
             Config = TerminalConfig.GetInstance();
 
             MapFieldList = new List<MapField>();
+            MpsInfoFieldList = new List<MpsInfoField>();
+            RobotInfoFieldList = new List<RobotInfoField>();
+
             time = Timer.GetInstance();
             Instance = new View();
             GeneralWindow = new Window("General Information")
@@ -130,15 +137,22 @@ namespace Simulator.TerminalGui
         }
         public void Update()
         {
-            if(TimeLabel==null)
+            if (TimeLabel == null)
             {
                 return;
             }
-            TimeLabel.Text = string.Format(TimeString,time.Sec/60, time.Sec % 60, time.Nsec);
+            TimeLabel.Text = string.Format(TimeString, time.Sec / 60, time.Sec % 60, time.Nsec);
             foreach (var field in MapFieldList)
             {
                 field.UpdateLabel();
-
+            }
+            foreach (var field in MpsInfoFieldList)
+            {
+                field.UpdateLabel();
+            }
+            foreach(var field in RobotInfoFieldList)
+            {
+                field.UpdateLabel();
             }
         }
 
@@ -160,51 +174,53 @@ namespace Simulator.TerminalGui
                 Height = 1,
                 AutoSize = true
             };
-            var headline = new Label("Points:")
+            //var headline = new Label("Points:")
+            //{
+            //    X = Pos.Left(GeneralInformation),
+            //    Y = Pos.Bottom(TimeLabel),
+            //    Width = Dim.Fill(),
+            //    Height = 1
+            //};
+            var anchor = TimeLabel;
+            foreach (var team in Configurations.GetInstance().Teams)
             {
-                X = Pos.Left(GeneralInformation),
-                Y = Pos.Bottom(TimeLabel),
-                Width = Dim.Fill(),
-                Height = 1
-            };
+                TeamLabel = new Label(String.Format(TeamString, team.Name))
+                {
+                    X = 0,
+                    Y = Pos.Bottom(anchor),
+                    Width = Dim.Fill(),
+                    Height = 1,
+                    AutoSize = true,
+                    ColorScheme = team.Color == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+                };
+                TeamPointsLabel = new Label(String.Format(PointString, 0))
+                {
+                    X = Config.ColumnWidthGeneralInfo - 5,
+                    Y = Pos.Bottom(anchor),
+                    Width = 3,
+                    Height = 1,
+                    AutoSize = true,
+                    ColorScheme = team.Color == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+                };
+                anchor = TeamLabel;
+                foreach (var machine in MpsManager.GetInstance().Machines.Where(machine => machine.Team.Equals(team.Color)))
+                {
+                    var MpsInfo = new MpsInfoField(machine, GeneralInformation, anchor);
+                    MpsInfoFieldList.Add(MpsInfo);
+                    anchor = MpsInfo.GetAnchor();
+                }
+                GeneralInformation.Add(TeamLabel, TeamPointsLabel);
+                foreach (var robot in RobotManager.Robots.Where(robot => robot.TeamColor.Equals(team.Color)))
+                {
+                    var robotinfo = new RobotInfoField(robot, GeneralInformation, anchor);
+                    anchor = robotinfo.GetAnchor();
+                    RobotInfoFieldList.Add(robotinfo);
 
-            CyanTeamLabel = new Label(String.Format(TeamString, Configurations.GetInstance().Teams[0].Name))
-            {
-                X = Pos.Left(GeneralInformation),
-                Y = Pos.Bottom(headline),
-                Width = Dim.Fill(),
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team1ColorScheme
-            };
-            CyanTeamPointsLabel = new Label(String.Format(PointString, 0))
-            {
-                X = Pos.Right(GeneralInformation)-5,
-                Y = Pos.Bottom(headline),
-                Width = 3,
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team1ColorScheme
-            };
-            MagentaTeamLabel = new Label(String.Format(TeamString, Configurations.GetInstance().Teams[1].Name))
-            {
-                X = Pos.Left(GeneralInformation),
-                Y = Pos.Bottom(CyanTeamLabel),
-                Width = Dim.Fill(),
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team2ColorScheme
-            };
-            MagentaTeamPointsLabel = new Label(String.Format(PointString, 0))
-            {
-                X = Pos.Right(GeneralInformation)-5,
-                Y = Pos.Bottom(CyanTeamLabel),
-                Width = 3,
-                Height = 1,
-                AutoSize = true,
-                ColorScheme = Config.Team2ColorScheme
-            };
-            GeneralInformation.Add(timeTextLabel, headline, TimeLabel, CyanTeamLabel, CyanTeamPointsLabel,MagentaTeamLabel,MagentaTeamPointsLabel);
+                }
+            }
+
+            //GeneralInformation.Add(timeTextLabel, headline, TimeLabel);
+            GeneralInformation.Add(timeTextLabel, TimeLabel);
 
         }
     }
@@ -248,7 +264,7 @@ namespace Simulator.TerminalGui
             else
             {
                 string text = Zone.GetZoneString();
-                
+
                 if (Zone.Machine != null)
                 {
                     text += "\n " + Zone.Orientation + "°\n" + Zone.Machine.TaskDescription;
@@ -261,8 +277,8 @@ namespace Simulator.TerminalGui
                 {
                     text += "\n" + Zone.Robot.TaskDescription;
                     Label.ColorScheme = Zone.Robot.TeamColor == Team.Cyan
-                        ? Config.Team1ColorScheme
-                        : Config.Team2ColorScheme;
+                        ? Config.Team1RobotColorScheme
+                        : Config.Team2RobotColorScheme;
                 }
 
                 if (Zone.Robot == null && Zone.Machine == null)
@@ -273,4 +289,289 @@ namespace Simulator.TerminalGui
             }
         }
     }
+
+    class MpsInfoField
+    {
+        private const string LightString = " ";
+        private readonly Label NameLabel;
+        private readonly Label RedLabel;
+        private readonly Label YellowLabel;
+        private readonly Label GreenLabel;
+        private readonly Label? RingLabel1;
+        private readonly Label? RingLabel2;
+
+
+        private MPS.Mps Mps;
+        private TerminalConfig Config;
+        private Label Anchor;
+        public MpsInfoField(MPS.Mps mps, View parent, Label anchor)
+        {
+            Anchor = anchor;
+            Mps = mps;
+            Config = TerminalConfig.GetInstance();
+
+
+            NameLabel = new Label(String.Format("{0,-6}|", Mps.Name))
+            {
+                X = 0,
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                AutoSize = true,
+                ColorScheme = mps.Team == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme
+            };
+            RedLabel = new Label(LightString)
+            {
+                X = Pos.Right(NameLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.RedLightColorScheme
+            };
+            YellowLabel = new Label(LightString)
+            {
+                X = Pos.Right(RedLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.YellowLightColorScheme
+            };
+            GreenLabel = new Label(LightString)
+            {
+                X = Pos.Right(YellowLabel),
+                Y = Pos.Bottom(Anchor),
+                Width = 1,
+                Height = 1,
+                ColorScheme = Config.GreenLightColorScheme
+            };
+
+            parent.Add(NameLabel, RedLabel, YellowLabel, GreenLabel);
+            if (mps.Type == Mps.MpsType.RingStation)
+            {
+                var divider = new Label("|")
+                {
+                    X = Pos.Right(GreenLabel),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = mps.Team == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme
+                };
+                RingLabel1 = new Label(LightString)
+                {
+                    X = Pos.Right(divider),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = Config.YellowLightColorScheme
+                };
+                RingLabel2 = new Label(LightString)
+                {
+                    X = Pos.Right(RingLabel1),
+                    Y = Pos.Bottom(Anchor),
+                    Width = 1,
+                    Height = 1,
+                    ColorScheme = Config.GreenLightColorScheme
+                };
+                parent.Add(divider, RingLabel1, RingLabel2);
+            }
+            Anchor = GreenLabel;
+        }
+        public Label GetAnchor()
+        {
+            return Anchor;
+        }
+        public void UpdateLabel()
+        {
+            GreenLabel.ColorScheme = Mps.GreenLight.LightOn ? Config.GreenLightColorScheme : Config.LightOffColorScheme;
+            YellowLabel.ColorScheme = Mps.YellowLight.LightOn ? Config.YellowLightColorScheme : Config.LightOffColorScheme;
+            RedLabel.ColorScheme = Mps.RedLight.LightOn ? Config.RedLightColorScheme : Config.LightOffColorScheme;
+        }
+    }
+    class RobotInfoField
+    {
+        private const string LightString = " ";
+
+
+        private Label RobotLabel;
+        private Label GripperLabel;
+
+        private Robot Robot;
+        private TerminalConfig Config;
+        private Label Anchor;
+        private Label BaseLabel;
+        private List<Label> RingLabels;
+        private Label CapLabel;
+
+        public RobotInfoField(Robot robot, View parent, Label anchor)
+        {
+            Anchor = anchor;
+            Robot = robot;
+            Config = TerminalConfig.GetInstance();
+
+
+            RobotLabel = new Label(String.Format("{0} {1,-10} {2}", robot.JerseyNumber, robot.RobotName, "has "))
+            {
+                X = 0,
+                Y = Pos.Bottom(anchor),
+                Width = 1,
+                Height = 1,
+                AutoSize = true,
+                ColorScheme = robot.TeamColor == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+            };
+            parent.Add(RobotLabel);
+            Anchor = RobotLabel;
+            var product = Robot.GetHeldProduct();
+            var holding = Robot.IsHoldingSomething();
+            GripperLabel = new Label(String.Format("{0}", "Empty"))
+            {
+                X = Pos.Right(parent) - 7,
+                Y = Pos.Bottom(anchor),
+                Width = 1,
+                Height = 1,
+                AutoSize = true,
+                ColorScheme = robot.TeamColor == Team.Cyan ? Config.Team1ColorScheme : Config.Team2ColorScheme,
+                Visible = !holding
+            };
+            parent.Add(GripperLabel);
+
+            BaseLabel = new Label("B")
+            {
+                X = Pos.Right(parent) - 7,
+                Y = Pos.Bottom(anchor),
+                Width = 1,
+                Height = 1,
+                Visible = holding
+            };
+            var productanchor = BaseLabel;
+            parent.Add(BaseLabel);
+            RingLabels = new List<Label>();
+            for (var ring =0; ring < 3; ring ++)
+            {
+                var ringlabel = new Label("R")
+                {
+                    X = Pos.Right(productanchor),
+                    Y = Pos.Bottom(anchor),
+                    Width = 1,
+                    Height = 1,
+                    Visible = holding
+                };
+                RingLabels.Add(ringlabel);
+                parent.Add(ringlabel);
+                productanchor = ringlabel;
+            }
+            CapLabel = new Label("C")
+            {
+                X = Pos.Right(productanchor),
+                Y = Pos.Bottom(anchor),
+                Width = 1,
+                Height = 1,
+                Visible = holding
+            };
+            parent.Add(CapLabel);
+
+
+        }
+        public Label GetAnchor()
+        {
+            return Anchor;
+        }
+        public void UpdateLabel()
+        {
+            var holding = Robot.IsHoldingSomething();
+            GripperLabel.Visible = !holding;
+            BaseLabel.Visible = holding;
+            CapLabel.Visible = holding;
+            foreach (var label in RingLabels)
+                label.Visible = holding;
+            if (holding)
+            {
+                var product = Robot.GetHeldProduct();
+                BaseLabel.ColorScheme = GetBaseColorScheme(product!= null ? product.Base : null);
+                CapLabel.ColorScheme = GetCapColorScheme(product!= null ? product.Cap : null);
+                
+                var anchor = BaseLabel;
+
+                for (var i = 0; i < 3; i++)
+                {
+                    if (i < product.RingList.Count)
+                    {
+                        RingLabels.ElementAt(i).ColorScheme = GetRingColorScheme(product.RingList.ElementAt(i));
+                        RingLabels.ElementAt(i).Visible = holding;
+                        RingLabels.ElementAt(i).X = Pos.Right(anchor);
+                        anchor = RingLabels.ElementAt(i);
+                    }
+                    else
+                    {
+                        RingLabels.ElementAt(i).Visible = false;
+                    }
+
+                }
+                if (product.Cap == null)
+                    CapLabel.Visible = false;
+                else
+                {
+                    CapLabel.X = Pos.Right(anchor);
+                }
+
+            }
+
+            
+
+        }
+
+        private ColorScheme GetBaseColorScheme(BaseElement bottom)
+        {
+            if(bottom == null)
+            {
+                return Config.ProductColorSchemeBase0;
+            }
+            switch (bottom.GetBaseColor())
+            {
+                case BaseColor.BaseUncolored:
+                    return Config.ProductColorSchemeBase0;
+                case BaseColor.BaseRed:
+                    return Config.ProductColorSchemeBase1;
+                case BaseColor.BaseBlack:
+                    return Config.ProductColorSchemeBase2;
+                case BaseColor.BaseSilver:
+                    return Config.ProductColorSchemeBase3;
+                default:
+                    return Config.DefaultColorScheme;
+            }
+
+        }
+        private ColorScheme GetRingColorScheme(RingElement ring)
+        {
+            switch (ring.GetRingColor())
+            {
+                case RingColor.RingBlue:
+                    return Config.ProductColorSchemeRing1;
+                case RingColor.RingGreen:
+                    return Config.ProductColorSchemeRing2;
+                case RingColor.RingOrange:
+                    return Config.ProductColorSchemeRing3;
+                case RingColor.RingYellow:
+                    return Config.ProductColorSchemeRing4;
+                default:
+                    return Config.DefaultColorScheme;
+            }
+        }
+        private ColorScheme GetCapColorScheme(CapElement? cap)
+        {
+            if (cap == null)
+            {
+                return Config.ProductColorSchemeBase0;
+            }
+            switch (cap.GetCapColor())
+            {
+                case CapColor.CapBlack:
+                    return Config.ProductColorSchemeCap1;
+                case CapColor.CapGrey:
+                    return Config.ProductColorSchemeCap2;
+                default:
+                    return Config.DefaultColorScheme;
+            }
+        }
+    }
+
 }

@@ -2,7 +2,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>net5.0</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
@@ -29,14 +29,14 @@
     <Content Include="Utility\Logger.cs" />
     <Content Include="Utility\Timer.cs" />
     <Content Include="Utility\ZonesManager.cs" />
-    <Content Include="RobotEssentials\RobotTeamserver.cs" />
-    <Content Include="RobotEssentials\RobotRefbox.cs" />
+    <Content Include="RobotEssentials\TcpConnector.cs" />
+    <Content Include="RobotEssentials\UdpConnector.cs" />
     <Content Include="RobotEssentials\ConnectorBase.cs" />
     <Content Include="RobotEssentials\RobotManager.cs" />
     <Content Include="RobotEssentials\Robot.cs" />
     <Content Include="RobotEssentials\PBMessageLibrary.cs" />
-    <Content Include="RobotEssentials\PBMessageHandler.cs" />
-    <Content Include="RobotEssentials\PBMessageFactory.cs" />
+    <Content Include="RobotEssentials\PBMessageHandlerBase.cs" />
+    <Content Include="RobotEssentials\PBMessageFactoryBase.cs" />
     <Content Include="RobotEssentials\IConnector.cs" />
     <Content Include="protobuff\Zone.cs" />
     <Content Include="protobuff\WorkpieceInfo.cs" />
@@ -76,6 +76,7 @@
     <Content Include="protobuff\Time.cs" />
     <Content Include="protobuff\VersionInfo.cs" />
     <Content Include="protobuff\WorkpieceCommand.cs" />
+    <Content Include="WebGui\WebGui.cs" />
 
   </ItemGroup>
   <ItemGroup>
@@ -84,7 +85,7 @@
     <PackageReference Include="Serilog" Version="2.10.0" />
     <PackageReference Include="Serilog.Sinks.Console" Version="4.0.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Terminal.Gui" Version="1.2.1.0" />
-    <PackageReference Include="YamlDotNet" Version="11.0.1" />
+    <PackageReference Include="Terminal.Gui" Version="1.5.0" />
+    <PackageReference Include="YamlDotNet" Version="11.2.1" />
   </ItemGroup>
 </Project>

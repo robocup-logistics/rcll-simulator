@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading;
+using Opc.Ua;
 using Opc.UaFx;
 using Opc.UaFx.Server;
 using Opc.UaFx.Services;
@@ -15,24 +16,31 @@ namespace Simulator.MPS
         private readonly string URL;
         private readonly OpcServer server;
         private readonly MPSNodeManager m1;
-        private readonly ManualResetEvent WriteEvent;
+        private readonly ManualResetEvent BasicEvent;
+        private readonly ManualResetEvent InEvent;
         //private readonly static Dictionary<OpcNodeId, int> nodesPerSession = new Dictionary<OpcNodeId, int>();
-
-        public MPSOPCUAServer(string name, int port, ManualResetEvent mre, MyLogger log)
+        private readonly string Prefix;
+        private bool isMonitored;
+        public MPSOPCUAServer(string name, int port, ManualResetEvent basicEvent, ManualResetEvent inEvent, MyLogger log)
         {
             MyLogger = log;
             Name = name;
             Port = port;
             URL = "opc.tcp://localhost:" + Convert.ToString(Port) + "/";
             MyLogger.Info("Created Mps " + Name + " with URL = " + URL);
-            WriteEvent = mre;
+            BasicEvent = basicEvent;
+            InEvent = inEvent;
+            isMonitored = false;
+            
+            Prefix = String.Format("HRP on {0,-6}|", Name);
             string[] Namespaces =
-{
+            {
                 "urn:DESKTOP-7TJKAL0:3S%20-%20Smart%20Software%20Solutions%20GmbH:CODESYS%20Control%20Win%20V3:OPCUA:Server",
                 "http://PLCopen.org/OpcUa/IEC61131-3/",
                 "CODESYSSPV3/3S/IecVarAccess"
             };
             m1 = new MPSNodeManager(Namespaces[1], Namespaces, MyLogger);
+            //server.Configurations
             server = new OpcServer(URL, m1);
             try
             {
@@ -43,6 +51,12 @@ namespace Simulator.MPS
             {
                 MyLogger.Log("Port already in use?" + e.ToString());
             }
+        }
+
+        ~MPSOPCUAServer()
+        {
+            MyLogger.Log("Closing the OPCUA Server for " + Name);
+            server.Stop();
         }
 
         public void Start()
@@ -58,10 +72,17 @@ namespace Simulator.MPS
             //server.RequestProcessed += HandleRequestProcessed;
             while (true)
             {
-                //MyLogger.Info("Doing stuff with the Refbox!");
-                //MyLogger.Info("The Refbox connector is still running!");
-
-                Thread.Sleep(500);
+                if(m1.InNodes.StatusNodes.busy.Value == true)
+                {
+                    m1.InNodes.StatusNodes.busy.Value = true;
+                    ApplyChanges(m1.InNodes.StatusNodes.busy);
+                }
+                else
+                {
+                    m1.InNodes.StatusNodes.busy.Value = false;
+                    ApplyChanges(m1.InNodes.StatusNodes.busy);
+                }
+                Thread.Sleep(50);
             }
         }
 
@@ -69,49 +90,82 @@ namespace Simulator.MPS
         {
             return In ? m1.InNodes : m1.BasicNodes;
         }
-        public void UpdateChanges(OpcNode node)
+        public void ApplyChanges(OpcNode node)
         {
-            node.UpdateChanges(server.SystemContext, OpcNodeChanges.Value);
+            node.ApplyChanges(server.SystemContext);
         }
 
         #region MessageHandler
         private void HandleRequestProcessing(object sender, OpcRequestProcessingEventArgs e)
         {
-            const string prefix = "[HRP] ";
-            //MyLogger.Log("------------------------------------------------");
-            MyLogger.Log(prefix + "Processing: " + e.Request + " type = [" + e.Request.GetType().FullName + "]");
 
+          
+            //MyLogger.Log("------------------------------------------------");
+            //MyLogger.Log(prefix + "Processing: " + e.Request + " type = [" + e.Request.GetType().FullName + "]");
             switch (e.Request.ToString())
             {
                 case "Read":
-                    MyLogger.Log(prefix + "Trying to Read from the Server!");
+                    //MyLogger.Log(prefix + "Trying to Read from the Server!");
                     break;
                 case "Write":
-                    MyLogger.Log(prefix + "This is a Write Request");
+                    //MyLogger.Log(prefix + "This is a WriteRequest");
                     break;
                 case "Publish":
-                    MyLogger.Log(prefix + "This is a Publish Request");
+                    //MyLogger.Log(prefix + "This is a Publish Request");
                     break;
                 case "CreateSessionRequest":
-                    MyLogger.Log(prefix + "This is a CreateSessionRequest");
+                    Console.WriteLine(Prefix + "This is a CreateSessionRequest");
                     break;
                 case "GetEndpointsRequest":
-                    MyLogger.Log(prefix + "This is a GetEndpointsRequest");
+                    //MyLogger.Log(prefix + "This is a GetEndpointsRequest");
                     break;
                 case "BrowseRequest":
-                    MyLogger.Log(prefix + "This is a BrowseRequest");
+                    //MyLogger.Log(prefix + "This is a BrowseRequest");
                     break;
                 case "ActivateSessionRequest":
-                    MyLogger.Log(prefix + "This is a ActivateSessionRequest");
+                    //MyLogger.Log(prefix + "This is a ActivateSessionRequest");
                     break;
                 case "ReadRequest":
-                    MyLogger.Log(prefix + "This is a ReadRequest for the node ");
+                    {
+                        Console.WriteLine(Prefix + "This is a ReadRequest");
+                        /*foreach(var com in Request.Commands)
+                        {
+                            Console.WriteLine(Prefix + com.ToString());
+                        }*/
+                    }
+
+                    
                     break;
                 case "WriteRequest":
-                    MyLogger.Log(prefix + "This is a WriteRequest");
+                {
+                    Console.WriteLine(Prefix + "WriteRequest on " + Name + "!");
+                    var Request = (OpcWriteNodesRequest)e.Request;
+                    Console.WriteLine(Prefix + Request.Header);
+                    foreach (var com in Request.Commands)
+                    {
+                        Console.WriteLine(Prefix + com.ToString());
+                    }
+                }
+                    break;
+                case "TranslateBrowsePathsToNodeIdsRequest":
+                    break;
+                case "CreateMonitoredItemsRequest":
+                {
+                    Console.WriteLine(Prefix + " CreateMonitoredItemsRequest");
+                    isMonitored = true;
+                }
+                    break;
+                case "DeleteMonitoredItemsRequest":
+                isMonitored = false;
+                    break;
+                case "CreateSubscriptionRequest":
+                    break;
+                case "PublishRequest":
+                    break;
+                case "CloseSessionRequest":
                     break;
                 default:
-                    MyLogger.Log(prefix + "Not a known Request! {" + e.Request + "}");
+                    Console.WriteLine(Prefix + "Not a known Request! {" + e.Request + "}");
                     break;
             }
 
@@ -131,10 +185,33 @@ namespace Simulator.MPS
             var Request = (OpcWriteNodesRequest)e.Request; 
             //MyLogger.Log("We got a write for [" + Request.Commands[0].NodeId + "] -> [" + Request.Commands[0].Value + "] on the port [" + Port + "] an we wake up the corresponding machine!");
             var nodeName = Request.Commands[0].NodeId.ToString();
+            var parts = nodeName.Split("/");
             var nodeValue = Request.Commands[0].Value.ToString();
-            if (!nodeName.Contains("Enable") || !nodeValue.Equals("True")) return;
-            MyLogger.Log("Got a Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
-            WriteEvent.Set();
+            switch (parts.Last())
+            {
+                case "Enable":
+                    if (nodeValue.ToLower().Equals("true"))
+                    {
+                        MyLogger.Log(nodeName);
+                        if (nodeName.ToLower().Contains("basic"))
+                        {
+                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + m1.BasicNodes.ActionId.Value + "] D0[" + m1.BasicNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            BasicEvent.Set();
+                        }
+                        if(nodeName.ToLower().Contains("in"))
+                        {
+                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            InEvent.Set();
+                        }
+                    }
+                    break;
+                case "ActionId":
+                    if(parts[^3].Equals("In"))
+                        MyLogger.Log("Got a new Value for " + parts.Last() + " [" + nodeValue + "]");
+                    break;
+                default:
+                    return;
+            }
         }
 
         void HandleRequestValidated(object sender, OpcRequestValidatedEventArgs e)
@@ -157,8 +234,8 @@ namespace Simulator.MPS
             }*/
             bool v = e.Request.GetType() == typeof(OpcWriteNodesRequest);
             if (!v) return;
-            MyLogger.Log(e.Request.ToString());
-            WriteEvent.Set();
+            //MyLogger.Log(e.Request.ToString());
+            InEvent.Set();
 
             //WriteEvent.Set();
 

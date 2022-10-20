@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -17,56 +19,74 @@ namespace Simulator.RobotEssentials
         public Team TeamColor { get; }
         public CPosition Position { get; set; }
         private readonly MyLogger MyLogger;
-        private readonly RobotTeamserver? Teamserver;
-        private readonly RobotRefbox? Refbox;
+        private TcpConnector? TcpConnectionTeamserver;
+        private UdpConnector? UdpConnectionTeamserver;
+        private UdpConnector? UdpConnectionRefbox;
         private bool Running;
         private Products? HeldProduct;
         private GameState.Types.State GameState;
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
-        private Zones? CurrentZone;
-        private readonly Queue<GripsMidlevelTasks> Tasks;
-        public GripsMidlevelTasks? CurrentTask { get; set; }
+        public Zones? CurrentZone { get; private set; }
+        public Zones? nextZone { get; private set; }
+
+        private readonly Queue<AgentTask> Tasks;
+
+        public AgentTask? CurrentTask { get; set; }
         private DateTime MoveStart = DateTime.MinValue;
         public List<RobotMachineReportEntry> Machines { get; set; }
+        [JsonIgnore]
         public Thread? WorkingRobotThread { get; set; }
         private RobotManager MyManager;
-        public Window? RobotView { get; set; }
+        //public Window? RobotView { get; set; }
         private readonly Configurations Config;
         public string TaskDescription { get; private set; }
+        [JsonIgnore]
         public ManualResetEvent WaitForPrepare { get; private set; }
         private MpsManager? MpsManager;
+        [JsonIgnore]
+        public List<FinishedTasks> FinishedTasksList { get; }
+
+        private string JsonInformation;
+        private enum TaskEnum : int
+        {
+            None,
+            Move,
+            Deliver,
+            Retrieve,
+            Buffer,
+            Explore
+        }
+
         public Robot(string name, RobotManager manager, Team color, int jersey, bool debug = false)
         {
             Config = Configurations.GetInstance();
             RobotName = name;
             TeamName = Config.Teams[0].Name;
             TeamColor = color;
+
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = (uint)jersey;
-            /*
-            HeldProduct = new Products();
-            HeldProduct.AddPart(new BaseElement(BaseColor.BaseBlack));
-            HeldProduct.AddPart(new RingElement(RingColor.RingBlue));
-            HeldProduct.AddPart(new CapElement(CapColor.CapBlack));
-            */
+            FinishedTasksList = new List<FinishedTasks>();
+
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
+            MyLogger.Log("--------------------------------------------------------");
+            MyLogger.Log(RobotName + " is ready for production!");
             Running = true;
             RobotState = RobotState.Active;
             WaitForPrepare = new ManualResetEvent(false);
-            if (!Config.MockUp)
-            {
-                Teamserver = new RobotTeamserver(this, MyLogger);
-            }
+
             CurrentZone = null;
-            Tasks = new Queue<GripsMidlevelTasks>();
+            Tasks = new Queue<AgentTask>();
             Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
             MpsManager = null;
-
+            TcpConnectionTeamserver = null;
+            UdpConnectionTeamserver = null;
+            UdpConnectionRefbox = null;
+            nextZone = null;
         }
-
 
         public string GetHeldProductString()
         {
@@ -80,7 +100,16 @@ namespace Simulator.RobotEssentials
         {
             return CurrentZone;
         }
-
+        public Products? GetHeldProduct()
+        {
+            //MyLogger.Log("Checking if a Product is held. Currently = " + (HeldProduct == null ? "null" : HeldProduct.ProductDescription()));
+            return HeldProduct;
+        }
+        public void DropItem()
+        {
+            MyLogger.Log("Dropping my Product!");
+            HeldProduct = null;
+        }
         public void SetZone(Zones zone)
         {
             CurrentZone = zone;
@@ -105,7 +134,7 @@ namespace Simulator.RobotEssentials
             }
         }
 
-        public void SetGripsTasks(GripsMidlevelTasks task)
+        public void SetAgentTasks(AgentTask task)
         {
             switch (Config.IgnoreTeamColor)
             {
@@ -114,45 +143,52 @@ namespace Simulator.RobotEssentials
                     //TODO added canceling of tasks, need to evaluate if behaviour is now correct!
                     CurrentTask.Canceled = true;
                     CurrentTask.Successful = true;
-                    Teamserver.AddMessage(Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks));
-                    return;
-                case true:
-                {
-                    var check = false;
-                    foreach (var t in Tasks)
+                    if (Config.RobotConnectionType.Equals("udp"))
                     {
-                        if (t.TaskId == task.TaskId)
-                        {
-                            MyLogger.Log("Current Task is already in the list!");
-                            check = true;
-                            return;
-                        }
-                    }
-
-                    if (!check)
-                    {
-                        MyLogger.Log("Added a new Task!");
-                        MyLogger.Log(task.ToString());
-                        Tasks.Enqueue(task);
+                        UdpConnectionTeamserver.AddMessage(UdpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
                     else
                     {
-                        MyLogger.Log("The task with id " + task.TaskId + " is already in my task list!");
+                        TcpConnectionTeamserver.AddMessage(TcpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
-
-                    break;
-                }
-                case false when task.RobotId == this.JerseyNumber && task.TeamColor == this.TeamColor:
-                {
-                    if (CurrentTask != null && task.CancelTask && task.TaskId == CurrentTask.TaskId)
+                    return;
+                case true:
                     {
-                        MyLogger.Log("Current task should be canceled!");
+                        var check = false;
+                        foreach (var t in Tasks)
+                        {
+                            if (t.TaskId == task.TaskId)
+                            {
+                                MyLogger.Log("Current Task is already in the list!");
+                                check = true;
+                                return;
+                            }
+                        }
+
+                        if (!check)
+                        {
+                            MyLogger.Log("Added a new Task!");
+                            MyLogger.Log(task.ToString());
+                            Tasks.Enqueue(task);
+                        }
+                        else
+                        {
+                            MyLogger.Log("The task with id " + task.TaskId + " is already in my task list!");
+                        }
+
+                        break;
                     }
-                    MyLogger.Log("Added a new Task!");
-                    MyLogger.Log(task.ToString());
-                    Tasks.Enqueue(task);
-                    break;
-                }
+                case false when task.RobotId == this.JerseyNumber && task.TeamColor == this.TeamColor:
+                    {
+                        if (CurrentTask != null && task.CancelTask && task.TaskId == CurrentTask.TaskId)
+                        {
+                            MyLogger.Log("Current task should be canceled!");
+                        }
+                        MyLogger.Log("Added a new Task!");
+                        MyLogger.Log(task.ToString());
+                        Tasks.Enqueue(task);
+                        break;
+                    }
                 default:
                     MyLogger.Log("The received task is not for me, will ignore!");
                     break;
@@ -162,39 +198,91 @@ namespace Simulator.RobotEssentials
         public void Run()
         {
             MyLogger.Log("Robot " + RobotName + " is starting!");
-            Refbox?.Start();
-            Teamserver?.Start();
+
+            if (!Config.MockUp)
+            {
+                if (Config.RobotDirectBeaconSignals)
+                {
+                    UdpConnectionRefbox =
+                        new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
+                    UdpConnectionRefbox.Start();
+                }
+                if (Config.RobotConnectionType.Equals("udp"))
+                {
+                    UdpConnectionTeamserver = new UdpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger, true);
+                    UdpConnectionTeamserver.Start();
+                }
+                else
+                {
+                    TcpConnectionTeamserver = new TcpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger);
+                    TcpConnectionTeamserver.Start();
+                }
+            }
+
 
             MyLogger.Log("Starting " + RobotName + "'s working thread! Mockup = " +
                          Configurations.GetInstance().MockUp.ToString());
-            if (Config.MockUp)
+            Work();
+            if (Config.RobotConnectionType.Equals("udp"))
             {
-                WorkMockup();
+                UdpConnectionTeamserver.Stop();
             }
             else
             {
-                Work();
+
+                TcpConnectionTeamserver?.Stop();
             }
         }
 
-        public void Test()
+        private void AddMessage(PBMessageFactoryBase.MessageTypes type)
         {
-            var msg = Teamserver?.GetTestMessage();
-            if (msg != null)
+            MyLogger.Log("Sending a " + type.ToString() + "!");
+
+            if (Config.RobotConnectionType.Equals("udp"))
             {
-                MyLogger.Log(msg);
+                var message = UdpConnectionTeamserver?.CreateMessage(type);
+                if (message != Array.Empty<byte>())
+                {
+                    UdpConnectionTeamserver?.AddMessage(message);
+                }
+                else
+                {
+                    MyLogger.Log("No" + type.ToString() + " can be sent!");
+                }
+            }
+            else
+            {
+                var message = TcpConnectionTeamserver?.CreateMessage(type);
+                if (message != Array.Empty<byte>())
+                {
+                    TcpConnectionTeamserver?.AddMessage(message);
+                }
+                else
+                {
+                    MyLogger.Log("No" + type.ToString() + " can be sent!");
+                }
             }
         }
+
+
+
         #region BasicBehaviour
 
         private bool Move(Zone TargetZone)
         {
             var attempt = 0;
+
             var path = ZonesManager.GetInstance().Astar(CurrentZone, ZonesManager.GetInstance().GetZone(TargetZone));
+            if (path.Count == 0 && CurrentZone.ZoneId == TargetZone)
+            {
+                MyLogger.Log("Finished the move as I'm already in place!");
+                return true;
+            }
             MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
             foreach (var z in path)
             {
                 TaskDescription = "Moving to " + z.ZoneId;
+                nextZone = z;
                 MyLogger.Log("Doing a step towards + " + z.ZoneId);
                 MyLogger.Log("Getting the Mutex from zone " + z.ZoneId.ToString());
                 z.ZoneMutex.WaitOne();
@@ -233,22 +321,30 @@ namespace Simulator.RobotEssentials
             if (attempt != 4)
             {
                 MyLogger.Log("Failed due to exceding amount of try's");
+                nextZone = null;
                 CurrentTask.Successful = false;
                 return false;
             }
             else
             {
                 MyLogger.Log("Finishing the move command");
+                nextZone = null;
                 return true;
             }
 
         }
         private bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0)
         {
+            if (CurrentZone.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint))
+            {
+                MyLogger.Log("Unable to GRIP, not yet in position!");
+                return false;
+            }
             MyLogger.Log("At station starting the GRIP Action!");
             TaskDescription = "Grasping Product";
+            SerializeRobotToJson();
             var attempts = 0;
-            while (HeldProduct == null && attempts < 60)
+            while (HeldProduct == null && attempts < 30)
             {
                 MyLogger.Log("[Attempt nr " + attempts + "] Trying to get a product from the machine!");
                 Thread.Sleep(1000);
@@ -276,40 +372,89 @@ namespace Simulator.RobotEssentials
             }
         }
 
+        private bool PlaceProduct(Mps mps, string machinePoint = "input", uint shelfNumber = 0)
+        {
+            if (!mps.EmptyMachinePoint(machinePoint))
+            {
+                MyLogger.Log("Something went wrong with placing. Seems there is already a product at " + machinePoint + " of machine " + mps.Name);
+                return false;
+            }
+            TaskDescription = "Placing product";
+            SerializeRobotToJson();
+            MyLogger.Log("Aligning and starting the place action");
+            Thread.Sleep(Config.RobotPlaceDuration);
+            switch (mps.Type)
+            {
+                case MPS.Mps.MpsType.RingStation:
+                    {
+                        ((MPS_RS)mps).PlaceProduct(machinePoint, HeldProduct);
+                        if (!machinePoint.Equals("slide") && Config.SendPrepare)
+                        {
+                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        }
+                        break;
+                    }
+                case MPS.Mps.MpsType.DeliveryStation:
+                    {
+                        mps.PlaceProduct(machinePoint, HeldProduct);
+                        if (Config.SendPrepare)
+                        {
+                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        }
+
+                        break;
+                    }
+                case MPS.Mps.MpsType.CapStation:
+                        ((MPS_CS)mps).PlaceProduct(machinePoint, HeldProduct);
+                        if (Config.SendPrepare)
+                        {
+                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        }
+                        break;
+                default:
+                    mps.PlaceProduct(machinePoint, HeldProduct);
+                    break;
+            }
+
+            HeldProduct = null;
+            TaskDescription = "Idle";
+            return true;
+        }
+
         #endregion
+
         #region Grips Tasks
+
         private void MoveToWaypoint()
         {
             MyLogger.Log("Move To Waypoint task!");
             TaskDescription = "Moving to Waypoint";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 MyLogger.Log("MoveToWayPoint -> current task is NULL!");
                 return;
             }
-            var Waypoint = CurrentTask.MoveToWaypoint.Waypoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint);
+            var Waypoint = CurrentTask.Move.Waypoint;
+            var MachinePoint = CurrentTask.Move.MachinePoint;
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint, MachinePoint);
             if (targetZone == 0)
             {
                 MyLogger.Log("Couldn't find the machine position!");
                 TaskDescription = "Idle";
                 CurrentTask.Successful = false;
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                if (message != null)
-                {
-                    Teamserver?.AddMessage(message);
-                }
+                AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 return;
             }
             //todo add check why task was unsuccessful and if pathing failed replan the path
             if (Move(targetZone))
             {
-                MyLogger.Log("Finished the move to waypoint successfull!");
+                MyLogger.Log("Finished the move to waypoint successful!");
                 CurrentTask.Successful = true;
             }
             else
             {
-                MyLogger.Log("Finished the move to waypoint unsuccessfull!");
+                MyLogger.Log("Finished the move to waypoint unsuccessful!");
                 if (CurrentTask.Canceled)
                 {
                     TaskDescription = "Idle";
@@ -320,11 +465,7 @@ namespace Simulator.RobotEssentials
 
             if (!Config.MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                if (message != null)
-                {
-                    Teamserver?.AddMessage(message);
-                }
+                AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             }
 
 
@@ -336,20 +477,21 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Get From Station task!");
             TaskDescription = "GetFromStationTask";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 MyLogger.Log("GetFromStation -> the current task is NULL!");
                 return;
             }
-            var machine = CurrentTask.GetFromStation.MachineId;
+            var machine = CurrentTask.Retrieve.MachineId;
             MpsManager ??= MpsManager.GetInstance();
-            var mps = MpsManager.GetMachineViaId(CurrentTask.GetFromStation.MachineId);
-            var target = CurrentTask.GetFromStation.MachinePoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine);
-            if(targetZone == 0)
+            var mps = MpsManager.GetMachineViaId(CurrentTask.Retrieve.MachineId);
+            var target = CurrentTask.Retrieve.MachinePoint;
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
+            if (targetZone == 0)
             {
                 MyLogger.Log("Couldnt find the requested target machine!");
-                if(!Config.MockUp)
+                if (!Config.MockUp)
                 {
                     CurrentTask.Successful = false;
                     //TODO maybe add feedback for wrongly issued targets
@@ -365,9 +507,9 @@ namespace Simulator.RobotEssentials
                 if (mps.Type == Mps.MpsType.CapStation && !target.Equals("output"))
                 {
                     MyLogger.Log("Prepare in case of a CapStation!");
-                    if(Config.SendPrepare)
+                    if (Config.SendPrepare)
                     {
-                        PrepareMachine();
+                        AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
                     }
 
                 }
@@ -375,12 +517,7 @@ namespace Simulator.RobotEssentials
                 if (!Configurations.GetInstance().MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                    if (message != null)
-                    {
-                        Teamserver?.AddMessage(message);
-                        return;
-                    }
+                    AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 }
             }
             if (!Configurations.GetInstance().MockUp)
@@ -393,13 +530,13 @@ namespace Simulator.RobotEssentials
                         {
                             if (Config.SendPrepare)
                             {
-                                PrepareMachine();
+                                AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
                             }
                             break;
                         }
                 }
             }
-            if(mps == null)
+            if (mps == null)
             {
                 MyLogger.Log("The Machine was not found? Griping not possible?");
                 CurrentTask = null;
@@ -408,27 +545,25 @@ namespace Simulator.RobotEssentials
             CurrentTask.Successful = GripProduct(mps, target);
             if (!Configurations.GetInstance().MockUp)
             {
-                var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                if (message != null)
-                {
-                    Teamserver?.AddMessage(message);
-                }
+                AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             }
-            CurrentTask = null;
             TaskDescription = "Idle";
         }
+
         private void DeliverToStation()
         {
             MyLogger.Log("DeliverToStation!");
             TaskDescription = "DeliverToStationTask";
+            SerializeRobotToJson();
             if (CurrentTask == null)
             {
                 return;
             }
-            var machine = CurrentTask.DeliverToStation.MachineId;
-            var target = CurrentTask.DeliverToStation.MachinePoint;
-            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine);
+            var machine = CurrentTask.Deliver.MachineId;
+            var target = CurrentTask.Deliver.MachinePoint;
+            Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);
+
             if (targetZone == CurrentZone.ZoneId)
             {
                 MyLogger.Log("I am in position to do my task!");
@@ -439,60 +574,25 @@ namespace Simulator.RobotEssentials
                 if (!Config.MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
-                    var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                    if (message != null)
-                    {
-                        Teamserver?.AddMessage(message);
-                        return;
-                    }
+                    AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
+                    return;
                 }
             }
             MyLogger.Log("Placing the product on the machine!");
             MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
-            switch (mps.Type)
-            {
-                case MPS.Mps.MpsType.RingStation:
-                    {
-                        ((MPS_RS)mps).PlaceProduct(target, HeldProduct);
-                        if(Config.SendPrepare)
-                        {
-                            PrepareMachine();
-                        }
-                        break;
-                    }
-                case MPS.Mps.MpsType.DeliveryStation:
-                    {
-                        mps.PlaceProduct(target, HeldProduct);
-                        if(Config.SendPrepare)
-                        {
-                            PrepareMachine();
-                        }
-                        break;
-                    }
-                default:
-                    mps.PlaceProduct(target, HeldProduct);
-                    break;
-            }
-
-            HeldProduct = null;
-
+            CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
             {
-                CurrentTask.Successful = true;
-                var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                if (message != null)
-                {
-                    Teamserver.AddMessage(message);
-                }
+                AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             }
             TaskDescription = "Idle";
         }
         private void BufferCapStation()
         {
             MyLogger.Log("BufferCapStation!");
-            var machine = CurrentTask?.BufferCapStation.MachineId;
-            var target = CurrentTask?.BufferCapStation.ShelfNumber;
+            var machine = CurrentTask?.Buffer.MachineId;
+            var target = CurrentTask?.Buffer.ShelfNumber;
             MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
             if (GripProduct(mps, "shelf" + target.ToString()))
@@ -501,26 +601,19 @@ namespace Simulator.RobotEssentials
             }
 
             MyLogger.Log("Trying to place the currently held Product on the input side of the CS");
-            mps.PlaceProduct("input", HeldProduct);
-            MyLogger.Log("Next we need to send a prepare machine to the teamserver!");
-            if(Config.SendPrepare)
-            {
-                PrepareMachine();
-            }
-            
-            MpsManager ??= MpsManager.GetInstance();
+            CurrentTask.Successful = PlaceProduct(mps);
 
+            MyLogger.Log("Next we need to send a prepare machine to the teamserver!");
+            if (Config.SendPrepare)
+            {
+                AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+            }
             if (CurrentTask == null)
             {
                 return;
             }
-            MyLogger.Log("Buffered the machine!");
-            CurrentTask.Successful = true;
-            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-            if (message != null)
-            {
-                Teamserver?.AddMessage(message);
-            }
+            MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
+            AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             TaskDescription = "Idle";
         }
         private void ExploreMachine()
@@ -532,33 +625,18 @@ namespace Simulator.RobotEssentials
                 return;
             }
             CurrentTask.Successful = true;
-            var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-            if (message != null)
-            {
-                Teamserver.AddMessage(message);
-            }
-
+            AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
         }
+
         private void Explore()
         {
             MyLogger.Log("Current Zone = " + CurrentZone.ToString());
         }
-        private void PrepareMachine()
-        {
-            var message = Teamserver?.CreateMessage(PBMessageFactory.MessageTypes.GripsPrepareMachine);
-            MyLogger.Log("Tried to create a GripPrepareMachineTask!");
-            if (message != null)
-            {
-                MyLogger.Log("Sending a GripsPrepareMachineTask!");
-                Teamserver?.AddMessage(message);
-                return;
-            }
-            MyLogger.Log("No Prepare machine task can be sent!");
-            return;
-        }
+
         #endregion
         public void Work()
         {
+            SerializeRobotToJson();
             while (Running)
             {
                 switch (RobotState)
@@ -575,17 +653,6 @@ namespace Simulator.RobotEssentials
                             MyLogger.Log("#######################################################################");
                             MyLogger.Log("The current task = " + CurrentTask.ToString());
                             MyLogger.Log("#######################################################################");
-                            if (CurrentTask.ReportAllSeenMachines)
-                            {
-                                MyLogger.Log("Got a Report all seen Machines flag!");
-                                //todo add a answer to report all seen machines
-                                var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.ReportAllMachines);
-                                if (message != null)
-                                {
-                                    Teamserver.AddMessage(message);
-                                }
-
-                            }
 
                             if (CurrentTask.PauseTask)
                             {
@@ -596,55 +663,50 @@ namespace Simulator.RobotEssentials
                             {
                                 MyLogger.Log("Got a Cancel Task!");
                             }
+                            switch (CheckTaskType())
+                            {
+                                case TaskEnum.Move:
+                                    MoveToWaypoint();
+                                    break;
+                                case TaskEnum.Retrieve:
+                                    GetFromStation();
+                                    break;
+                                case TaskEnum.Deliver:
+                                    DeliverToStation();
+                                    break;
+                                case TaskEnum.Buffer:
+                                    BufferCapStation();
+                                    break;
+                                case TaskEnum.Explore:
+                                    ExploreMachine();
+                                    break;
+                                case TaskEnum.None:
+                                default:
+                                    MyLogger.Log("Somehow an empty task was added?");
 
-                            if (CurrentTask.MoveToWaypoint != null)
-                            {
-                                MoveToWaypoint();
-                                CurrentTask = null;
-                            }
-                            else if (CurrentTask.GetFromStation != null)
-                            {
+                                    if (Configurations.GetInstance().IgnoreTeamColor)
+                                    {
+                                        /*
+                                        var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                                        if(message != null)
+                                        {
+                                            Teamserver.AddMessage(message);
+                                        }
+                                        */
 
-                                GetFromStation();
-                                CurrentTask = null;
-                            }
-                            else if (CurrentTask.DeliverToStation != null)
-                            {
-                                DeliverToStation();
-                                CurrentTask = null;
-                            }
-                            else if (CurrentTask.BufferCapStation != null)
-                            {
-                                BufferCapStation();
-                                CurrentTask = null;
-                            }
-                            else if (CurrentTask.ExploreMachine != null)
-                            {
-                                ExploreMachine();
-                                CurrentTask = null;
-                            }
-                            else
-                            {
-                                if (Configurations.GetInstance().IgnoreTeamColor)
-                                {
-                                    /*
-                                    var message = Teamserver.CreateMessage(PBMessageFactory.MessageTypes.GripsMidlevelTasks);
-                                    if(message != null)
-                                    {
-                                        Teamserver.AddMessage(message);
                                     }
-                                    */
-                                    CurrentTask = null;
-                                }
-                                else
-                                {
-                                    if (CurrentTask.TeamColor != TeamColor)
+                                    else
                                     {
-                                        MyLogger.Log("Got a task thats not for me. I ignore it!");
-                                        CurrentTask = null;
+                                        if (CurrentTask.TeamColor != TeamColor)
+                                        {
+                                            MyLogger.Log("Got a task thats not for me. I ignore it!");
+                                        }
                                     }
-                                }
+                                    break;
                             }
+                            FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
+                            SerializeRobotToJson();
+                            CurrentTask = null;
                         }
                         else
                         {
@@ -660,8 +722,6 @@ namespace Simulator.RobotEssentials
                                 //TestMove();
                             }
                         }
-
-
                         break;
                     case RobotState.Disqualified:
                         break;
@@ -679,73 +739,36 @@ namespace Simulator.RobotEssentials
 
                 MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring + "! Gamephase is [" +
                              GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
-                Thread.Sleep(1000);
+
+                Thread.Sleep(500);
             }
         }
-
-        public void WorkMockup()
+        private TaskEnum CheckTaskType()
         {
-            MyLogger.Log("Entered WorkMockup! Running = " + Running.ToString());
-            while (Running)
-            {
-                //MyLogger.Log("is [" + RobotState.ToString() + "] and doing his job! Gamephase is [" +
-                //             GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
-                if (CurrentTask != null)
-                {
-                    if (CurrentTask.MoveToWaypoint != null)
-                    {
-                        MoveToWaypoint();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.GetFromStation != null)
-                    {
-                        GetFromStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.DeliverToStation != null)
-                    {
-                        DeliverToStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.BufferCapStation != null)
-                    {
-                        BufferCapStation();
-                        CurrentTask = null;
-                    }
-                    else if (CurrentTask.ExploreMachine != null)
-                    {
-                        ExploreMachine();
-                        CurrentTask = null;
-                    }
-                }
-                else
-                {
-                    if (Tasks.Count != 0)
-                    {
-                        MyLogger.Log("No Current task, fetching a new one from my task list!");
-                        CurrentTask = Tasks.Dequeue();
-                        MyLogger.Log("The new task = " + CurrentTask.ToString());
-                    }
-                    else
-                    {
-                        //MyLogger.Log("No Tasks currently!");
-                        //TestMove();
-                    }
-                }
-                Thread.Sleep(100);
-            }
+            if (CurrentTask.Move != null)
+                return TaskEnum.Move;
+            else if (CurrentTask.Retrieve != null)
+                return TaskEnum.Retrieve;
+            else if (CurrentTask.Deliver != null)
+                return TaskEnum.Deliver;
+            else if (CurrentTask.Buffer != null)
+                return TaskEnum.Buffer;
+            else if (CurrentTask.ExploreMachine != null)
+                return TaskEnum.Explore;
+            else
+                return TaskEnum.None;
         }
 
         public void TestMove()
         {
-            GripsMidlevelTasks task = new GripsMidlevelTasks()
+            AgentTask task = new AgentTask()
             {
                 RobotId = 0,
                 TaskId = 1,
                 TeamColor = TeamColor,
-                MoveToWaypoint = new MoveToWaypoint
+                Move = new Move
                 {
-                    Waypoint = "Test Zone"
+                    Waypoint = "C_Z11"
                 }
             };
             CurrentTask = task;
@@ -767,7 +790,9 @@ namespace Simulator.RobotEssentials
         }
         public string GetDebugLog(int lines)
         {
-            return MyLogger.GetLines(lines);
+            var format = "Task {0} finished {1}\n";
+            return FinishedTasksList.Aggregate("", (current, task) => current + String.Format(format, task.TaskId, task.Successful ? "successful" : "unsuccessful"));
+            //return MyLogger.GetLines(lines);
         }
         public string GetConnectionState()
         {
@@ -775,7 +800,30 @@ namespace Simulator.RobotEssentials
             {
                 return "Mockup";
             }
-            return Teamserver?.GetConnected().ToString() ?? string.Empty;
+
+            if (Config.RobotConnectionType.Equals("tcp"))
+            {
+                if (TcpConnectionTeamserver != null)
+                {
+                    return TcpConnectionTeamserver.GetConnected().ToString() ?? string.Empty;
+
+                }
+                else
+                {
+                    return "starting";
+                }
+            }
+            else
+            {
+                return "UDP";
+            }
+
+        }
+
+        public void SerializeRobotToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 
@@ -797,6 +845,18 @@ namespace Simulator.RobotEssentials
             X = x;
             Y = y;
             Orientation = orientation;
+        }
+    }
+
+    public class FinishedTasks
+    {
+        public uint TaskId { get; }
+        public bool Successful { get; }
+
+        public FinishedTasks(uint taskid, bool success)
+        {
+            TaskId = taskid;
+            Successful = success;
         }
     }
 }

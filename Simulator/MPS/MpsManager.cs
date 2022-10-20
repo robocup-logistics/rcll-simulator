@@ -12,7 +12,7 @@ namespace Simulator.MPS
     public class MpsManager
     {
         //private member and getter for my singleton configurations class
-        private static MpsManager? Instance;
+        private static MpsManager Instance;
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
@@ -22,19 +22,23 @@ namespace Simulator.MPS
         }
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
+        private MyLogger myLogger;
+        private UdpConnector Refbox;
+        private Configurations Config;
         private MpsManager()
         {
-            var mylogger = new MyLogger("MpsManager", true);
-            mylogger.Log("Started the Mps Manager!");
+            myLogger = new MyLogger("MpsManager", true);
+            myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
             CreateMachines();
             AllMachineSet = false;
-            if (!Configurations.GetInstance().MockUp)
-            {
-                var rf = new RobotRefbox(null, mylogger);
-                rf.Start();
-            }
             Instance = this;
+            Config = Configurations.GetInstance();
+            if(!Config.MockUp)
+            {
+                Refbox = new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanRecvPort, myLogger);
+                Refbox.Start();
+            }
         }
         private void CreateMachines()
         {
@@ -75,7 +79,6 @@ namespace Simulator.MPS
                         currentMps = null;
                         break;
                 }
-
                 thread?.Start();
                 if(currentMps==null)
                 {
@@ -100,6 +103,18 @@ namespace Simulator.MPS
         }
         public void PlaceMachines(MachineInfo Info)
         {
+            myLogger.Log("Starting to PlaceMachines!");
+            myLogger.Log("Received Information = " + Info.ToString());
+            var list = new List<Zone>();
+            foreach (var machine in Info.Machines)
+            {
+                list.Add(machine.Zone);
+            }
+            if(list.Distinct().Count() != Info.Machines.Count)
+            {
+                myLogger.Log("Duplicated zones for machines. Will skip this place machines!");
+                return;
+            }
             foreach (var machineInfo in Info.Machines)
             {
                 foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name)))
@@ -108,6 +123,8 @@ namespace Simulator.MPS
                     {
                         continue;
                     }
+                    myLogger.Log("Placed " + machine.Name + "!");
+
                     machine.Zone = machineInfo.Zone;
                     machine.Rotation = machineInfo.Rotation;
                     ZonesManager.GetInstance().PlaceMachine(machineInfo.Zone, machine.Rotation, machine);
@@ -136,7 +153,14 @@ namespace Simulator.MPS
                 AllMachineSet = true;
             }
         }
-
+        public void StartRefboxConnection()
+        {
+            if (!Configurations.GetInstance().MockUp)
+            {
+                var rf = new UdpConnector(Configurations.GetInstance().Refbox.IP,Configurations.GetInstance().Refbox.CyanRecvPort, myLogger);
+                rf.Start();
+            }
+        }
         internal bool FindMachine(string machine, ref Zone Target)
         {
             foreach (var m in Machines)

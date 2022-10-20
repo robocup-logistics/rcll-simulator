@@ -16,8 +16,8 @@ namespace Simulator.Utility
         public float TimeFactor { get; private set; }
         private Thread? Tickthread;
         //private Logger Logger;
-        private RobotRefbox Refbox;
-        private readonly PBMessageFactory Factory;
+        private UdpConnector Refbox;
+        private readonly PBMessageFactoryBase FactoryBase;
         private MyLogger MyLogger;
         private Mutex TimerMutex;
         //private member and getter for my singleton configurations class
@@ -37,8 +37,8 @@ namespace Simulator.Utility
             Paused = true;
             TimeFactor = Configurations.GetInstance().TimeFactor;
             MyLogger = new MyLogger("Timer", true);
-            Factory = new PBMessageFactory(null, MyLogger);
-            //Refbox = new RobotRefbox(null, myLogger);
+            FactoryBase = new PBMessageFactoryBase(MyLogger);
+            //Refbox = new UdpConnector(null, myLogger);
             //Refbox.StartSendThread();
             //Tickthread = new Thread(Tick);
             //Tickthread.Start();
@@ -81,7 +81,7 @@ namespace Simulator.Utility
                         Nsec -= 1000;
                     }
                 }
-                var message = Factory.CreateMessage(PBMessageFactory.MessageTypes.SimSynchTime);
+                var message = FactoryBase.CreateMessage(PBMessageFactoryBase.MessageTypes.SimSynchTime);
                 if(message != null)
                 {
                     Refbox.Messages.Enqueue(message);

@@ -32,13 +32,20 @@ namespace Simulator
 
         public bool IgnoreTeamColor { get; private set; } = true;
         public bool SendPrepare { get; private set; } = true;
+        public bool FixedMPSplacement { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
+        public int RobotPlaceDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
         public int BSTaskDuration { get; private set; }
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
+        public bool AppendLogging { get; private set; }
+        public string RobotConnectionType { get; private set; }
+        public bool RobotDirectBeaconSignals { get; private set; }
+        public string WebguiPrefix { get; private set;}
+        public uint WebguiPort { get; private set;}
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -53,6 +60,11 @@ namespace Simulator
             DSTaskDuration = 1000;
             RSTaskDuration = 1000;
             RobotMoveZoneDuration = 1000;
+            FixedMPSplacement = false;
+            RobotPlaceDuration = 4000;
+            AppendLogging = false;
+            RobotConnectionType = "tcp";
+            RobotDirectBeaconSignals = false;
         }
 
         //private member and getter for my singleton configurations class
@@ -79,6 +91,8 @@ namespace Simulator
             var teams = (YamlMappingNode)mapping.Children[new YamlScalarNode("teams")];
             var refbox = (YamlMappingNode)mapping.Children[new YamlScalarNode("refbox")];
             var general = (YamlMappingNode)mapping.Children[new YamlScalarNode("general")];
+            var webgui = (YamlMappingNode)mapping.Children[new YamlScalarNode("webui")];
+
             foreach (var keyPair in stations.Children)
             {
                 var config = CreateMachineConfig(keyPair);
@@ -87,6 +101,7 @@ namespace Simulator
                     MpsConfigs.Add(config);
                 }
             }
+
             foreach (var keyPair in robots.Children)
             {
                 var config = CreateRobotConfig(keyPair);
@@ -95,6 +110,7 @@ namespace Simulator
                     RobotConfigs.Add(config);
                 }
             }
+
             foreach (var keyPair in teams.Children)
             {
                 var config = CreateTeamConfig(keyPair);
@@ -103,6 +119,7 @@ namespace Simulator
                     Teams.Add(config);
                 }
             }
+
             Refbox = CreateRefboxConfig(refbox);
             foreach (var (key, value) in general.Children)
             {
@@ -114,22 +131,24 @@ namespace Simulator
                       rs-mount-duration: 3.5  # mounting a ring 3.5 seconds - taken from gazebo
                       ds-deliver-duration: 3.5  # time it takes to deliver - taken from gazebo
                  */
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
                     case "robot-prepare-mps":
-                        SendPrepare = bool.Parse(value.ToString());
+                        SendPrepare = bool.Parse(value.ToString().ToLower());
                         break;
                     case "ignore-teamcolor":
-                        IgnoreTeamColor = bool.Parse(value.ToString());
+                        IgnoreTeamColor = bool.Parse(value.ToString().ToLower());
                         break;
                     case "mockup-connections":
-                        MockUp = bool.Parse(value.ToString());
+                        MockUp = bool.Parse(value.ToString().ToLower());
                         break;
                     case "robot-move-zone-duration":
-                        RobotMoveZoneDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000); // convert from seconds to milliseconds
+                        RobotMoveZoneDuration =
+                            (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
+                                  1000); // convert from seconds to milliseconds
                         break;
                     case "belt-action-duration":
                         BeltActionDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
@@ -146,7 +165,32 @@ namespace Simulator
                     case "ds-deliver-duration":
                         DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
+                    case "fixed-mps-position":
+                        FixedMPSplacement = bool.Parse(value.ToString().ToUpper());
+                        break;
+                    case "robot-connection-type":
+                        RobotConnectionType = value.ToString().ToLower();
+                        break;
+                    case "robot-direct-beacon":
+                        RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
+                        break;
+                }
+            }
 
+            foreach (var (key, value) in webgui.Children)
+            {
+
+                switch (key.ToString().ToLower())
+                {
+                    case "prefix":
+                        WebguiPrefix = value.ToString().ToLower();
+                        break;
+                    case "port":
+                        WebguiPort = uint.Parse(value.ToString());
+                        break;
+                    default:
+                        Console.WriteLine("Test!");
+                        break;
                 }
             }
         }
@@ -156,20 +200,22 @@ namespace Simulator
         {
 
             var port = 0;
+            var orientation = 0;
+            var zone = Zone.CZ11;
             var debug = false;
             var type = MpsType.BaseStation;
             var (yamlNode, yamlNode1) = child;
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("This has to be skipped!");
                         return null;
                     case "debug":
-                        switch (value.ToString())
+                        switch (value.ToString().ToLower())
                         {
                             case "true":
                                 debug = true;
@@ -184,7 +230,7 @@ namespace Simulator
 
                         break;
                     case "type":
-                        type = value.ToString() switch
+                        type = value.ToString().ToUpper() switch
                         {
                             "BS" => MpsType.BaseStation,
                             "CS" => MpsType.CapStation,
@@ -197,11 +243,17 @@ namespace Simulator
                     case "port":
                         port = int.Parse(value.ToString());
                         break;
+                    case "orientation":
+                        orientation = int.Parse(value.ToString());
+                        break;
+                    case "position":
+                        zone = (Zone)Enum.Parse(typeof(Zone), value.ToString());
+                        break;
                 }
             }
 
             var color = yamlNode.ToString().Contains("M-") ? Team.Magenta : Team.Cyan;
-            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug);
+            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug, zone, orientation);
             return config;
         }
 
@@ -213,16 +265,16 @@ namespace Simulator
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "jersey":
                         jersey = int.Parse(value.ToString());
                         break;
-                    case "team" when yamlNode1.ToString().Contains("magenta"):
+                    case "team" when yamlNode1.ToString().ToLower().Contains("magenta"):
                         color = Team.Magenta;
                         break;
                     case "team":
@@ -261,10 +313,10 @@ namespace Simulator
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
-                switch (key.ToString())
+                switch (key.ToString().ToLower())
                 {
                     //Console.WriteLine(entry);
-                    case "active" when value.ToString().Equals("false"):
+                    case "active" when value.ToString().ToLower().Equals("false"):
                         //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "name":
@@ -302,7 +354,7 @@ namespace Simulator
                         var publicChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in publicChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "ip":
                                     ip = yamlNode1.ToString();
@@ -324,7 +376,7 @@ namespace Simulator
                         var cyanChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in cyanChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "send":
                                     cyanSendPort = int.Parse(yamlNode1.ToString());
@@ -342,7 +394,7 @@ namespace Simulator
                         var magentaChild = ((YamlMappingNode)value).Children;
                         foreach (var (yamlNode, yamlNode1) in magentaChild)
                         {
-                            switch (yamlNode.ToString())
+                            switch (yamlNode.ToString().ToLower())
                             {
                                 case "send":
                                     magentaSendPort = int.Parse(yamlNode1.ToString());
@@ -399,13 +451,17 @@ namespace Simulator
         public int Port { get; }
         public Team Team { get; }
         public bool Debug { get; }
-        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug)
+        public Zone Zone {get;}
+        public int Orientation {get;}
+        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug, Zone zone = 0, int orientation = -1)
         {
             Name = name;
             Type = type;
             Port = port;
             Team = team;
             Debug = debug;
+            Zone = zone;
+            Orientation = orientation;
         }
 
         public void PrintConfig()
@@ -416,6 +472,8 @@ namespace Simulator
             Console.WriteLine("Port = [" + Port + "]");
             Console.WriteLine("Team = [" + Team + "]");
             Console.WriteLine("Debug = [" + Debug + "]");
+            Console.WriteLine("Zone = [" + Zone + "]");
+            Console.WriteLine("Orientation = [" + Orientation + "]");
         }
     }
 

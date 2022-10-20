@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -9,16 +10,16 @@ namespace Simulator.MPS
     {
         public readonly MyLogger MyLogger;
         public readonly MPSOPCUAServer Refbox;
-        public readonly string Name;
-        public readonly int Port;
+        public string Name { get; private set; }
+        public int Port { get; private set; }
         public MpsType Type;
         public NodeCollection InNodes;
         public NodeCollection BasicNodes;
         public MachineState MachineState;
         public ExplorationState ExplorationState;
         public MachineSide MachineSide;
-        public Zone Zone;
-        public uint Rotation;
+        public Zone Zone { get; set; }
+        public uint Rotation { get; set; }
         public bool Debug;
         public int InternalId { get; }
         public Team Team;
@@ -26,7 +27,8 @@ namespace Simulator.MPS
         public Light GreenLight;
         public Light YellowLight;
         //public Belt Belt;
-        public ManualResetEvent WriteEvent;
+        public ManualResetEvent InEvent;
+        public ManualResetEvent BasicEvent;
         public ManualResetEvent LightEvent;
         public ManualResetEvent BeltEvent;
         public bool GotConnection;
@@ -35,6 +37,7 @@ namespace Simulator.MPS
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
+        public string JsonInformation;
         public enum MpsType
         {
             BaseStation = 100,
@@ -65,7 +68,8 @@ namespace Simulator.MPS
             Team = team;
             GotConnection = false;
             GotPlaced = false;
-            WriteEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            InEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
             LightEvent = new ManualResetEvent(false); // block threads till a write event occurs
             BeltEvent = new ManualResetEvent(false); // block threads till a write event occurs
             ProductAtOut = null;
@@ -74,7 +78,7 @@ namespace Simulator.MPS
             // Initializing simulated machine parts and logger
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
-            RedLight = new Light(LightColor.Red,LightEvent);
+            RedLight = new Light(LightColor.Red, LightEvent);
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
@@ -84,7 +88,7 @@ namespace Simulator.MPS
                 return;*/
             try
             {
-                Refbox = new MPSOPCUAServer(Name, Port, WriteEvent, MyLogger);
+                Refbox = new MPSOPCUAServer(Name, Port, BasicEvent, InEvent, MyLogger);
                 InNodes = Refbox.GetNodeCollection(true);
                 BasicNodes = Refbox.GetNodeCollection(false);
                 var th = new Thread(Refbox.Start);
@@ -104,81 +108,89 @@ namespace Simulator.MPS
         public void ResetMachine()
         {
             TaskDescription = "Reseting!";
-            InNodes.StatusNodes.enable.Value = false;                                      
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
             InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1); 
-            InNodes.ByteError.Value = 0;
-            Refbox.UpdateChanges(InNodes.ByteError);
-            InNodes.StatusNodes.error.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.error);
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+            InNodes.StatusNodes.enable.Value = false;
+            Refbox.ApplyChanges(InNodes.StatusNodes.enable);
             Thread.Sleep(1000);
+            InNodes.ActionId.Value = 0;
+            //Refbox.ApplyChanges(InNodes.ActionId);
+            InNodes.Data0.Value = 0;
+            //Refbox.ApplyChanges(InNodes.Data0);
+            InNodes.Data1.Value = 0;
+            //Refbox.ApplyChanges(InNodes.Data1);
+            InNodes.ByteError.Value = 0;
+            //Refbox.ApplyChanges(InNodes.ByteError);
+            InNodes.StatusNodes.ready.Value = false;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+            InNodes.StatusNodes.error.Value = false;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.error);
+            ProductAtIn = null;
+            ProductAtOut = null;
+            ProductOnBelt = null;
+
             InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
 
-        public void StartOpc(MpsType Station)
+        public void StartTask()
         {
-            /*InNodes.ActionId.Value = (ushort)Actions.MachineTyp;
-            refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = (ushort) ((int)Station / 100);
-            refbox.UpdateChanges(InNodes.Data0); */
-            /*BasicNodes.ActionId.Value = (ushort)Actions.MachineTyp;
-            refbox.UpdateChanges(BasicNodes.ActionId);
-            BasicNodes.Data0.Value = (ushort)((int)Station / 100);
-            refbox.UpdateChanges(BasicNodes.Data0); */
+            InNodes.StatusNodes.busy.Value = true;
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
 
+        public void FinishedTask()
+        {
+            int i = 0;
+            InNodes.StatusNodes.busy.Value = false;
+            Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+        }
         public void HandleBasicTasks()
         {
-            switch (BasicNodes.ActionId.Value)
+            while(true)
             {
-                case (ushort)Actions.RedLight:
-                case (ushort)Actions.YellowLight:
-                case (ushort)Actions.GreenLight:
-                case (ushort)Actions.RYGLight:
-                case (ushort)Actions.ResetLights:
-                    HandleLights();
-                    break;
-                case (ushort)Actions.NoJob:
-                    MyLogger.Log("No Basic Job!");
-                    break;
-                case (ushort)Actions.MachineTyp:
-                    MyLogger.Log("MachineTyp!");
-                    TaskDescription = "MachineType!";
-                    if (BasicNodes.StatusNodes.enable.Value)
-                    {
+                BasicEvent.WaitOne();
+                //MyLogger.Info("We got a write and reset the wait!");
+                BasicEvent.Reset();
+                switch (BasicNodes.ActionId.Value)
+                {
+                    case (ushort)Actions.RedLight:
+                    case (ushort)Actions.YellowLight:
+                    case (ushort)Actions.GreenLight:
+                    case (ushort)Actions.RYGLight:
+                    case (ushort)Actions.ResetLights:
+                        HandleLights();
+                        break;
+                    case (ushort)Actions.NoJob:
+                        MyLogger.Log("No Basic Job!");
+                        break;
+                    case (ushort)Actions.MachineTyp:
+                        MyLogger.Log("MachineTyp!");
+                        //TaskDescription = "MachineType!";
                         BasicNodes.StatusNodes.busy.Value = true;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+                        //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+                        Thread.Sleep(400);
                         BasicNodes.Data0.Value = 0;
-                        Refbox.UpdateChanges(InNodes.Data0);
+                        BasicNodes.Data1.Value = 0;
+                        //Refbox.ApplyChanges(InNodes.Data0);
                         BasicNodes.StatusNodes.enable.Value = false;
-                        Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+                        //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
                         //Thread.Sleep(20);
                         BasicNodes.StatusNodes.busy.Value = false;
-                        Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
-                    }
-                    else
-                    {
-                        MyLogger.Log("Called Handle Machinetype but enable is false");
-                    }
-                    break;
-                default:
-                    MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
-                    break;
+                        Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+                        break;
+                    default:
+                        MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
+                        break;
+                }
+                
             }
-            
+
         }
         public void HandleLights()
         {
             BasicNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
             var state = BasicNodes.Data0.Value.ToString();
             var time = BasicNodes.Data1.Value; // not in use currently
             var LightState = (LightState)Enum.Parse(typeof(LightState), state);
@@ -191,7 +203,7 @@ namespace Simulator.MPS
                     GreenLight.SetLight(LightState.Off);
                     break;
                 case (ushort)Actions.RedLight:
-                    MyLogger.Log("Handle Lights got a RedLight task with [" + LightState.ToString()+ "]!");
+                    MyLogger.Log("Handle Lights got a RedLight task with [" + LightState.ToString() + "]!");
                     RedLight.SetLight(LightState);
                     break;
                 case (ushort)Actions.YellowLight:
@@ -212,44 +224,49 @@ namespace Simulator.MPS
                     break;
             }
             BasicNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(BasicNodes.ActionId);
+            Refbox.ApplyChanges(BasicNodes.ActionId);
             BasicNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.enable);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.enable);
             BasicNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(BasicNodes.StatusNodes.busy);
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
         }
 
         public void HandleBelt()
         {
             MyLogger.Log("Got a Band on Task!");
-            TaskDescription = "BandOnUntilTask";
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            TaskDescription = "Move via Belt";
             var target = (Positions)InNodes.Data0.Value;
             var direction = (Direction)InNodes.Data1.Value;
+            StartTask();
+            MyLogger.Log("Product on belt?");
+            for(var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++)
+            {
+                Thread.Sleep(200);
+            }
+            MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
+            InNodes.StatusNodes.ready.Value = false;
+            Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
             {
                 case Positions.In:
                     ProductAtIn = ProductOnBelt;
-                    ProductOnBelt = null;     
+                    ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
-                    InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    /*InNodes.StatusNodes.ready.Value = true;
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.Out:
                     ProductAtOut = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the OutBeltPosition");
                     InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                     break;
                 case Positions.Mid:
-                    if(direction == Direction.FromInToOut)
+                    if (direction == Direction.FromInToOut)
                     {
                         ProductOnBelt = ProductAtIn;
                         ProductAtIn = null;
@@ -260,8 +277,10 @@ namespace Simulator.MPS
                         ProductAtOut = null;
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
-                    InNodes.StatusNodes.ready.Value = false;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    InNodes.StatusNodes.ready.Value = true;
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+                    /*InNodes.StatusNodes.ready.Value = false;
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;
                 case Positions.NoTarget:
                     MyLogger.Log("Placing Product on NoTarget?");
@@ -271,19 +290,11 @@ namespace Simulator.MPS
                     break;
             }
             //Belt.SetTarget(target, direction);
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
         }
 
-         public void PlaceProduct(string machinePoint, Products? heldProduct)
-         {
+        public void PlaceProduct(string machinePoint, Products? heldProduct)
+        {
             MyLogger.Log("Got a PlaceProduct!");
             switch (machinePoint)
             {
@@ -300,16 +311,16 @@ namespace Simulator.MPS
             }
             //if (!Configurations.GetInstance().MockUp)
             {
-                if(ProductAtOut != null)
+                if (ProductAtOut != null)
                 {
                     InNodes.StatusNodes.ready.Value = true;
-                    Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                 }
             }
         }
         public Products RemoveProduct(string machinePoint)
         {
-            Products returnProduct;
+            Products? returnProduct;
             switch (machinePoint)
             {
                 case "input":
@@ -329,9 +340,28 @@ namespace Simulator.MPS
             //if (!Configurations.GetInstance().MockUp)
             {
                 InNodes.StatusNodes.ready.Value = false;
-                Refbox.UpdateChanges(InNodes.StatusNodes.ready);
+                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
             }
             return returnProduct;
+        }
+        public bool EmptyMachinePoint(string machinepoint)
+        {
+            switch (machinepoint)
+            {
+                case "input":
+                    return ProductAtIn == null;
+                case "output":
+                    return ProductAtOut == null;
+                case "slide":
+                    return true;
+                default:
+                    return false;
+            }
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            //Console.WriteLine(JsonInformation);
         }
     }
 }

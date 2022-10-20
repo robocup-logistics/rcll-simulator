@@ -1,4 +1,5 @@
-﻿using LlsfMsgs;
+﻿using System.Text.Json;
+using LlsfMsgs;
 using System.Threading;
 using Simulator.Utility;
 
@@ -7,9 +8,9 @@ namespace Simulator.MPS
     public class MPS_DS : Mps
     {
         // TODO Add some more space to the slots
-        private Products Slot1;
-        private Products Slot2;
-        private Products Slot3;
+        private Products? Slot1;
+        private Products? Slot2;
+        private Products? Slot3;
         public enum BaseSpecificActions
         {
             Reset = 400,
@@ -26,6 +27,8 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         public bool ProductAtSlot(int slot)
@@ -52,14 +55,13 @@ namespace Simulator.MPS
         }
         private void Work()
         {
-            StartOpc(Type);
-
+            SerializeMachineToJson();
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -81,35 +83,35 @@ namespace Simulator.MPS
         private void DeliverToSlotTask()
         {
             MyLogger.Log("DeliverToSlotTask!");
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
-
+            TaskDescription = "Delivering Product";
+            var slot = InNodes.Data0.Value;
+            StartTask();
+            for(var count = 0; count  < 45 && ProductAtIn == null; count++)
+            {
+                Thread.Sleep(1000);
+            }
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
             Thread.Sleep(Configurations.GetInstance().DSTaskDuration);
-            switch (InNodes.Data0.Value)
+            switch (slot)
             {
                 case 1:
                     Slot1 = ProductAtIn;
                     break;
                 case 2:
-                    Slot1 = ProductAtIn;
+                    Slot2 = ProductAtIn;
                     break;
                 case 3:
-                    Slot1 = ProductAtIn;
+                    Slot3 = ProductAtIn;
                     break;
             }
             ProductAtIn = null;
-            InNodes.ActionId.Value = 0;
-            Refbox.UpdateChanges(InNodes.ActionId);
-            InNodes.Data0.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data0);
-            InNodes.Data1.Value = 0;
-            Refbox.UpdateChanges(InNodes.Data1);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }

@@ -74,16 +74,16 @@ namespace Simulator.MPS
                         On = false;
                         TargetPosition = Positions.NoTarget;
                         Machine.InNodes.StatusNodes.ready.Value = true;
-                        Machine.Refbox.UpdateChanges(Machine.InNodes.StatusNodes.ready);
+                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.ready);
                         Machine.InNodes.StatusNodes.busy.Value = false;
-                        Machine.Refbox.UpdateChanges(Machine.InNodes.StatusNodes.busy);
+                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.busy);
                         continue;
                     }
 
                     if (!Machine.InNodes.StatusNodes.busy.Value)
                     {
                         Machine.InNodes.StatusNodes.busy.Value = true;
-                        Machine.Refbox.UpdateChanges(Machine.InNodes.StatusNodes.busy);
+                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.busy);
                     }
 
 

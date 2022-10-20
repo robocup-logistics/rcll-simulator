@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Reflection.Metadata;
+using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
@@ -28,6 +29,11 @@ namespace Simulator.MPS
                 Stock2.Enqueue(new RingElement(RingColor.RingOrange));
             }
             //if (Configurations.GetInstance().MockUp) return;
+            /*var prod = new Products(BaseColor.BaseBlack);
+            prod.AddPart(new RingElement(RingColor.RingBlue));
+            prod.AddPart(new RingElement(RingColor.RingGreen));
+            prod.AddPart(new CapElement(CapColor.CapBlack));
+            ProductAtOut = prod;*/
         }
         public new void Run()
         {
@@ -35,18 +41,19 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         private void Work()
         {
-            StartOpc(Type);
-            
+            SerializeMachineToJson();
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -78,7 +85,7 @@ namespace Simulator.MPS
                 MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
                 MyLogger.Log("Added a Base to the slide!");
                 InNodes.SlideCnt.Value += 1;
-                Refbox.UpdateChanges(InNodes.SlideCnt);
+                Refbox.ApplyChanges(InNodes.SlideCnt);
                 MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
             }
             else{
@@ -90,13 +97,15 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
-            InNodes.StatusNodes.busy.Value = true;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
-            InNodes.StatusNodes.enable.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.enable);
+            var ringNumber = InNodes.Data0.Value;
+            StartTask();
+            for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+            {
+                Thread.Sleep(1000);
+            }
             if (ProductOnBelt == null) return;
             RingElement ringToMount;
-            switch (InNodes.Data0.Value)
+            switch (ringNumber)
             {
                 case 1:
                     ringToMount = Stock1.Dequeue();
@@ -109,8 +118,12 @@ namespace Simulator.MPS
             }
             Thread.Sleep(Configurations.GetInstance().RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
-            InNodes.StatusNodes.busy.Value = false;
-            Refbox.UpdateChanges(InNodes.StatusNodes.busy);
+            FinishedTask();
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }

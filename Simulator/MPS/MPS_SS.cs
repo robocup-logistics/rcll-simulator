@@ -1,4 +1,5 @@
-﻿using LlsfMsgs;
+﻿using System.Text.Json;
+using LlsfMsgs;
 
 namespace Simulator.MPS
 {
@@ -22,18 +23,19 @@ namespace Simulator.MPS
             {
                 return;
             }*/
+            var BasicThread = new Thread(base.HandleBasicTasks);
+            BasicThread.Start();
             Work();
         }
         private void Work()
         {
-            StartOpc(Type);
-            
+            SerializeMachineToJson();
             while (true)
             {
-                WriteEvent.WaitOne();
-                WriteEvent.Reset();
+                InEvent.WaitOne();
+                InEvent.Reset();
                 GotConnection = true;
-                HandleBasicTasks();
+                //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
@@ -50,6 +52,11 @@ namespace Simulator.MPS
                 TaskDescription = "Idle";                
                 MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
             }
+        }
+        public void SerializeMachineToJson()
+        {
+            JsonInformation = JsonSerializer.Serialize(this);
+            Console.WriteLine(JsonInformation);
         }
     }
 }
