@@ -286,6 +286,7 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("Doing a step towards + " + z.ZoneId);
                 MyLogger.Log("Getting the Mutex from zone " + z.ZoneId.ToString());
                 z.ZoneMutex.WaitOne();
+                SerializeRobotToJson();
                 MyLogger.Log("Got the Mutex from zone " + z.ZoneId.ToString());
                 for (attempt = 0; attempt < 3; attempt++)
                 {
