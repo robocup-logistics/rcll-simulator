@@ -111,7 +111,7 @@ namespace Simulator.MPS
         public void SerializeMachineToJson()
         {
             JsonInformation = JsonSerializer.Serialize(this);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 }

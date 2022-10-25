@@ -116,7 +116,7 @@ namespace Simulator.MPS
                 WriteIndented = true
             };
             JsonInformation = JsonSerializer.Serialize<MPS_BS>(this, options);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 

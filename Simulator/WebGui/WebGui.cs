@@ -31,7 +31,7 @@ namespace Simulator.WebGui
             Console.WriteLine(path);
             listener = new HttpListener();
             Config = Configurations.GetInstance();
-            Url = Config.WebguiPrefix + "://localhost:" + Config.WebguiPort + "/";
+            Url = Config.WebguiPrefix + "://*:" + Config.WebguiPort + "/";
             listener.Prefixes.Add(Url);
             //listener.Prefixes.Add(url2);
 
