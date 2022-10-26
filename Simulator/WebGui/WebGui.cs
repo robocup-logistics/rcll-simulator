@@ -28,7 +28,7 @@ namespace Simulator.WebGui
         public WebGui(RobotManager robotManager = null, MpsManager machine = null)
         {
             var path = Directory.GetCurrentDirectory();
-            Console.WriteLine(path);
+            //Console.WriteLine(path);
             listener = new HttpListener();
             Config = Configurations.GetInstance();
             Url = Config.WebguiPrefix + "://*:" + Config.WebguiPort + "/";
@@ -66,15 +66,15 @@ namespace Simulator.WebGui
                 HttpListenerResponse resp = ctx.Response;
 
                 // Print out some info about the request
-                Console.WriteLine("Request #: {0}", ++requestCount);
+                //Console.WriteLine("Request #: {0}", ++requestCount);
                 MyLogger.Log(req.Url.ToString());
                 //Console.WriteLine(req.Url.ToString());
                 MyLogger.Log(req.HttpMethod);
                 //Console.WriteLine(req.HttpMethod);
                 //MyLogger.Log(req.UserHostName);
-                Console.WriteLine(req.UserHostName);
+                //Console.WriteLine(req.UserHostName);
                 //MyLogger.Log(req.UserAgent);
-                Console.WriteLine(req.UserAgent);
+                //Console.WriteLine(req.UserAgent);
 
                 MyLogger.Log(" ");
 
@@ -101,7 +101,7 @@ namespace Simulator.WebGui
                     }
                     case "OPTIONS":
                         {
-                            Console.WriteLine("Got options!");
+                            //Console.WriteLine("Got options!");
                             resp.StatusCode = (byte)HttpStatusCode.OK;
                             resp.ContentType = "application/json";
                             resp.AddHeader("Access-Control-Allow-Headers", "Content-Type, Accept, X-Requested-With, Authorization");
@@ -163,20 +163,20 @@ namespace Simulator.WebGui
                                 case "robots":
                                 {
                                     resp.ContentType = "JSON";
-                                    Console.WriteLine("Creating the json of robots!");
+                                    //Console.WriteLine("Creating the json of robots!");
                                     //var text = _robotManager.Robots[0].SerializeRobotToJson();
                                     var jsonString = JsonSerializer.Serialize(_robotManager?.Robots);
-                                    Console.WriteLine(jsonString);
+                                    //Console.WriteLine(jsonString);
                                     data = Encoding.UTF8.GetBytes(jsonString);
                                     break;
                                 }
                                 case "machines":
                                 {
                                     resp.ContentType = "JSON";
-                                    Console.WriteLine("Creating the json of machines!");
+                                    //Console.WriteLine("Creating the json of machines!");
 
                                         var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
-                                    Console.WriteLine(jsonString);
+                                    //Console.WriteLine(jsonString);
                                     data = Encoding.UTF8.GetBytes(jsonString);
                                     break;
 
@@ -230,9 +230,9 @@ namespace Simulator.WebGui
                                         resp.ContentType = "JSON";
                                         var test = new TestJson("Test1", "Val2");
                                         string jsonString = JsonSerializer.Serialize(test);
-                                        Console.WriteLine(jsonString);
+                                        //Console.WriteLine(jsonString);
                                         data = Encoding.UTF8.GetBytes(jsonString);
-                                        Console.WriteLine(JsonSerializer.Serialize(MpsManager.GetInstance().Machines));
+                                        //Console.WriteLine(JsonSerializer.Serialize(MpsManager.GetInstance().Machines));
                                         break;
                                     }
                                 default:

@@ -824,7 +824,7 @@ namespace Simulator.RobotEssentials
         public void SerializeRobotToJson()
         {
             JsonInformation = JsonSerializer.Serialize(this);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 
