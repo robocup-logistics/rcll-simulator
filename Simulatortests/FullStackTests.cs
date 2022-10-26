@@ -139,7 +139,7 @@ namespace Simulatortests
             movetask.Move.Waypoint = "C-CS";
             movetask.Move.MachinePoint = "input";
             rob.SetAgentTasks(movetask);
-            Thread.Sleep((3 * config.RobotMoveZoneDuration) + 300);
+            Thread.Sleep((5 * config.RobotMoveZoneDuration) + 300);
             Assert.AreNotEqual(startzone, rob.GetZone().ZoneId);
             Assert.AreEqual(zonesManager.GetWaypoint("C-CS_input"), rob.GetZone().ZoneId);
             buffertask.Buffer = new BufferStation

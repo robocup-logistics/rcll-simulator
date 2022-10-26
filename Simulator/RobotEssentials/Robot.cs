@@ -348,7 +348,7 @@ namespace Simulator.RobotEssentials
             while (HeldProduct == null && attempts < 30)
             {
                 MyLogger.Log("[Attempt nr " + attempts + "] Trying to get a product from the machine!");
-                Thread.Sleep(1000);
+                Thread.Sleep(Config.RobotGrabProductDuration);
                 HeldProduct = mps.Type switch
                 {
                     Mps.MpsType.BaseStation => ((MPS_BS)mps).RemoveProduct(machinePoint),

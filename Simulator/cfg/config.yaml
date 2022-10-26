@@ -158,6 +158,8 @@ general:
   robot-prepare-mps: true # robot is responsible to send prepare machine messages, option might be removed in future as teams tend to send prepare via their main control unit
   robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
   robot-move-zone-duration: 2 # in seconds
+  robot-grab-product-duration: 1 # duration for a single try of a grab 
+  robot-place-product-duration: 1 # duration for a single place try
   belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
   bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo
   cs-buffer-duration: 3.5  # buffer cap - taken from gazebo
