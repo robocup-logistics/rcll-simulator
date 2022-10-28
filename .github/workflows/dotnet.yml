@@ -24,6 +24,6 @@ jobs:
   testing:
     needs: [build]
     steps:
-    - uses: actions/build@v3
+    - uses: actions/dotnet@v4
     - name: Test
       run: dotnet test Simulatortests/Simulatortests.csproj --verbosity normal 
