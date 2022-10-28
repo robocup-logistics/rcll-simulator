@@ -10,12 +10,9 @@ on:
     branches: [ "master" ]
 
 jobs:
+  runs-on: ubuntu-latest
   build:
-
-    runs-on: ubuntu-latest
-
     steps:
-    - uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -26,7 +23,7 @@ jobs:
       run: dotnet build --no-restore
   testing:
     needs: [build]
-    runs-on: ubuntu-latest
     steps:
+    - uses: actions/checkout@v3
     - name: Test
       run: dotnet test Simulatortests/Simulatortests.csproj --verbosity normal 
