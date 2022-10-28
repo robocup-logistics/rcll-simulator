@@ -67,6 +67,7 @@ namespace Simulatortests
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.MountRing, (ushort)1, (ushort)0);
             Thread.Sleep(Configurations.GetInstance().RSTaskDuration + 200);
             Assert.AreEqual(1, baseProduct.RingCount);
+            testhelper.CloseConnection();
         }
     }
 }

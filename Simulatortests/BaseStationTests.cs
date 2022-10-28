@@ -57,6 +57,7 @@ namespace Simulatortests
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
             Assert.IsNull(machine.ProductOnBelt);
+            testhelper.CloseConnection();
         }
 
         [TestMethod]

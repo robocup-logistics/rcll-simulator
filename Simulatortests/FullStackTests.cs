@@ -175,7 +175,7 @@ namespace Simulatortests
             movetask.Move.Waypoint = "C-RS";
             movetask.Move.MachinePoint = "slide";
             rob.SetAgentTasks(movetask);
-            Thread.Sleep((config.RobotMoveZoneDuration * 6) + 100);
+            Thread.Sleep((config.RobotMoveZoneDuration * 30));
             Assert.AreEqual(zonesManager.GetWaypoint("C-RS_slide"), rob.GetZone().ZoneId);
             puttask.Deliver = new Deliver
             {
@@ -183,7 +183,7 @@ namespace Simulatortests
                 MachinePoint = "slide"
             };
             rob.SetAgentTasks(puttask);
-            Thread.Sleep(config.RobotPlaceDuration * 2);
+            Thread.Sleep(config.RobotPlaceDuration * 10);
             Assert.AreEqual(1, machinemanager.Machines[3].InNodes.SlideCnt.Value);
             movetask.Move.Waypoint = "C-BS";
             movetask.Move.MachinePoint = "output";
@@ -200,7 +200,7 @@ namespace Simulatortests
                 MachinePoint = "output"
             };
             rob.SetAgentTasks(gettask);
-            Thread.Sleep(config.RobotGrabProductDuration * 10);
+            Thread.Sleep(config.RobotGrabProductDuration * 20);
             Assert.IsTrue(rob.IsHoldingSomething());
             movetask.Move.Waypoint = "C-CS";
             movetask.Move.MachinePoint = "input";
@@ -244,6 +244,9 @@ namespace Simulatortests
             ds.SendTask((ushort)MPS_DS.BaseSpecificActions.DeliverToSlot, (ushort)1);
             Thread.Sleep(config.DSTaskDuration + 300);
             Assert.IsNotNull(((MPS_DS)machinemanager.Machines[2]).ProductAtSlot(1));
+            bs.CloseConnection();
+            cs.CloseConnection();
+            ds.CloseConnection();
         }
         [TestMethod]
         public void CreateOneC1()
