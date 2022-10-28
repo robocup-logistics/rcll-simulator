@@ -37,8 +37,6 @@ namespace Simulator.WebGui
 
             listener.Start();
             MyLogger = new MyLogger("Web", true);
-
-            Path = "C:\\Users\\lumpi\\source\\repos\\rcll-simulation\\Simulator\\WebGui\\page\\";
             MyLogger.Log($"Listening for connections on {Url}");
             Console.WriteLine($"Listening for connections on {Url}");
             _robotManager = robotManager;
@@ -141,17 +139,6 @@ namespace Simulator.WebGui
 
                             switch (segment)
                             {
-                                case "styles.css":
-                                    MyLogger.Log("Requested the CSS File!");
-                                    resp.ContentType = "text/css";
-                                    pageData = File.ReadAllText(Path + req.Url.Segments[1]);
-                                    data = Encoding.UTF8.GetBytes(pageData);
-                                    MyLogger.Log("The css = " + data);
-                                    break;
-                                case "map.html":
-                                    pageData = File.ReadAllText(Path + req.Url.Segments[1]);
-                                    data = Encoding.UTF8.GetBytes(String.Format(pageData));
-                                    break;
                                 case "zones":
                                     {
                                         resp.ContentType = "JSON";
@@ -181,71 +168,14 @@ namespace Simulator.WebGui
                                     break;
 
                                 }
-                                case "robot.html":
-                                    {
-                                        int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
-                                        pageData = File.ReadAllText("/simulator/WebGui/page/" + req.Url.Segments[1]);
-                                        if (_robotManager != null)
-                                        {
-                                            id -= 1;
-                                            MyLogger.Log("The Robot we get is : " + id);
-                                            Robot rob = _robotManager.Robots[id];
-                                            var text = String.Format(pageData, rob.RobotName, rob.JerseyNumber, rob.TeamColor.ToString());
-                                            data = Encoding.UTF8.GetBytes(text);
-                                        }
-                                        else
-                                        {
-                                            data = Encoding.UTF8.GetBytes(String.Format(pageData));
-                                        }
-                                    }
-
-                                    break;
-                                case "mps.html":
-                                    {
-                                        int id = Int32.Parse(req.Url.ToString().Split('=')[1]);
-
-                                        MyLogger.Log("Loading HMTL file : " + req.Url.Segments[1]);
-                                        pageData = File.ReadAllText(Path + req.Url.Segments[1]);
-                                        if (_mpsManager != null)
-                                        {
-                                            MPS.Mps mp = _mpsManager.Machines[id];
-                                            MyLogger.Log("Mps Nr" + mp.InternalId + " is of type " + mp.Type + " with a machine state of : " + mp.MachineState);
-                                            var text = String.Format(pageData, mp.Name, mp.Type.ToString(), mp.MachineState.ToString(), "4", "5", "6", "7", "8");
-                                            data = Encoding.UTF8.GetBytes(text);
-                                        }
-                                        else
-                                        {
-                                            data = Encoding.UTF8.GetBytes(String.Format(pageData));
-                                        }
-                                    }
-                                    break;
-                                case "debug.html":
-                                    pageData = File.ReadAllText(Path + "debug.html");
-                                    data = Encoding.UTF8.GetBytes(String.Format(pageData));
-                                    break;
-                                case "favicon.ico":
-                                    continue;
-                                case "json.html":
-                                    {
-                                        resp.ContentType = "JSON";
-                                        var test = new TestJson("Test1", "Val2");
-                                        string jsonString = JsonSerializer.Serialize(test);
-                                        //Console.WriteLine(jsonString);
-                                        data = Encoding.UTF8.GetBytes(jsonString);
-                                        //Console.WriteLine(JsonSerializer.Serialize(MpsManager.GetInstance().Machines));
-                                        break;
-                                    }
                                 default:
-                                    pageData = File.ReadAllText(Path + "home.html");
-                                    var MapFields = CreateMapFields();
-                                    var RobotFields = CreateRobotFields();
-                                    var MpsField = CreateMpsFields();
-                                    MyLogger.Log("In front of the string.format");
-                                    data = Encoding.UTF8.GetBytes(String.Format(pageData, MapFields, RobotFields, MpsField));
-                                    MyLogger.Log("after string.format");
+                                {
+                                    resp.ContentType = "JSON";
+                                    data = Encoding.UTF8.GetBytes("{Connection:working}");
                                     break;
-                            }
+                                }
 
+                            }
                             resp.ContentLength64 = data.LongLength;
 
                             await resp.OutputStream.WriteAsync(data, 0, data.Length);
