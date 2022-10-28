@@ -24,5 +24,8 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+  testing:
+    runs-on: ubuntu-latest
+    steps:
     - name: Test
       run: dotnet test Simulatortests/Simulatortests.csproj --no-build --verbosity normal 
