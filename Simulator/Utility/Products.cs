@@ -1,17 +1,25 @@
 ﻿using System.Collections.Generic;
 using LlsfMsgs;
+using Newtonsoft.Json;
 using static LlsfMsgs.Order.Types;
 
 namespace Simulator.Utility
 {
+    [JsonObject(MemberSerialization.OptIn)]
     public class Products
     {
+        [JsonProperty]
         public int ID { get; private set; }
+        [JsonProperty]
         public Complexity Complexity { get;  private set; }
-        public int RingCount = 0;
-        public BaseElement? Base;
-        public CapElement? Cap;
-        public List<RingElement> RingList = new List<RingElement>();
+        [JsonProperty]
+        public int RingCount { get; private set; }
+        [JsonProperty]
+        public BaseElement? Base { get; private set; }
+        [JsonProperty]
+        public CapElement? Cap { get; private set; }
+        [JsonProperty]
+        public List<RingElement> RingList { get; private set; }
         public void AddPart(BaseElement newBase)
         {
             Base = newBase;
@@ -42,18 +50,24 @@ namespace Simulator.Utility
         {
             Base =  new BaseElement(color);
             Complexity = (Complexity)-1;
+            RingCount = 0;
+            RingList = new List<RingElement>();
         }
         public Products(CapColor color)
         {
             Base = new BaseElement();
             Cap = new CapElement(color);
             Complexity = (Complexity) 0;
+            RingCount = 0;
+            RingList = new List<RingElement>();
         }
 
         public Products(RingColor color)
         {
             RingList.Add(new RingElement(color));
             Complexity = (Complexity) 1;
+            RingCount = 0;
+            RingList = new List<RingElement>();
         }
         public Products()
         {
@@ -71,9 +85,10 @@ namespace Simulator.Utility
         }
     }
 
-    public class BaseElement : Products
+    public class BaseElement// : Products
     {
-        private readonly BaseColor BaseColor;
+        [JsonProperty]
+        public BaseColor BaseColor { get; private set; }
         public BaseElement(BaseColor color)
         {
             BaseColor = color;
@@ -92,9 +107,10 @@ namespace Simulator.Utility
             return BaseColor.ToString();
         }
     }
-    public class RingElement : Products
+    public class RingElement// : Products
     {
-        private readonly RingColor RingColor;
+        [JsonProperty]
+        public RingColor RingColor { get; private set; }
         public RingElement(RingColor color)
         {
             RingColor = color;
@@ -108,9 +124,10 @@ namespace Simulator.Utility
             return RingColor.ToString();
         }
     }
-    public class CapElement : Products
+    public class CapElement// : Products
     {
-        private readonly CapColor CapColor;
+        [JsonProperty]
+        public CapColor CapColor { get; private set; }
         public CapElement(CapColor color)
         {
             CapColor = color;

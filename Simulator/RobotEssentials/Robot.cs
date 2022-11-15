@@ -23,7 +23,7 @@ namespace Simulator.RobotEssentials
         private UdpConnector? UdpConnectionTeamserver;
         private UdpConnector? UdpConnectionRefbox;
         private bool Running;
-        private Products? HeldProduct;
+        public Products? HeldProduct { get; private set; }
         private GameState.Types.State GameState;
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;

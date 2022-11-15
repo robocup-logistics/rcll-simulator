@@ -140,33 +140,38 @@ namespace Simulator.WebGui
                             switch (segment)
                             {
                                 case "zones":
-                                    {
-                                        resp.ContentType = "JSON";
-                                        var jsonString = JsonSerializer.Serialize(ZonesManager.GetInstance().ZoneList);
-                                        //Console.WriteLine(jsonString);
-                                        data = Encoding.UTF8.GetBytes(jsonString);
-                                        break;
-                                    }
+                                {
+                                    resp.ContentType = "JSON";
+                                    var jsonString = JsonSerializer.Serialize(ZonesManager.GetInstance().ZoneList);
+                                    MyLogger.Log(jsonString);
+                                    data = Encoding.UTF8.GetBytes(jsonString);
+                                    break;
+                                }
                                 case "robots":
                                 {
                                     resp.ContentType = "JSON";
-                                    //Console.WriteLine("Creating the json of robots!");
-                                    //var text = _robotManager.Robots[0].SerializeRobotToJson();
                                     var jsonString = JsonSerializer.Serialize(_robotManager?.Robots);
-                                    //Console.WriteLine(jsonString);
+                                    MyLogger.Log(jsonString);
                                     data = Encoding.UTF8.GetBytes(jsonString);
                                     break;
                                 }
                                 case "machines":
                                 {
                                     resp.ContentType = "JSON";
-                                    //Console.WriteLine("Creating the json of machines!");
-
-                                        var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
-                                    //Console.WriteLine(jsonString);
+                                    var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
+                                    MyLogger.Log(jsonString);
                                     data = Encoding.UTF8.GetBytes(jsonString);
                                     break;
-
+                                }
+                                case "products":
+                                {
+                                    resp.ContentType = "JSON";
+                                    var product = new Products(BaseColor.BaseBlack);
+                                    product.AddPart(new RingElement(RingColor.RingBlue));
+                                    product.AddPart(new CapElement(CapColor.CapBlack));
+                                    var jsonString = JsonSerializer.Serialize(product);
+                                    data = Encoding.UTF8.GetBytes(jsonString);
+                                    break;
                                 }
                                 default:
                                 {
@@ -177,7 +182,6 @@ namespace Simulator.WebGui
 
                             }
                             resp.ContentLength64 = data.LongLength;
-
                             await resp.OutputStream.WriteAsync(data, 0, data.Length);
                             resp.Close();
                             break;
