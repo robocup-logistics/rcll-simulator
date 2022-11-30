@@ -30,7 +30,7 @@ namespace Simulator.MPS
             /*if (Configurations.GetInstance().MockUp)
                 return;*/
 
-            for(var i = 0; i < 5; i++)
+            for(var i = 0; i < 10; i++)
             {
                 Stock1.Enqueue(new Products(BaseColor.BaseRed));
                 Stock2.Enqueue(new Products(BaseColor.BaseSilver));
