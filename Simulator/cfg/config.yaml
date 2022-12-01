@@ -6,94 +6,94 @@ stations:
     debug: true
     type: BS
     port: 4840
-    position: MZ28
-    orientation: 180
+    position: CZ28
+    orientation: 0
   C-CS1:
-    active: False
+    active: True
     debug: true
     port:  4841
     type: CS
-    position: CZ47
-    orientation: 0
+    position: CZ54
+    orientation: 45
   C-CS2:
-    active: False
+    active: True
     debug: true
     port:  4842
     type: CS
-    position: CZ76
+    position: MZ77
     orientation: 90
   C-RS1:
-    active: False
+    active: True
     debug: true
     port:  4843
     type: RS
-    position: MZ55
-    orientation: 225
+    position: CZ21
+    orientation: 180
   C-RS2:
-    active: False
+    active: True
     debug: true
     port:  4844
     type: RS
-    position: CZ14
-    orientation: 270
+    position: MZ15
+    orientation: 180
   C-DS:
-    active: False
+    active: True
     debug: true
     port:  4845
     type: DS
-    position: CZ33
-    orientation: 225
+    position: CZ72
+    orientation: 90
   C-SS:
-    active: true
+    active: false
     debug: true
     port:  4846
     type: SS
-    position: CZ72
-    orientation: 135
+    position: MZ77
+    orientation: 270
   M-BS:
-    active: true
+    active: false
     debug: false
     port:  4850
     type: BS
-    position: MZ72
+    position: MZ28
     orientation: 0
   M-CS1:
-    active: true
+    active: false
     debug: false
     port:  4851
     type: CS
-    position: MZ73
-    orientation: 0
+    position: MZ54
+    orientation: 45
   M-CS2:
-    active: true
+    active: false
     debug: false
     port:  4852
     type: CS
-    position: MZ74
-    orientation: 0
+    position: CZ77
+    orientation: 90
   M-RS1:
-    active: true
+    active: false
     debug: false
     port:  4853
     type: RS
-    position: MZ75
-    orientation: 0
+    position: MZ21
+    orientation: 135
   M-RS2:
-    active: true
+    active: false
     debug: false
     port:  4854
     type: RS
-    position: MZ76
-    orientation: 0
+    position: CZ15
+    orientation: 180
   M-DS:
-    active: true
+    active: false
     debug: false
     port:  4855
     type: DS
-    position: MZ77
-    orientation: 0
+    position: MZ72
+    orientation: 225
   M-SS:
-    active: true
+    active: false
     debug: false
     port:  4856
     type: SS
@@ -113,15 +113,15 @@ robots:
     jersey: 3
     team: cyan
   Heinz:
-    active: true
+    active: false
     jersey: 1
     team: magenta
   Franz:
-    active: true
+    active: false
     jersey: 2
     team: magenta
   Hans:
-    active: true
+    active: false
     jersey: 3
     team: magenta
 teams:
@@ -158,6 +158,8 @@ general:
   robot-prepare-mps: true # robot is responsible to send prepare machine messages, option might be removed in future as teams tend to send prepare via their main control unit
   robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
   robot-move-zone-duration: 2 # in seconds
+  robot-grab-product-duration: 10 # duration for a single try of a grab 
+  robot-place-product-duration: 10 # duration for a single place try
   belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
   bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo
   cs-buffer-duration: 3.5  # buffer cap - taken from gazebo

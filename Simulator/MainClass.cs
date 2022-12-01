@@ -80,7 +80,7 @@ namespace Simulator
                 MachineManager = MpsManager.GetInstance();
                 Console.WriteLine("done!");
                 Console.Write("Starting the Robots ... ");
-                RobotManager = new RobotManager();
+                RobotManager = RobotManager.GetInstance();
                 Console.WriteLine("done!");
                 Console.Write("Creating the Zones ... ");
                 ZoneManager = ZonesManager.GetInstance();
@@ -104,7 +104,7 @@ namespace Simulator
                     Console.WriteLine("done!");
                 }
 
-                var web = new WebGui.WebGui(RobotManager,MachineManager);
+                var web = new WebGui.WebGui();
                 Console.WriteLine("Everything is set up! Waiting for connections!");
             }
             else
@@ -129,7 +129,7 @@ namespace Simulator
                     MachineManager.PlaceMachines(mi);
                 }
                 //zonesManager.Astar(zonesManager.GetZone(Zone.CZ11), zonesManager.GetZone(Zone.MZ78));
-                var gui = new TerminalGui.TerminalGui(RobotManager, MachineManager, ZoneManager);
+                var gui = new TerminalGui.TerminalGui();
             }
         }
 

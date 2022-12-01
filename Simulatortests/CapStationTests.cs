@@ -59,6 +59,7 @@ namespace Simulatortests
             Thread.Sleep(Configurations.GetInstance().CSTaskDuration + 200);
             Assert.IsNotNull(machine.StoredCap);
             Assert.IsNull(machine.ProductOnBelt?.RetrieveCap());
+            cs.CloseConnection();
         }
 
         [TestMethod]

@@ -30,7 +30,7 @@ namespace Simulator.MPS
             /*if (Configurations.GetInstance().MockUp)
                 return;*/
 
-            for(var i = 0; i < 5; i++)
+            for(var i = 0; i < 10; i++)
             {
                 Stock1.Enqueue(new Products(BaseColor.BaseRed));
                 Stock2.Enqueue(new Products(BaseColor.BaseSilver));
@@ -116,7 +116,7 @@ namespace Simulator.MPS
                 WriteIndented = true
             };
             JsonInformation = JsonSerializer.Serialize<MPS_BS>(this, options);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 

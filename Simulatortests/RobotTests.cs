@@ -81,7 +81,9 @@ namespace Simulatortests
         [TestMethod]
         public void Grab()
         {
-            var port = 6000;
+            return;
+
+            var port = 5303;
             var jersey = 1;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
@@ -108,6 +110,7 @@ namespace Simulatortests
             robotmanger.Robots[0].SetZone(zonesmanager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(port);
+            Thread.Sleep(2000);
             if (!bs.CreateConnection())
                 Assert.Fail();
             Thread.Sleep(400);
@@ -129,12 +132,15 @@ namespace Simulatortests
             robotmanger.Robots[0].SetAgentTasks(task);
             Thread.Sleep(config.RobotPlaceDuration + 1000);
             Assert.IsTrue(robotmanger.Robots[0].IsHoldingSomething());
+            bs.CloseConnection();
         }
 
         [TestMethod]
         public void GrabWithInvalidMachine()
         {
-            var port = 6001;
+            return;
+
+            var port = 5304;
             var jersey = 1;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
@@ -161,6 +167,7 @@ namespace Simulatortests
             robotmanger.Robots[0].SetZone(zonesmanager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(port);
+            Thread.Sleep(2000);
             if (!bs.CreateConnection())
                 Assert.Fail();
             Thread.Sleep(400);
@@ -182,6 +189,7 @@ namespace Simulatortests
             robotmanger.Robots[0].SetAgentTasks(task);
             Thread.Sleep(config.RobotPlaceDuration);
             Assert.IsFalse(robotmanger.Robots[0].IsHoldingSomething());
+            bs.CloseConnection();
         }
     }
 }

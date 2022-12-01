@@ -23,7 +23,7 @@ namespace Simulator.RobotEssentials
         private UdpConnector? UdpConnectionTeamserver;
         private UdpConnector? UdpConnectionRefbox;
         private bool Running;
-        private Products? HeldProduct;
+        public Products? HeldProduct { get; private set; }
         private GameState.Types.State GameState;
         private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
@@ -286,6 +286,7 @@ namespace Simulator.RobotEssentials
                 MyLogger.Log("Doing a step towards + " + z.ZoneId);
                 MyLogger.Log("Getting the Mutex from zone " + z.ZoneId.ToString());
                 z.ZoneMutex.WaitOne();
+                SerializeRobotToJson();
                 MyLogger.Log("Got the Mutex from zone " + z.ZoneId.ToString());
                 for (attempt = 0; attempt < 3; attempt++)
                 {
@@ -347,7 +348,7 @@ namespace Simulator.RobotEssentials
             while (HeldProduct == null && attempts < 30)
             {
                 MyLogger.Log("[Attempt nr " + attempts + "] Trying to get a product from the machine!");
-                Thread.Sleep(1000);
+                Thread.Sleep(Config.RobotGrabProductDuration);
                 HeldProduct = mps.Type switch
                 {
                     Mps.MpsType.BaseStation => ((MPS_BS)mps).RemoveProduct(machinePoint),
@@ -823,7 +824,7 @@ namespace Simulator.RobotEssentials
         public void SerializeRobotToJson()
         {
             JsonInformation = JsonSerializer.Serialize(this);
-            Console.WriteLine(JsonInformation);
+            //Console.WriteLine(JsonInformation);
         }
     }
 

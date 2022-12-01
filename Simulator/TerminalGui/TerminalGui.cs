@@ -30,13 +30,13 @@ namespace Simulator.TerminalGui
         private readonly ZonesManager ZonesManager;
         private readonly TabView MainView;
 
-        public TerminalGui(RobotManager robotManager, MpsManager mpsManager, ZonesManager zonesManager)
+        public TerminalGui()
         {
             /*Test(robotManager);
             return;*/
-            MpsManager = mpsManager;
-            RobotManager = robotManager;
-            ZonesManager = zonesManager;
+            MpsManager = MpsManager.GetInstance();
+            RobotManager = RobotManager.GetInstance();
+            ZonesManager = ZonesManager.GetInstance();
             ViewList = new List<View>();
             Application.Init();
             var menu = new MenuBar(new MenuBarItem[] {
@@ -72,8 +72,8 @@ namespace Simulator.TerminalGui
             Application.Top.GetCurrentWidth(out Console_Width);
 
 
-            var mpsView = CreateMpsView(mpsManager);
-            var robotView = CreateRobotView(robotManager);
+            var mpsView = CreateMpsView(MpsManager);
+            var robotView = CreateRobotView(RobotManager);
             var generalView = CreateGeneralView();
             ViewList.Add(generalView);
             ViewList.Add(mpsView);

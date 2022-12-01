@@ -35,6 +35,7 @@ namespace Simulator
         public bool FixedMPSplacement { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int RobotPlaceDuration { get; private set; }
+        public int RobotGrabProductDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
@@ -54,14 +55,15 @@ namespace Simulator
             RobotConfigs = new List<RobotConfig>();
             Teams = new List<TeamConfig>();
             MockUp = true;
-            BeltActionDuration = 1000;
-            CSTaskDuration = 1000;
-            BSTaskDuration = 1100;
-            DSTaskDuration = 1000;
-            RSTaskDuration = 1000;
-            RobotMoveZoneDuration = 1000;
+            BeltActionDuration = 100;
+            CSTaskDuration = 100;
+            BSTaskDuration = 110;
+            DSTaskDuration = 100;
+            RSTaskDuration = 100;
+            RobotMoveZoneDuration = 100;
             FixedMPSplacement = false;
-            RobotPlaceDuration = 4000;
+            RobotPlaceDuration = 400;
+            RobotGrabProductDuration = 100;
             AppendLogging = false;
             RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
@@ -147,6 +149,16 @@ namespace Simulator
                         break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
+                            (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
+                                  1000); // convert from seconds to milliseconds
+                        break;
+                    case "robot-grab-product-duration":
+                        RobotGrabProductDuration =
+                            (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
+                                  1000); // convert from seconds to milliseconds
+                        break;
+                    case "robot-place-product-duration":
+                        RobotPlaceDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
                                   1000); // convert from seconds to milliseconds
                         break;

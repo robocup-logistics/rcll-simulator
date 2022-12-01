@@ -9,10 +9,20 @@ namespace Simulator.RobotEssentials
     {
         public List<Robot> Robots { get; }
         private ZonesManager ZonesManager;
+        private static RobotManager Instance;
+        /// <returns>
+        /// Returns the instance of the Configurations Singleton
+        /// </returns>
+        public static RobotManager GetInstance()
+        {
+            return Instance ??= new RobotManager();
+        }
+
         public RobotManager()
         {
             Robots = new List<Robot>();
             ZonesManager = ZonesManager.GetInstance();
+            Instance = this;
             CreateRobots();
         }
         private void CreateRobots()
