@@ -8,8 +8,6 @@ namespace Simulator.MPS
 {
     public class MPS_RS : Mps
     {
-        private readonly Queue<RingElement> Stock1;
-        private readonly Queue<RingElement> Stock2;
         public enum BaseSpecificActions
         {
             Reset = 200,
@@ -21,26 +19,9 @@ namespace Simulator.MPS
         public MPS_RS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
         {
             Type = MpsType.RingStation;
-            Stock1 = new Queue<RingElement>();
-            Stock2 = new Queue<RingElement>();
-            for(int i = 0; i < 5; i++)
-            {
-                Stock1.Enqueue(new RingElement(RingColor.RingBlue));
-                Stock2.Enqueue(new RingElement(RingColor.RingOrange));
-            }
-            //if (Configurations.GetInstance().MockUp) return;
-            /*var prod = new Products(BaseColor.BaseBlack);
-            prod.AddPart(new RingElement(RingColor.RingBlue));
-            prod.AddPart(new RingElement(RingColor.RingGreen));
-            prod.AddPart(new CapElement(CapColor.CapBlack));
-            ProductAtOut = prod;*/
         }
         public new void Run()
         {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
             Work();
@@ -108,10 +89,10 @@ namespace Simulator.MPS
             switch (ringNumber)
             {
                 case 1:
-                    ringToMount = Stock1.Dequeue();
+                    ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingYellow) : new RingElement(RingColor.RingBlue);
                     break;
                 case 2:
-                    ringToMount = Stock2.Dequeue();
+                    ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingGreen) : new RingElement(RingColor.RingOrange);
                     break;
                 default:
                     return;

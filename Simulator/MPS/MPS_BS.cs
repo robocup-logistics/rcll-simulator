@@ -9,10 +9,6 @@ namespace Simulator.MPS
 {
     public class MPS_BS : Mps
     {
-        private readonly Queue<Products> Stock1;
-        private readonly Queue<Products> Stock2;
-        private readonly Queue<Products> Stock3;
-
         public enum BaseSpecificActions
         {
             Reset = 100,
@@ -23,30 +19,12 @@ namespace Simulator.MPS
         public MPS_BS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
         {
             Type = MpsType.BaseStation;
-            Stock1 = new Queue<Products>();
-            Stock2 = new Queue<Products>();
-            Stock3 = new Queue<Products>();
-
-            /*if (Configurations.GetInstance().MockUp)
-                return;*/
-
-            for(var i = 0; i < 10; i++)
-            {
-                Stock1.Enqueue(new Products(BaseColor.BaseRed));
-                Stock2.Enqueue(new Products(BaseColor.BaseSilver));
-                Stock3.Enqueue(new Products(BaseColor.BaseBlack));
-            }
         }
         public new void Run()
         {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
             Work();
-
         }
         public void DispenseBase()
         {
@@ -59,13 +37,13 @@ namespace Simulator.MPS
             switch (stock)
             {
                 case 1:
-                    ProductOnBelt = Stock1.Dequeue();
+                    ProductOnBelt = new Products(BaseColor.BaseRed);
                     break;
                 case 2:
-                    ProductOnBelt = Stock2.Dequeue();
+                    ProductOnBelt = new Products(BaseColor.BaseSilver);
                     break;
                 case 3:
-                    ProductOnBelt = Stock3.Dequeue();
+                    ProductOnBelt = new Products(BaseColor.BaseBlack);
                     break;
                 default:
                     MyLogger.Log("Unknown Stock to get base from!");

@@ -27,7 +27,7 @@ namespace Simulator.WebGui
         private string Path;
         private Configurations Config;
 
-        public WebGui(RobotManager robotManager = null, MpsManager machine = null)
+        public WebGui()
         {
             var path = Directory.GetCurrentDirectory();
             //Console.WriteLine(path);
@@ -39,10 +39,10 @@ namespace Simulator.WebGui
 
             listener.Start();
             MyLogger = new MyLogger("Web", true);
-            MyLogger.Log($"Listening for connections on {Url}");
-            Console.WriteLine($"Listening for connections on {Url}");
-            _robotManager = robotManager;
-            _mpsManager = machine;
+            MyLogger.Log($"Listening for the WebGUI to connect to {Url}");
+            Console.WriteLine($"Listening for the WebGUI to connect to {Url}");
+            _robotManager = RobotManager.GetInstance();
+            _mpsManager = MpsManager.GetInstance();
             // Handle requests
             Task listenTask = HandleIncomingConnections();
             listenTask.GetAwaiter().GetResult();

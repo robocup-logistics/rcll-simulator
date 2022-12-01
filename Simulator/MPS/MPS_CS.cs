@@ -8,9 +8,6 @@ namespace Simulator.MPS
 {
     public class MPS_CS : Mps
     {
-        private readonly Queue<Products> Shelf1;
-        private readonly Queue<Products> Shelf2;
-        private readonly Queue<Products> Shelf3;
         public CapElement? StoredCap { get; private set; }
         public enum BaseSpecificActions
         {
@@ -21,24 +18,10 @@ namespace Simulator.MPS
         public MPS_CS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
         {
             Type = MpsType.CapStation;
-            Shelf1 = new Queue<Products>();
-            Shelf2 = new Queue<Products>();
-            Shelf3 = new Queue<Products>();
-            for(int i = 0; i < 5; i++)
-            {
-                Shelf1.Enqueue(new Products(CapColor.CapBlack));
-                Shelf2.Enqueue(new Products(CapColor.CapGrey));
-                Shelf3.Enqueue(new Products(CapColor.CapGrey));
-            }
             StoredCap = null;
-            //if (Configurations.GetInstance().MockUp) return;
         }
         public new void Run()
         {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
             Work();
@@ -80,50 +63,50 @@ namespace Simulator.MPS
             switch (InNodes.Data0.Value)
             {
                 case (ushort)CSOp.RetrieveCap:
-                {
-                    TaskDescription = "Cap Retrieve";
-                    MyLogger.Log("Got a Retrieve CAP task!");
-                    /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                     {
-                        Thread.Sleep(1000);
-                    }*/
-                    if (ProductOnBelt == null) 
-                    {
-                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                        InNodes.StatusNodes.error.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                        TaskDescription = "Cap Retrieve";
+                        MyLogger.Log("Got a Retrieve CAP task!");
+                        /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                        {
+                            Thread.Sleep(1000);
+                        }*/
+                        if (ProductOnBelt == null)
+                        {
+                            MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                            InNodes.StatusNodes.error.Value = true;
+                            Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                        }
+                        else
+                        {
+                            TaskDescription = "Retrieving Cap";
+                            Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
+                            StoredCap = ProductOnBelt.RetrieveCap();
+                        }
+                        break;
                     }
-                    else
-                    {
-                        TaskDescription = "Retrieving Cap";
-                        Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
-                        StoredCap = ProductOnBelt.RetrieveCap();
-                    }
-                    break;
-                }
                 case (ushort)CSOp.MountCap:
-                {
-                    TaskDescription = "Cap Mount";
-                    MyLogger.Log("Got a Mount Cap TASK!");
-                    /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                     {
-                        Thread.Sleep(1000);
-                    }*/
-                    if (StoredCap != null && ProductOnBelt != null)
-                    {
-                        TaskDescription = "Mounting Cap";
-                        Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
-                        ProductOnBelt.AddPart(StoredCap);
-                    }
-                    else
-                    {
-                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                        InNodes.StatusNodes.error.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.error);
-                    }
+                        TaskDescription = "Cap Mount";
+                        MyLogger.Log("Got a Mount Cap TASK!");
+                        /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
+                        {
+                            Thread.Sleep(1000);
+                        }*/
+                        if (StoredCap != null && ProductOnBelt != null)
+                        {
+                            TaskDescription = "Mounting Cap";
+                            Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
+                            ProductOnBelt.AddPart(StoredCap);
+                        }
+                        else
+                        {
+                            MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                            InNodes.StatusNodes.error.Value = true;
+                            Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                        }
 
-                    break;
-                }
+                        break;
+                    }
             }
             FinishedTask();
         }
@@ -151,15 +134,6 @@ namespace Simulator.MPS
 
             switch (machinePoint)
             {
-                case "shelf1":
-                    returnProduct = Shelf1.Dequeue();
-                    break;
-                case "shelf2":
-                    returnProduct = Shelf2.Dequeue();
-                    break;
-                case "shelf3":
-                    returnProduct = Shelf3.Dequeue();
-                    break;
                 case "output":
                     MyLogger.Log("my Output!");
                     returnProduct = ProductAtOut;
@@ -169,9 +143,14 @@ namespace Simulator.MPS
                     returnProduct = ProductAtIn;
                     ProductAtIn = null;
                     break;
+                case "shelf3":
+                case "shelf2":
+                case "shelf1":
+                    returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                    break;
                 default:
                     MyLogger.Log("Defaulting!?");
-                    returnProduct = Shelf1.Dequeue();
+                    returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
                     break;
             }
             //if (!Configurations.GetInstance().MockUp)
