@@ -34,7 +34,7 @@ namespace Simulatortests
             config.AddConfig(dsconfig);
             config.AddConfig(rsconfig);
             config.AddConfig(teamconf);
-            var robotmanager = new RobotManager();
+            var robotmanager = RobotManager.GetInstance();
             var machinemanager = MpsManager.GetInstance();
             var zonesManager = ZonesManager.GetInstance();
             var rob = robotmanager.Robots[0];
