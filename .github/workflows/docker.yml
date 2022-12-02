@@ -1,0 +1,22 @@
+# This workflow will build the containers for the frontend and backend
+
+name: .NET
+
+on:
+  push:
+    branches: [ "master"]
+  pull_request:
+    branches: [ "master" ]
+
+jobs:
+
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Build the Simulator image
+      run: docker build Simulator/. --file Dockerfile --tag simulator_frontend:$(date +%s)
+    - name: Build the Frontend image
+      run: docker build frontend/. --file Dockerfile --tag simulator_backend:$(date +%s)
