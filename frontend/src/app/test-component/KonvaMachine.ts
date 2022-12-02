@@ -34,6 +34,7 @@ export class KonvaMachine {
   private ProductAtInRect: KonvaProduct;
   private ProductAtOutRect: KonvaProduct;
   private ProductOnBeltRect: KonvaProduct;
+  private CurrentRotation: number;
 
   constructor(machine: Machine, konvaZone: KonvaZone, layer: Konva.Layer) {
     this.Group = new Konva.Group({
@@ -42,7 +43,7 @@ export class KonvaMachine {
       width: konvaZone.Group.width(),
       height: konvaZone.Group.height(),
     });
-
+    this.CurrentRotation = machine.Rotation;
     let color = "";
     if (machine.Name.includes("M-")) {
       color = "magenta";
@@ -73,7 +74,6 @@ export class KonvaMachine {
       verticalAlign: "bottom",
       align: "center"
     });
-
 
     var ImageResolutionX = 90;
     var imageResolutionY = 150;
@@ -143,6 +143,12 @@ export class KonvaMachine {
 
 
   Update(machinesData: Machine, zone: KonvaZone) {
+    if(this.CurrentRotation != machinesData.Rotation)
+    {
+      this.rotateAroundCenter(this.ImageRect, -machinesData.Rotation);
+      this.rotateAroundCenter(this.BodyRect, -machinesData.Rotation);
+      this.CurrentRotation = machinesData.Rotation;
+    }
     this.Group.setPosition(zone.Group.position());
     this.TaskText.text(machinesData.TaskDescription);
     this.ProductOnBeltRect.Update(machinesData.ProductOnBelt, this);
