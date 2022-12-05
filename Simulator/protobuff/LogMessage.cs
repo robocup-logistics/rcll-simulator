@@ -42,7 +42,11 @@ namespace LlsfLogMsgs {
 
   }
   #region Messages
-  public sealed partial class LogMessage : pb::IMessage<LogMessage> {
+  public sealed partial class LogMessage : pb::IMessage<LogMessage>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<LogMessage> _parser = new pb::MessageParser<LogMessage>(() => new LogMessage());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -269,6 +273,9 @@ namespace LlsfLogMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasTsSec) {
         output.WriteRawTag(8);
         output.WriteInt64(TsSec);
@@ -296,7 +303,41 @@ namespace LlsfLogMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasTsSec) {
+        output.WriteRawTag(8);
+        output.WriteInt64(TsSec);
+      }
+      if (HasTsNsec) {
+        output.WriteRawTag(16);
+        output.WriteInt64(TsNsec);
+      }
+      if (HasLogLevel) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) LogLevel);
+      }
+      if (HasComponent) {
+        output.WriteRawTag(34);
+        output.WriteString(Component);
+      }
+      if (HasMessage) {
+        output.WriteRawTag(42);
+        output.WriteString(Message);
+      }
+      if (HasIsException) {
+        output.WriteRawTag(48);
+        output.WriteBool(IsException);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -353,6 +394,9 @@ namespace LlsfLogMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -385,7 +429,46 @@ namespace LlsfLogMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            TsSec = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            TsNsec = input.ReadInt64();
+            break;
+          }
+          case 24: {
+            LogLevel = (global::LlsfLogMsgs.LogMessage.Types.LogLevel) input.ReadEnum();
+            break;
+          }
+          case 34: {
+            Component = input.ReadString();
+            break;
+          }
+          case 42: {
+            Message = input.ReadString();
+            break;
+          }
+          case 48: {
+            IsException = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the LogMessage message type.</summary>

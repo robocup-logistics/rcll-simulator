@@ -61,7 +61,7 @@ namespace Simulator.RobotEssentials
                         var robotId = Peer.JerseyNumber;
                         if (Peer.CurrentTask.Deliver != null)
                         {
-                            machineId = Peer.CurrentTask.Deliver.MachineId;
+                            machineId = Peer.CurrentTask.Deliver.Waypoint;
                             machinePoint = Peer.CurrentTask.Deliver.MachinePoint;
                         }
                         else if (Peer.CurrentTask.Buffer != null)

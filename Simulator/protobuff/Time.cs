@@ -42,7 +42,11 @@ namespace Llsfmsgs {
   /// Can be used for absolute times or
   /// durations alike.
   /// </summary>
-  public sealed partial class Time : pb::IMessage<Time> {
+  public sealed partial class Time : pb::IMessage<Time>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Time> _parser = new pb::MessageParser<Time>(() => new Time());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -171,6 +175,9 @@ namespace Llsfmsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasSec) {
         output.WriteRawTag(8);
         output.WriteInt64(Sec);
@@ -182,7 +189,25 @@ namespace Llsfmsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasSec) {
+        output.WriteRawTag(8);
+        output.WriteInt64(Sec);
+      }
+      if (HasNsec) {
+        output.WriteRawTag(16);
+        output.WriteInt64(Nsec);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -215,6 +240,9 @@ namespace Llsfmsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -231,7 +259,30 @@ namespace Llsfmsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Sec = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            Nsec = input.ReadInt64();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

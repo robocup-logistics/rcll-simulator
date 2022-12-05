@@ -38,7 +38,11 @@ namespace GazsimMsgs {
 
   }
   #region Messages
-  public sealed partial class SimTime : pb::IMessage<SimTime> {
+  public sealed partial class SimTime : pb::IMessage<SimTime>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<SimTime> _parser = new pb::MessageParser<SimTime>(() => new SimTime());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -213,6 +217,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasSimTimeSec) {
         output.WriteRawTag(8);
         output.WriteInt64(SimTimeSec);
@@ -232,7 +239,33 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasSimTimeSec) {
+        output.WriteRawTag(8);
+        output.WriteInt64(SimTimeSec);
+      }
+      if (HasSimTimeNsec) {
+        output.WriteRawTag(16);
+        output.WriteInt64(SimTimeNsec);
+      }
+      if (HasRealTimeFactor) {
+        output.WriteRawTag(29);
+        output.WriteFloat(RealTimeFactor);
+      }
+      if (HasPaused) {
+        output.WriteRawTag(32);
+        output.WriteBool(Paused);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -277,6 +310,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -301,7 +337,38 @@ namespace GazsimMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            SimTimeSec = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            SimTimeNsec = input.ReadInt64();
+            break;
+          }
+          case 29: {
+            RealTimeFactor = input.ReadFloat();
+            break;
+          }
+          case 32: {
+            Paused = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the SimTime message type.</summary>

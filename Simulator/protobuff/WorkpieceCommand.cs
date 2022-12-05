@@ -81,7 +81,11 @@ namespace GazsimMsgs {
   /// Can be used for absolute times or
   /// durations alike.
   /// </summary>
-  public sealed partial class WorkpieceCommand : pb::IMessage<WorkpieceCommand> {
+  public sealed partial class WorkpieceCommand : pb::IMessage<WorkpieceCommand>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<WorkpieceCommand> _parser = new pb::MessageParser<WorkpieceCommand>(() => new WorkpieceCommand());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -241,6 +245,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasCommand) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Command);
@@ -257,7 +264,30 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasCommand) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Command);
+      }
+      color_.WriteTo(ref output, _repeated_color_codec);
+      if (HasPuckName) {
+        output.WriteRawTag(26);
+        output.WriteString(PuckName);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -298,6 +328,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -323,11 +356,47 @@ namespace GazsimMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Command = (global::GazsimMsgs.Command) input.ReadEnum();
+            break;
+          }
+          case 18:
+          case 16: {
+            color_.AddEntriesFrom(ref input, _repeated_color_codec);
+            break;
+          }
+          case 26: {
+            PuckName = input.ReadString();
+            break;
+          }
+          case 32: {
+            TeamColor = (global::GazsimMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
-  public sealed partial class WorkpieceResult : pb::IMessage<WorkpieceResult> {
+  public sealed partial class WorkpieceResult : pb::IMessage<WorkpieceResult>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<WorkpieceResult> _parser = new pb::MessageParser<WorkpieceResult>(() => new WorkpieceResult());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -447,6 +516,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Color);
@@ -458,7 +530,25 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasColor) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Color);
+      }
+      if (HasPuckName) {
+        output.WriteRawTag(18);
+        output.WriteString(PuckName);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -491,6 +581,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -507,7 +600,30 @@ namespace GazsimMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Color = (global::GazsimMsgs.Color) input.ReadEnum();
+            break;
+          }
+          case 18: {
+            PuckName = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

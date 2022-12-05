@@ -27,7 +27,7 @@ namespace LlsfMsgs {
             "ChJCZWFjb25TaWduYWwucHJvdG8SCWxsc2ZfbXNncxoKVGltZS5wcm90bxoK",
             "VGVhbS5wcm90bxoMUG9zZTJELnByb3RvGg9BZ2VudFRhc2sucHJvdG8iswIK",
             "DEJlYWNvblNpZ25hbBIdCgR0aW1lGAEgAigLMg8ubGxzZl9tc2dzLlRpbWUS",
-            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgIIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
+            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgDIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
             "KAkSEQoJcGVlcl9uYW1lGAUgAigJEiMKCnRlYW1fY29sb3IYBiABKA4yDy5s",
             "bHNmX21zZ3MuVGVhbRIfCgRwb3NlGAcgASgLMhEubGxzZl9tc2dzLlBvc2Uy",
             "RBIiCgR0YXNrGAkgASgLMhQubGxzZl9tc2dzLkFnZW50VGFzaxIvCg5maW5p",
@@ -47,7 +47,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class BeaconSignal : pb::IMessage<BeaconSignal> {
+  public sealed partial class BeaconSignal : pb::IMessage<BeaconSignal>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<BeaconSignal> _parser = new pb::MessageParser<BeaconSignal>(() => new BeaconSignal());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -133,7 +137,7 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "number" field.</summary>
-    public const int NumberFieldNumber = 8;
+    public const int NumberFieldNumber = 3;
     private readonly static uint NumberDefaultValue = 0;
 
     private uint number_;
@@ -142,21 +146,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint Number {
-      get { if ((_hasBits0 & 4) != 0) { return number_; } else { return NumberDefaultValue; } }
+      get { if ((_hasBits0 & 2) != 0) { return number_; } else { return NumberDefaultValue; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         number_ = value;
       }
     }
     /// <summary>Gets whether the "number" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasNumber {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "number" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearNumber() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "team_name" field.</summary>
@@ -221,21 +225,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Team TeamColor {
-      get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      get { if ((_hasBits0 & 4) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         teamColor_ = value;
       }
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasTeamColor {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearTeamColor() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "pose" field.</summary>
@@ -330,6 +334,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (time_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(Time);
@@ -337,6 +344,10 @@ namespace LlsfMsgs {
       if (HasSeq) {
         output.WriteRawTag(16);
         output.WriteUInt64(Seq);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(Number);
       }
       if (HasTeamName) {
         output.WriteRawTag(34);
@@ -354,10 +365,6 @@ namespace LlsfMsgs {
         output.WriteRawTag(58);
         output.WriteMessage(Pose);
       }
-      if (HasNumber) {
-        output.WriteRawTag(64);
-        output.WriteUInt32(Number);
-      }
       if (task_ != null) {
         output.WriteRawTag(74);
         output.WriteMessage(Task);
@@ -366,7 +373,50 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (time_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Time);
+      }
+      if (HasSeq) {
+        output.WriteRawTag(16);
+        output.WriteUInt64(Seq);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(Number);
+      }
+      if (HasTeamName) {
+        output.WriteRawTag(34);
+        output.WriteString(TeamName);
+      }
+      if (HasPeerName) {
+        output.WriteRawTag(42);
+        output.WriteString(PeerName);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(48);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (pose_ != null) {
+        output.WriteRawTag(58);
+        output.WriteMessage(Pose);
+      }
+      if (task_ != null) {
+        output.WriteRawTag(74);
+        output.WriteMessage(Task);
+      }
+      finishedTasks_.WriteTo(ref output, _repeated_finishedTasks_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -446,6 +496,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -461,6 +514,10 @@ namespace LlsfMsgs {
           }
           case 16: {
             Seq = input.ReadUInt64();
+            break;
+          }
+          case 24: {
+            Number = input.ReadUInt32();
             break;
           }
           case 34: {
@@ -482,10 +539,6 @@ namespace LlsfMsgs {
             input.ReadMessage(Pose);
             break;
           }
-          case 64: {
-            Number = input.ReadUInt32();
-            break;
-          }
           case 74: {
             if (task_ == null) {
               Task = new global::LlsfMsgs.AgentTask();
@@ -499,7 +552,67 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (time_ == null) {
+              Time = new global::Llsfmsgs.Time();
+            }
+            input.ReadMessage(Time);
+            break;
+          }
+          case 16: {
+            Seq = input.ReadUInt64();
+            break;
+          }
+          case 24: {
+            Number = input.ReadUInt32();
+            break;
+          }
+          case 34: {
+            TeamName = input.ReadString();
+            break;
+          }
+          case 42: {
+            PeerName = input.ReadString();
+            break;
+          }
+          case 48: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 58: {
+            if (pose_ == null) {
+              Pose = new global::LlsfMsgs.Pose2D();
+            }
+            input.ReadMessage(Pose);
+            break;
+          }
+          case 74: {
+            if (task_ == null) {
+              Task = new global::LlsfMsgs.AgentTask();
+            }
+            input.ReadMessage(Task);
+            break;
+          }
+          case 82: {
+            finishedTasks_.AddEntriesFrom(ref input, _repeated_finishedTasks_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the BeaconSignal message type.</summary>
@@ -515,7 +628,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class FinishedTask : pb::IMessage<FinishedTask> {
+  public sealed partial class FinishedTask : pb::IMessage<FinishedTask>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<FinishedTask> _parser = new pb::MessageParser<FinishedTask>(() => new FinishedTask());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -642,6 +759,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasTaskId) {
         output.WriteRawTag(8);
         output.WriteUInt32(TaskId);
@@ -653,7 +773,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasTaskId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(TaskId);
+      }
+      if (HasSuccessful) {
+        output.WriteRawTag(16);
+        output.WriteBool(Successful);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -686,6 +824,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -702,7 +843,30 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            TaskId = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            Successful = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

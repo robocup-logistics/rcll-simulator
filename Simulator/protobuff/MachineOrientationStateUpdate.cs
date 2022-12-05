@@ -45,7 +45,11 @@ namespace MachineStates {
   /// <summary>
   /// [START messages]
   /// </summary>
-  public sealed partial class MachineOrientationState : pb::IMessage<MachineOrientationState> {
+  public sealed partial class MachineOrientationState : pb::IMessage<MachineOrientationState>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<MachineOrientationState> _parser = new pb::MessageParser<MachineOrientationState>(() => new MachineOrientationState());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -272,6 +276,9 @@ namespace MachineStates {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasRobotId) {
         output.WriteRawTag(8);
         output.WriteUInt32(RobotId);
@@ -299,7 +306,41 @@ namespace MachineStates {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasRobotId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(RobotId);
+      }
+      if (HasFoundMachine) {
+        output.WriteRawTag(16);
+        output.WriteBool(FoundMachine);
+      }
+      if (HasMachineId) {
+        output.WriteRawTag(26);
+        output.WriteString(MachineId);
+      }
+      if (HasZoneNumber) {
+        output.WriteRawTag(32);
+        output.WriteUInt32(ZoneNumber);
+      }
+      if (HasZonePrefix) {
+        output.WriteRawTag(42);
+        output.WriteString(ZonePrefix);
+      }
+      if (HasOrientation) {
+        output.WriteRawTag(49);
+        output.WriteDouble(Orientation);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -356,6 +397,9 @@ namespace MachineStates {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -388,7 +432,46 @@ namespace MachineStates {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            RobotId = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            FoundMachine = input.ReadBool();
+            break;
+          }
+          case 26: {
+            MachineId = input.ReadString();
+            break;
+          }
+          case 32: {
+            ZoneNumber = input.ReadUInt32();
+            break;
+          }
+          case 42: {
+            ZonePrefix = input.ReadString();
+            break;
+          }
+          case 49: {
+            Orientation = input.ReadDouble();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineOrientationState message type.</summary>

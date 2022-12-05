@@ -41,7 +41,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class RobotBeaconSignal : pb::IMessage<RobotBeaconSignal> {
+  public sealed partial class RobotBeaconSignal : pb::IMessage<RobotBeaconSignal>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<RobotBeaconSignal> _parser = new pb::MessageParser<RobotBeaconSignal>(() => new RobotBeaconSignal());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -229,6 +233,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (beaconSignal_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(BeaconSignal);
@@ -252,7 +259,37 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (beaconSignal_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(BeaconSignal);
+      }
+      if (HasTaskId) {
+        output.WriteRawTag(16);
+        output.WriteInt32(TaskId);
+      }
+      if (HasRunning) {
+        output.WriteRawTag(24);
+        output.WriteBool(Running);
+      }
+      if (HasOprsStack) {
+        output.WriteRawTag(34);
+        output.WriteString(OprsStack);
+      }
+      if (HasHoldProduct) {
+        output.WriteRawTag(40);
+        output.WriteBool(HoldProduct);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -306,6 +343,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -337,7 +377,45 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (beaconSignal_ == null) {
+              BeaconSignal = new global::LlsfMsgs.BeaconSignal();
+            }
+            input.ReadMessage(BeaconSignal);
+            break;
+          }
+          case 16: {
+            TaskId = input.ReadInt32();
+            break;
+          }
+          case 24: {
+            Running = input.ReadBool();
+            break;
+          }
+          case 34: {
+            OprsStack = input.ReadString();
+            break;
+          }
+          case 40: {
+            HoldProduct = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the RobotBeaconSignal message type.</summary>

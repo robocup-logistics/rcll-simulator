@@ -63,7 +63,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class UnconfirmedDelivery : pb::IMessage<UnconfirmedDelivery> {
+  public sealed partial class UnconfirmedDelivery : pb::IMessage<UnconfirmedDelivery>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<UnconfirmedDelivery> _parser = new pb::MessageParser<UnconfirmedDelivery>(() => new UnconfirmedDelivery());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -198,6 +202,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasId) {
         output.WriteRawTag(8);
         output.WriteUInt32(Id);
@@ -213,7 +220,29 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Id);
+      }
+      if (HasTeam) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Team);
+      }
+      if (deliveryTime_ != null) {
+        output.WriteRawTag(26);
+        output.WriteMessage(DeliveryTime);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -255,6 +284,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -278,7 +310,37 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Id = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            Team = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            if (deliveryTime_ == null) {
+              DeliveryTime = new global::Llsfmsgs.Time();
+            }
+            input.ReadMessage(DeliveryTime);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the UnconfirmedDelivery message type.</summary>
@@ -294,7 +356,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class Order : pb::IMessage<Order> {
+  public sealed partial class Order : pb::IMessage<Order>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Order> _parser = new pb::MessageParser<Order>(() => new Order());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -698,6 +764,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasId) {
         output.WriteRawTag(8);
         output.WriteUInt32(Id);
@@ -747,7 +816,63 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(Id);
+      }
+      if (HasComplexity) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Complexity);
+      }
+      if (HasBaseColor) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) BaseColor);
+      }
+      ringColors_.WriteTo(ref output, _repeated_ringColors_codec);
+      if (HasCapColor) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) CapColor);
+      }
+      if (HasQuantityRequested) {
+        output.WriteRawTag(48);
+        output.WriteUInt32(QuantityRequested);
+      }
+      if (HasQuantityDeliveredCyan) {
+        output.WriteRawTag(56);
+        output.WriteUInt32(QuantityDeliveredCyan);
+      }
+      if (HasQuantityDeliveredMagenta) {
+        output.WriteRawTag(64);
+        output.WriteUInt32(QuantityDeliveredMagenta);
+      }
+      if (HasDeliveryPeriodBegin) {
+        output.WriteRawTag(72);
+        output.WriteUInt32(DeliveryPeriodBegin);
+      }
+      if (HasDeliveryPeriodEnd) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(DeliveryPeriodEnd);
+      }
+      if (HasDeliveryGate) {
+        output.WriteRawTag(88);
+        output.WriteUInt32(DeliveryGate);
+      }
+      unconfirmedDeliveries_.WriteTo(ref output, _repeated_unconfirmedDeliveries_codec);
+      if (HasCompetitive) {
+        output.WriteRawTag(104);
+        output.WriteBool(Competitive);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -838,6 +963,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -899,7 +1027,75 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Id = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            Complexity = (global::LlsfMsgs.Order.Types.Complexity) input.ReadEnum();
+            break;
+          }
+          case 24: {
+            BaseColor = (global::LlsfMsgs.BaseColor) input.ReadEnum();
+            break;
+          }
+          case 34:
+          case 32: {
+            ringColors_.AddEntriesFrom(ref input, _repeated_ringColors_codec);
+            break;
+          }
+          case 40: {
+            CapColor = (global::LlsfMsgs.CapColor) input.ReadEnum();
+            break;
+          }
+          case 48: {
+            QuantityRequested = input.ReadUInt32();
+            break;
+          }
+          case 56: {
+            QuantityDeliveredCyan = input.ReadUInt32();
+            break;
+          }
+          case 64: {
+            QuantityDeliveredMagenta = input.ReadUInt32();
+            break;
+          }
+          case 72: {
+            DeliveryPeriodBegin = input.ReadUInt32();
+            break;
+          }
+          case 80: {
+            DeliveryPeriodEnd = input.ReadUInt32();
+            break;
+          }
+          case 88: {
+            DeliveryGate = input.ReadUInt32();
+            break;
+          }
+          case 98: {
+            unconfirmedDeliveries_.AddEntriesFrom(ref input, _repeated_unconfirmedDeliveries_codec);
+            break;
+          }
+          case 104: {
+            Competitive = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the Order message type.</summary>
@@ -925,7 +1121,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class OrderInfo : pb::IMessage<OrderInfo> {
+  public sealed partial class OrderInfo : pb::IMessage<OrderInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<OrderInfo> _parser = new pb::MessageParser<OrderInfo>(() => new OrderInfo());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1006,11 +1206,25 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       orders_.WriteTo(output, _repeated_orders_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      orders_.WriteTo(ref output, _repeated_orders_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1033,6 +1247,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1045,7 +1262,26 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            orders_.AddEntriesFrom(ref input, _repeated_orders_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the OrderInfo message type.</summary>
@@ -1061,7 +1297,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class SetOrderDelivered : pb::IMessage<SetOrderDelivered> {
+  public sealed partial class SetOrderDelivered : pb::IMessage<SetOrderDelivered>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<SetOrderDelivered> _parser = new pb::MessageParser<SetOrderDelivered>(() => new SetOrderDelivered());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -1182,6 +1422,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasTeamColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) TeamColor);
@@ -1193,7 +1436,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasTeamColor) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (HasOrderId) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(OrderId);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1226,6 +1487,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1242,7 +1506,30 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 16: {
+            OrderId = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the SetOrderDelivered message type.</summary>
@@ -1258,7 +1545,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class ConfirmDelivery : pb::IMessage<ConfirmDelivery> {
+  public sealed partial class ConfirmDelivery : pb::IMessage<ConfirmDelivery>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<ConfirmDelivery> _parser = new pb::MessageParser<ConfirmDelivery>(() => new ConfirmDelivery());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -1379,6 +1670,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasDeliveryId) {
         output.WriteRawTag(8);
         output.WriteUInt32(DeliveryId);
@@ -1390,7 +1684,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasDeliveryId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(DeliveryId);
+      }
+      if (HasCorrect) {
+        output.WriteRawTag(16);
+        output.WriteBool(Correct);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1423,6 +1735,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1439,7 +1754,30 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            DeliveryId = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            Correct = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the ConfirmDelivery message type.</summary>

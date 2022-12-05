@@ -74,7 +74,11 @@ namespace LlsfMsgs {
   #endregion
 
   #region Messages
-  public sealed partial class LightSpec : pb::IMessage<LightSpec> {
+  public sealed partial class LightSpec : pb::IMessage<LightSpec>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<LightSpec> _parser = new pb::MessageParser<LightSpec>(() => new LightSpec());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -198,6 +202,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) Color);
@@ -209,7 +216,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasColor) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) Color);
+      }
+      if (HasState) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) State);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -242,6 +267,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -258,7 +286,30 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Color = (global::LlsfMsgs.LightColor) input.ReadEnum();
+            break;
+          }
+          case 16: {
+            State = (global::LlsfMsgs.LightState) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the LightSpec message type.</summary>
@@ -274,7 +325,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class Machine : pb::IMessage<Machine> {
+  public sealed partial class Machine : pb::IMessage<Machine>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Machine> _parser = new pb::MessageParser<Machine>(() => new Machine());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -743,6 +798,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasName) {
         output.WriteRawTag(10);
         output.WriteString(Name);
@@ -812,7 +870,83 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasName) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (HasType) {
+        output.WriteRawTag(18);
+        output.WriteString(Type);
+      }
+      if (HasState) {
+        output.WriteRawTag(26);
+        output.WriteString(State);
+      }
+      lights_.WriteTo(ref output, _repeated_lights_codec);
+      if (pose_ != null) {
+        output.WriteRawTag(66);
+        output.WriteMessage(Pose);
+      }
+      if (HasCorrectlyReported) {
+        output.WriteRawTag(72);
+        output.WriteBool(CorrectlyReported);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(80);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (HasZone) {
+        output.WriteRawTag(88);
+        output.WriteEnum((int) Zone);
+      }
+      if (HasRotation) {
+        output.WriteRawTag(96);
+        output.WriteUInt32(Rotation);
+      }
+      if (HasLoadedWith) {
+        output.WriteRawTag(104);
+        output.WriteUInt32(LoadedWith);
+      }
+      ringColors_.WriteTo(ref output, _repeated_ringColors_codec);
+      if (instructionBs_ != null) {
+        output.WriteRawTag(130, 1);
+        output.WriteMessage(InstructionBs);
+      }
+      if (instructionDs_ != null) {
+        output.WriteRawTag(138, 1);
+        output.WriteMessage(InstructionDs);
+      }
+      if (instructionRs_ != null) {
+        output.WriteRawTag(146, 1);
+        output.WriteMessage(InstructionRs);
+      }
+      if (instructionCs_ != null) {
+        output.WriteRawTag(154, 1);
+        output.WriteMessage(InstructionCs);
+      }
+      if (instructionSs_ != null) {
+        output.WriteRawTag(162, 1);
+        output.WriteMessage(InstructionSs);
+      }
+      if (HasExplorationRotationState) {
+        output.WriteRawTag(168, 1);
+        output.WriteEnum((int) ExplorationRotationState);
+      }
+      if (HasExplorationZoneState) {
+        output.WriteRawTag(176, 1);
+        output.WriteEnum((int) ExplorationZoneState);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -951,6 +1085,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1050,7 +1187,113 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Type = input.ReadString();
+            break;
+          }
+          case 26: {
+            State = input.ReadString();
+            break;
+          }
+          case 58: {
+            lights_.AddEntriesFrom(ref input, _repeated_lights_codec);
+            break;
+          }
+          case 66: {
+            if (pose_ == null) {
+              Pose = new global::LlsfMsgs.Pose2D();
+            }
+            input.ReadMessage(Pose);
+            break;
+          }
+          case 72: {
+            CorrectlyReported = input.ReadBool();
+            break;
+          }
+          case 80: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 88: {
+            Zone = (global::LlsfMsgs.Zone) input.ReadEnum();
+            break;
+          }
+          case 96: {
+            Rotation = input.ReadUInt32();
+            break;
+          }
+          case 104: {
+            LoadedWith = input.ReadUInt32();
+            break;
+          }
+          case 114:
+          case 112: {
+            ringColors_.AddEntriesFrom(ref input, _repeated_ringColors_codec);
+            break;
+          }
+          case 130: {
+            if (instructionBs_ == null) {
+              InstructionBs = new global::LlsfMsgs.PrepareInstructionBS();
+            }
+            input.ReadMessage(InstructionBs);
+            break;
+          }
+          case 138: {
+            if (instructionDs_ == null) {
+              InstructionDs = new global::LlsfMsgs.PrepareInstructionDS();
+            }
+            input.ReadMessage(InstructionDs);
+            break;
+          }
+          case 146: {
+            if (instructionRs_ == null) {
+              InstructionRs = new global::LlsfMsgs.PrepareInstructionRS();
+            }
+            input.ReadMessage(InstructionRs);
+            break;
+          }
+          case 154: {
+            if (instructionCs_ == null) {
+              InstructionCs = new global::LlsfMsgs.PrepareInstructionCS();
+            }
+            input.ReadMessage(InstructionCs);
+            break;
+          }
+          case 162: {
+            if (instructionSs_ == null) {
+              InstructionSs = new global::LlsfMsgs.PrepareInstructionSS();
+            }
+            input.ReadMessage(InstructionSs);
+            break;
+          }
+          case 168: {
+            ExplorationRotationState = (global::LlsfMsgs.ExplorationState) input.ReadEnum();
+            break;
+          }
+          case 176: {
+            ExplorationZoneState = (global::LlsfMsgs.ExplorationState) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the Machine message type.</summary>
@@ -1066,7 +1309,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class MachineInfo : pb::IMessage<MachineInfo> {
+  public sealed partial class MachineInfo : pb::IMessage<MachineInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<MachineInfo> _parser = new pb::MessageParser<MachineInfo>(() => new MachineInfo());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -1179,6 +1426,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       machines_.WriteTo(output, _repeated_machines_codec);
       if (HasTeamColor) {
         output.WriteRawTag(16);
@@ -1187,7 +1437,22 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      machines_.WriteTo(ref output, _repeated_machines_codec);
+      if (HasTeamColor) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1216,6 +1481,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1232,7 +1500,30 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            machines_.AddEntriesFrom(ref input, _repeated_machines_codec);
+            break;
+          }
+          case 16: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineInfo message type.</summary>

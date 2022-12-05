@@ -44,7 +44,11 @@ namespace GazsimMsgs {
 
   }
   #region Messages
-  public sealed partial class LightSignalDetection : pb::IMessage<LightSignalDetection> {
+  public sealed partial class LightSignalDetection : pb::IMessage<LightSignalDetection>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<LightSignalDetection> _parser = new pb::MessageParser<LightSignalDetection>(() => new LightSignalDetection());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -187,6 +191,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasVisible) {
         output.WriteRawTag(8);
         output.WriteBool(Visible);
@@ -199,7 +206,26 @@ namespace GazsimMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasVisible) {
+        output.WriteRawTag(8);
+        output.WriteBool(Visible);
+      }
+      lights_.WriteTo(ref output, _repeated_lights_codec);
+      if (HasVisibilityHistory) {
+        output.WriteRawTag(24);
+        output.WriteInt32(VisibilityHistory);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -234,6 +260,9 @@ namespace GazsimMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -254,7 +283,34 @@ namespace GazsimMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Visible = input.ReadBool();
+            break;
+          }
+          case 18: {
+            lights_.AddEntriesFrom(ref input, _repeated_lights_codec);
+            break;
+          }
+          case 24: {
+            VisibilityHistory = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the LightSignalDetection message type.</summary>
@@ -272,7 +328,11 @@ namespace GazsimMsgs {
         [pbr::OriginalName("BLINK")] Blink = 2,
       }
 
-      public sealed partial class LightSpec : pb::IMessage<LightSpec> {
+      public sealed partial class LightSpec : pb::IMessage<LightSpec>
+      #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          , pb::IBufferMessage
+      #endif
+      {
         private static readonly pb::MessageParser<LightSpec> _parser = new pb::MessageParser<LightSpec>(() => new LightSpec());
         private pb::UnknownFieldSet _unknownFields;
         private int _hasBits0;
@@ -396,6 +456,9 @@ namespace GazsimMsgs {
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public void WriteTo(pb::CodedOutputStream output) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          output.WriteRawMessage(this);
+        #else
           if (HasColor) {
             output.WriteRawTag(8);
             output.WriteEnum((int) Color);
@@ -407,7 +470,25 @@ namespace GazsimMsgs {
           if (_unknownFields != null) {
             _unknownFields.WriteTo(output);
           }
+        #endif
         }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+          if (HasColor) {
+            output.WriteRawTag(8);
+            output.WriteEnum((int) Color);
+          }
+          if (HasState) {
+            output.WriteRawTag(16);
+            output.WriteEnum((int) State);
+          }
+          if (_unknownFields != null) {
+            _unknownFields.WriteTo(ref output);
+          }
+        }
+        #endif
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public int CalculateSize() {
@@ -440,6 +521,9 @@ namespace GazsimMsgs {
 
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
         public void MergeFrom(pb::CodedInputStream input) {
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+          input.ReadRawMessage(this);
+        #else
           uint tag;
           while ((tag = input.ReadTag()) != 0) {
             switch(tag) {
@@ -456,7 +540,30 @@ namespace GazsimMsgs {
               }
             }
           }
+        #endif
         }
+
+        #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+        void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+          uint tag;
+          while ((tag = input.ReadTag()) != 0) {
+            switch(tag) {
+              default:
+                _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+                break;
+              case 8: {
+                Color = (global::GazsimMsgs.LightSignalDetection.Types.LightColor) input.ReadEnum();
+                break;
+              }
+              case 16: {
+                State = (global::GazsimMsgs.LightSignalDetection.Types.LightState) input.ReadEnum();
+                break;
+              }
+            }
+          }
+        }
+        #endif
 
         #region Nested types
         /// <summary>Container for nested types declared in the LightSpec message type.</summary>

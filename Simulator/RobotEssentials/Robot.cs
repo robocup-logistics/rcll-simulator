@@ -567,7 +567,7 @@ namespace Simulator.RobotEssentials
             {
                 return;
             }
-            var machine = CurrentTask.Deliver.MachineId;
+            var machine = CurrentTask.Deliver.Waypoint;
             var target = CurrentTask.Deliver.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);

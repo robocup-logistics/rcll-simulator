@@ -58,7 +58,11 @@ namespace LlsfMsgs {
   #endregion
 
   #region Messages
-  public sealed partial class Robot : pb::IMessage<Robot> {
+  public sealed partial class Robot : pb::IMessage<Robot>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Robot> _parser = new pb::MessageParser<Robot>(() => new Robot());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -410,6 +414,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasName) {
         output.WriteRawTag(10);
         output.WriteString(Name);
@@ -457,7 +464,61 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasName) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (HasTeam) {
+        output.WriteRawTag(18);
+        output.WriteString(Team);
+      }
+      if (HasHost) {
+        output.WriteRawTag(26);
+        output.WriteString(Host);
+      }
+      if (lastSeen_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(LastSeen);
+      }
+      if (pose_ != null) {
+        output.WriteRawTag(50);
+        output.WriteMessage(Pose);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(56);
+        output.WriteUInt32(Number);
+      }
+      if (HasState) {
+        output.WriteRawTag(64);
+        output.WriteEnum((int) State);
+      }
+      if (HasMaintenanceTimeRemaining) {
+        output.WriteRawTag(77);
+        output.WriteFloat(MaintenanceTimeRemaining);
+      }
+      if (HasMaintenanceCycles) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(MaintenanceCycles);
+      }
+      if (visionPose_ != null) {
+        output.WriteRawTag(90);
+        output.WriteMessage(VisionPose);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(96);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -553,6 +614,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -614,7 +678,75 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Team = input.ReadString();
+            break;
+          }
+          case 26: {
+            Host = input.ReadString();
+            break;
+          }
+          case 34: {
+            if (lastSeen_ == null) {
+              LastSeen = new global::Llsfmsgs.Time();
+            }
+            input.ReadMessage(LastSeen);
+            break;
+          }
+          case 50: {
+            if (pose_ == null) {
+              Pose = new global::LlsfMsgs.Pose2D();
+            }
+            input.ReadMessage(Pose);
+            break;
+          }
+          case 56: {
+            Number = input.ReadUInt32();
+            break;
+          }
+          case 64: {
+            State = (global::LlsfMsgs.RobotState) input.ReadEnum();
+            break;
+          }
+          case 77: {
+            MaintenanceTimeRemaining = input.ReadFloat();
+            break;
+          }
+          case 80: {
+            MaintenanceCycles = input.ReadUInt32();
+            break;
+          }
+          case 90: {
+            if (visionPose_ == null) {
+              VisionPose = new global::LlsfMsgs.Pose2D();
+            }
+            input.ReadMessage(VisionPose);
+            break;
+          }
+          case 96: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the Robot message type.</summary>
@@ -630,7 +762,11 @@ namespace LlsfMsgs {
 
   }
 
-  public sealed partial class RobotInfo : pb::IMessage<RobotInfo> {
+  public sealed partial class RobotInfo : pb::IMessage<RobotInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<RobotInfo> _parser = new pb::MessageParser<RobotInfo>(() => new RobotInfo());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -711,11 +847,25 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       robots_.WriteTo(output, _repeated_robots_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      robots_.WriteTo(ref output, _repeated_robots_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -738,6 +888,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -750,7 +903,26 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            robots_.AddEntriesFrom(ref input, _repeated_robots_codec);
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the RobotInfo message type.</summary>

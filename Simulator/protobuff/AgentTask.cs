@@ -39,25 +39,25 @@ namespace LlsfMsgs {
             "ZRIMCgdDT01QX0lEEMA+Eg0KCE1TR19UWVBFEPYDIi8KBE1vdmUSEAoId2F5",
             "cG9pbnQYASACKAkSFQoNbWFjaGluZV9wb2ludBgCIAEoCSI1CghSZXRyaWV2",
             "ZRISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9pbnQYAiACKAki",
-            "NAoHRGVsaXZlchISCgptYWNoaW5lX2lkGAEgAigJEhUKDW1hY2hpbmVfcG9p",
-            "bnQYAiACKAkiOQoNQnVmZmVyU3RhdGlvbhISCgptYWNoaW5lX2lkGAEgAigJ",
-            "EhQKDHNoZWxmX251bWJlchgCIAIoDSJOCg9FeHBsb3JlV2F5cG9pbnQSEgoK",
-            "bWFjaGluZV9pZBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50GAIgAigJEhAKCHdh",
-            "eXBvaW50GAMgAigJIrwBChRXb3JrcGllY2VEZXNjcmlwdGlvbhIoCgpiYXNl",
-            "X2NvbG9yGAMgAigOMhQubGxzZl9tc2dzLkJhc2VDb2xvchIpCgtyaW5nX2Nv",
-            "bG9ycxgEIAMoDjIULmxsc2ZfbXNncy5SaW5nQ29sb3ISJgoJY2FwX2NvbG9y",
-            "GAUgASgOMhMubGxzZl9tc2dzLkNhcENvbG9yIicKCENvbXBUeXBlEgwKB0NP",
-            "TVBfSUQQwD4SDQoITVNHX1RZUEUQ/gNCMwofb3JnLnJvYm9jdXBfbG9naXN0",
-            "aWNzLmxsc2ZfbXNnc0IQQWdlbnRUYXNrc1Byb3Rvcw=="));
+            "MgoHRGVsaXZlchIQCgh3YXlwb2ludBgBIAIoCRIVCg1tYWNoaW5lX3BvaW50",
+            "GAIgAigJIjkKDUJ1ZmZlclN0YXRpb24SEgoKbWFjaGluZV9pZBgBIAIoCRIU",
+            "CgxzaGVsZl9udW1iZXIYAiABKA0iTgoPRXhwbG9yZVdheXBvaW50EhAKCHdh",
+            "eXBvaW50GAEgAigJEhIKCm1hY2hpbmVfaWQYAiABKAkSFQoNbWFjaGluZV9w",
+            "b2ludBgDIAEoCSK8AQoUV29ya3BpZWNlRGVzY3JpcHRpb24SKAoKYmFzZV9j",
+            "b2xvchgDIAIoDjIULmxsc2ZfbXNncy5CYXNlQ29sb3ISKQoLcmluZ19jb2xv",
+            "cnMYBCADKA4yFC5sbHNmX21zZ3MuUmluZ0NvbG9yEiYKCWNhcF9jb2xvchgF",
+            "IAEoDjITLmxsc2ZfbXNncy5DYXBDb2xvciInCghDb21wVHlwZRIMCgdDT01Q",
+            "X0lEEMA+Eg0KCE1TR19UWVBFEP4DQjIKH29yZy5yb2JvY3VwX2xvZ2lzdGlj",
+            "cy5sbHNmX21zZ3NCD0FnZW50VGFza1Byb3Rvcw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.ProductColorReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.AgentTask), global::LlsfMsgs.AgentTask.Parser, new[]{ "TeamColor", "TaskId", "RobotId", "Move", "Retrieve", "Deliver", "Buffer", "ExploreMachine", "WorkpieceDescription", "OrderId", "CancelTask", "PauseTask", "Successful", "Canceled", "ErrorCode" }, null, new[]{ typeof(global::LlsfMsgs.AgentTask.Types.CompType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Move), global::LlsfMsgs.Move.Parser, new[]{ "Waypoint", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Retrieve), global::LlsfMsgs.Retrieve.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Deliver), global::LlsfMsgs.Deliver.Parser, new[]{ "MachineId", "MachinePoint" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Deliver), global::LlsfMsgs.Deliver.Parser, new[]{ "Waypoint", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.BufferStation), global::LlsfMsgs.BufferStation.Parser, new[]{ "MachineId", "ShelfNumber" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.ExploreWaypoint), global::LlsfMsgs.ExploreWaypoint.Parser, new[]{ "MachineId", "MachinePoint", "Waypoint" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.ExploreWaypoint), global::LlsfMsgs.ExploreWaypoint.Parser, new[]{ "Waypoint", "MachineId", "MachinePoint" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.WorkpieceDescription), global::LlsfMsgs.WorkpieceDescription.Parser, new[]{ "BaseColor", "RingColors", "CapColor" }, null, new[]{ typeof(global::LlsfMsgs.WorkpieceDescription.Types.CompType) }, null, null)
           }));
     }
@@ -65,7 +65,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class AgentTask : pb::IMessage<AgentTask> {
+  public sealed partial class AgentTask : pb::IMessage<AgentTask>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<AgentTask> _parser = new pb::MessageParser<AgentTask>(() => new AgentTask());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -174,6 +178,9 @@ namespace LlsfMsgs {
     private readonly static uint RobotIdDefaultValue = 0;
 
     private uint robotId_;
+    /// <summary>
+    /// identifier for the robot
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint RobotId {
       get { if ((_hasBits0 & 4) != 0) { return robotId_; } else { return RobotIdDefaultValue; } }
@@ -349,7 +356,7 @@ namespace LlsfMsgs {
 
     private bool successful_;
     /// <summary>
-    /// was the task finished successful?
+    /// response from the agent with the outcome of the task
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Successful {
@@ -375,9 +382,6 @@ namespace LlsfMsgs {
     private readonly static bool CanceledDefaultValue = false;
 
     private bool canceled_;
-    /// <summary>
-    /// the task was successfully cancled from the agent
-    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool Canceled {
       get { if ((_hasBits0 & 128) != 0) { return canceled_; } else { return CanceledDefaultValue; } }
@@ -403,7 +407,7 @@ namespace LlsfMsgs {
 
     private uint errorCode_;
     /// <summary>
-    /// only set if failure, error-codes not yet defined, might be changed to an enum
+    /// only set if failure, codes are not defined yet
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint ErrorCode {
@@ -486,6 +490,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasTeamColor) {
         output.WriteRawTag(8);
         output.WriteEnum((int) TeamColor);
@@ -549,7 +556,77 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasTeamColor) {
+        output.WriteRawTag(8);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (HasTaskId) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(TaskId);
+      }
+      if (HasRobotId) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(RobotId);
+      }
+      if (move_ != null) {
+        output.WriteRawTag(34);
+        output.WriteMessage(Move);
+      }
+      if (retrieve_ != null) {
+        output.WriteRawTag(42);
+        output.WriteMessage(Retrieve);
+      }
+      if (deliver_ != null) {
+        output.WriteRawTag(50);
+        output.WriteMessage(Deliver);
+      }
+      if (buffer_ != null) {
+        output.WriteRawTag(58);
+        output.WriteMessage(Buffer);
+      }
+      if (exploreMachine_ != null) {
+        output.WriteRawTag(66);
+        output.WriteMessage(ExploreMachine);
+      }
+      if (workpieceDescription_ != null) {
+        output.WriteRawTag(74);
+        output.WriteMessage(WorkpieceDescription);
+      }
+      if (HasOrderId) {
+        output.WriteRawTag(80);
+        output.WriteUInt32(OrderId);
+      }
+      if (HasCancelTask) {
+        output.WriteRawTag(88);
+        output.WriteBool(CancelTask);
+      }
+      if (HasPauseTask) {
+        output.WriteRawTag(96);
+        output.WriteBool(PauseTask);
+      }
+      if (HasSuccessful) {
+        output.WriteRawTag(104);
+        output.WriteBool(Successful);
+      }
+      if (HasCanceled) {
+        output.WriteRawTag(112);
+        output.WriteBool(Canceled);
+      }
+      if (HasErrorCode) {
+        output.WriteRawTag(120);
+        output.WriteUInt32(ErrorCode);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -678,6 +755,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -764,7 +844,100 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 16: {
+            TaskId = input.ReadUInt32();
+            break;
+          }
+          case 24: {
+            RobotId = input.ReadUInt32();
+            break;
+          }
+          case 34: {
+            if (move_ == null) {
+              Move = new global::LlsfMsgs.Move();
+            }
+            input.ReadMessage(Move);
+            break;
+          }
+          case 42: {
+            if (retrieve_ == null) {
+              Retrieve = new global::LlsfMsgs.Retrieve();
+            }
+            input.ReadMessage(Retrieve);
+            break;
+          }
+          case 50: {
+            if (deliver_ == null) {
+              Deliver = new global::LlsfMsgs.Deliver();
+            }
+            input.ReadMessage(Deliver);
+            break;
+          }
+          case 58: {
+            if (buffer_ == null) {
+              Buffer = new global::LlsfMsgs.BufferStation();
+            }
+            input.ReadMessage(Buffer);
+            break;
+          }
+          case 66: {
+            if (exploreMachine_ == null) {
+              ExploreMachine = new global::LlsfMsgs.ExploreWaypoint();
+            }
+            input.ReadMessage(ExploreMachine);
+            break;
+          }
+          case 74: {
+            if (workpieceDescription_ == null) {
+              WorkpieceDescription = new global::LlsfMsgs.WorkpieceDescription();
+            }
+            input.ReadMessage(WorkpieceDescription);
+            break;
+          }
+          case 80: {
+            OrderId = input.ReadUInt32();
+            break;
+          }
+          case 88: {
+            CancelTask = input.ReadBool();
+            break;
+          }
+          case 96: {
+            PauseTask = input.ReadBool();
+            break;
+          }
+          case 104: {
+            Successful = input.ReadBool();
+            break;
+          }
+          case 112: {
+            Canceled = input.ReadBool();
+            break;
+          }
+          case 120: {
+            ErrorCode = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the AgentTask message type.</summary>
@@ -786,7 +959,11 @@ namespace LlsfMsgs {
   /// <summary>
   /// Move robot to stated waypoint
   /// </summary>
-  public sealed partial class Move : pb::IMessage<Move> {
+  public sealed partial class Move : pb::IMessage<Move>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Move> _parser = new pb::MessageParser<Move>(() => new Move());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -853,7 +1030,7 @@ namespace LlsfMsgs {
 
     private string machinePoint_;
     /// <summary>
-    /// can be used to specify the point of the machine (input, output)
+    /// can be used to specify the point of the machine (input, output, shelf, slide)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string MachinePoint {
@@ -909,6 +1086,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasWaypoint) {
         output.WriteRawTag(10);
         output.WriteString(Waypoint);
@@ -920,7 +1100,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasWaypoint) {
+        output.WriteRawTag(10);
+        output.WriteString(Waypoint);
+      }
+      if (HasMachinePoint) {
+        output.WriteRawTag(18);
+        output.WriteString(MachinePoint);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -953,6 +1151,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -969,14 +1170,41 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Waypoint = input.ReadString();
+            break;
+          }
+          case 18: {
+            MachinePoint = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
   /// <summary>
   /// Get a workpiece at the given station and hold the product in the gripper
   /// </summary>
-  public sealed partial class Retrieve : pb::IMessage<Retrieve> {
+  public sealed partial class Retrieve : pb::IMessage<Retrieve>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Retrieve> _parser = new pb::MessageParser<Retrieve>(() => new Retrieve());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1043,7 +1271,7 @@ namespace LlsfMsgs {
 
     private string machinePoint_;
     /// <summary>
-    /// valid machine-points: input, output
+    /// valid machine-points: input, output, shelf
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string MachinePoint {
@@ -1099,6 +1327,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasMachineId) {
         output.WriteRawTag(10);
         output.WriteString(MachineId);
@@ -1110,7 +1341,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasMachineId) {
+        output.WriteRawTag(10);
+        output.WriteString(MachineId);
+      }
+      if (HasMachinePoint) {
+        output.WriteRawTag(18);
+        output.WriteString(MachinePoint);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1143,6 +1392,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1159,14 +1411,41 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            MachineId = input.ReadString();
+            break;
+          }
+          case 18: {
+            MachinePoint = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
   /// <summary>
   /// Deliver the holding product to the given station
   /// </summary>
-  public sealed partial class Deliver : pb::IMessage<Deliver> {
+  public sealed partial class Deliver : pb::IMessage<Deliver>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Deliver> _parser = new pb::MessageParser<Deliver>(() => new Deliver());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1191,7 +1470,7 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public Deliver(Deliver other) : this() {
-      machineId_ = other.machineId_;
+      waypoint_ = other.waypoint_;
       machinePoint_ = other.machinePoint_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
@@ -1201,30 +1480,30 @@ namespace LlsfMsgs {
       return new Deliver(this);
     }
 
-    /// <summary>Field number for the "machine_id" field.</summary>
-    public const int MachineIdFieldNumber = 1;
-    private readonly static string MachineIdDefaultValue = "";
+    /// <summary>Field number for the "waypoint" field.</summary>
+    public const int WaypointFieldNumber = 1;
+    private readonly static string WaypointDefaultValue = "";
 
-    private string machineId_;
+    private string waypoint_;
     /// <summary>
-    /// name of the machine 
+    /// name of a machine or of the waypoint if you want to drop a piece
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string MachineId {
-      get { return machineId_ ?? MachineIdDefaultValue; }
+    public string Waypoint {
+      get { return waypoint_ ?? WaypointDefaultValue; }
       set {
-        machineId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+        waypoint_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
       }
     }
-    /// <summary>Gets whether the "machine_id" field is set</summary>
+    /// <summary>Gets whether the "waypoint" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasMachineId {
-      get { return machineId_ != null; }
+    public bool HasWaypoint {
+      get { return waypoint_ != null; }
     }
-    /// <summary>Clears the value of the "machine_id" field</summary>
+    /// <summary>Clears the value of the "waypoint" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearMachineId() {
-      machineId_ = null;
+    public void ClearWaypoint() {
+      waypoint_ = null;
     }
 
     /// <summary>Field number for the "machine_point" field.</summary>
@@ -1266,7 +1545,7 @@ namespace LlsfMsgs {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (MachineId != other.MachineId) return false;
+      if (Waypoint != other.Waypoint) return false;
       if (MachinePoint != other.MachinePoint) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -1274,7 +1553,7 @@ namespace LlsfMsgs {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
-      if (HasMachineId) hash ^= MachineId.GetHashCode();
+      if (HasWaypoint) hash ^= Waypoint.GetHashCode();
       if (HasMachinePoint) hash ^= MachinePoint.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -1289,9 +1568,12 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (HasMachineId) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasWaypoint) {
         output.WriteRawTag(10);
-        output.WriteString(MachineId);
+        output.WriteString(Waypoint);
       }
       if (HasMachinePoint) {
         output.WriteRawTag(18);
@@ -1300,13 +1582,31 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasWaypoint) {
+        output.WriteRawTag(10);
+        output.WriteString(Waypoint);
+      }
+      if (HasMachinePoint) {
+        output.WriteRawTag(18);
+        output.WriteString(MachinePoint);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
-      if (HasMachineId) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(MachineId);
+      if (HasWaypoint) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Waypoint);
       }
       if (HasMachinePoint) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MachinePoint);
@@ -1322,8 +1622,8 @@ namespace LlsfMsgs {
       if (other == null) {
         return;
       }
-      if (other.HasMachineId) {
-        MachineId = other.MachineId;
+      if (other.HasWaypoint) {
+        Waypoint = other.Waypoint;
       }
       if (other.HasMachinePoint) {
         MachinePoint = other.MachinePoint;
@@ -1333,6 +1633,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1340,7 +1643,29 @@ namespace LlsfMsgs {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            MachineId = input.ReadString();
+            Waypoint = input.ReadString();
+            break;
+          }
+          case 18: {
+            MachinePoint = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Waypoint = input.ReadString();
             break;
           }
           case 18: {
@@ -1350,13 +1675,18 @@ namespace LlsfMsgs {
         }
       }
     }
+    #endif
 
   }
 
   /// <summary>
   /// Get product from shelf and place it immediately afterwards on the conveyor
   /// </summary>
-  public sealed partial class BufferStation : pb::IMessage<BufferStation> {
+  public sealed partial class BufferStation : pb::IMessage<BufferStation>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<BufferStation> _parser = new pb::MessageParser<BufferStation>(() => new BufferStation());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -1425,7 +1755,7 @@ namespace LlsfMsgs {
 
     private uint shelfNumber_;
     /// <summary>
-    /// only for old-gripper, valid shelf-numbers: 1, 2, 3
+    /// valid shelf-numbers: 1, 2, 3
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint ShelfNumber {
@@ -1482,6 +1812,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasMachineId) {
         output.WriteRawTag(10);
         output.WriteString(MachineId);
@@ -1493,7 +1826,25 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasMachineId) {
+        output.WriteRawTag(10);
+        output.WriteString(MachineId);
+      }
+      if (HasShelfNumber) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(ShelfNumber);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1526,6 +1877,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1542,14 +1896,41 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            MachineId = input.ReadString();
+            break;
+          }
+          case 16: {
+            ShelfNumber = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 
   /// <summary>
-  /// Move to the given machine (if position already detected), else move to given waypoint (=zone on the playing field)
+  /// Move to the given waypoint and explore it
   /// </summary>
-  public sealed partial class ExploreWaypoint : pb::IMessage<ExploreWaypoint> {
+  public sealed partial class ExploreWaypoint : pb::IMessage<ExploreWaypoint>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<ExploreWaypoint> _parser = new pb::MessageParser<ExploreWaypoint>(() => new ExploreWaypoint());
     private pb::UnknownFieldSet _unknownFields;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -1574,9 +1955,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public ExploreWaypoint(ExploreWaypoint other) : this() {
+      waypoint_ = other.waypoint_;
       machineId_ = other.machineId_;
       machinePoint_ = other.machinePoint_;
-      waypoint_ = other.waypoint_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -1585,13 +1966,39 @@ namespace LlsfMsgs {
       return new ExploreWaypoint(this);
     }
 
+    /// <summary>Field number for the "waypoint" field.</summary>
+    public const int WaypointFieldNumber = 1;
+    private readonly static string WaypointDefaultValue = "";
+
+    private string waypoint_;
+    /// <summary>
+    /// waypoint that should be explored by the robot
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public string Waypoint {
+      get { return waypoint_ ?? WaypointDefaultValue; }
+      set {
+        waypoint_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "waypoint" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public bool HasWaypoint {
+      get { return waypoint_ != null; }
+    }
+    /// <summary>Clears the value of the "waypoint" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    public void ClearWaypoint() {
+      waypoint_ = null;
+    }
+
     /// <summary>Field number for the "machine_id" field.</summary>
-    public const int MachineIdFieldNumber = 1;
+    public const int MachineIdFieldNumber = 2;
     private readonly static string MachineIdDefaultValue = "";
 
     private string machineId_;
     /// <summary>
-    /// name of the machine 
+    /// name of the machine that can be navigated to 
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public string MachineId {
@@ -1612,7 +2019,7 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "machine_point" field.</summary>
-    public const int MachinePointFieldNumber = 2;
+    public const int MachinePointFieldNumber = 3;
     private readonly static string MachinePointDefaultValue = "";
 
     private string machinePoint_;
@@ -1637,29 +2044,6 @@ namespace LlsfMsgs {
       machinePoint_ = null;
     }
 
-    /// <summary>Field number for the "waypoint" field.</summary>
-    public const int WaypointFieldNumber = 3;
-    private readonly static string WaypointDefaultValue = "";
-
-    private string waypoint_;
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public string Waypoint {
-      get { return waypoint_ ?? WaypointDefaultValue; }
-      set {
-        waypoint_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
-      }
-    }
-    /// <summary>Gets whether the "waypoint" field is set</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public bool HasWaypoint {
-      get { return waypoint_ != null; }
-    }
-    /// <summary>Clears the value of the "waypoint" field</summary>
-    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public void ClearWaypoint() {
-      waypoint_ = null;
-    }
-
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override bool Equals(object other) {
       return Equals(other as ExploreWaypoint);
@@ -1673,18 +2057,18 @@ namespace LlsfMsgs {
       if (ReferenceEquals(other, this)) {
         return true;
       }
+      if (Waypoint != other.Waypoint) return false;
       if (MachineId != other.MachineId) return false;
       if (MachinePoint != other.MachinePoint) return false;
-      if (Waypoint != other.Waypoint) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public override int GetHashCode() {
       int hash = 1;
+      if (HasWaypoint) hash ^= Waypoint.GetHashCode();
       if (HasMachineId) hash ^= MachineId.GetHashCode();
       if (HasMachinePoint) hash ^= MachinePoint.GetHashCode();
-      if (HasWaypoint) hash ^= Waypoint.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -1698,34 +2082,59 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
-      if (HasMachineId) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasWaypoint) {
         output.WriteRawTag(10);
+        output.WriteString(Waypoint);
+      }
+      if (HasMachineId) {
+        output.WriteRawTag(18);
         output.WriteString(MachineId);
       }
       if (HasMachinePoint) {
-        output.WriteRawTag(18);
-        output.WriteString(MachinePoint);
-      }
-      if (HasWaypoint) {
         output.WriteRawTag(26);
-        output.WriteString(Waypoint);
+        output.WriteString(MachinePoint);
       }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasWaypoint) {
+        output.WriteRawTag(10);
+        output.WriteString(Waypoint);
+      }
+      if (HasMachineId) {
+        output.WriteRawTag(18);
+        output.WriteString(MachineId);
+      }
+      if (HasMachinePoint) {
+        output.WriteRawTag(26);
+        output.WriteString(MachinePoint);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
       int size = 0;
+      if (HasWaypoint) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Waypoint);
+      }
       if (HasMachineId) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MachineId);
       }
       if (HasMachinePoint) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(MachinePoint);
-      }
-      if (HasWaypoint) {
-        size += 1 + pb::CodedOutputStream.ComputeStringSize(Waypoint);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -1738,20 +2147,23 @@ namespace LlsfMsgs {
       if (other == null) {
         return;
       }
+      if (other.HasWaypoint) {
+        Waypoint = other.Waypoint;
+      }
       if (other.HasMachineId) {
         MachineId = other.MachineId;
       }
       if (other.HasMachinePoint) {
         MachinePoint = other.MachinePoint;
       }
-      if (other.HasWaypoint) {
-        Waypoint = other.Waypoint;
-      }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1759,24 +2171,55 @@ namespace LlsfMsgs {
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
           case 10: {
-            MachineId = input.ReadString();
+            Waypoint = input.ReadString();
             break;
           }
           case 18: {
-            MachinePoint = input.ReadString();
+            MachineId = input.ReadString();
             break;
           }
           case 26: {
+            MachinePoint = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
             Waypoint = input.ReadString();
+            break;
+          }
+          case 18: {
+            MachineId = input.ReadString();
+            break;
+          }
+          case 26: {
+            MachinePoint = input.ReadString();
             break;
           }
         }
       }
     }
+    #endif
 
   }
 
-  public sealed partial class WorkpieceDescription : pb::IMessage<WorkpieceDescription> {
+  public sealed partial class WorkpieceDescription : pb::IMessage<WorkpieceDescription>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<WorkpieceDescription> _parser = new pb::MessageParser<WorkpieceDescription>(() => new WorkpieceDescription());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -1919,6 +2362,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasBaseColor) {
         output.WriteRawTag(24);
         output.WriteEnum((int) BaseColor);
@@ -1931,7 +2377,26 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasBaseColor) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) BaseColor);
+      }
+      ringColors_.WriteTo(ref output, _repeated_ringColors_codec);
+      if (HasCapColor) {
+        output.WriteRawTag(40);
+        output.WriteEnum((int) CapColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -1966,6 +2431,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -1987,7 +2455,35 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 24: {
+            BaseColor = (global::LlsfMsgs.BaseColor) input.ReadEnum();
+            break;
+          }
+          case 34:
+          case 32: {
+            ringColors_.AddEntriesFrom(ref input, _repeated_ringColors_codec);
+            break;
+          }
+          case 40: {
+            CapColor = (global::LlsfMsgs.CapColor) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the WorkpieceDescription message type.</summary>

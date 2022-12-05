@@ -43,7 +43,11 @@ namespace LlsfMsgs {
   /// <summary>
   /// Instructs the Teamserver to prepare the machine
   /// </summary>
-  public sealed partial class GripsPrepareMachine : pb::IMessage<GripsPrepareMachine> {
+  public sealed partial class GripsPrepareMachine : pb::IMessage<GripsPrepareMachine>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<GripsPrepareMachine> _parser = new pb::MessageParser<GripsPrepareMachine>(() => new GripsPrepareMachine());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -219,6 +223,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasRobotId) {
         output.WriteRawTag(8);
         output.WriteUInt32(RobotId);
@@ -238,7 +245,33 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasRobotId) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(RobotId);
+      }
+      if (HasMachineId) {
+        output.WriteRawTag(18);
+        output.WriteString(MachineId);
+      }
+      if (HasMachinePoint) {
+        output.WriteRawTag(26);
+        output.WriteString(MachinePoint);
+      }
+      if (HasMachinePrepared) {
+        output.WriteRawTag(32);
+        output.WriteBool(MachinePrepared);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -283,6 +316,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -307,7 +343,38 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            RobotId = input.ReadUInt32();
+            break;
+          }
+          case 18: {
+            MachineId = input.ReadString();
+            break;
+          }
+          case 26: {
+            MachinePoint = input.ReadString();
+            break;
+          }
+          case 32: {
+            MachinePrepared = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the GripsPrepareMachine message type.</summary>

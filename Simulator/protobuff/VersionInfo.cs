@@ -40,7 +40,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class VersionInfo : pb::IMessage<VersionInfo> {
+  public sealed partial class VersionInfo : pb::IMessage<VersionInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<VersionInfo> _parser = new pb::MessageParser<VersionInfo>(() => new VersionInfo());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -214,6 +218,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasVersionMajor) {
         output.WriteRawTag(8);
         output.WriteUInt32(VersionMajor);
@@ -233,7 +240,33 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasVersionMajor) {
+        output.WriteRawTag(8);
+        output.WriteUInt32(VersionMajor);
+      }
+      if (HasVersionMinor) {
+        output.WriteRawTag(16);
+        output.WriteUInt32(VersionMinor);
+      }
+      if (HasVersionMicro) {
+        output.WriteRawTag(24);
+        output.WriteUInt32(VersionMicro);
+      }
+      if (HasVersionString) {
+        output.WriteRawTag(34);
+        output.WriteString(VersionString);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -278,6 +311,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -302,7 +338,38 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            VersionMajor = input.ReadUInt32();
+            break;
+          }
+          case 16: {
+            VersionMinor = input.ReadUInt32();
+            break;
+          }
+          case 24: {
+            VersionMicro = input.ReadUInt32();
+            break;
+          }
+          case 34: {
+            VersionString = input.ReadString();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the VersionInfo message type.</summary>

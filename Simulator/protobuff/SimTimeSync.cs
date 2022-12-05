@@ -40,7 +40,11 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class SimTimeSync : pb::IMessage<SimTimeSync> {
+  public sealed partial class SimTimeSync : pb::IMessage<SimTimeSync>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<SimTimeSync> _parser = new pb::MessageParser<SimTimeSync>(() => new SimTimeSync());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
@@ -175,6 +179,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (simTime_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(SimTime);
@@ -190,7 +197,29 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (simTime_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(SimTime);
+      }
+      if (HasRealTimeFactor) {
+        output.WriteRawTag(21);
+        output.WriteFloat(RealTimeFactor);
+      }
+      if (HasPaused) {
+        output.WriteRawTag(24);
+        output.WriteBool(Paused);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public int CalculateSize() {
@@ -232,6 +261,9 @@ namespace LlsfMsgs {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -255,7 +287,37 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (simTime_ == null) {
+              SimTime = new global::Llsfmsgs.Time();
+            }
+            input.ReadMessage(SimTime);
+            break;
+          }
+          case 21: {
+            RealTimeFactor = input.ReadFloat();
+            break;
+          }
+          case 24: {
+            Paused = input.ReadBool();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the SimTimeSync message type.</summary>

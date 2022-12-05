@@ -305,7 +305,7 @@ namespace Simulator.TerminalGui
                         {
                             newTask.Deliver = new Deliver()
                             {
-                                MachineId = mpsName,
+                                Waypoint = mpsName,
                                 MachinePoint = machinepoint
                             };
                             break;
