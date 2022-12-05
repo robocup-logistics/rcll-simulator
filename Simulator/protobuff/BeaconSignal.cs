@@ -387,10 +387,6 @@ namespace LlsfMsgs {
         output.WriteRawTag(16);
         output.WriteUInt64(Seq);
       }
-      if (HasNumber) {
-        output.WriteRawTag(24);
-        output.WriteUInt32(Number);
-      }
       if (HasTeamName) {
         output.WriteRawTag(34);
         output.WriteString(TeamName);
@@ -406,6 +402,10 @@ namespace LlsfMsgs {
       if (pose_ != null) {
         output.WriteRawTag(58);
         output.WriteMessage(Pose);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(64);
+        output.WriteUInt32(Number);
       }
       if (task_ != null) {
         output.WriteRawTag(74);
@@ -575,10 +575,6 @@ namespace LlsfMsgs {
             Seq = input.ReadUInt64();
             break;
           }
-          case 24: {
-            Number = input.ReadUInt32();
-            break;
-          }
           case 34: {
             TeamName = input.ReadString();
             break;
@@ -596,6 +592,10 @@ namespace LlsfMsgs {
               Pose = new global::LlsfMsgs.Pose2D();
             }
             input.ReadMessage(Pose);
+            break;
+          }
+          case 64: {
+            Number = input.ReadUInt32();
             break;
           }
           case 74: {
