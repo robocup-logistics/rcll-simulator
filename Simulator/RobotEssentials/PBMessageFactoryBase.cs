@@ -179,10 +179,10 @@ namespace Simulator.RobotEssentials
             Bytes[2] = Reserved;
             Bytes[3] = Reserved2;
             var payloadbytes = GetBytesfrom32(payload);
-            Bytes[4] = payloadbytes[3];
-            Bytes[5] = payloadbytes[2];
-            Bytes[6] = payloadbytes[1];
-            Bytes[7] = payloadbytes[0];
+            Bytes[4] = payloadbytes[0];
+            Bytes[5] = payloadbytes[1];
+            Bytes[6] = payloadbytes[2];
+            Bytes[7] = payloadbytes[3];
             Length = Bytes.Length;
         }
         public byte[] GetBytes()
@@ -191,11 +191,8 @@ namespace Simulator.RobotEssentials
         }
         public byte[] GetBytesfrom32(uint val)
         {
-            var res = new byte[4];
-            res[0] = (byte)(val & 0xff);
-            res[1] = (byte)((val >> 8) & 0xff);
-            res[2] = (byte)((val >> 16) & 0xff);
-            res[3] = (byte)((val >> 24) & 0xff);
+            var netorder = IPAddress.HostToNetworkOrder((checked((int) val)));
+            var res = BitConverter.GetBytes(netorder);
             return res;
         }
     }
@@ -232,10 +229,8 @@ namespace Simulator.RobotEssentials
         }
         public byte[] GetBytesfrom16(ushort val)
         {
-            //changed order to fix some bug
-            var res = new byte[2];
-            res[0] = (byte)(val >> 8);
-            res[1] = (byte)(val & 0xff);
+            var netorder = IPAddress.HostToNetworkOrder(checked((short) val));
+            var res = BitConverter.GetBytes(netorder);
             return res;
         }
         public byte[] GetBytes()
