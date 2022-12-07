@@ -103,12 +103,12 @@ namespace Simulator.RobotEssentials
                         Client.Send(message, message.Length,Address.ToString(), Port);
                     }
 
-                    Thread.Sleep(1000);
                 }
                 catch (Exception e)
                 {
                     MyLogger.Log(e + " - Something went wrong with the SendThread!");
                 }
+                Thread.Sleep(1000);
             }
 
         }
