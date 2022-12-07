@@ -17,7 +17,7 @@ namespace Simulator.RobotEssentials
         public Thread RecvThread;
         public IPAddress Address;
         public PBMessageFactoryBase PbFactory;
-        protected PBMessageHandlerRobot HandlerRobot;
+        protected PBMessageHandlerBase PbHandler;
 
         public string IP;
         public int Port;

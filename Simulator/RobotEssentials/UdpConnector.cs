@@ -11,7 +11,7 @@ namespace Simulator.RobotEssentials
     /// </summary>
     class UdpConnector : ConnectorBase
     {
-        private readonly PbMessageHandlerMachineManager PbHandler;
+        private readonly PBMessageHandlerBase PbHandler;
         private Configurations Config;
         private bool OnlySending;
         private UdpClient Client;
@@ -20,7 +20,7 @@ namespace Simulator.RobotEssentials
         public UdpConnector(string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            PbHandler = new PbMessageHandlerMachineManager(MyLogger);
+            PbHandler = new PBMessageHandlerRobot(rob, MyLogger);
             Config = Configurations.GetInstance();
             
             ResolveIpAddress(ip);
@@ -32,14 +32,13 @@ namespace Simulator.RobotEssentials
             Client = new UdpClient();
             Client.EnableBroadcast = true;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public UdpConnector(string ip, int port, MyLogger logger) : base(ip, port, null, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             MyLogger.Log("Starting UdpConnector without a robot!");
-            PbHandler = new PbMessageHandlerMachineManager(MyLogger);
+            PbHandler = new PBMessageHandlerMachineManager(MyLogger);
             Config = Configurations.GetInstance();
             IpString = ip;
             RecvThread = new Thread(() => ReceiveUdpMethod());
@@ -48,7 +47,6 @@ namespace Simulator.RobotEssentials
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
-            HandlerRobot = null;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
@@ -119,7 +117,7 @@ namespace Simulator.RobotEssentials
         {
             Running = true;
             //PublicSendThread.Start();
-            if(HandlerRobot == null)
+            if(Owner == null)
             {
                 RecvThread.Start();
             }

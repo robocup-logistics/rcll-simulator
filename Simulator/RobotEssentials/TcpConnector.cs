@@ -30,7 +30,7 @@ namespace Simulator.RobotEssentials
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
 
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
+            PbHandler = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public bool Close()
@@ -170,7 +170,7 @@ namespace Simulator.RobotEssentials
                     //MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    var payload = HandlerRobot.CheckMessageHeader(buffer);
+                    var payload = PbHandler.CheckMessageHeader(buffer);
                     if (payload == -1)
                     {
                         continue;
@@ -183,7 +183,7 @@ namespace Simulator.RobotEssentials
                         //MyLogger.Log("Lines Receive " + message);
                     }
                     //MyLogger.Log("Received a message!");
-                    HandlerRobot.HandleMessage(buffer);
+                    PbHandler.HandleMessage(buffer);
                     //MyLogger.Log("Handled the message!");
                     //MyLogger.Log(message.ToString());
                 }
