@@ -71,6 +71,7 @@ namespace Simulator.RobotEssentials
                 catch (Exception e)
                 {
                     MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
+                    Thread.Sleep(1000);
                 }
             }
 
