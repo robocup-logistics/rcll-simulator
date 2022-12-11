@@ -15,14 +15,14 @@ namespace Simulator.RobotEssentials
         private Configurations Config;
         private bool OnlySending;
         private UdpClient Client;
-        
+
         private string IpString;
         public UdpConnector(string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             PbHandler = new PBMessageHandlerRobot(rob, MyLogger);
             Config = Configurations.GetInstance();
-            
+
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             RecvThread = new Thread(() => ReceiveUdpMethod());
@@ -54,16 +54,15 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Starting the ReceiveUDPMethod!");
             ResolveIpAddress(IpString);
-            Endpoint = new IPEndPoint(Address, Port);
+            var recvEndpoint = new IPEndPoint(IPAddress.Any, 0);
             MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
-            Client.Connect(Endpoint);
 
             while (Running)
             {
                 try
                 {
                     MyLogger.Log("Waiting on message on port " + Port);
-                    var message = Client.Receive(ref Endpoint);
+                    var message = Client.Receive(ref recvEndpoint);
                     var payload = PbHandler.CheckMessageHeader(message);
                     MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
                     PbHandler.HandleMessage(message);
@@ -80,24 +79,27 @@ namespace Simulator.RobotEssentials
         public void SendUdpMethod()
         {
             MyLogger.Log("Sending message to port " + Port);
-            ResolveIpAddress(IpString);
-            Endpoint = new IPEndPoint(Address, Port);
-            //SendEndpoint = new IPEndPoint(IPAddress.Any, port);
-            //UdpClient client = new UdpClient(SendEndpoint);
-            
             while (Running)
             {
                 try
                 {
-                    MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
                     byte[] message;
-                    if(Owner != null)
-                    {   
-                        message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                    if (Messages.Count == 0)
+                    {
+                      MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
+                      if(Owner != null)
+                      {
+                          message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                      }
+                      else
+                      {
+                          message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                      }
                     }
                     else
                     {
-                        message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                        MyLogger.Log("Sending Queue message to " + Address + ":" + Port + "!");
+                        message = Messages.Dequeue();
                     }
                     if(message != Array.Empty<byte>())
                     {
@@ -113,7 +115,7 @@ namespace Simulator.RobotEssentials
             }
 
         }
-        
+
         public bool Start()
         {
             Running = true;
