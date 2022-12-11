@@ -60,7 +60,7 @@ namespace Simulator.RobotEssentials
         }
         public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type)
         {
-            return ((PBMessageFactoryRobot)PbFactory).CreateMessage(type);
+            return PbFactory.CreateMessage(type);
         }
     }
 }

@@ -47,7 +47,7 @@ namespace Simulator.RobotEssentials
             Timer = null;
         }
 
-        public byte[] CreateMessage(MessageTypes mtype)
+        public virtual byte[] CreateMessage(MessageTypes mtype)
         {
             Timer ??= Timer.GetInstance();
             ushort cmp = 0;
@@ -71,7 +71,7 @@ namespace Simulator.RobotEssentials
                             Number = 0,
                             PeerName = "Test"
                         };
-                        
+
                         cmp = (ushort)BeaconSignal.Types.CompType.CompId;
                         msg = (ushort)BeaconSignal.Types.CompType.MsgType;
                         payloadsize = (uint)Signal.CalculateSize() + 4;
@@ -119,7 +119,7 @@ namespace Simulator.RobotEssentials
             return message.GetBytes();
         }
 
-       
+
         public Time GetTimeMessage()
         {
             Timer ??= Timer.GetInstance();
