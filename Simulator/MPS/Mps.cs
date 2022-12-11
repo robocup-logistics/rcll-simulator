@@ -304,9 +304,11 @@ namespace Simulator.MPS
             switch (machinePoint)
             {
                 case "input":
+                case "INPUT":
                     ProductAtIn = heldProduct;
                     break;
                 case "output":
+                case "OUTPUT":
                     ProductAtOut = heldProduct;
                     break;
                 default:
@@ -329,10 +331,12 @@ namespace Simulator.MPS
             switch (machinePoint)
             {
                 case "input":
+                case "INPUT":
                     returnProduct = ProductAtIn;
                     ProductAtIn = null;
                     break;
                 case "output":
+                case "OUTPUT":
                     returnProduct = ProductAtOut;
                     ProductAtOut = null;
                     break;
@@ -354,10 +358,13 @@ namespace Simulator.MPS
             switch (machinepoint)
             {
                 case "input":
+                case "INPUT":
                     return ProductAtIn == null;
                 case "output":
+                case "OUTPUT":
                     return ProductAtOut == null;
                 case "slide":
+                case "SLIDE":
                     return true;
                 default:
                     return false;
