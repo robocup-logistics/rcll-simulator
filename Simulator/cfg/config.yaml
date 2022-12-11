@@ -1,7 +1,7 @@
 ﻿version: 2
 # Color of machine gets taken from a prefix of C-xxx or M-xxx
 stations:
-  C-BS: 
+  C-BS:
     active: true
     debug: true
     type: BS
@@ -105,11 +105,11 @@ robots:
     jersey: 1
     team: cyan
   Wolf:
-    active: true
+    active: false
     jersey: 2
     team: cyan
   Uke:
-    active: true
+    active: false
     jersey: 3
     team: cyan
   Heinz:
@@ -126,40 +126,42 @@ robots:
     team: magenta
 teams:
   CYAN:
-    name: GRIPS
+    name: Carologistics
     active: True
     host: 127.0.0.1
     port: 2016
   MAGENTA:
-    name: Carologistics
+    name: GRIPS
     active: False
     host: 192.169.0.94
     port: 12345
 refbox:
   public:
-    ip: 172.0.0.1
-    send: 4445
-    recv: 4444
+    ip: 127.0.0.1
+    # The Simulation communicates via tcp to get ground-truth
+    tcp: 4444
+    #send: 4445
+    #recv: 2017
   cyan:
-    send: 4446
-    recv: 4441
+    send: 4446 # 4446
+    recv: 4441 # 4441
   magenta:
     send: 4442
     recv: 4447
 webui:
-  prefix: http  
+  prefix: http
   port: 8000
 general:
   timefactor: 1.0
-  fixed-mps-position: true
-  mockup-connections: true
-  robot-connection-type: tcp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
-  ignore-teamcolor: true
+  fixed-mps-position: false
+  mockup-connections: false
+  robot-connection-type: udp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
+  ignore-teamcolor: false
   robot-prepare-mps: true # robot is responsible to send prepare machine messages, option might be removed in future as teams tend to send prepare via their main control unit
-  robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
+  robot-direct-beacon: true  # Robot is expected to send his beaconsignals directly to the refbox via udp
   robot-move-zone-duration: 2 # in seconds
-  robot-grab-product-duration: 10 # duration for a single try of a grab 
-  robot-maximum-grab-duration: 40 # duration after which a grab is stopped 
+  robot-grab-product-duration: 10 # duration for a single try of a grab
+  robot-maximum-grab-duration: 40 # duration after which a grab is stopped
   robot-place-product-duration: 10 # duration for a single place try
   belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
   bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo

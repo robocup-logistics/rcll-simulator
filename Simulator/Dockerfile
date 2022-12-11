@@ -1,5 +1,5 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
-RUN apt-get update && apt-get -y install xterm libncurses5-dev locales locales-all
+RUN apt-get update && apt-get -y install xterm libncurses5-dev locales locales-all vim
 COPY /MPS/ /simulator/MPS
 COPY /protobuff/ /simulator/protobuff
 COPY /RobotEssentials/ /simulator/RobotEssentials
