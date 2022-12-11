@@ -24,8 +24,10 @@ namespace Simulator.RobotEssentials
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
-            SendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
+            RecvThread = new Thread(() => ReceiveThreadMethod());
+            if (Owner != null) {
+              SendThread = new Thread(() => SendThreadMethod());
+            }
 
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
 
@@ -67,7 +69,10 @@ namespace Simulator.RobotEssentials
                 {
                     Running = true;
                     MyLogger.Log(".... Started");
-                    SendThread.Start();
+                    if (SendThread != null)
+                    {
+                      SendThread.Start();
+                    }
                     RecvThread.Start();
                 }
                 else
@@ -104,7 +109,7 @@ namespace Simulator.RobotEssentials
             return true;
         }
 
-        public void SendThreadMethod(int port)
+        public void SendThreadMethod()
         {
             MyLogger.Log("Starting the SendThread!");
             if (Socket == null)
@@ -156,7 +161,7 @@ namespace Simulator.RobotEssentials
 
 
 
-        public void ReceiveThreadMethod(int port)
+        public void ReceiveThreadMethod()
         {
             MyLogger.Log("Starting the ReceiveThread!");
             while (Running)
