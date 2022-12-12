@@ -27,7 +27,7 @@ namespace LlsfMsgs {
             "ChJCZWFjb25TaWduYWwucHJvdG8SCWxsc2ZfbXNncxoKVGltZS5wcm90bxoK",
             "VGVhbS5wcm90bxoMUG9zZTJELnByb3RvGg9BZ2VudFRhc2sucHJvdG8iswIK",
             "DEJlYWNvblNpZ25hbBIdCgR0aW1lGAEgAigLMg8ubGxzZl9tc2dzLlRpbWUS",
-            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgDIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
+            "CwoDc2VxGAIgAigEEg4KBm51bWJlchgIIAIoDRIRCgl0ZWFtX25hbWUYBCAC",
             "KAkSEQoJcGVlcl9uYW1lGAUgAigJEiMKCnRlYW1fY29sb3IYBiABKA4yDy5s",
             "bHNmX21zZ3MuVGVhbRIfCgRwb3NlGAcgASgLMhEubGxzZl9tc2dzLlBvc2Uy",
             "RBIiCgR0YXNrGAkgASgLMhQubGxzZl9tc2dzLkFnZW50VGFzaxIvCg5maW5p",
@@ -137,7 +137,7 @@ namespace LlsfMsgs {
     }
 
     /// <summary>Field number for the "number" field.</summary>
-    public const int NumberFieldNumber = 3;
+    public const int NumberFieldNumber = 8;
     private readonly static uint NumberDefaultValue = 0;
 
     private uint number_;
@@ -146,21 +146,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public uint Number {
-      get { if ((_hasBits0 & 2) != 0) { return number_; } else { return NumberDefaultValue; } }
+      get { if ((_hasBits0 & 4) != 0) { return number_; } else { return NumberDefaultValue; } }
       set {
-        _hasBits0 |= 2;
+        _hasBits0 |= 4;
         number_ = value;
       }
     }
     /// <summary>Gets whether the "number" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasNumber {
-      get { return (_hasBits0 & 2) != 0; }
+      get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "number" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearNumber() {
-      _hasBits0 &= ~2;
+      _hasBits0 &= ~4;
     }
 
     /// <summary>Field number for the "team_name" field.</summary>
@@ -225,21 +225,21 @@ namespace LlsfMsgs {
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public global::LlsfMsgs.Team TeamColor {
-      get { if ((_hasBits0 & 4) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
-        _hasBits0 |= 4;
+        _hasBits0 |= 2;
         teamColor_ = value;
       }
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public bool HasTeamColor {
-      get { return (_hasBits0 & 4) != 0; }
+      get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     public void ClearTeamColor() {
-      _hasBits0 &= ~4;
+      _hasBits0 &= ~2;
     }
 
     /// <summary>Field number for the "pose" field.</summary>
@@ -345,10 +345,6 @@ namespace LlsfMsgs {
         output.WriteRawTag(16);
         output.WriteUInt64(Seq);
       }
-      if (HasNumber) {
-        output.WriteRawTag(24);
-        output.WriteUInt32(Number);
-      }
       if (HasTeamName) {
         output.WriteRawTag(34);
         output.WriteString(TeamName);
@@ -364,6 +360,10 @@ namespace LlsfMsgs {
       if (pose_ != null) {
         output.WriteRawTag(58);
         output.WriteMessage(Pose);
+      }
+      if (HasNumber) {
+        output.WriteRawTag(64);
+        output.WriteUInt32(Number);
       }
       if (task_ != null) {
         output.WriteRawTag(74);
@@ -516,10 +516,6 @@ namespace LlsfMsgs {
             Seq = input.ReadUInt64();
             break;
           }
-          case 24: {
-            Number = input.ReadUInt32();
-            break;
-          }
           case 34: {
             TeamName = input.ReadString();
             break;
@@ -537,6 +533,10 @@ namespace LlsfMsgs {
               Pose = new global::LlsfMsgs.Pose2D();
             }
             input.ReadMessage(Pose);
+            break;
+          }
+          case 64: {
+            Number = input.ReadUInt32();
             break;
           }
           case 74: {
