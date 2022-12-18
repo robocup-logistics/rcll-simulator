@@ -82,9 +82,8 @@ namespace Simulator.MPS
                         MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
                         break;
                 }
-
                 TaskDescription = "Idle";
-                // Thread.Sleep(1000);
+                    // Thread.Sleep(1000);
             }
         }
         public void SerializeMachineToJson()

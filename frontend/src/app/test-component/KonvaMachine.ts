@@ -1,8 +1,6 @@
-import {Component, Injectable, OnInit} from '@angular/core';
-import {Zone} from "../Interfaces/Zone";
 import Konva from "konva";
 import {KonvaZone} from "./KonvaZone";
-import {Machine} from "../Interfaces/Machine";
+import {LightState, Machine} from "../Interfaces/Machine";
 import {KonvaProduct} from "./KonvaProduct";
 
 const rotatePoint = ({x, y}: { x: number; y: number },
@@ -34,7 +32,11 @@ export class KonvaMachine {
   private ProductAtInRect: KonvaProduct;
   private ProductAtOutRect: KonvaProduct;
   private ProductOnBeltRect: KonvaProduct;
-
+  private CurrentRotation: number;
+  //@ts-ignore
+  private SlideCnt: Konva.Text;
+  //@ts-ignore
+  private SlideCntRect: Konva.Rect;
   constructor(machine: Machine, konvaZone: KonvaZone, layer: Konva.Layer) {
     this.Group = new Konva.Group({
       x: konvaZone.Group.x(),
@@ -42,7 +44,7 @@ export class KonvaMachine {
       width: konvaZone.Group.width(),
       height: konvaZone.Group.height(),
     });
-
+    this.CurrentRotation = machine.Rotation;
     let color = "";
     if (machine.Name.includes("M-")) {
       color = "magenta";
@@ -73,7 +75,6 @@ export class KonvaMachine {
       verticalAlign: "bottom",
       align: "center"
     });
-
 
     var ImageResolutionX = 90;
     var imageResolutionY = 150;
@@ -108,7 +109,6 @@ export class KonvaMachine {
         fillPatternImage: imageObj,
         fillPatternScale: {x: this.BodyRect.width() / ImageResolutionX, y: this.BodyRect.height() / imageResolutionY}
       });
-
       this.rotateAroundCenter(this.ImageRect, -machine.Rotation);
       this.Group.add(this.ImageRect);
     }
@@ -118,6 +118,36 @@ export class KonvaMachine {
 
     imageObj.src = this.GetAssetPath(this.Type);
     this.rotateAroundCenter(this.BodyRect, -machine.Rotation);
+
+    if(this.Type == MachineType.RS1 || this.Type == MachineType.RS2)
+    {
+
+      this.SlideCnt = new Konva.Text({
+        x: this.Group.width()* 8 / 12,
+        y: this.Group.height() * 0 / 12,
+        width:  this.Group.width() * 4 / 12,
+        height: this.Group.height() * 1 / 8,
+        fill: "black",
+        text: "Cnt: 00",
+        fontSize: 8,
+        verticalAlign: "bottom",
+        align: "center"
+      });
+      /*this.SlideCntRect = new Konva.Rect({
+        x: this.Group.width()* 8 / 12,
+        y: this.Group.height() * 0 / 12,
+        width: this.Group.width() * 4 / 12,
+        height: this.Group.height() * 1 / 8,
+        fill: "white",
+        verticalAlign: "bottom",
+        align: "center",
+        stroke: 'black',
+        strokeWidth: 1,
+      });*/
+      this.Group.add(this.SlideCnt);
+      //this.Group.add(this.SlideCntRect);
+    }
+
     //this.rotateAroundCenter()
     this.Group.add(this.BodyRect);
     this.Group.add(this.Text);
@@ -143,18 +173,39 @@ export class KonvaMachine {
 
 
   Update(machinesData: Machine, zone: KonvaZone) {
+    if(this.CurrentRotation != machinesData.Rotation)
+    {
+      this.rotateAroundCenter(this.ImageRect, -machinesData.Rotation);
+      this.rotateAroundCenter(this.BodyRect, -machinesData.Rotation);
+      this.CurrentRotation = machinesData.Rotation;
+    }
     this.Group.setPosition(zone.Group.position());
     this.TaskText.text(machinesData.TaskDescription);
     this.ProductOnBeltRect.Update(machinesData.ProductOnBelt, this);
     this.ProductAtInRect.Update(machinesData.ProductAtIn, this);
     this.ProductAtOutRect.Update(machinesData.ProductAtOut, this);
-    if (machinesData.TaskDescription.toLowerCase() == "idle") {
+    if(machinesData.RedLight.LightOn == LightState.ON && machinesData.YellowLight.LightOn == LightState.OFF && machinesData.GreenLight.LightOn == LightState.OFF)
+    {
+      this.BodyRect.stroke("red");
+      this.BodyRect.strokeWidth(5);
+    }
+    else if (machinesData.TaskDescription.toLowerCase() == "idle") {
       this.BodyRect.stroke("gray");
       this.BodyRect.strokeWidth(1);
     } else {
       this.BodyRect.stroke("green");
-      this.BodyRect.strokeWidth(4);
+      this.BodyRect.strokeWidth(5);
     }
+    if(this.Type == MachineType.RS1 || this.Type == MachineType.RS2)
+    {
+      this.SlideCnt.text("Cnt: " + this.addLeadingZeros(machinesData.SlideCount,2));
+      //this.SlideCntRect.moveToTop();
+      this.SlideCnt.moveToTop();
+    }
+  }
+
+  addLeadingZeros(num: number, totalLength: number): string {
+    return String(num).padStart(totalLength, '0');
   }
 
   GetType(name: string): MachineType {

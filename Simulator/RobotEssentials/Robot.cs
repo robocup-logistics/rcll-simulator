@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
@@ -48,6 +49,7 @@ namespace Simulator.RobotEssentials
         public List<FinishedTasks> FinishedTasksList { get; }
 
         private string JsonInformation;
+        private Stopwatch stopwatch;
         private enum TaskEnum : int
         {
             None,
@@ -77,6 +79,7 @@ namespace Simulator.RobotEssentials
             RobotState = RobotState.Active;
             WaitForPrepare = new ManualResetEvent(false);
 
+            stopwatch = new Stopwatch();
             CurrentZone = null;
             Tasks = new Queue<AgentTask>();
             Machines = new List<RobotMachineReportEntry>();
@@ -345,9 +348,10 @@ namespace Simulator.RobotEssentials
             TaskDescription = "Grasping Product";
             SerializeRobotToJson();
             var attempts = 0;
-            while (HeldProduct == null && attempts < 30)
+            stopwatch.Start(); // starting the stopwatch
+            while (HeldProduct == null && stopwatch.ElapsedMilliseconds < Config.RobotMaximumGrabDuration)
             {
-                MyLogger.Log("[Attempt nr " + attempts + "] Trying to get a product from the machine!");
+                MyLogger.Log("Trying to get a product from the machine! " + stopwatch.Elapsed.Seconds.ToString() + "s have elapsed!");
                 Thread.Sleep(Config.RobotGrabProductDuration);
                 HeldProduct = mps.Type switch
                 {
@@ -358,7 +362,9 @@ namespace Simulator.RobotEssentials
                 };
                 //Teamserver.AddMessage(message);
                 attempts++;
+
             }
+            
             TaskDescription = "Idle";
             if (HeldProduct != null)
             {
@@ -368,9 +374,10 @@ namespace Simulator.RobotEssentials
             }
             else
             {
-                MyLogger.Log("Was not able to grasp the product!");
+                MyLogger.Log("Was not able to grasp the product after " + stopwatch.ElapsedMilliseconds.ToString() + "ms!");
                 return false;
             }
+            stopwatch.Stop(); // stopping the stopwatch
         }
 
         private bool PlaceProduct(Mps mps, string machinePoint = "input", uint shelfNumber = 0)

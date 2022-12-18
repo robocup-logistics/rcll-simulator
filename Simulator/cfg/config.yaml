@@ -35,7 +35,7 @@ stations:
     port:  4844
     type: RS
     position: MZ15
-    orientation: 180
+    orientation: 45
   C-DS:
     active: True
     debug: true
@@ -159,6 +159,7 @@ general:
   robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
   robot-move-zone-duration: 2 # in seconds
   robot-grab-product-duration: 10 # duration for a single try of a grab 
+  robot-maximum-grab-duration: 40 # duration after which a grab is stopped 
   robot-place-product-duration: 10 # duration for a single place try
   belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
   bs-dispense-duration: 2.5 # time the base station takes to dispense a base - taken from gazebo

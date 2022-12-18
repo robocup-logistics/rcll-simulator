@@ -8,6 +8,7 @@ namespace Simulator.MPS
 {
     public class MPS_RS : Mps
     {
+
         public enum BaseSpecificActions
         {
             Reset = 200,
@@ -19,6 +20,7 @@ namespace Simulator.MPS
         public MPS_RS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
         {
             Type = MpsType.RingStation;
+            SlideCount = 0;
         }
         public new void Run()
         {
@@ -66,6 +68,7 @@ namespace Simulator.MPS
                 MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
                 MyLogger.Log("Added a Base to the slide!");
                 InNodes.SlideCnt.Value += 1;
+                SlideCount = InNodes.SlideCnt.Value;
                 Refbox.ApplyChanges(InNodes.SlideCnt);
                 MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
             }
