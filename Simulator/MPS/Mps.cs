@@ -23,9 +23,9 @@ namespace Simulator.MPS
         public bool Debug;
         public int InternalId { get; }
         public Team Team;
-        public Light RedLight;
-        public Light GreenLight;
-        public Light YellowLight;
+        public Light RedLight { get; }
+        public Light GreenLight { get; }
+        public Light YellowLight { get; }
         //public Belt Belt;
         public ManualResetEvent InEvent;
         public ManualResetEvent BasicEvent;
@@ -131,6 +131,7 @@ namespace Simulator.MPS
 
             InNodes.StatusNodes.busy.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+            TaskDescription = "Idle";
         }
 
         public void StartTask()
@@ -185,7 +186,10 @@ namespace Simulator.MPS
                 }
                 
             }
-
+            if(RedLight.LightOn && !YellowLight.LightOn && !GreenLight.LightOn)
+            {
+                TaskDescription = "Broken";
+            }
         }
         public void HandleLights()
         {

@@ -119,7 +119,7 @@ export class TestComponentComponent implements OnInit {
     if (this.zonesData != undefined && this.robotsData != undefined && this.machinesData != undefined) {
       this.subscription.unsubscribe();
       this.initSubscription.unsubscribe();
-      const update_interval = interval(1000);
+      const update_interval = interval(200);
       this.subscription = update_interval.subscribe(() => this.update());
     }
   }

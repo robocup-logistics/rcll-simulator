@@ -1,8 +1,6 @@
-import {Component, Injectable, OnInit} from '@angular/core';
-import {Zone} from "../Interfaces/Zone";
 import Konva from "konva";
 import {KonvaZone} from "./KonvaZone";
-import {Machine} from "../Interfaces/Machine";
+import {LightState, Machine} from "../Interfaces/Machine";
 import {KonvaProduct} from "./KonvaProduct";
 
 const rotatePoint = ({x, y}: { x: number; y: number },
@@ -154,12 +152,17 @@ export class KonvaMachine {
     this.ProductOnBeltRect.Update(machinesData.ProductOnBelt, this);
     this.ProductAtInRect.Update(machinesData.ProductAtIn, this);
     this.ProductAtOutRect.Update(machinesData.ProductAtOut, this);
-    if (machinesData.TaskDescription.toLowerCase() == "idle") {
+    if(machinesData.RedLight.LightOn == LightState.ON && machinesData.YellowLight.LightOn == LightState.OFF && machinesData.GreenLight.LightOn == LightState.OFF)
+    {
+      this.BodyRect.stroke("red");
+      this.BodyRect.strokeWidth(5);
+    }
+    else if (machinesData.TaskDescription.toLowerCase() == "idle") {
       this.BodyRect.stroke("gray");
       this.BodyRect.strokeWidth(1);
     } else {
       this.BodyRect.stroke("green");
-      this.BodyRect.strokeWidth(4);
+      this.BodyRect.strokeWidth(5);
     }
   }
 

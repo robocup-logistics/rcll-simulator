@@ -36,6 +36,7 @@ namespace Simulator
         public int RobotMoveZoneDuration { get; private set; }
         public int RobotPlaceDuration { get; private set; }
         public int RobotGrabProductDuration { get; private set; }
+        public int RobotMaximumGrabDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
@@ -63,10 +64,12 @@ namespace Simulator
             RobotMoveZoneDuration = 100;
             FixedMPSplacement = false;
             RobotPlaceDuration = 400;
+            RobotMaximumGrabDuration = 30000;  //milliseconds
             RobotGrabProductDuration = 100;
             AppendLogging = false;
             RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
+           
         }
 
         //private member and getter for my singleton configurations class
@@ -161,6 +164,9 @@ namespace Simulator
                         RobotPlaceDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
                                   1000); // convert from seconds to milliseconds
+                        break;
+                    case "robot-maximum-grab-duration":
+                        RobotMaximumGrabDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "belt-action-duration":
                         BeltActionDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);

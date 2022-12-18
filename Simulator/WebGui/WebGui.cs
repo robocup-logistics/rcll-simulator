@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Net;
@@ -8,6 +9,7 @@ using Simulator.RobotEssentials;
 using Simulator.Utility;
 using System.Text.Json;
 using LlsfMsgs;
+using Opc.Ua.Server;
 using Robot = Simulator.RobotEssentials.Robot;
 
 namespace Simulator.WebGui
@@ -26,6 +28,7 @@ namespace Simulator.WebGui
         private MpsManager _mpsManager;
         private string Path;
         private Configurations Config;
+        Stopwatch timer = new Stopwatch();
 
         public WebGui()
         {
@@ -48,7 +51,6 @@ namespace Simulator.WebGui
             listenTask.GetAwaiter().GetResult();
             // Close the listener
             listener.Close();
-
         }
 
         public async Task HandleIncomingConnections()
@@ -115,17 +117,22 @@ namespace Simulator.WebGui
                                 };
                                 task.Buffer = buffer;
                                 break;
-
+                            case "grab":
+                                var Grab = new Retrieve
+                                {
+                                    MachineId = taskJson.Target,
+                                    MachinePoint = taskJson.MachinePoint
+                                };
+                                task.Retrieve = Grab;
+                                break;
                         }
-                       
+
 
                         _robotManager.Robots[0].SetAgentTasks(task);
                         resp.StatusCode = (byte)HttpStatusCode.OK;
                         resp.ContentLength64 = 0;
                         resp.Close();
                         break;
-
-
                     }
                     case "OPTIONS":
                     {
@@ -151,6 +158,7 @@ namespace Simulator.WebGui
                     }
                     case "GET":
                     {
+                        //timer.Start();
                         var pageData = "";
                         var segment = req.Url.Segments[req.Url.Segments.Length - 1];
                         MyLogger.Log("The query = " + req.Url.Query.ToString());
@@ -193,6 +201,8 @@ namespace Simulator.WebGui
                                 var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
                                 MyLogger.Log(jsonString);
                                 data = Encoding.UTF8.GetBytes(jsonString);
+                                //Console.WriteLine("Creating the Json took : {0}", timer.ElapsedMilliseconds.ToString());
+
                                 break;
                             }
                             case "products":
@@ -211,7 +221,6 @@ namespace Simulator.WebGui
                                 data = Encoding.UTF8.GetBytes("{Connection:working}");
                                 break;
                             }
-
                         }
 
                         resp.ContentLength64 = data.LongLength;
@@ -221,9 +230,7 @@ namespace Simulator.WebGui
                     }
                 }
             }
-
         }
-        
     }
 
     internal class JsonTask
