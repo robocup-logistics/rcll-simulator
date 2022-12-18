@@ -125,6 +125,14 @@ namespace Simulator.WebGui
                                 };
                                 task.Retrieve = Grab;
                                 break;
+                            case "place":
+                                var place = new Deliver
+                                {
+                                    MachineId = taskJson.Target,
+                                    MachinePoint = taskJson.MachinePoint,
+                                };
+                                task.Deliver = place;
+                                break;
                         }
 
 

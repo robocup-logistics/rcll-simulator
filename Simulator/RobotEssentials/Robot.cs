@@ -89,6 +89,7 @@ namespace Simulator.RobotEssentials
             UdpConnectionTeamserver = null;
             UdpConnectionRefbox = null;
             nextZone = null;
+            HeldProduct = new Products(BaseColor.BaseUncolored);
         }
 
         public string GetHeldProductString()

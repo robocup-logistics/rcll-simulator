@@ -8,7 +8,7 @@ namespace Simulator.MPS
 {
     public class MPS_RS : Mps
     {
-        public uint SlideCount { get; private set; }
+
         public enum BaseSpecificActions
         {
             Reset = 200,

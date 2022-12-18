@@ -13,6 +13,7 @@ export interface Machine {
   YellowLight: Light;
   RedLight: Light;
   GreenLight: Light;
+  SlideCount: number;
   //GetsMovedTo:boolean;
 }
 

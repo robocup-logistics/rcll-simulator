@@ -37,6 +37,7 @@ namespace Simulator.MPS
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
+        public uint SlideCount { get; set; }
         public string JsonInformation;
         public enum MpsType
         {

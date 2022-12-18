@@ -35,7 +35,7 @@ stations:
     port:  4844
     type: RS
     position: MZ15
-    orientation: 180
+    orientation: 45
   C-DS:
     active: True
     debug: true
