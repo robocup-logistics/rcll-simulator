@@ -1,6 +1,6 @@
 # This workflow will build the containers for the frontend and backend
 
-name: .NET
+name: Docker Container Build
 
 on:
   push:
