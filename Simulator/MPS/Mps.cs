@@ -351,6 +351,7 @@ namespace Simulator.MPS
         }
         public bool EmptyMachinePoint(string machinepoint)
         {
+            MyLogger.Log("Checking the MachinePoint " + machinepoint);
             switch (machinepoint)
             {
                 case "input":
@@ -359,6 +360,10 @@ namespace Simulator.MPS
                     return ProductAtOut == null;
                 case "slide":
                     return true;
+                case "shelf1":
+                case "shelf2":
+                case "shelf3":
+                    return false;
                 default:
                     return false;
             }

@@ -347,25 +347,23 @@ namespace Simulator.RobotEssentials
             MyLogger.Log("At station starting the GRIP Action!");
             TaskDescription = "Grasping Product";
             SerializeRobotToJson();
-            var attempts = 0;
             stopwatch.Start(); // starting the stopwatch
-            while (HeldProduct == null && stopwatch.ElapsedMilliseconds < Config.RobotMaximumGrabDuration)
+            while (mps.EmptyMachinePoint(machinePoint) && stopwatch.ElapsedMilliseconds < Config.RobotMaximumGrabDuration)
             {
-                MyLogger.Log("Trying to get a product from the machine! " + stopwatch.Elapsed.Seconds.ToString() + "s have elapsed!");
-                Thread.Sleep(Config.RobotGrabProductDuration);
-                HeldProduct = mps.Type switch
-                {
-                    Mps.MpsType.BaseStation => ((MPS_BS)mps).RemoveProduct(machinePoint),
-                    Mps.MpsType.CapStation => ((MPS_CS)mps).RemoveProduct(machinePoint),
-                    Mps.MpsType.RingStation => ((MPS_RS)mps).RemoveProduct(machinePoint),
-                    _ => null
-                };
-                //Teamserver.AddMessage(message);
-                attempts++;
-
+                Thread.Sleep(1000);
+                MyLogger.Log("Checking for a product from the machine! " + stopwatch.Elapsed.Seconds.ToString() + "s have elapsed!");
             }
-            
+            MyLogger.Log("There is a product, starting the Grab!");
+            Thread.Sleep(Config.RobotGrabProductDuration);
+            HeldProduct = mps.Type switch
+            {
+                Mps.MpsType.BaseStation => ((MPS_BS)mps).RemoveProduct(machinePoint),
+                Mps.MpsType.CapStation => ((MPS_CS)mps).RemoveProduct(machinePoint),
+                Mps.MpsType.RingStation => ((MPS_RS)mps).RemoveProduct(machinePoint),
+                _ => null
+            };
             TaskDescription = "Idle";
+
             if (HeldProduct != null)
             {
                 MyLogger.Log("Got a new Product!");
