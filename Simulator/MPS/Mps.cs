@@ -248,6 +248,11 @@ namespace Simulator.MPS
             {
                 Thread.Sleep(200);
             }
+            if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null)
+            {
+                MyLogger.Log("Still no Product on the Belt!");
+                return;
+            }
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
             InNodes.StatusNodes.ready.Value = false;

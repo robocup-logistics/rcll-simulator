@@ -214,7 +214,7 @@ namespace Simulatortests
             rob.SetAgentTasks(puttask);
             Thread.Sleep(config.RobotPlaceDuration * 10);
             movetask.Move.Waypoint = "C-CS";
-            movetask.Move.Waypoint = "output";
+            movetask.Move.MachinePoint = "output";
             rob.SetAgentTasks(movetask);
             cs.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
             Thread.Sleep(config.BeltActionDuration + 300);
@@ -222,13 +222,17 @@ namespace Simulatortests
             Thread.Sleep(config.CSTaskDuration + 300);
             cs.SendTask((ushort)MPS_CS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
             Thread.Sleep(config.BeltActionDuration + 300);
+            Thread.Sleep(config.RobotMoveZoneDuration * 3 + 200);
             gettask.Retrieve = new Retrieve
             {
                 MachineId = "C-CS",
                 MachinePoint = "output"
             };
+            //return;
+            //Thread.Sleep(6000); // waiting for finished move
+
             rob.SetAgentTasks(gettask);
-            Thread.Sleep(13000);
+            Thread.Sleep(config.RobotGrabProductDuration + 300); // grabing an item
             Assert.IsTrue(rob.IsHoldingSomething());
             movetask.Move.Waypoint = "C-DS";
             movetask.Move.MachinePoint = "";
@@ -240,7 +244,7 @@ namespace Simulatortests
                 MachinePoint = "input"
             };
             rob.SetAgentTasks(puttask);
-            Thread.Sleep(3000);
+            Thread.Sleep(config.RobotPlaceDuration + 300);
             ds.SendTask((ushort)MPS_DS.BaseSpecificActions.DeliverToSlot, (ushort)1);
             Thread.Sleep(config.DSTaskDuration + 300);
             Assert.IsNotNull(((MPS_DS)machinemanager.Machines[2]).ProductAtSlot(1));
@@ -248,6 +252,7 @@ namespace Simulatortests
             cs.CloseConnection();
             ds.CloseConnection();
         }
+
         [TestMethod]
         public void CreateOneC1()
         {
