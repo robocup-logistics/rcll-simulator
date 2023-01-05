@@ -16,11 +16,11 @@ export class KonvaZone{
   constructor(z: Zone, color: string, layer: Konva.Layer) {
     if(color.includes("cyan"))
     {
-      this.DefaultColor = "pink";
+      this.DefaultColor = "lightblue";
       this.Prefix = "C"
     }
     else {
-      this.DefaultColor = "lightblue";
+      this.DefaultColor = "pink";
       this.Prefix = "M"
     }
     this.HighlightColor = "yellow"
