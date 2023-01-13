@@ -113,18 +113,7 @@ namespace Simulator.MPS
         public new void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
-            if (machinePoint.Equals("slide"))
-            {
-                MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
-                MyLogger.Log("Added a Base to the slide!");
-                InNodes.SlideCnt.Value += 1;
-                Refbox.ApplyChanges(InNodes.SlideCnt);
-                MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
-            }
-            else
-            {
-                base.PlaceProduct(machinePoint, heldProduct);
-            }
+            base.PlaceProduct(machinePoint, heldProduct);
         }
 
         public new Products RemoveProduct(string machinePoint)
