@@ -380,6 +380,12 @@ namespace Simulator.Utility
 
         public static double CalcDistance(Zones Start, Zones End)
         {
+            if (Start == null || End == null)
+            {
+                ZonesManager.GetInstance().MyLogger.Log("CalcDistance has a null?");
+                return 1000;
+            }
+
             return Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2));
         }
         private void AddNeighborhood()
