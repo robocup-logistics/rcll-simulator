@@ -8,6 +8,11 @@ namespace Simulator.Utility
     [JsonObject(MemberSerialization.OptIn)]
     public class Products
     {
+        private int WorkpieceRedRangeStart = 1000;
+        private int WorkpieceBlackRangeStart = 2000;
+        private int WorkpieceSilverRangeStart = 3000;
+        private int WorkpieceColorlessRangeStart = 4000;
+        private static int internalProductCounter;
         [JsonProperty]
         public int ID { get; private set; }
         [JsonProperty]
@@ -52,6 +57,23 @@ namespace Simulator.Utility
             Complexity = (Complexity)-1;
             RingCount = 0;
             RingList = new List<RingElement>();
+            switch (color)
+            {
+                case BaseColor.BaseBlack:
+                    ID = WorkpieceBlackRangeStart;
+                    break;
+                case BaseColor.BaseRed:
+                    ID = WorkpieceRedRangeStart;
+                    break;
+                case BaseColor.BaseSilver:
+                    ID = WorkpieceSilverRangeStart;
+                    break;
+                case BaseColor.BaseUncolored:
+                    ID = WorkpieceColorlessRangeStart;
+                    break;
+            }
+            ID += internalProductCounter;
+            internalProductCounter++;
         }
         public Products(CapColor color)
         {
@@ -60,6 +82,8 @@ namespace Simulator.Utility
             Complexity = (Complexity) 0;
             RingCount = 0;
             RingList = new List<RingElement>();
+            ID = WorkpieceColorlessRangeStart + internalProductCounter;
+            internalProductCounter++;
         }
 
         public Products(RingColor color)

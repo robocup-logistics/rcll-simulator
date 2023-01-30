@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
+using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 
 namespace Simulator.MPS
@@ -39,6 +40,7 @@ namespace Simulator.MPS
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string JsonInformation;
+        private Configurations Config;
         public enum MpsType
         {
             BaseStation = 100,
@@ -83,6 +85,7 @@ namespace Simulator.MPS
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
+            Config = Configurations.GetInstance();
             // Belt = new Belt(this, BeltEvent);
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
@@ -265,6 +268,11 @@ namespace Simulator.MPS
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
+                    if (Config.BarcodeScanner)
+                    {
+                        InNodes.BarCode.Value = (uint) ProductAtIn.ID;
+                        Refbox.ApplyChanges(InNodes.BarCode);  
+                    }
                     /*InNodes.StatusNodes.ready.Value = true;
                     Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;

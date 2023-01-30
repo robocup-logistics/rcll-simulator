@@ -48,6 +48,7 @@ namespace Simulator
         public bool RobotDirectBeaconSignals { get; private set; }
         public string WebguiPrefix { get; private set;}
         public uint WebguiPort { get; private set;}
+        public bool BarcodeScanner { get; private set; }
 
         //Constructor of my Singleton variable
         private Configurations()
@@ -69,7 +70,7 @@ namespace Simulator
             AppendLogging = false;
             RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
-           
+            BarcodeScanner = false;
         }
 
         //private member and getter for my singleton configurations class
@@ -191,6 +192,9 @@ namespace Simulator
                         break;
                     case "robot-direct-beacon":
                         RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "enable-barcode-scanner":
+                        BarcodeScanner = bool.Parse(value.ToString().ToLower());
                         break;
                 }
             }
