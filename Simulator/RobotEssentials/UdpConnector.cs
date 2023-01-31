@@ -11,7 +11,7 @@ namespace Simulator.RobotEssentials
     /// </summary>
     class UdpConnector : ConnectorBase
     {
-        private readonly PbMessageHandlerMachineManager PbHandler;
+        private readonly PBMessageHandlerBase PbHandler;
         private Configurations Config;
         private bool OnlySending;
         private UdpClient Client;
@@ -20,7 +20,7 @@ namespace Simulator.RobotEssentials
         public UdpConnector(string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            PbHandler = new PbMessageHandlerMachineManager(MyLogger);
+            PbHandler = new PBMessageHandlerRobot(rob, MyLogger);
             Config = Configurations.GetInstance();
             
             ResolveIpAddress(ip);
@@ -32,14 +32,13 @@ namespace Simulator.RobotEssentials
             Client = new UdpClient();
             Client.EnableBroadcast = true;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public UdpConnector(string ip, int port, MyLogger logger) : base(ip, port, null, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             MyLogger.Log("Starting UdpConnector without a robot!");
-            PbHandler = new PbMessageHandlerMachineManager(MyLogger);
+            PbHandler = new PBMessageHandlerMachineManager(MyLogger);
             Config = Configurations.GetInstance();
             IpString = ip;
             RecvThread = new Thread(() => ReceiveUdpMethod());
@@ -48,7 +47,6 @@ namespace Simulator.RobotEssentials
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
-            HandlerRobot = null;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
@@ -56,7 +54,7 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Starting the ReceiveUDPMethod!");
             ResolveIpAddress(IpString);
-            Endpoint = new IPEndPoint(Address, Port);
+            var recvEndpoint = new IPEndPoint(IPAddress.Any, 0);
             MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
             Client.Connect(Endpoint);
 
@@ -65,7 +63,7 @@ namespace Simulator.RobotEssentials
                 try
                 {
                     MyLogger.Log("Waiting on message on port " + Port);
-                    var message = Client.Receive(ref Endpoint);
+                    var message = Client.Receive(ref recvEndpoint);
                     var payload = PbHandler.CheckMessageHeader(message);
                     MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
                     PbHandler.HandleMessage(message);
@@ -73,44 +71,49 @@ namespace Simulator.RobotEssentials
                 catch (Exception e)
                 {
                     MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
+                    Thread.Sleep(1000);
                 }
             }
-
         }
 
         public void SendUdpMethod()
         {
             MyLogger.Log("Sending message to port " + Port);
-            ResolveIpAddress(IpString);
-            Endpoint = new IPEndPoint(Address, Port);
-            //SendEndpoint = new IPEndPoint(IPAddress.Any, port);
-            //UdpClient client = new UdpClient(SendEndpoint);
-            
+
             while (Running)
             {
                 try
                 {
-                    MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
                     byte[] message;
-                    if(Owner != null)
-                    {   
+                    if(Messages.Count == 0)
+                    {
+                        MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
                         message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                        if (Owner != null)
+                        {
+                            message = ((PBMessageFactoryRobot)PbFactory).CreateMessage((PBMessageFactoryBase
+                                .MessageTypes.BeaconSignal));
+                        }
+                        else
+                        {
+                            message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                        }
                     }
                     else
                     {
+                        MyLogger.Log("Sending Queue message to " + Address + ":" + Port + "!");
                         message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                     }
                     if(message != Array.Empty<byte>())
                     {
                         Client.Send(message, message.Length,Address.ToString(), Port);
                     }
-
-                    Thread.Sleep(1000);
                 }
                 catch (Exception e)
                 {
                     MyLogger.Log(e + " - Something went wrong with the SendThread!");
                 }
+                Thread.Sleep(1000);
             }
 
         }
@@ -119,7 +122,7 @@ namespace Simulator.RobotEssentials
         {
             Running = true;
             //PublicSendThread.Start();
-            if(HandlerRobot == null)
+            if(Owner == null)
             {
                 RecvThread.Start();
             }

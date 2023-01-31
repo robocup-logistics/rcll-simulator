@@ -314,7 +314,7 @@ namespace Simulator.MPS
         public void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct!");
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "input":
                     ProductAtIn = heldProduct;
@@ -339,7 +339,7 @@ namespace Simulator.MPS
         public Products RemoveProduct(string machinePoint)
         {
             Products? returnProduct;
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "input":
                     returnProduct = ProductAtIn;
@@ -365,7 +365,7 @@ namespace Simulator.MPS
         public bool EmptyMachinePoint(string machinepoint)
         {
             MyLogger.Log("Checking the MachinePoint " + machinepoint);
-            switch (machinepoint)
+            switch (machinepoint.ToLower())
             {
                 case "input":
                     return ProductAtIn == null;

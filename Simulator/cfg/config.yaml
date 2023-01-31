@@ -138,6 +138,8 @@ teams:
 refbox:
   public:
     ip: 172.0.0.1
+    # THe simulation communicates via tcp to get ground-truth
+    tcp: 4444
     send: 4445
     recv: 4444
   cyan:

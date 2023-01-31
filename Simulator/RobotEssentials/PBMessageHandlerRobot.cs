@@ -20,7 +20,7 @@ namespace Simulator.RobotEssentials
             Owner = owner;
             Fact = new PBMessageFactoryRobot(Owner, log);
         }
-        public new bool HandleMessage(byte[] Stream)
+        public override bool HandleMessage(byte[] Stream)
         {
 
             /*      Each row is 4 bytes

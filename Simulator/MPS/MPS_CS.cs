@@ -121,7 +121,7 @@ namespace Simulator.MPS
             Products returnProduct;
             MyLogger.Log("Someone trys to grabs a Item from!");
 
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "output":
                     MyLogger.Log("my Output!");
@@ -135,6 +135,9 @@ namespace Simulator.MPS
                 case "shelf3":
                 case "shelf2":
                 case "shelf1":
+                case "left":
+                case "middle":
+                case "right":
                     returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
                     break;
                 default:

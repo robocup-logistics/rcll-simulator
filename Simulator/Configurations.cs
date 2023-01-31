@@ -363,7 +363,7 @@ namespace Simulator
         private static RefboxConfig? CreateRefboxConfig(YamlMappingNode refbox)
         {
             string? ip = null;
-            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0;
+            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0;
             var children = refbox.Children;
             // Step into the public information
             //Console.WriteLine(children[0].Key.ToString());
@@ -380,6 +380,9 @@ namespace Simulator
                             {
                                 case "ip":
                                     ip = yamlNode1.ToString();
+                                    break;
+                                case "tcp":
+                                    tcpPort = int.Parse(yamlNode1.ToString());
                                     break;
                                 case "send":
                                     publicSendPort = int.Parse(yamlNode1.ToString());
@@ -441,7 +444,7 @@ namespace Simulator
             {
                 return null;
             }
-            var config = new RefboxConfig(ip, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
+            var config = new RefboxConfig(ip, tcpPort, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
                 magentaSendPort, magentaRecvPort);
             return config;
         }
@@ -519,6 +522,7 @@ namespace Simulator
     public class RefboxConfig
     {
         public string IP { get; }
+        public int TcpPort { get; }
         public int PublicSendPort { get; }
         public int PublicRecvPort { get; }
         public int CyanSendPort { get; }
@@ -526,9 +530,10 @@ namespace Simulator
         public int MagentaSendPort { get; }
         public int MagentaRecvPort { get; }
 
-        public RefboxConfig(string ip, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv)
+        public RefboxConfig(string ip,int tcpPort, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv)
         {
             IP = ip;
+            TcpPort = tcpPort;
             PublicRecvPort = publicRecv;
             PublicSendPort = publicSend;
             CyanRecvPort = cyanRecv;
@@ -540,6 +545,7 @@ namespace Simulator
         {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Ip = [" + IP + "]");
+            Console.WriteLine("TcpPort = [" + TcpPort + "]");
             Console.WriteLine("PublicRecvPort = [" + PublicRecvPort + "]");
             Console.WriteLine("PublicSendPort = [" + PublicSendPort + "]");
             Console.WriteLine("CyanRecvPort = [" + CyanRecvPort + "]");
