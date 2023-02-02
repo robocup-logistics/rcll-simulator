@@ -7,6 +7,10 @@
     "Simulator No Gui": {
       "commandName": "Project",
       "commandLineArgs": "-cfg C:\\Users\\lumpi\\source\\repos\\rcll-simulation\\Simulator\\cfg\\config.yaml "
+    },
+    "Ubuntu Simulator No Gui": {
+      "commandName": "Project",
+      "commandLineArgs": "-cfg /home/dominik/git/rcll-simulator/Simulator/cfg/config.yaml "
     }
   }
 }

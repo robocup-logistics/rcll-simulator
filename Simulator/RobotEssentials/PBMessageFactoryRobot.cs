@@ -20,7 +20,7 @@ namespace Simulator.RobotEssentials
             log.Info("Created a PBMessageFactoryRobot!");
             Peer = peer;
         }
-        public byte[] CreateMessage(MessageTypes mtype)
+        public override byte[] CreateMessage(MessageTypes mtype)
         {
             Timer ??= Utility.Timer.GetInstance();
             ushort cmp = 0;

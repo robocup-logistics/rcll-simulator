@@ -23,26 +23,26 @@ namespace Simulator.MPS
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
-        private UdpConnector Refbox;
+        private TcpConnector Refbox;
         private Configurations Config;
         private MpsManager()
         {
             myLogger = new MyLogger("MpsManager", true);
+            Config = Configurations.GetInstance();
             myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
             CreateMachines();
             AllMachineSet = false;
             Instance = this;
-            Config = Configurations.GetInstance();
             if(!Config.MockUp)
             {
-                Refbox = new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanRecvPort, myLogger);
+                Refbox = new TcpConnector(Config.Refbox.IP, Config.Refbox.TcpPort, null, myLogger);
                 Refbox.Start();
             }
         }
         private void CreateMachines()
         {
-            foreach (var mps in Configurations.GetInstance().MpsConfigs)
+            foreach (var mps in Config.MpsConfigs)
             {
                 Mps? currentMps;
                 Thread? thread;
@@ -155,9 +155,9 @@ namespace Simulator.MPS
         }
         public void StartRefboxConnection()
         {
-            if (!Configurations.GetInstance().MockUp)
+            if (!Config.MockUp)
             {
-                var rf = new UdpConnector(Configurations.GetInstance().Refbox.IP,Configurations.GetInstance().Refbox.CyanRecvPort, myLogger);
+                var rf = new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanRecvPort, myLogger);
                 rf.Start();
             }
         }

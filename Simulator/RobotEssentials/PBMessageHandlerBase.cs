@@ -39,7 +39,7 @@ namespace Simulator.RobotEssentials
             var payloadsize = BytesToInt(Stream, 4, 4);
             return payloadsize;
         }
-        public bool HandleMessage(byte[] Stream)
+        public virtual bool HandleMessage(byte[] Stream)
         {
 
             /*      Each row is 4 bytes

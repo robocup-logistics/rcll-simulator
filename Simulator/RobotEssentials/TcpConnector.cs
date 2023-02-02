@@ -24,13 +24,16 @@ namespace Simulator.RobotEssentials
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod(Configurations.GetInstance().Teams[0].Port));
-            SendThread = new Thread(() => SendThreadMethod(Configurations.GetInstance().Teams[0].Port));
+            RecvThread = new Thread(() => ReceiveThreadMethod());
+            if (Owner != null)
+            {
+                SendThread = new Thread(() => SendThreadMethod());
+            }
 
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
 
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            HandlerRobot = new PBMessageHandlerRobot(Owner, MyLogger);
+            PbHandler = new PBMessageHandlerRobot(Owner, MyLogger);
         }
 
         public bool Close()
@@ -67,7 +70,10 @@ namespace Simulator.RobotEssentials
                 {
                     Running = true;
                     MyLogger.Log(".... Started");
-                    SendThread.Start();
+                    if (SendThread != null)
+                    {
+                        SendThread.Start();
+                    }
                     RecvThread.Start();
                 }
                 else
@@ -104,7 +110,7 @@ namespace Simulator.RobotEssentials
             return true;
         }
 
-        public void SendThreadMethod(int port)
+        public void SendThreadMethod()
         {
             MyLogger.Log("Starting the SendThread!");
             if (Socket == null)
@@ -156,7 +162,7 @@ namespace Simulator.RobotEssentials
 
 
 
-        public void ReceiveThreadMethod(int port)
+        public void ReceiveThreadMethod()
         {
             MyLogger.Log("Starting the ReceiveThread!");
             while (Running)
@@ -170,7 +176,7 @@ namespace Simulator.RobotEssentials
                     //MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    var payload = HandlerRobot.CheckMessageHeader(buffer);
+                    var payload = PbHandler.CheckMessageHeader(buffer);
                     if (payload == -1)
                     {
                         continue;
@@ -183,7 +189,7 @@ namespace Simulator.RobotEssentials
                         //MyLogger.Log("Lines Receive " + message);
                     }
                     //MyLogger.Log("Received a message!");
-                    HandlerRobot.HandleMessage(buffer);
+                    PbHandler.HandleMessage(buffer);
                     //MyLogger.Log("Handled the message!");
                     //MyLogger.Log(message.ToString());
                 }

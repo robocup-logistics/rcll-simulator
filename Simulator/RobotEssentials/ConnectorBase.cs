@@ -17,7 +17,7 @@ namespace Simulator.RobotEssentials
         public Thread RecvThread;
         public IPAddress Address;
         public PBMessageFactoryBase PbFactory;
-        protected PBMessageHandlerRobot HandlerRobot;
+        protected PBMessageHandlerBase PbHandler;
 
         public string IP;
         public int Port;
@@ -60,7 +60,7 @@ namespace Simulator.RobotEssentials
         }
         public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type)
         {
-            return ((PBMessageFactoryRobot)PbFactory).CreateMessage(type);
+            return PbFactory.CreateMessage(type);
         }
     }
 }

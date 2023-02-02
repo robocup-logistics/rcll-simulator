@@ -113,18 +113,7 @@ namespace Simulator.MPS
         public new void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
-            if (machinePoint.Equals("slide"))
-            {
-                MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
-                MyLogger.Log("Added a Base to the slide!");
-                InNodes.SlideCnt.Value += 1;
-                Refbox.ApplyChanges(InNodes.SlideCnt);
-                MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
-            }
-            else
-            {
-                base.PlaceProduct(machinePoint, heldProduct);
-            }
+            base.PlaceProduct(machinePoint, heldProduct);
         }
 
         public new Products RemoveProduct(string machinePoint)
@@ -132,7 +121,7 @@ namespace Simulator.MPS
             Products returnProduct;
             MyLogger.Log("Someone trys to grabs a Item from!");
 
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "output":
                     MyLogger.Log("my Output!");
@@ -146,6 +135,9 @@ namespace Simulator.MPS
                 case "shelf3":
                 case "shelf2":
                 case "shelf1":
+                case "left":
+                case "middle":
+                case "right":
                     returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
                     break;
                 default:

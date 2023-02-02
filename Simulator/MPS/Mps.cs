@@ -2,6 +2,7 @@
 using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
+using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 
 namespace Simulator.MPS
@@ -39,6 +40,7 @@ namespace Simulator.MPS
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string JsonInformation;
+        private Configurations Config;
         public enum MpsType
         {
             BaseStation = 100,
@@ -83,6 +85,7 @@ namespace Simulator.MPS
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
+            Config = Configurations.GetInstance();
             // Belt = new Belt(this, BeltEvent);
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
@@ -248,6 +251,11 @@ namespace Simulator.MPS
             {
                 Thread.Sleep(200);
             }
+            if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null)
+            {
+                MyLogger.Log("Still no Product on the Belt!");
+                return;
+            }
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
             InNodes.StatusNodes.ready.Value = false;
@@ -260,6 +268,11 @@ namespace Simulator.MPS
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
+                    if (Config.BarcodeScanner)
+                    {
+                        InNodes.BarCode.Value = (uint) ProductAtIn.ID;
+                        Refbox.ApplyChanges(InNodes.BarCode);  
+                    }
                     /*InNodes.StatusNodes.ready.Value = true;
                     Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
                     break;
@@ -301,7 +314,7 @@ namespace Simulator.MPS
         public void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct!");
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "input":
                     ProductAtIn = heldProduct;
@@ -326,7 +339,7 @@ namespace Simulator.MPS
         public Products RemoveProduct(string machinePoint)
         {
             Products? returnProduct;
-            switch (machinePoint)
+            switch (machinePoint.ToLower())
             {
                 case "input":
                     returnProduct = ProductAtIn;
@@ -351,7 +364,8 @@ namespace Simulator.MPS
         }
         public bool EmptyMachinePoint(string machinepoint)
         {
-            switch (machinepoint)
+            MyLogger.Log("Checking the MachinePoint " + machinepoint);
+            switch (machinepoint.ToLower())
             {
                 case "input":
                     return ProductAtIn == null;
@@ -359,6 +373,10 @@ namespace Simulator.MPS
                     return ProductAtOut == null;
                 case "slide":
                     return true;
+                case "shelf1":
+                case "shelf2":
+                case "shelf3":
+                    return false;
                 default:
                     return false;
             }

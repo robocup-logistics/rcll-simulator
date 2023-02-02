@@ -12,15 +12,15 @@ using Timer = Simulator.Utility.Timer;
 
 namespace Simulator.RobotEssentials
 {
-    class PbMessageHandlerMachineManager : PBMessageHandlerBase
+    class PBMessageHandlerMachineManager : PBMessageHandlerBase
     {
         private readonly MpsManager Manager;
-        public PbMessageHandlerMachineManager(MyLogger log) : base(log)
+        public PBMessageHandlerMachineManager(MyLogger log) : base(log)
         {
             Manager = MpsManager.GetInstance();
         }
 
-        public new bool HandleMessage(byte[] stream)
+        public override bool HandleMessage(byte[] stream)
         {
 
             /*      Each row is 4 bytes
