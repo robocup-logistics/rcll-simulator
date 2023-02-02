@@ -56,7 +56,6 @@ namespace Simulator.RobotEssentials
             ResolveIpAddress(IpString);
             var recvEndpoint = new IPEndPoint(IPAddress.Any, 0);
             MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
-            Client.Connect(Endpoint);
 
             while (Running)
             {
