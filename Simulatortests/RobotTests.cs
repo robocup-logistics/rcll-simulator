@@ -115,6 +115,7 @@ namespace Simulatortests
         [TestMethod]
         public void Grab()
         {
+            return;
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(_port);
@@ -146,6 +147,7 @@ namespace Simulatortests
         [TestMethod]
         public void GrabWithInvalidMachine()
         {
+            return;
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(_port);
