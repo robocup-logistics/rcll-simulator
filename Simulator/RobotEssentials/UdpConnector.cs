@@ -101,7 +101,7 @@ namespace Simulator.RobotEssentials
                     else
                     {
                         MyLogger.Log("Sending Queue message to " + Address + ":" + Port + "!");
-                        message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
+                        message = Messages.Dequeue();
                     }
                     if(message != Array.Empty<byte>())
                     {
