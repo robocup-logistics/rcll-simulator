@@ -68,7 +68,7 @@ namespace Simulator.Utility
                 case BaseColor.BaseSilver:
                     ID = WorkpieceSilverRangeStart;
                     break;
-                case BaseColor.BaseUncolored:
+                case BaseColor.BaseClear:
                     ID = WorkpieceColorlessRangeStart;
                     break;
             }
@@ -119,7 +119,7 @@ namespace Simulator.Utility
         }
         public BaseElement()
         {
-            BaseColor = BaseColor.BaseUncolored;
+            BaseColor = BaseColor.BaseClear;
         }
         public BaseColor GetBaseColor()
         {
