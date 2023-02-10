@@ -51,7 +51,7 @@ namespace Simulator
         public bool BarcodeScanner { get; private set; }
 
         //Constructor of my Singleton variable
-        private Configurations()
+        public Configurations()
         {
             MpsConfigs = new List<MpsConfig>();
             RobotConfigs = new List<RobotConfig>();
@@ -72,18 +72,7 @@ namespace Simulator
             RobotDirectBeaconSignals = false;
             BarcodeScanner = false;
         }
-
-        //private member and getter for my singleton configurations class
-        private static Configurations? Instance;
-        /// <returns>
-        /// Returns the instance of the Configurations Singleton
-        /// </returns>
-        /// 
-        public static Configurations GetInstance()
-        {
-            return Instance ??= new Configurations();
-        }
-
+        
         public void LoadConfig(string path)
         {
             using var reader = new StreamReader(path);

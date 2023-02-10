@@ -21,11 +21,6 @@
     <Content Include="MPS\MPS_RS.cs" />
     <Content Include="MPS\MPS_SS.cs" />
     <Content Include="MPS\MPSNodeManager.cs" />
-    <Content Include="TerminalGui\TerminalGui.cs" />
-    <Content Include="TerminalGui\MapGuiView.cs" />
-    <Content Include="TerminalGui\MpsGuiView.cs" />
-    <Content Include="TerminalGui\RobotGuiView.cs" />
-    <Content Include="TerminalGui\TerminalConfig.cs" />
     <Content Include="Utility\Logger.cs" />
     <Content Include="Utility\Timer.cs" />
     <Content Include="Utility\ZonesManager.cs" />

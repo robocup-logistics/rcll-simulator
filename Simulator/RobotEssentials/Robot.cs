@@ -44,7 +44,7 @@ namespace Simulator.RobotEssentials
         public string TaskDescription { get; private set; }
         [JsonIgnore]
         public ManualResetEvent WaitForPrepare { get; private set; }
-        private MpsManager? MpsManager;
+        private MpsManager MpsManager;
         [JsonIgnore]
         public List<FinishedTasks> FinishedTasksList { get; }
 
@@ -60,9 +60,9 @@ namespace Simulator.RobotEssentials
             Explore
         }
 
-        public Robot(string name, RobotManager manager, Team color, int jersey, bool debug = false)
+        public Robot(Configurations config, string name, RobotManager manager, Team color, int jersey, MpsManager mpsManager, bool debug = false)
         {
-            Config = Configurations.GetInstance();
+            Config = config;
             RobotName = name;
             TeamName = Config.Teams[0].Name;
             TeamColor = color;
@@ -84,7 +84,7 @@ namespace Simulator.RobotEssentials
             Tasks = new Queue<AgentTask>();
             Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
-            MpsManager = null;
+            MpsManager = mpsManager;
             TcpConnectionTeamserver = null;
             UdpConnectionTeamserver = null;
             UdpConnectionRefbox = null;
@@ -207,24 +207,24 @@ namespace Simulator.RobotEssentials
                 if (Config.RobotDirectBeaconSignals)
                 {
                     UdpConnectionRefbox =
-                        new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
+                        new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
                     UdpConnectionRefbox.Start();
                 }
                 if (Config.RobotConnectionType.Equals("udp"))
                 {
-                    UdpConnectionTeamserver = new UdpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger, true);
+                    UdpConnectionTeamserver = new UdpConnector(Config, Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger, true);
                     UdpConnectionTeamserver.Start();
                 }
                 else
                 {
-                    TcpConnectionTeamserver = new TcpConnector(Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger);
+                    TcpConnectionTeamserver = new TcpConnector(Config, Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger);
                     TcpConnectionTeamserver.Start();
                 }
             }
 
 
             MyLogger.Log("Starting " + RobotName + "'s working thread! Mockup = " +
-                         Configurations.GetInstance().MockUp.ToString());
+                         Config.MockUp.ToString());
             Work();
             if (Config.RobotConnectionType.Equals("udp"))
             {
@@ -490,7 +490,6 @@ namespace Simulator.RobotEssentials
                 return;
             }
             var machine = CurrentTask.Retrieve.MachineId;
-            MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(CurrentTask.Retrieve.MachineId);
             var target = CurrentTask.Retrieve.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
@@ -520,13 +519,13 @@ namespace Simulator.RobotEssentials
 
                 }
                 CurrentTask.Successful = Move(targetZone);
-                if (!Configurations.GetInstance().MockUp && !CurrentTask.Successful)
+                if (!Config.MockUp && !CurrentTask.Successful)
                 {
                     MyLogger.Log("Movement was not successful we interrupt the task!");
                     AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
                 }
             }
-            if (!Configurations.GetInstance().MockUp)
+            if (!Config.MockUp)
             {
 
                 MyLogger.Log("At station sending a prepare machine task!");
@@ -549,7 +548,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             CurrentTask.Successful = GripProduct(mps, target);
-            if (!Configurations.GetInstance().MockUp)
+            if (!Config.MockUp)
             {
                 AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             }
@@ -585,7 +584,6 @@ namespace Simulator.RobotEssentials
                 }
             }
             MyLogger.Log("Placing the product on the machine!");
-            MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
             CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
@@ -599,7 +597,6 @@ namespace Simulator.RobotEssentials
             MyLogger.Log("BufferCapStation!");
             var machine = CurrentTask?.Buffer.MachineId;
             var target = CurrentTask?.Buffer.ShelfNumber;
-            MpsManager ??= MpsManager.GetInstance();
             var mps = MpsManager.GetMachineViaId(machine);
             if (GripProduct(mps, "shelf" + target.ToString()))
             {
@@ -690,7 +687,7 @@ namespace Simulator.RobotEssentials
                                 default:
                                     MyLogger.Log("Somehow an empty task was added?");
 
-                                    if (Configurations.GetInstance().IgnoreTeamColor)
+                                    if (Config.IgnoreTeamColor)
                                     {
                                         /*
                                         var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
@@ -802,7 +799,7 @@ namespace Simulator.RobotEssentials
         }
         public string GetConnectionState()
         {
-            if (Configurations.GetInstance().MockUp)
+            if (Config.MockUp)
             {
                 return "Mockup";
             }

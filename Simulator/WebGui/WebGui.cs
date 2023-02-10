@@ -30,12 +30,12 @@ namespace Simulator.WebGui
         private Configurations Config;
         Stopwatch timer = new Stopwatch();
 
-        public WebGui()
+        public WebGui(Configurations config, MpsManager mpsManager, RobotManager robotManager)
         {
             var path = Directory.GetCurrentDirectory();
             //Console.WriteLine(path);
             listener = new HttpListener();
-            Config = Configurations.GetInstance();
+            Config = config;
             Url = Config.WebguiPrefix + "://*:" + Config.WebguiPort + "/";
             listener.Prefixes.Add(Url);
             //listener.Prefixes.Add(url2);
@@ -44,8 +44,8 @@ namespace Simulator.WebGui
             MyLogger = new MyLogger("Web", true);
             MyLogger.Log($"Listening for the WebGUI to connect to {Url}");
             Console.WriteLine($"Listening for the WebGUI to connect to {Url}");
-            _robotManager = RobotManager.GetInstance();
-            _mpsManager = MpsManager.GetInstance();
+            _robotManager = robotManager;
+            _mpsManager = mpsManager;
             // Handle requests
             Task listenTask = HandleIncomingConnections();
             listenTask.GetAwaiter().GetResult();

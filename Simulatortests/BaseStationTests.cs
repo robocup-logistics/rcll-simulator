@@ -15,7 +15,8 @@ namespace Simulatortests
         public void DispenseBase()
         {
             var port = 5100;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             var testnode = machine.InNodes.ActionId;
             thread.Start();
@@ -23,14 +24,15 @@ namespace Simulatortests
             //Setting the shelf number to dispense a base
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
+            Thread.Sleep(config.BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductOnBelt);
         }
         [TestMethod]
         public void OPC_DispenseBase()
         {
             var port = 5101;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config,"C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -39,7 +41,7 @@ namespace Simulatortests
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 300);
+            Thread.Sleep(config.BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
             testhelper.CloseConnection();
         }
@@ -47,7 +49,8 @@ namespace Simulatortests
         public void OPC_WrongDispenseBase()
         {
             var port = 5102;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -64,7 +67,8 @@ namespace Simulatortests
         public void OPC_DispenseBaseAndStartBeltWithReady()
         {
             var port = 5103;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -73,11 +77,11 @@ namespace Simulatortests
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)1);
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 300);
+            Thread.Sleep(config.BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
            
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
+            Thread.Sleep(config.BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
             Assert.AreEqual(machine.InNodes.StatusNodes.ready.Value, true);

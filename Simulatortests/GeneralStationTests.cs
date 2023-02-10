@@ -14,7 +14,8 @@ namespace Simulatortests
         [TestMethod]
         public void ResetMachine()
         {
-            var machine = new MPS_BS("C-BS", 5001, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", 5001, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -29,20 +30,21 @@ namespace Simulatortests
         [TestMethod]
         public void BeltTest1()
         {
-            var machine = new MPS_BS("C-BS", 5002, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", 5002, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
             Thread.Sleep(500);
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
+            Thread.Sleep(config.BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductOnBelt);
 
             machine.InNodes.Data0.Value = (ushort)Positions.Out;
             machine.InNodes.Data1.Value = (ushort)Direction.FromInToOut;
             machine.HandleBelt();
-            Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 100);
+            Thread.Sleep(config.BeltActionDuration + 100);
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
         }
@@ -52,7 +54,8 @@ namespace Simulatortests
         {
             // Testing the opc connection generally
             var port = 5003;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
@@ -70,7 +73,8 @@ namespace Simulatortests
         public void OPC_ResetMachine()
         {
             var port = 5004;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -92,7 +96,8 @@ namespace Simulatortests
         public void OPC_SendTaskTwice()
         {
             var port = 5005;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);

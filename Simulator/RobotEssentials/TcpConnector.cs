@@ -16,7 +16,7 @@ namespace Simulator.RobotEssentials
         private Socket Socket;
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
-        public TcpConnector(string ip, int port, Robot rob, MyLogger logger) : base(ip, port, rob, logger)
+        public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger)
         {
             MyLogger.Log("Starting TcpConnector for " + ip + ":" + port + "!");
 
@@ -30,10 +30,10 @@ namespace Simulator.RobotEssentials
                 SendThread = new Thread(() => SendThreadMethod());
             }
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
 
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerRobot(Owner, MyLogger);
+            PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
         }
 
         public bool Close()

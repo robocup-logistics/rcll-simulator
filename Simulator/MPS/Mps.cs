@@ -40,7 +40,7 @@ namespace Simulator.MPS
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string JsonInformation;
-        private Configurations Config;
+        public Configurations Config { get; private set; }
         public enum MpsType
         {
             BaseStation = 100,
@@ -60,7 +60,7 @@ namespace Simulator.MPS
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(string name, int port, int id, Team team, bool debug = false)
+        protected Mps(Configurations config, string name, int port, int id, Team team, bool debug = false)
         {
             // Constructor for basic member initializations
             Debug = debug;
@@ -85,7 +85,7 @@ namespace Simulator.MPS
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
-            Config = Configurations.GetInstance();
+            Config = config;
             // Belt = new Belt(this, BeltEvent);
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
@@ -260,7 +260,7 @@ namespace Simulator.MPS
             MyLogger.Log("Product is moving on the belt!");
             InNodes.StatusNodes.ready.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-            Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
+            Thread.Sleep(Config.BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
             {

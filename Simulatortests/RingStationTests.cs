@@ -14,7 +14,8 @@ namespace Simulatortests
         [TestMethod]
         public void IncreaseSlideconut()
         {
-            var machine = new MPS_RS("C-RS", 5300, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_RS(config, "C-RS", 5300, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -30,7 +31,8 @@ namespace Simulatortests
         [TestMethod]
         public void AddRingToProduct()
         {
-            var machine = new MPS_RS("C-RS", 5301, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_RS(config, "C-RS", 5301, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -40,7 +42,7 @@ namespace Simulatortests
             machine.ProductOnBelt = baseProduct;
             machine.InNodes.Data0.Value = 1;
             machine.MountRingTask();
-            Thread.Sleep(Configurations.GetInstance().RSTaskDuration + 100);
+            Thread.Sleep(config.RSTaskDuration + 100);
             Assert.AreNotEqual(baseProduct.Complexity, complexity);
         }
         
@@ -48,7 +50,8 @@ namespace Simulatortests
         public void OPC_AddRingToProduct()
         {
             var port = 5302;
-            var machine = new MPS_RS("C-RS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_RS(config,"C-RS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
@@ -61,11 +64,11 @@ namespace Simulatortests
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
             var client = new OpcClient("opc.tcp://localhost:" + port + "/");
-            Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 300);
+            Thread.Sleep(config.BeltActionDuration + 300);
             Assert.IsNull(machine.ProductAtIn);
             Assert.IsNotNull(machine.ProductOnBelt);
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.MountRing, (ushort)1, (ushort)0);
-            Thread.Sleep(Configurations.GetInstance().RSTaskDuration + 200);
+            Thread.Sleep(config.RSTaskDuration + 200);
             Assert.AreEqual(1, baseProduct.RingCount);
             testhelper.CloseConnection();
         }

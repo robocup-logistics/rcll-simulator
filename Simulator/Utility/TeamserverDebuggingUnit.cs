@@ -20,12 +20,12 @@ namespace Simulator.Utility
         private Thread? PublicRecvThread; 
         private Thread? PrivateRecvThread;
         private bool Running;
-        public TeamserverDebuggingUnit()
+        public TeamserverDebuggingUnit(Configurations config)
         {
             MyLogger = new MyLogger("Teamserver", true);
-            Factory = new PBMessageFactoryRobot(null, MyLogger);
-            Handler = new PBMessageHandlerRobot(null, MyLogger);
-            Config = Configurations.GetInstance();
+            Factory = new PBMessageFactoryRobot(Config, null, MyLogger);
+            Handler = new PBMessageHandlerRobot(Config, null, MyLogger);
+            Config = config;
             if (Config == null || Config.Refbox == null) return;
             Running = true;
 

@@ -15,9 +15,9 @@ namespace Simulator.RobotEssentials
     class PBMessageHandlerMachineManager : PBMessageHandlerBase
     {
         private readonly MpsManager Manager;
-        public PBMessageHandlerMachineManager(MyLogger log) : base(log)
+        public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, MyLogger log) : base(config, log)
         {
-            Manager = MpsManager.GetInstance();
+            Manager = mpsManager;
         }
 
         public override bool HandleMessage(byte[] stream)
@@ -94,7 +94,7 @@ namespace Simulator.RobotEssentials
                         MyLogger.Log("Parsing of MachineInfo Message was successful!");
                         msg = mi.ToString();
                         MyLogger.Log("The Parsed message = " + msg);
-                        if (mi.Machines.Count < MpsManager.GetInstance().Machines.Count)
+                        if (mi.Machines.Count < Manager.Machines.Count)
                         {
                             MyLogger.Log("MachineInfo is not containing all machines!");
                             return false;
@@ -114,11 +114,11 @@ namespace Simulator.RobotEssentials
                     {
                         MessageParser<GameState> gsp = new(() => new GameState());
                         GameState gs = gsp.ParseFrom(stream, 12, payloadsize - 4);
-                        Timer.GetInstance().UpdateTime(gs.GameTime);
+                        Timer.GetInstance(Config).UpdateTime(gs.GameTime);
                         if (gs.HasPointsCyan)
-                            Configurations.GetInstance().Teams[0].Points = gs.PointsCyan;
+                            Config.Teams[0].Points = gs.PointsCyan;
                         if (gs.HasPointsMagenta)
-                            Configurations.GetInstance().Teams[0].Points = gs.PointsMagenta;
+                            Config.Teams[0].Points = gs.PointsMagenta;
                         MyLogger.Log("Parsing of GameState Message was successful!");
                         msg = gs.ToString();
                         break;

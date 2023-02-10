@@ -20,7 +20,7 @@ namespace Simulatortests
              * One Robot, a BaseStation, a CapStation and a Delivery Station
              * Goal is a Produced C0
              * **/
-            var config = Configurations.GetInstance();
+            var config = new Configurations();
             var startzone = Zone.CZ52;
             var robotconf = new RobotConfig("TestBot", 0, Team.Cyan);
             var bsconfig = new MpsConfig("C-BS", Mps.MpsType.BaseStation, 10000, Team.Cyan, true);
@@ -34,8 +34,8 @@ namespace Simulatortests
             config.AddConfig(dsconfig);
             config.AddConfig(rsconfig);
             config.AddConfig(teamconf);
-            var robotmanager = RobotManager.GetInstance();
-            var machinemanager = MpsManager.GetInstance();
+            var machinemanager = new MpsManager(config);
+            var robotmanager = new RobotManager(config, machinemanager);
             var zonesManager = ZonesManager.GetInstance();
             var rob = robotmanager.Robots[0];
             rob.SetZone(zonesManager.GetZone(startzone));

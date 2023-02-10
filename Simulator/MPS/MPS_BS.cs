@@ -16,7 +16,7 @@ namespace Simulator.MPS
             BandOnUntil = 102
         }
 
-        public MPS_BS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
+        public MPS_BS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
         {
             Type = MpsType.BaseStation;
         }
@@ -32,7 +32,7 @@ namespace Simulator.MPS
             TaskDescription = "Dispensing a Base";
             var stock = InNodes.Data0.Value;
             StartTask();
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration);
+            Thread.Sleep(Config.BSTaskDuration);
             MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
             switch (stock)
             {

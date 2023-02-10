@@ -5,7 +5,7 @@ using System;
 using System.Drawing.Printing;
 using LlsfMsgs;
 using Serilog;
-using TerminalGui = Simulator.TerminalGui.TerminalGui;
+
 // TODO Test Robot with teamserver
 // Todo test Mps with refbox and teamserver
 // todo GUI - split from console application 
@@ -22,12 +22,13 @@ namespace Simulator
         private static RobotManager? RobotManager;
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
-        private static bool ShowGui;
+        private static Configurations Config;
+        
+
         private static void Main(string[] args)
         {
             var next = false;
             var path = "";
-            ShowGui = false;
             foreach (var argument in args)
             {
                 switch (argument.ToLower())
@@ -35,9 +36,6 @@ namespace Simulator
                     case "-cfg":
                         next = true;
                         continue;
-                    case "-gui":
-                        ShowGui = true;
-                        break;
                     default:
                         {
                             if (next)
@@ -72,73 +70,46 @@ namespace Simulator
                 Console.WriteLine("Something like \"-cfg cfg\\config.yaml should work if you just pulled the project!");
                 return;
             }
-            Configurations.GetInstance().LoadConfig(path);
+            Config = new Configurations();
+            Config.LoadConfig(path);
             Mainlogger = new MyLogger("MainClass", true);
-            if (!ShowGui)
+            Console.Write("Starting the Machines ... ");
+            MachineManager = new MpsManager(Config);
+            Console.WriteLine("done!");
+            Console.Write("Starting the Robots ... ");
+            RobotManager = new RobotManager(Config, MachineManager);
+            Console.WriteLine("done!");
+            Console.Write("Creating the Zones ... ");
+            ZoneManager = ZonesManager.GetInstance();
+            Console.WriteLine("done!");
+            if (Config.FixedMPSplacement)
             {
-                Console.Write("Starting the Machines ... ");
-                MachineManager = MpsManager.GetInstance();
-                Console.WriteLine("done!");
-                Console.Write("Starting the Robots ... ");
-                RobotManager = RobotManager.GetInstance();
-                Console.WriteLine("done!");
-                Console.Write("Creating the Zones ... ");
-                ZoneManager = ZonesManager.GetInstance();
-                Console.WriteLine("done!");
-                if (Configurations.GetInstance().FixedMPSplacement)
+                Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
+                var mi = new MachineInfo();
+                foreach (var m in Config.MpsConfigs)
                 {
-                    Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
-                    var mi = new MachineInfo();
-                    foreach (var m in Configurations.GetInstance().MpsConfigs)
+                    var machine = new Machine()
                     {
-                        var machine = new Machine()
-                        {
-                            Name = m.Name,
-                            Zone = m.Zone,
-                            Rotation = (uint)m.Orientation
+                        Name = m.Name,
+                        Zone = m.Zone,
+                        Rotation = (uint)m.Orientation
 
-                        };
-                        mi.Machines.Add(machine);
-                    }
-                    MachineManager.PlaceMachines(mi);
-                    Console.WriteLine("done!");
+                    };
+                    mi.Machines.Add(machine);
                 }
 
-                var web = new WebGui.WebGui();
-                Console.WriteLine("Everything is set up! Waiting for connections!");
+                MachineManager.PlaceMachines(mi);
+                Console.WriteLine("done!");
             }
-            else
-            {
-                RobotManager = new RobotManager();
-                MachineManager = MpsManager.GetInstance();
-                ZoneManager = ZonesManager.GetInstance();
-                if (Configurations.GetInstance().FixedMPSplacement)
-                {
-                    var mi = new MachineInfo();
-                    foreach (var m in Configurations.GetInstance().MpsConfigs)
-                    {
-                        var machine = new Machine()
-                        {
-                            Name = m.Name,
-                            Zone = m.Zone,
-                            Rotation = (uint)m.Orientation
 
-                        };
-                        mi.Machines.Add(machine);
-                    }
-                    MachineManager.PlaceMachines(mi);
-                }
-                //zonesManager.Astar(zonesManager.GetZone(Zone.CZ11), zonesManager.GetZone(Zone.MZ78));
-                var gui = new TerminalGui.TerminalGui();
-            }
+            var web = new WebGui.WebGui(Config, MachineManager, RobotManager);
+            Console.WriteLine("Everything is set up! Waiting for connections!");
+            
         }
 
         public static void CloseApplication()
         {
-            if (!ShowGui)
-            {
-                Console.Write("Starting the cleanup ..");
-            }
+            Console.Write("Starting the cleanup ..");
             if(RobotManager != null)
             {
                 foreach (var robot in RobotManager.Robots)
@@ -149,11 +120,7 @@ namespace Simulator
 
                 }
             }
-
-            if (!ShowGui)
-            {
-                Console.Write(".. cleanup done");
-            }
+            Console.Write(".. cleanup done");
             Environment.Exit(0);
         }
     }

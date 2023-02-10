@@ -20,6 +20,7 @@ namespace Simulatortests
         [TestInitialize]
         public void SetUp()
         {
+            return;
             _port = 5303;
             var jersey = 1;
             var team = Team.Cyan;
@@ -27,12 +28,12 @@ namespace Simulatortests
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
-            _configurations = Configurations.GetInstance();
+            _configurations = new Configurations();
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _robotManager = new RobotManager();
-            _mpsManager = MpsManager.GetInstance();
+            _mpsManager = new MpsManager(_configurations);
+            _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();
             machineinfo.Machines.Add(new Machine
@@ -48,9 +49,9 @@ namespace Simulatortests
         [TestMethod]
         public void ShortMove()
         {
-            var configurations = Configurations.GetInstance();
+            var configurations = new Configurations();
             configurations.AddTestData();
-            var robot = new Simulator.RobotEssentials.Robot("TestBot", null, Team.Cyan, 1, false);
+            var robot = new Simulator.RobotEssentials.Robot(configurations,"TestBot", null, Team.Cyan, 1, _mpsManager, false);
             robot.WorkingRobotThread = new Thread(() => robot.Run());
             robot.WorkingRobotThread.Start();
             var zonesManager = ZonesManager.GetInstance();
@@ -69,7 +70,7 @@ namespace Simulatortests
                 }
             };
             robot.SetAgentTasks(task);
-            Thread.Sleep(Configurations.GetInstance().RobotMoveZoneDuration + 3000);
+            Thread.Sleep(configurations.RobotMoveZoneDuration + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
         }
 
@@ -77,9 +78,9 @@ namespace Simulatortests
         [TestMethod]
         public void LongMove()
         {
-            var configurations = Configurations.GetInstance();
+            var configurations = new Configurations();
             configurations.AddTestData();
-            var robot = new Simulator.RobotEssentials.Robot("TestBot", null, Team.Cyan, 1, false);
+            var robot = new Simulator.RobotEssentials.Robot(configurations, "TestBot", null, Team.Cyan, 1, _mpsManager, false);
             robot.WorkingRobotThread = new Thread(() => robot.Run());
             robot.WorkingRobotThread.Start();
             var zonesManager = ZonesManager.GetInstance();
@@ -98,7 +99,7 @@ namespace Simulatortests
                 }
             };
             robot.SetAgentTasks(task);
-            Thread.Sleep((15 * Configurations.GetInstance().RobotMoveZoneDuration) + 3000);
+            Thread.Sleep((15 * configurations.RobotMoveZoneDuration) + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
         }
 
@@ -115,7 +116,30 @@ namespace Simulatortests
         [TestMethod]
         public void Grab()
         {
-            return;
+            _port = 5303;
+            var jersey = 1;
+            var team = Team.Cyan;
+            var robconf = new RobotConfig("TestBot", jersey, team);
+            var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
+            var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
+
+            _configurations = new Configurations();
+            _configurations.AddConfig(robconf);
+            _configurations.AddConfig(mpsconf);
+            _configurations.AddConfig(teamconf);
+            _mpsManager = new MpsManager(_configurations);
+            _robotManager = new RobotManager(_configurations, _mpsManager);
+            _zonesManager = ZonesManager.GetInstance();
+            MachineInfo machineinfo = new MachineInfo();
+            machineinfo.Machines.Add(new Machine
+            {
+                Name = "C-BS",
+                Type = "BS",
+                TeamColor = team,
+                Zone = Zone.CZ14,
+                Rotation = 180
+            });
+            _mpsManager.PlaceMachines(machineinfo);
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(_port);
@@ -147,7 +171,30 @@ namespace Simulatortests
         [TestMethod]
         public void GrabWithInvalidMachine()
         {
-            return;
+            _port = 5304;
+            var jersey = 1;
+            var team = Team.Cyan;
+            var robconf = new RobotConfig("TestBot", jersey, team);
+            var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
+            var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
+
+            _configurations = new Configurations();
+            _configurations.AddConfig(robconf);
+            _configurations.AddConfig(mpsconf);
+            _configurations.AddConfig(teamconf);
+            _mpsManager = new MpsManager(_configurations);
+            _robotManager = new RobotManager(_configurations, _mpsManager);
+            _zonesManager = ZonesManager.GetInstance();
+            MachineInfo machineinfo = new MachineInfo();
+            machineinfo.Machines.Add(new Machine
+            {
+                Name = "C-BS",
+                Type = "BS",
+                TeamColor = team,
+                Zone = Zone.CZ14,
+                Rotation = 180
+            });
+            _mpsManager.PlaceMachines(machineinfo);
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new TestHelper(_port);

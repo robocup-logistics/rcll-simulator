@@ -1,4 +1,5 @@
 ﻿using System.Threading;
+using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 
 namespace Simulator.MPS
@@ -26,7 +27,8 @@ namespace Simulator.MPS
         private readonly Mps Machine;
         private Products? ProductOnBelt;
         private bool Work;
-        public Belt(Mps machine, ManualResetEvent mre)
+        private Configurations Config;
+        public Belt(Configurations config, Mps machine, ManualResetEvent mre)
         {
             Position = Positions.In;
             Direction = Direction.FromInToOut;
@@ -35,6 +37,7 @@ namespace Simulator.MPS
             On = false;
             Work = true;
             Machine = machine;
+            Config = config;
             var beltThread = new Thread(StateMachine);
             beltThread.Start();
         }
@@ -87,7 +90,7 @@ namespace Simulator.MPS
                     }
 
 
-                    Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
+                    Thread.Sleep(Config.BeltActionDuration);
                     switch (Direction)
                     {
                         case Direction.FromInToOut:
