@@ -59,7 +59,7 @@ namespace Simulatortests
             var baseProduct = new Products(BaseColor.BaseBlack);
             var complexity = baseProduct.Complexity;
             machine.ProductAtIn = baseProduct;
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);

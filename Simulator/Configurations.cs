@@ -50,7 +50,7 @@ namespace Simulator
         public uint WebguiPort { get; private set;}
         public bool BarcodeScanner { get; private set; }
 
-        //Constructor of my Singleton variable
+
         public Configurations()
         {
             MpsConfigs = new List<MpsConfig>();
@@ -71,8 +71,9 @@ namespace Simulator
             RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
             BarcodeScanner = false;
+            WebguiPrefix = "http";
         }
-        
+
         public void LoadConfig(string path)
         {
             using var reader = new StreamReader(path);
@@ -455,6 +456,20 @@ namespace Simulator
         public void AddConfig(TeamConfig conf)
         {
             Teams.Add(conf);
+        }
+
+        public void AddConfig(RefboxConfig refbox)
+        {
+            Refbox = refbox;
+        }
+        public void SetConnectionType(string connectionType)
+        {
+            RobotConnectionType = connectionType;
+        }
+
+        public void ToggleMockUp()
+        {
+            MockUp = !MockUp;
         }
     }
 

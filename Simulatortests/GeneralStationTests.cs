@@ -61,7 +61,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             var value = true;
-            var bs = new TestHelper(port);
+            var bs = new OPCTestHelper(port);
             if (!bs.CreateConnection())
                 Assert.Fail();
             bs.EnableTask();
@@ -79,7 +79,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)200);
@@ -102,7 +102,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)200);

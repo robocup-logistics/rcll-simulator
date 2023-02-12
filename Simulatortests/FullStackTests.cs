@@ -40,9 +40,9 @@ namespace Simulatortests
             var rob = robotmanager.Robots[0];
             rob.SetZone(zonesManager.GetZone(startzone));
 
-            var bs = new TestHelper(bsconfig.Port);
-            var cs = new TestHelper(csconfig.Port);
-            var ds = new TestHelper(dsconfig.Port);
+            var bs = new OPCTestHelper(bsconfig.Port);
+            var cs = new OPCTestHelper(csconfig.Port);
+            var ds = new OPCTestHelper(dsconfig.Port);
             if (!bs.CreateConnection())
                 Assert.Fail();
             if (!cs.CreateConnection())

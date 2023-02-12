@@ -25,6 +25,7 @@ namespace Simulator.MPS
             }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
         private void Work()

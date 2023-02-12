@@ -32,7 +32,9 @@ namespace Simulator.RobotEssentials
             {
                 var robot = new Robot(Config, rob.Name, this,rob.TeamColor, rob.Jersey, MpsManager, true);
                 robot.WorkingRobotThread = new Thread(() => robot.Run());
+                robot.WorkingRobotThread.Name = "Robot" + robot.JerseyNumber + "_working_thread";
                 robot.WorkingRobotThread.Start();
+                
                 Robots.Add(robot);
                 bool set = false;
                 int x = 5;

@@ -26,8 +26,9 @@ namespace Simulator.RobotEssentials
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             RecvThread = new Thread(() => ReceiveUdpMethod());
+            RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             SendThread = new Thread(() => SendUdpMethod());
-
+            SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
@@ -42,6 +43,7 @@ namespace Simulator.RobotEssentials
 
             IpString = ip;
             RecvThread = new Thread(() => ReceiveUdpMethod());
+            RecvThread.Name = "mpsManager_UDP_ReceiveThread";
             //SendThread = new Thread(() => SendUdpMethod());
 
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);

@@ -37,7 +37,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
@@ -55,7 +55,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
@@ -73,7 +73,7 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)1);

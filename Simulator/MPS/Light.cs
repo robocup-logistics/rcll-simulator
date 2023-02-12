@@ -18,7 +18,9 @@ namespace Simulator.MPS
             Event = mre;
             LightOn = false;
             var lightThread = new Thread(StateMachine);
+            lightThread.Name = "Light_" +  color.ToString() + "_Thread";
             lightThread.Start();
+            
         }
 
         public void SetLight(LightState update)

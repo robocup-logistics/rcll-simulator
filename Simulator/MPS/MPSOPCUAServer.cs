@@ -15,6 +15,7 @@ namespace Simulator.MPS
         private readonly int Port;
         private readonly string URL;
         private readonly OpcServer server;
+        /// <summary></summary>
         private readonly MPSNodeManager m1;
         private readonly ManualResetEvent BasicEvent;
         private readonly ManualResetEvent InEvent;
@@ -72,7 +73,7 @@ namespace Simulator.MPS
             //server.RequestProcessed += HandleRequestProcessed;
             while (true)
             {
-                if(m1.InNodes.StatusNodes.busy.Value == true)
+                /*if(m1.InNodes.StatusNodes.busy.Value == true)
                 {
                     m1.InNodes.StatusNodes.busy.Value = true;
                     ApplyChanges(m1.InNodes.StatusNodes.busy);
@@ -81,7 +82,7 @@ namespace Simulator.MPS
                 {
                     m1.InNodes.StatusNodes.busy.Value = false;
                     ApplyChanges(m1.InNodes.StatusNodes.busy);
-                }
+                }*/
                 Thread.Sleep(50);
             }
         }

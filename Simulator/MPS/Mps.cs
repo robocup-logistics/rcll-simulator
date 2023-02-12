@@ -96,6 +96,7 @@ namespace Simulator.MPS
                 InNodes = Refbox.GetNodeCollection(true);
                 BasicNodes = Refbox.GetNodeCollection(false);
                 var th = new Thread(Refbox.Start);
+                th.Name = Name + "_OpcServerThread";
                 Rotation = 0;
                 Zone = Zone.MZ41;
                 th.Start();

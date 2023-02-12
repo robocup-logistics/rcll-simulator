@@ -7,13 +7,13 @@ using System.Threading.Tasks;
 
 namespace Simulatortests
 {
-    public class TestHelper
+    public class OPCTestHelper
     {
         public string NodePath = "ns=4;s=DeviceSet/CPX-E-CEC-C1-PN/Resources/Application/GlobalVars/G/In/p/";
         private readonly int Port;
         private readonly OpcClient Client;
 
-        public TestHelper(int port)
+        public OPCTestHelper(int port)
         {
             Port = port;
             Client = new OpcClient("opc.tcp://localhost:" + Port + "/");

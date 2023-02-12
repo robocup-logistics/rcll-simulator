@@ -49,7 +49,7 @@ namespace Simulatortests
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
-            var cs = new TestHelper(port);
+            var cs = new OPCTestHelper(port);
             if (!cs.CreateConnection())
                 Assert.Fail();
             var product = new Products(CapColor.CapBlack);
@@ -73,7 +73,7 @@ namespace Simulatortests
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             var product = new Products(CapColor.CapBlack);

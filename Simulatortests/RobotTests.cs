@@ -142,7 +142,7 @@ namespace Simulatortests
             _mpsManager.PlaceMachines(machineinfo);
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
-            var bs = new TestHelper(_port);
+            var bs = new OPCTestHelper(_port);
             Thread.Sleep(2000);
             if (!bs.CreateConnection())
                 Assert.Fail();
@@ -197,7 +197,7 @@ namespace Simulatortests
             _mpsManager.PlaceMachines(machineinfo);
             _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
-            var bs = new TestHelper(_port);
+            var bs = new OPCTestHelper(_port);
             Thread.Sleep(2000);
             if (!bs.CreateConnection())
                 Assert.Fail();
