@@ -53,6 +53,8 @@ namespace Simulator.RobotEssentials
             RecvThread.Name = "MpsManager_TCP_ReceiveThread";
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
             PbHandler = new PBMessageHandlerMachineManager(Config, manager, MyLogger);
+            Running = true;
+            Connect();
             RecvThread.Start();
         }
         public bool Close()
