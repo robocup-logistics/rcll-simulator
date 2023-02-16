@@ -29,7 +29,7 @@ namespace LlsfMsgs {
             "IAIoAhIJCgF5GAMgAigCEgsKA29yaRgEIAIoAkIvCh9vcmcucm9ib2N1cF9s",
             "b2dpc3RpY3MubGxzZl9tc2dzQgxQb3NlMkRQcm90b3M="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Llsfmsgs.TimeReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::LlsfMsgs.TimeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Pose2D), global::LlsfMsgs.Pose2D.Parser, new[]{ "Timestamp", "X", "Y", "Ori" }, null, null, null, null)
           }));
@@ -42,24 +42,32 @@ namespace LlsfMsgs {
   /// Pose information on 2D map
   /// Data is relative to the LLSF field frame
   /// </summary>
-  public sealed partial class Pose2D : pb::IMessage<Pose2D> {
+  public sealed partial class Pose2D : pb::IMessage<Pose2D>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Pose2D> _parser = new pb::MessageParser<Pose2D>(() => new Pose2D());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Pose2D> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.Pose2DReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Pose2D() {
       OnConstruction();
     }
@@ -67,6 +75,7 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Pose2D(Pose2D other) : this() {
       _hasBits0 = other._hasBits0;
       timestamp_ = other.timestamp_ != null ? other.timestamp_.Clone() : null;
@@ -77,18 +86,20 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Pose2D Clone() {
       return new Pose2D(this);
     }
 
     /// <summary>Field number for the "timestamp" field.</summary>
     public const int TimestampFieldNumber = 1;
-    private global::Llsfmsgs.Time timestamp_;
+    private global::LlsfMsgs.Time timestamp_;
     /// <summary>
     /// Time when this pose was measured
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Llsfmsgs.Time Timestamp {
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LlsfMsgs.Time Timestamp {
       get { return timestamp_; }
       set {
         timestamp_ = value;
@@ -104,6 +115,7 @@ namespace LlsfMsgs {
     /// X/Y coordinates in meters
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float X {
       get { if ((_hasBits0 & 1) != 0) { return x_; } else { return XDefaultValue; } }
       set {
@@ -113,11 +125,13 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "x" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasX {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "x" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearX() {
       _hasBits0 &= ~1;
     }
@@ -128,6 +142,7 @@ namespace LlsfMsgs {
 
     private float y_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Y {
       get { if ((_hasBits0 & 2) != 0) { return y_; } else { return YDefaultValue; } }
       set {
@@ -137,11 +152,13 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "y" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasY {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "y" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearY() {
       _hasBits0 &= ~2;
     }
@@ -155,6 +172,7 @@ namespace LlsfMsgs {
     /// Orientation in rad
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float Ori {
       get { if ((_hasBits0 & 4) != 0) { return ori_; } else { return OriDefaultValue; } }
       set {
@@ -164,21 +182,25 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "ori" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasOri {
       get { return (_hasBits0 & 4) != 0; }
     }
     /// <summary>Clears the value of the "ori" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearOri() {
       _hasBits0 &= ~4;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Pose2D);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Pose2D other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -194,6 +216,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (timestamp_ != null) hash ^= Timestamp.GetHashCode();
@@ -207,12 +230,17 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (timestamp_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(Timestamp);
@@ -232,9 +260,37 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (timestamp_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(Timestamp);
+      }
+      if (HasX) {
+        output.WriteRawTag(21);
+        output.WriteFloat(X);
+      }
+      if (HasY) {
+        output.WriteRawTag(29);
+        output.WriteFloat(Y);
+      }
+      if (HasOri) {
+        output.WriteRawTag(37);
+        output.WriteFloat(Ori);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (timestamp_ != null) {
@@ -256,13 +312,14 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Pose2D other) {
       if (other == null) {
         return;
       }
       if (other.timestamp_ != null) {
         if (timestamp_ == null) {
-          Timestamp = new global::Llsfmsgs.Time();
+          Timestamp = new global::LlsfMsgs.Time();
         }
         Timestamp.MergeFrom(other.Timestamp);
       }
@@ -279,7 +336,11 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -288,7 +349,41 @@ namespace LlsfMsgs {
             break;
           case 10: {
             if (timestamp_ == null) {
-              Timestamp = new global::Llsfmsgs.Time();
+              Timestamp = new global::LlsfMsgs.Time();
+            }
+            input.ReadMessage(Timestamp);
+            break;
+          }
+          case 21: {
+            X = input.ReadFloat();
+            break;
+          }
+          case 29: {
+            Y = input.ReadFloat();
+            break;
+          }
+          case 37: {
+            Ori = input.ReadFloat();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (timestamp_ == null) {
+              Timestamp = new global::LlsfMsgs.Time();
             }
             input.ReadMessage(Timestamp);
             break;
@@ -308,6 +403,7 @@ namespace LlsfMsgs {
         }
       }
     }
+    #endif
 
   }
 

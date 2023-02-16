@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace Llsfmsgs {
+namespace LlsfMsgs {
 
   /// <summary>Holder for reflection information generated from Time.proto</summary>
   public static partial class TimeReflection {
@@ -25,12 +25,12 @@ namespace Llsfmsgs {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "CgpUaW1lLnByb3RvEglsbHNmX21zZ3MiIQoEVGltZRILCgNzZWMYASACKAMS",
-            "DAoEbnNlYxgCIAIoA0I4Ch9vcmcucm9ib2N1cF9sb2dpc3RpY3MubGxzZl9t",
-            "c2dzQgpUaW1lUHJvdG9zqgIITGxzZm1zZ3M="));
+            "DAoEbnNlYxgCIAIoA0ItCh9vcmcucm9ib2N1cF9sb2dpc3RpY3MubGxzZl9t",
+            "c2dzQgpUaW1lUHJvdG9z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::Llsfmsgs.Time), global::Llsfmsgs.Time.Parser, new[]{ "Sec", "Nsec" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.Time), global::LlsfMsgs.Time.Parser, new[]{ "Sec", "Nsec" }, null, null, null, null)
           }));
     }
     #endregion
@@ -42,24 +42,32 @@ namespace Llsfmsgs {
   /// Can be used for absolute times or
   /// durations alike.
   /// </summary>
-  public sealed partial class Time : pb::IMessage<Time> {
+  public sealed partial class Time : pb::IMessage<Time>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<Time> _parser = new pb::MessageParser<Time>(() => new Time());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<Time> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::Llsfmsgs.TimeReflection.Descriptor.MessageTypes[0]; }
+      get { return global::LlsfMsgs.TimeReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Time() {
       OnConstruction();
     }
@@ -67,6 +75,7 @@ namespace Llsfmsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Time(Time other) : this() {
       _hasBits0 = other._hasBits0;
       sec_ = other.sec_;
@@ -75,6 +84,7 @@ namespace Llsfmsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public Time Clone() {
       return new Time(this);
     }
@@ -89,6 +99,7 @@ namespace Llsfmsgs {
     /// in UTC or seconds part of duration
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long Sec {
       get { if ((_hasBits0 & 1) != 0) { return sec_; } else { return SecDefaultValue; } }
       set {
@@ -98,11 +109,13 @@ namespace Llsfmsgs {
     }
     /// <summary>Gets whether the "sec" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasSec {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "sec" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearSec() {
       _hasBits0 &= ~1;
     }
@@ -117,6 +130,7 @@ namespace Llsfmsgs {
     /// or nanoseconds part for duration
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public long Nsec {
       get { if ((_hasBits0 & 2) != 0) { return nsec_; } else { return NsecDefaultValue; } }
       set {
@@ -126,21 +140,25 @@ namespace Llsfmsgs {
     }
     /// <summary>Gets whether the "nsec" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasNsec {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "nsec" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearNsec() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as Time);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(Time other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -154,6 +172,7 @@ namespace Llsfmsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasSec) hash ^= Sec.GetHashCode();
@@ -165,12 +184,17 @@ namespace Llsfmsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasSec) {
         output.WriteRawTag(8);
         output.WriteInt64(Sec);
@@ -182,9 +206,29 @@ namespace Llsfmsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasSec) {
+        output.WriteRawTag(8);
+        output.WriteInt64(Sec);
+      }
+      if (HasNsec) {
+        output.WriteRawTag(16);
+        output.WriteInt64(Nsec);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasSec) {
@@ -200,6 +244,7 @@ namespace Llsfmsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(Time other) {
       if (other == null) {
         return;
@@ -214,7 +259,11 @@ namespace Llsfmsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -231,7 +280,31 @@ namespace Llsfmsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 8: {
+            Sec = input.ReadInt64();
+            break;
+          }
+          case 16: {
+            Nsec = input.ReadInt64();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
   }
 

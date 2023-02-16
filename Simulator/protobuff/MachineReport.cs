@@ -25,47 +25,61 @@ namespace LlsfMsgs {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
             "ChNNYWNoaW5lUmVwb3J0LnByb3RvEglsbHNmX21zZ3MaClRlYW0ucHJvdG8a",
-            "ClpvbmUucHJvdG8iewoSTWFjaGluZVJlcG9ydEVudHJ5EgwKBG5hbWUYASAC",
-            "KAkSHQoEem9uZRgDIAEoDjIPLmxsc2ZfbXNncy5ab25lEhAKCHJvdGF0aW9u",
-            "GAQgASgNIiYKCENvbXBUeXBlEgwKB0NPTVBfSUQQ0A8SDAoITVNHX1RZUEUQ",
-            "PCKNAQoNTWFjaGluZVJlcG9ydBIjCgp0ZWFtX2NvbG9yGAIgAigOMg8ubGxz",
-            "Zl9tc2dzLlRlYW0SLwoIbWFjaGluZXMYASADKAsyHS5sbHNmX21zZ3MuTWFj",
-            "aGluZVJlcG9ydEVudHJ5IiYKCENvbXBUeXBlEgwKB0NPTVBfSUQQ0A8SDAoI",
-            "TVNHX1RZUEUQPSJ7ChFNYWNoaW5lUmVwb3J0SW5mbxIZChFyZXBvcnRlZF9t",
-            "YWNoaW5lcxgBIAMoCRIjCgp0ZWFtX2NvbG9yGAIgAigOMg8ubGxzZl9tc2dz",
-            "LlRlYW0iJgoIQ29tcFR5cGUSDAoHQ09NUF9JRBDQDxIMCghNU0dfVFlQRRA+",
-            "QjYKH29yZy5yb2JvY3VwX2xvZ2lzdGljcy5sbHNmX21zZ3NCE01hY2hpbmVS",
-            "ZXBvcnRQcm90b3M="));
+            "ClpvbmUucHJvdG8iiQEKEk1hY2hpbmVSZXBvcnRFbnRyeRIMCgRuYW1lGAEg",
+            "ASgJEgwKBHR5cGUYAiABKAkSHQoEem9uZRgDIAEoDjIPLmxsc2ZfbXNncy5a",
+            "b25lEhAKCHJvdGF0aW9uGAQgASgNIiYKCENvbXBUeXBlEgwKB0NPTVBfSUQQ",
+            "0A8SDAoITVNHX1RZUEUQPCKNAQoNTWFjaGluZVJlcG9ydBIjCgp0ZWFtX2Nv",
+            "bG9yGAIgAigOMg8ubGxzZl9tc2dzLlRlYW0SLwoIbWFjaGluZXMYASADKAsy",
+            "HS5sbHNmX21zZ3MuTWFjaGluZVJlcG9ydEVudHJ5IiYKCENvbXBUeXBlEgwK",
+            "B0NPTVBfSUQQ0A8SDAoITVNHX1RZUEUQPSKzAQoRTWFjaGluZVJlcG9ydElu",
+            "Zm8SGQoRcmVwb3J0ZWRfbWFjaGluZXMYASADKAkSIwoKdGVhbV9jb2xvchgC",
+            "IAIoDjIPLmxsc2ZfbXNncy5UZWFtEjYKDnJlcG9ydGVkX3R5cGVzGAMgAygL",
+            "Mh4ubGxzZl9tc2dzLk1hY2hpbmVUeXBlRmVlZGJhY2siJgoIQ29tcFR5cGUS",
+            "DAoHQ09NUF9JRBDQDxIMCghNU0dfVFlQRRA+Ip0BChNNYWNoaW5lVHlwZUZl",
+            "ZWRiYWNrEgwKBHR5cGUYASACKAkSHQoEem9uZRgCIAIoDjIPLmxsc2ZfbXNn",
+            "cy5ab25lEgwKBG5hbWUYAyABKAkSIwoKdGVhbV9jb2xvchgEIAEoDjIPLmxs",
+            "c2ZfbXNncy5UZWFtIiYKCENvbXBUeXBlEgwKB0NPTVBfSUQQ0A8SDAoITVNH",
+            "X1RZUEUQP0I2Ch9vcmcucm9ib2N1cF9sb2dpc3RpY3MubGxzZl9tc2dzQhNN",
+            "YWNoaW5lUmVwb3J0UHJvdG9z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::LlsfMsgs.TeamReflection.Descriptor, global::LlsfMsgs.ZoneReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineReportEntry), global::LlsfMsgs.MachineReportEntry.Parser, new[]{ "Name", "Zone", "Rotation" }, null, new[]{ typeof(global::LlsfMsgs.MachineReportEntry.Types.CompType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineReportEntry), global::LlsfMsgs.MachineReportEntry.Parser, new[]{ "Name", "Type", "Zone", "Rotation" }, null, new[]{ typeof(global::LlsfMsgs.MachineReportEntry.Types.CompType) }, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineReport), global::LlsfMsgs.MachineReport.Parser, new[]{ "TeamColor", "Machines" }, null, new[]{ typeof(global::LlsfMsgs.MachineReport.Types.CompType) }, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineReportInfo), global::LlsfMsgs.MachineReportInfo.Parser, new[]{ "ReportedMachines", "TeamColor" }, null, new[]{ typeof(global::LlsfMsgs.MachineReportInfo.Types.CompType) }, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineReportInfo), global::LlsfMsgs.MachineReportInfo.Parser, new[]{ "ReportedMachines", "TeamColor", "ReportedTypes" }, null, new[]{ typeof(global::LlsfMsgs.MachineReportInfo.Types.CompType) }, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.MachineTypeFeedback), global::LlsfMsgs.MachineTypeFeedback.Parser, new[]{ "Type", "Zone", "Name", "TeamColor" }, null, new[]{ typeof(global::LlsfMsgs.MachineTypeFeedback.Types.CompType) }, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
-  public sealed partial class MachineReportEntry : pb::IMessage<MachineReportEntry> {
+  public sealed partial class MachineReportEntry : pb::IMessage<MachineReportEntry>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<MachineReportEntry> _parser = new pb::MessageParser<MachineReportEntry>(() => new MachineReportEntry());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<MachineReportEntry> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineReportReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportEntry() {
       OnConstruction();
     }
@@ -73,15 +87,18 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportEntry(MachineReportEntry other) : this() {
       _hasBits0 = other._hasBits0;
       name_ = other.name_;
+      type_ = other.type_;
       zone_ = other.zone_;
       rotation_ = other.rotation_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportEntry Clone() {
       return new MachineReportEntry(this);
     }
@@ -96,6 +113,7 @@ namespace LlsfMsgs {
     /// and zone the machine is in
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public string Name {
       get { return name_ ?? NameDefaultValue; }
       set {
@@ -104,13 +122,41 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "name" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasName {
       get { return name_ != null; }
     }
     /// <summary>Clears the value of the "name" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearName() {
       name_ = null;
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 2;
+    private readonly static string TypeDefaultValue = "";
+
+    private string type_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Type {
+      get { return type_ ?? TypeDefaultValue; }
+      set {
+        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "type" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasType {
+      get { return type_ != null; }
+    }
+    /// <summary>Clears the value of the "type" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearType() {
+      type_ = null;
     }
 
     /// <summary>Field number for the "zone" field.</summary>
@@ -119,6 +165,7 @@ namespace LlsfMsgs {
 
     private global::LlsfMsgs.Zone zone_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Zone Zone {
       get { if ((_hasBits0 & 1) != 0) { return zone_; } else { return ZoneDefaultValue; } }
       set {
@@ -128,11 +175,13 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "zone" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasZone {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "zone" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearZone() {
       _hasBits0 &= ~1;
     }
@@ -146,6 +195,7 @@ namespace LlsfMsgs {
     /// [0-360] in deg
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public uint Rotation {
       get { if ((_hasBits0 & 2) != 0) { return rotation_; } else { return RotationDefaultValue; } }
       set {
@@ -155,21 +205,25 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "rotation" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasRotation {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "rotation" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearRotation() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as MachineReportEntry);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(MachineReportEntry other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -178,15 +232,18 @@ namespace LlsfMsgs {
         return true;
       }
       if (Name != other.Name) return false;
+      if (Type != other.Type) return false;
       if (Zone != other.Zone) return false;
       if (Rotation != other.Rotation) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasName) hash ^= Name.GetHashCode();
+      if (HasType) hash ^= Type.GetHashCode();
       if (HasZone) hash ^= Zone.GetHashCode();
       if (HasRotation) hash ^= Rotation.GetHashCode();
       if (_unknownFields != null) {
@@ -196,15 +253,24 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (HasName) {
         output.WriteRawTag(10);
         output.WriteString(Name);
+      }
+      if (HasType) {
+        output.WriteRawTag(18);
+        output.WriteString(Type);
       }
       if (HasZone) {
         output.WriteRawTag(24);
@@ -217,13 +283,44 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasName) {
+        output.WriteRawTag(10);
+        output.WriteString(Name);
+      }
+      if (HasType) {
+        output.WriteRawTag(18);
+        output.WriteString(Type);
+      }
+      if (HasZone) {
+        output.WriteRawTag(24);
+        output.WriteEnum((int) Zone);
+      }
+      if (HasRotation) {
+        output.WriteRawTag(32);
+        output.WriteUInt32(Rotation);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasName) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (HasType) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
       }
       if (HasZone) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Zone);
@@ -238,12 +335,16 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(MachineReportEntry other) {
       if (other == null) {
         return;
       }
       if (other.HasName) {
         Name = other.Name;
+      }
+      if (other.HasType) {
+        Type = other.Type;
       }
       if (other.HasZone) {
         Zone = other.Zone;
@@ -255,7 +356,11 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -264,6 +369,41 @@ namespace LlsfMsgs {
             break;
           case 10: {
             Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Type = input.ReadString();
+            break;
+          }
+          case 24: {
+            Zone = (global::LlsfMsgs.Zone) input.ReadEnum();
+            break;
+          }
+          case 32: {
+            Rotation = input.ReadUInt32();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Name = input.ReadString();
+            break;
+          }
+          case 18: {
+            Type = input.ReadString();
             break;
           }
           case 24: {
@@ -277,10 +417,12 @@ namespace LlsfMsgs {
         }
       }
     }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineReportEntry message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,
@@ -296,24 +438,32 @@ namespace LlsfMsgs {
   /// Robots send this to announce recognized
   /// machines to the refbox.
   /// </summary>
-  public sealed partial class MachineReport : pb::IMessage<MachineReport> {
+  public sealed partial class MachineReport : pb::IMessage<MachineReport>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<MachineReport> _parser = new pb::MessageParser<MachineReport>(() => new MachineReport());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<MachineReport> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineReportReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReport() {
       OnConstruction();
     }
@@ -321,6 +471,7 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReport(MachineReport other) : this() {
       _hasBits0 = other._hasBits0;
       teamColor_ = other.teamColor_;
@@ -329,6 +480,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReport Clone() {
       return new MachineReport(this);
     }
@@ -342,6 +494,7 @@ namespace LlsfMsgs {
     /// Team for which the report is sent
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Team TeamColor {
       get { if ((_hasBits0 & 1) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
@@ -351,11 +504,13 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
       _hasBits0 &= ~1;
     }
@@ -370,16 +525,19 @@ namespace LlsfMsgs {
     /// or a subset thereof
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<global::LlsfMsgs.MachineReportEntry> Machines {
       get { return machines_; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as MachineReport);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(MachineReport other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -393,6 +551,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (HasTeamColor) hash ^= TeamColor.GetHashCode();
@@ -404,12 +563,17 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       machines_.WriteTo(output, _repeated_machines_codec);
       if (HasTeamColor) {
         output.WriteRawTag(16);
@@ -418,9 +582,26 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      machines_.WriteTo(ref output, _repeated_machines_codec);
+      if (HasTeamColor) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (HasTeamColor) {
@@ -434,6 +615,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(MachineReport other) {
       if (other == null) {
         return;
@@ -446,7 +628,11 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -463,11 +649,36 @@ namespace LlsfMsgs {
           }
         }
       }
+    #endif
     }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            machines_.AddEntriesFrom(ref input, _repeated_machines_codec);
+            break;
+          }
+          case 16: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineReport message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,
@@ -483,24 +694,32 @@ namespace LlsfMsgs {
   /// The refbox periodically sends this to
   /// acknowledge reported machines
   /// </summary>
-  public sealed partial class MachineReportInfo : pb::IMessage<MachineReportInfo> {
+  public sealed partial class MachineReportInfo : pb::IMessage<MachineReportInfo>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<MachineReportInfo> _parser = new pb::MessageParser<MachineReportInfo>(() => new MachineReportInfo());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<MachineReportInfo> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.MachineReportReflection.Descriptor.MessageTypes[2]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportInfo() {
       OnConstruction();
     }
@@ -508,14 +727,17 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportInfo(MachineReportInfo other) : this() {
       _hasBits0 = other._hasBits0;
       reportedMachines_ = other.reportedMachines_.Clone();
       teamColor_ = other.teamColor_;
+      reportedTypes_ = other.reportedTypes_.Clone();
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public MachineReportInfo Clone() {
       return new MachineReportInfo(this);
     }
@@ -531,6 +753,7 @@ namespace LlsfMsgs {
     /// may have been correct or wrong)
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public pbc::RepeatedField<string> ReportedMachines {
       get { return reportedMachines_; }
     }
@@ -544,6 +767,7 @@ namespace LlsfMsgs {
     /// Team for which the report is sent
     /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public global::LlsfMsgs.Team TeamColor {
       get { if ((_hasBits0 & 1) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
       set {
@@ -553,21 +777,40 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "team_color" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasTeamColor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "team_color" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearTeamColor() {
       _hasBits0 &= ~1;
     }
 
+    /// <summary>Field number for the "reported_types" field.</summary>
+    public const int ReportedTypesFieldNumber = 3;
+    private static readonly pb::FieldCodec<global::LlsfMsgs.MachineTypeFeedback> _repeated_reportedTypes_codec
+        = pb::FieldCodec.ForMessage(26, global::LlsfMsgs.MachineTypeFeedback.Parser);
+    private readonly pbc::RepeatedField<global::LlsfMsgs.MachineTypeFeedback> reportedTypes_ = new pbc::RepeatedField<global::LlsfMsgs.MachineTypeFeedback>();
+    /// <summary>
+    /// Responses to reports that were received by the refbox and
+    /// that contained machine types and zones
+    /// </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public pbc::RepeatedField<global::LlsfMsgs.MachineTypeFeedback> ReportedTypes {
+      get { return reportedTypes_; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as MachineReportInfo);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(MachineReportInfo other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -577,14 +820,17 @@ namespace LlsfMsgs {
       }
       if(!reportedMachines_.Equals(other.reportedMachines_)) return false;
       if (TeamColor != other.TeamColor) return false;
+      if(!reportedTypes_.Equals(other.reportedTypes_)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       hash ^= reportedMachines_.GetHashCode();
       if (HasTeamColor) hash ^= TeamColor.GetHashCode();
+      hash ^= reportedTypes_.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -592,29 +838,54 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       reportedMachines_.WriteTo(output, _repeated_reportedMachines_codec);
       if (HasTeamColor) {
         output.WriteRawTag(16);
         output.WriteEnum((int) TeamColor);
       }
+      reportedTypes_.WriteTo(output, _repeated_reportedTypes_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      reportedMachines_.WriteTo(ref output, _repeated_reportedMachines_codec);
+      if (HasTeamColor) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) TeamColor);
+      }
+      reportedTypes_.WriteTo(ref output, _repeated_reportedTypes_codec);
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       size += reportedMachines_.CalculateSize(_repeated_reportedMachines_codec);
       if (HasTeamColor) {
         size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TeamColor);
       }
+      size += reportedTypes_.CalculateSize(_repeated_reportedTypes_codec);
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
       }
@@ -622,6 +893,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(MachineReportInfo other) {
       if (other == null) {
         return;
@@ -630,11 +902,16 @@ namespace LlsfMsgs {
       if (other.HasTeamColor) {
         TeamColor = other.TeamColor;
       }
+      reportedTypes_.Add(other.reportedTypes_);
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -649,17 +926,429 @@ namespace LlsfMsgs {
             TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
             break;
           }
+          case 26: {
+            reportedTypes_.AddEntriesFrom(input, _repeated_reportedTypes_codec);
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            reportedMachines_.AddEntriesFrom(ref input, _repeated_reportedMachines_codec);
+            break;
+          }
+          case 16: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            reportedTypes_.AddEntriesFrom(ref input, _repeated_reportedTypes_codec);
+            break;
+          }
         }
       }
     }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the MachineReportInfo message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,
         [pbr::OriginalName("MSG_TYPE")] MsgType = 62,
+      }
+
+    }
+    #endregion
+
+  }
+
+  public sealed partial class MachineTypeFeedback : pb::IMessage<MachineTypeFeedback>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<MachineTypeFeedback> _parser = new pb::MessageParser<MachineTypeFeedback>(() => new MachineTypeFeedback());
+    private pb::UnknownFieldSet _unknownFields;
+    private int _hasBits0;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<MachineTypeFeedback> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::LlsfMsgs.MachineReportReflection.Descriptor.MessageTypes[3]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MachineTypeFeedback() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MachineTypeFeedback(MachineTypeFeedback other) : this() {
+      _hasBits0 = other._hasBits0;
+      type_ = other.type_;
+      zone_ = other.zone_;
+      name_ = other.name_;
+      teamColor_ = other.teamColor_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public MachineTypeFeedback Clone() {
+      return new MachineTypeFeedback(this);
+    }
+
+    /// <summary>Field number for the "type" field.</summary>
+    public const int TypeFieldNumber = 1;
+    private readonly static string TypeDefaultValue = "";
+
+    private string type_;
+    /// <summary>
+    /// Feedback about whether a reported type in a zone is correct
+    /// "name" and "team_color" are only set if the reported type is
+    /// located in the zone  and if the number of reported types did not
+    /// exceed the number of machines with the types
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Type {
+      get { return type_ ?? TypeDefaultValue; }
+      set {
+        type_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "type" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasType {
+      get { return type_ != null; }
+    }
+    /// <summary>Clears the value of the "type" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearType() {
+      type_ = null;
+    }
+
+    /// <summary>Field number for the "zone" field.</summary>
+    public const int ZoneFieldNumber = 2;
+    private readonly static global::LlsfMsgs.Zone ZoneDefaultValue = global::LlsfMsgs.Zone.CZ18;
+
+    private global::LlsfMsgs.Zone zone_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LlsfMsgs.Zone Zone {
+      get { if ((_hasBits0 & 1) != 0) { return zone_; } else { return ZoneDefaultValue; } }
+      set {
+        _hasBits0 |= 1;
+        zone_ = value;
+      }
+    }
+    /// <summary>Gets whether the "zone" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasZone {
+      get { return (_hasBits0 & 1) != 0; }
+    }
+    /// <summary>Clears the value of the "zone" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearZone() {
+      _hasBits0 &= ~1;
+    }
+
+    /// <summary>Field number for the "name" field.</summary>
+    public const int NameFieldNumber = 3;
+    private readonly static string NameDefaultValue = "";
+
+    private string name_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Name {
+      get { return name_ ?? NameDefaultValue; }
+      set {
+        name_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+    /// <summary>Gets whether the "name" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasName {
+      get { return name_ != null; }
+    }
+    /// <summary>Clears the value of the "name" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearName() {
+      name_ = null;
+    }
+
+    /// <summary>Field number for the "team_color" field.</summary>
+    public const int TeamColorFieldNumber = 4;
+    private readonly static global::LlsfMsgs.Team TeamColorDefaultValue = global::LlsfMsgs.Team.Cyan;
+
+    private global::LlsfMsgs.Team teamColor_;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LlsfMsgs.Team TeamColor {
+      get { if ((_hasBits0 & 2) != 0) { return teamColor_; } else { return TeamColorDefaultValue; } }
+      set {
+        _hasBits0 |= 2;
+        teamColor_ = value;
+      }
+    }
+    /// <summary>Gets whether the "team_color" field is set</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool HasTeamColor {
+      get { return (_hasBits0 & 2) != 0; }
+    }
+    /// <summary>Clears the value of the "team_color" field</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void ClearTeamColor() {
+      _hasBits0 &= ~2;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as MachineTypeFeedback);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(MachineTypeFeedback other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (Type != other.Type) return false;
+      if (Zone != other.Zone) return false;
+      if (Name != other.Name) return false;
+      if (TeamColor != other.TeamColor) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (HasType) hash ^= Type.GetHashCode();
+      if (HasZone) hash ^= Zone.GetHashCode();
+      if (HasName) hash ^= Name.GetHashCode();
+      if (HasTeamColor) hash ^= TeamColor.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (HasType) {
+        output.WriteRawTag(10);
+        output.WriteString(Type);
+      }
+      if (HasZone) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Zone);
+      }
+      if (HasName) {
+        output.WriteRawTag(26);
+        output.WriteString(Name);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (HasType) {
+        output.WriteRawTag(10);
+        output.WriteString(Type);
+      }
+      if (HasZone) {
+        output.WriteRawTag(16);
+        output.WriteEnum((int) Zone);
+      }
+      if (HasName) {
+        output.WriteRawTag(26);
+        output.WriteString(Name);
+      }
+      if (HasTeamColor) {
+        output.WriteRawTag(32);
+        output.WriteEnum((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (HasType) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Type);
+      }
+      if (HasZone) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) Zone);
+      }
+      if (HasName) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Name);
+      }
+      if (HasTeamColor) {
+        size += 1 + pb::CodedOutputStream.ComputeEnumSize((int) TeamColor);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(MachineTypeFeedback other) {
+      if (other == null) {
+        return;
+      }
+      if (other.HasType) {
+        Type = other.Type;
+      }
+      if (other.HasZone) {
+        Zone = other.Zone;
+      }
+      if (other.HasName) {
+        Name = other.Name;
+      }
+      if (other.HasTeamColor) {
+        TeamColor = other.TeamColor;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            Type = input.ReadString();
+            break;
+          }
+          case 16: {
+            Zone = (global::LlsfMsgs.Zone) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 32: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            Type = input.ReadString();
+            break;
+          }
+          case 16: {
+            Zone = (global::LlsfMsgs.Zone) input.ReadEnum();
+            break;
+          }
+          case 26: {
+            Name = input.ReadString();
+            break;
+          }
+          case 32: {
+            TeamColor = (global::LlsfMsgs.Team) input.ReadEnum();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+    #region Nested types
+    /// <summary>Container for nested types declared in the MachineTypeFeedback message type.</summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static partial class Types {
+      public enum CompType {
+        [pbr::OriginalName("COMP_ID")] CompId = 2000,
+        [pbr::OriginalName("MSG_TYPE")] MsgType = 63,
       }
 
     }

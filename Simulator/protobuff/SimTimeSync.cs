@@ -31,7 +31,7 @@ namespace LlsfMsgs {
             "b3JnLnJvYm9jdXBfbG9naXN0aWNzLmxsc2ZfbXNnc0IRU2ltVGltZVN5bmNQ",
             "cm90b3M="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::Llsfmsgs.TimeReflection.Descriptor, },
+          new pbr::FileDescriptor[] { global::LlsfMsgs.TimeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::LlsfMsgs.SimTimeSync), global::LlsfMsgs.SimTimeSync.Parser, new[]{ "SimTime", "RealTimeFactor", "Paused" }, null, new[]{ typeof(global::LlsfMsgs.SimTimeSync.Types.CompType) }, null, null)
           }));
@@ -40,24 +40,32 @@ namespace LlsfMsgs {
 
   }
   #region Messages
-  public sealed partial class SimTimeSync : pb::IMessage<SimTimeSync> {
+  public sealed partial class SimTimeSync : pb::IMessage<SimTimeSync>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
     private static readonly pb::MessageParser<SimTimeSync> _parser = new pb::MessageParser<SimTimeSync>(() => new SimTimeSync());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pb::MessageParser<SimTimeSync> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
       get { return global::LlsfMsgs.SimTimeSyncReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     pbr::MessageDescriptor pb::IMessage.Descriptor {
       get { return Descriptor; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTimeSync() {
       OnConstruction();
     }
@@ -65,6 +73,7 @@ namespace LlsfMsgs {
     partial void OnConstruction();
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTimeSync(SimTimeSync other) : this() {
       _hasBits0 = other._hasBits0;
       simTime_ = other.simTime_ != null ? other.simTime_.Clone() : null;
@@ -74,15 +83,17 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public SimTimeSync Clone() {
       return new SimTimeSync(this);
     }
 
     /// <summary>Field number for the "sim_time" field.</summary>
     public const int SimTimeFieldNumber = 1;
-    private global::Llsfmsgs.Time simTime_;
+    private global::LlsfMsgs.Time simTime_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
-    public global::Llsfmsgs.Time SimTime {
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public global::LlsfMsgs.Time SimTime {
       get { return simTime_; }
       set {
         simTime_ = value;
@@ -95,6 +106,7 @@ namespace LlsfMsgs {
 
     private float realTimeFactor_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public float RealTimeFactor {
       get { if ((_hasBits0 & 1) != 0) { return realTimeFactor_; } else { return RealTimeFactorDefaultValue; } }
       set {
@@ -104,11 +116,13 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "real_time_factor" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasRealTimeFactor {
       get { return (_hasBits0 & 1) != 0; }
     }
     /// <summary>Clears the value of the "real_time_factor" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearRealTimeFactor() {
       _hasBits0 &= ~1;
     }
@@ -119,6 +133,7 @@ namespace LlsfMsgs {
 
     private bool paused_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Paused {
       get { if ((_hasBits0 & 2) != 0) { return paused_; } else { return PausedDefaultValue; } }
       set {
@@ -128,21 +143,25 @@ namespace LlsfMsgs {
     }
     /// <summary>Gets whether the "paused" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool HasPaused {
       get { return (_hasBits0 & 2) != 0; }
     }
     /// <summary>Clears the value of the "paused" field</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void ClearPaused() {
       _hasBits0 &= ~2;
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
       return Equals(other as SimTimeSync);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public bool Equals(SimTimeSync other) {
       if (ReferenceEquals(other, null)) {
         return false;
@@ -157,6 +176,7 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
       if (simTime_ != null) hash ^= SimTime.GetHashCode();
@@ -169,12 +189,17 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override string ToString() {
       return pb::JsonFormatter.ToDiagnosticString(this);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
       if (simTime_ != null) {
         output.WriteRawTag(10);
         output.WriteMessage(SimTime);
@@ -190,9 +215,33 @@ namespace LlsfMsgs {
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
+    #endif
     }
 
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (simTime_ != null) {
+        output.WriteRawTag(10);
+        output.WriteMessage(SimTime);
+      }
+      if (HasRealTimeFactor) {
+        output.WriteRawTag(21);
+        output.WriteFloat(RealTimeFactor);
+      }
+      if (HasPaused) {
+        output.WriteRawTag(24);
+        output.WriteBool(Paused);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
       if (simTime_ != null) {
@@ -211,13 +260,14 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(SimTimeSync other) {
       if (other == null) {
         return;
       }
       if (other.simTime_ != null) {
         if (simTime_ == null) {
-          SimTime = new global::Llsfmsgs.Time();
+          SimTime = new global::LlsfMsgs.Time();
         }
         SimTime.MergeFrom(other.SimTime);
       }
@@ -231,7 +281,11 @@ namespace LlsfMsgs {
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
         switch(tag) {
@@ -240,7 +294,37 @@ namespace LlsfMsgs {
             break;
           case 10: {
             if (simTime_ == null) {
-              SimTime = new global::Llsfmsgs.Time();
+              SimTime = new global::LlsfMsgs.Time();
+            }
+            input.ReadMessage(SimTime);
+            break;
+          }
+          case 21: {
+            RealTimeFactor = input.ReadFloat();
+            break;
+          }
+          case 24: {
+            Paused = input.ReadBool();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            if (simTime_ == null) {
+              SimTime = new global::LlsfMsgs.Time();
             }
             input.ReadMessage(SimTime);
             break;
@@ -256,10 +340,12 @@ namespace LlsfMsgs {
         }
       }
     }
+    #endif
 
     #region Nested types
     /// <summary>Container for nested types declared in the SimTimeSync message type.</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static partial class Types {
       public enum CompType {
         [pbr::OriginalName("COMP_ID")] CompId = 2000,

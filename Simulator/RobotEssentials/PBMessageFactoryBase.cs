@@ -2,7 +2,6 @@
 using System.Net;
 using System.Collections.Generic;
 using Google.Protobuf;
-using Llsfmsgs;
 using LlsfMsgs;
 using MachineStates;
 using Simulator.Utility;
