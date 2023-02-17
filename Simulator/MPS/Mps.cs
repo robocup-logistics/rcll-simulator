@@ -41,6 +41,7 @@ namespace Simulator.MPS
         public uint SlideCount { get; set; }
         public string JsonInformation;
         public Configurations Config { get; private set; }
+        public bool Working { get; private set; }
         public enum MpsType
         {
             BaseStation = 100,
@@ -100,6 +101,7 @@ namespace Simulator.MPS
                 Rotation = 0;
                 Zone = Zone.MZ41;
                 th.Start();
+                Working = true;
             }
             catch (Exception e)
             {
@@ -153,7 +155,7 @@ namespace Simulator.MPS
         }
         public void HandleBasicTasks()
         {
-            while(true)
+            while(Working)
             {
                 BasicEvent.WaitOne();
                 //MyLogger.Info("We got a write and reset the wait!");

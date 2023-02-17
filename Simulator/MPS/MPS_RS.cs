@@ -32,7 +32,7 @@ namespace Simulator.MPS
         private void Work()
         {
             SerializeMachineToJson();
-            while (true)
+            while (Working)
             {
                 InEvent.WaitOne();
                 InEvent.Reset();
