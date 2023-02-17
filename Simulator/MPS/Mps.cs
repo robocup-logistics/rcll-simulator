@@ -153,6 +153,22 @@ namespace Simulator.MPS
             InNodes.StatusNodes.busy.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
+        public void HandleMachineType()
+        {
+            MyLogger.Log("MachineTyp!");
+            //TaskDescription = "MachineType!";
+            BasicNodes.StatusNodes.busy.Value = true;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+            Thread.Sleep(400);
+            BasicNodes.Data0.Value = 0;
+            BasicNodes.Data1.Value = 0;
+            //Refbox.ApplyChanges(InNodes.Data0);
+            BasicNodes.StatusNodes.enable.Value = false;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
+            //Thread.Sleep(20);
+            BasicNodes.StatusNodes.busy.Value = false;
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+        }
         public void HandleBasicTasks()
         {
             while(Working)
@@ -173,19 +189,7 @@ namespace Simulator.MPS
                         MyLogger.Log("No Basic Job!");
                         break;
                     case (ushort)Actions.MachineTyp:
-                        MyLogger.Log("MachineTyp!");
-                        //TaskDescription = "MachineType!";
-                        BasicNodes.StatusNodes.busy.Value = true;
-                        //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-                        Thread.Sleep(400);
-                        BasicNodes.Data0.Value = 0;
-                        BasicNodes.Data1.Value = 0;
-                        //Refbox.ApplyChanges(InNodes.Data0);
-                        BasicNodes.StatusNodes.enable.Value = false;
-                        //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
-                        //Thread.Sleep(20);
-                        BasicNodes.StatusNodes.busy.Value = false;
-                        Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+                        HandleMachineType();
                         break;
                     default:
                         MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
