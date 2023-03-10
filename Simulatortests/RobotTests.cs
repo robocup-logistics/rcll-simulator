@@ -84,7 +84,7 @@ namespace Simulatortests
         [TestMethod]
         public void MethodGrab()
         {
-            _port = 5303;
+            _port = 5313;
             var jersey = 1;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
@@ -126,7 +126,7 @@ namespace Simulatortests
         {
             var configurations = new Configurations();
             configurations.AddTestData();
-            var robot = new Simulator.RobotEssentials.Robot(configurations,"TestBot", null, Team.Cyan, 1, _mpsManager, false);
+            var robot = new Simulator.RobotEssentials.Robot(configurations,"TestBot", null, Team.Cyan, 1, _mpsManager, true);
             robot.WorkingRobotThread = new Thread(() => robot.Run());
             robot.WorkingRobotThread.Start();
             var zonesManager = ZonesManager.GetInstance();
@@ -140,13 +140,14 @@ namespace Simulatortests
                 RobotId = 1,
                 Move = new Move
                 {
-                    Waypoint = "C_Z21",
+                    Waypoint = "C_Z23",
                     MachinePoint = ""
                 }
             };
             robot.SetAgentTasks(task);
             Thread.Sleep(configurations.RobotMoveZoneDuration + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
+            robot.RobotStop();
         }
 
 
@@ -176,6 +177,7 @@ namespace Simulatortests
             robot.SetAgentTasks(task);
             Thread.Sleep((15 * configurations.RobotMoveZoneDuration) + 3000);
             Assert.AreNotEqual(robot.GetZone().ZoneId, zone.ZoneId);
+            robot.RobotStop();
         }
 
 
@@ -192,10 +194,10 @@ namespace Simulatortests
         public void ProtobufGrab()
         {
             _port = 5303;
-            var jersey = 1;
+            var jersey = 3;
             var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
-            var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
+            var mpsconf = new MpsConfig("C-BS2", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
             _configurations = new Configurations();
@@ -208,14 +210,15 @@ namespace Simulatortests
             MachineInfo machineinfo = new MachineInfo();
             machineinfo.Machines.Add(new Machine
             {
-                Name = "C-BS",
+                Name = "C-BS2",
                 Type = "BS",
                 TeamColor = team,
                 Zone = Zone.CZ14,
                 Rotation = 180
             });
             _mpsManager.PlaceMachines(machineinfo);
-            _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ15));
+            var robot = _robotManager.Robots[0];
+            robot.SetZone(_zonesManager.GetZone(Zone.CZ15));
             Thread.Sleep(400);
             var bs = new OPCTestHelper(_port);
             Thread.Sleep(2000);
@@ -233,14 +236,15 @@ namespace Simulatortests
                 TaskId = 1,
                 Retrieve = new Retrieve
                 {
-                    MachineId = "C-BS",
+                    MachineId = "C-BS2",
                     MachinePoint = "output"
                 }
             };
-            _robotManager.Robots[0].SetAgentTasks(task);
+            robot.SetAgentTasks(task);
             Thread.Sleep(_configurations.RobotPlaceDuration + 1000);
             Assert.IsTrue(_robotManager.Robots[0].IsHoldingSomething());
             bs.CloseConnection();
+            robot.RobotStop();
         }
 
         [TestMethod]
@@ -296,6 +300,7 @@ namespace Simulatortests
             Thread.Sleep(_configurations.RobotPlaceDuration);
             Assert.IsFalse(_robotManager.Robots[0].IsHoldingSomething());
             bs.CloseConnection();
+            _robotManager.Robots[0].RobotStop();
         }
     }
 }
