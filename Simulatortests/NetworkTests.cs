@@ -18,7 +18,6 @@ namespace Simulatortests
         [TestMethod]
         public void TcpConnectorTest()
         {
-            return;
             var port = 5500;
             var teamname = "TestTeam";
             var ip = "localhost";

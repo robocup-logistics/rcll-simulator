@@ -32,13 +32,13 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new OPCTestHelper(port);
-            if (!testhelper.CreateConnection())
+            var testHelper = new OPCTestHelper(port);
+            if (!testHelper.CreateConnection())
                 Assert.Fail();
-            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
+            testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
             Thread.Sleep(config.BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
-            testhelper.CloseConnection();
+            testHelper.CloseConnection();
         }
         [TestMethod]
         public void OPC_WrongDispenseBase()
@@ -50,12 +50,12 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new OPCTestHelper(port);
-            if (!testhelper.CreateConnection())
+            var testHelper = new OPCTestHelper(port);
+            if (!testHelper.CreateConnection())
                 Assert.Fail();
-            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
+            testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
             Assert.IsNull(machine.ProductOnBelt);
-            testhelper.CloseConnection();
+            testHelper.CloseConnection();
         }
 
         [TestMethod]
@@ -68,19 +68,19 @@ namespace Simulatortests
             thread.Start();
             Thread.Sleep(500);
             Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
-            var testhelper = new OPCTestHelper(port);
-            if (!testhelper.CreateConnection())
+            var testHelper = new OPCTestHelper(port);
+            if (!testHelper.CreateConnection())
                 Assert.Fail();
-            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)1);
+            testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)1);
             Thread.Sleep(config.BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
-            testhelper.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
+            testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Out, (ushort)Direction.FromInToOut);
            
             Thread.Sleep(config.BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
             Assert.AreEqual(machine.InNodes.StatusNodes.ready.Value, true);
-            testhelper.CloseConnection();
+            testHelper.CloseConnection();
         }
 
        
