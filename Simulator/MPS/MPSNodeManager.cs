@@ -48,7 +48,6 @@ namespace Simulator.MPS
         protected override IEnumerable<IOpcNode> CreateNodes(OpcNodeReferenceCollection references)
         {
             var objectsNode = OpcObjectTypes.ObjectsFolder;
-
             var ns = DefaultNamespaceIndex;
             // Creating the basic structure of the OPC UA communication with the refbox
             var deviceNode = new OpcFolderNode(new OpcName("DeviceSet", ns));

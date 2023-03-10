@@ -17,14 +17,9 @@ namespace Simulatortests
             var port = 5100;
             var config = new Configurations();
             var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
-            var thread = new Thread(machine.Run);
-            var testnode = machine.InNodes.ActionId;
-            thread.Start();
-            Thread.Sleep(500);
             //Setting the shelf number to dispense a base
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
-            Thread.Sleep(config.BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductOnBelt);
         }
         [TestMethod]

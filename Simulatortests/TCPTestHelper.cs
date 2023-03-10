@@ -87,7 +87,7 @@ namespace Simulatortests
         private void RecvMethod()
         {
             Logger.Log("Starting the RecvMethod!");
-            Logger.Log(Client.LocalEndPoint.ToString());
+            //Logger.Log(Client.LocalEndPoint.ToString());
             while (Running)
             {
                 Thread.Sleep(200);

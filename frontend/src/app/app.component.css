@@ -1,16 +1,14 @@
-.checkboxes {
-  display: flex;
-  flex-wrap: wrap;
-  margin-bottom: 2rem;
-}
 
-.checkboxes > label {
-  flex: 0 0 max-content;
-  margin: 0.5rem;
-  cursor: pointer;
+header{
+  margin: 0;
+  alignment: left;
 }
+body{
+  margin: 0;
+  alignment: left;
+}
+app-test-component{
+  margin: 0;
+  alignment: left;
 
-section:not(:last-of-type) {
-  padding-bottom: 2rem;
-  border-bottom: 1px solid black;
 }

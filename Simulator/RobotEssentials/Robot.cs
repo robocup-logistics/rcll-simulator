@@ -271,7 +271,7 @@ namespace Simulator.RobotEssentials
 
         #region BasicBehaviour
 
-        private bool Move(Zone TargetZone)
+        public bool Move(Zone TargetZone)
         {
             var attempt = 0;
 
@@ -337,7 +337,8 @@ namespace Simulator.RobotEssentials
             }
 
         }
-        private bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0)
+
+        public bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0)
         {
             if (CurrentZone.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint))
             {

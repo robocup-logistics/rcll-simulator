@@ -16,11 +16,7 @@ namespace Simulatortests
         {
             var config = new Configurations();
             var machine = new MPS_RS(config, "C-RS", 5300, 0, Team.Cyan, true);
-            var thread = new Thread(machine.Run);
-            thread.Start();
-            Thread.Sleep(500);
             var testnode = machine.InNodes.SlideCnt;
-            //Setting the shelf number to dispense a base
             var product = new Products(BaseColor.BaseBlack);
             Assert.AreEqual(testnode.Value, 0);
             machine.PlaceProduct("slide", product);
@@ -33,16 +29,11 @@ namespace Simulatortests
         {
             var config = new Configurations();
             var machine = new MPS_RS(config, "C-RS", 5301, 0, Team.Cyan, true);
-            var thread = new Thread(machine.Run);
-            thread.Start();
-            Thread.Sleep(500);
-
             var baseProduct = new Products(BaseColor.BaseBlack);
             var complexity = baseProduct.Complexity;
             machine.ProductOnBelt = baseProduct;
             machine.InNodes.Data0.Value = 1;
             machine.MountRingTask();
-            Thread.Sleep(config.RSTaskDuration + 100);
             Assert.AreNotEqual(baseProduct.Complexity, complexity);
         }
         

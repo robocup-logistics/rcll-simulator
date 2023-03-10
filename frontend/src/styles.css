@@ -26,6 +26,8 @@ body {
 body, input[text] {
   color: #333;
   font-family: Cambria, Georgia, serif;
+  alignment: left;
+  padding-left: 0px;
 }
 a {
   cursor: pointer;
@@ -79,4 +81,9 @@ input[type="text"] {
   box-sizing: border-box;
   width: 100%;
   padding: .5rem;
+}
+body{
+  margin-left: 20px;
+  margin-right: 20px;
+  padding-left: 0px;
 }

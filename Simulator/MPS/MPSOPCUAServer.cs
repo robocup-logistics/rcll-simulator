@@ -16,7 +16,7 @@ namespace Simulator.MPS
         private readonly string URL;
         private readonly OpcServer server;
         /// <summary></summary>
-        private readonly MPSNodeManager m1;
+        private readonly MPSNodeManager NodeManager;
         private readonly ManualResetEvent BasicEvent;
         private readonly ManualResetEvent InEvent;
         //private readonly static Dictionary<OpcNodeId, int> nodesPerSession = new Dictionary<OpcNodeId, int>();
@@ -40,9 +40,9 @@ namespace Simulator.MPS
                 "http://PLCopen.org/OpcUa/IEC61131-3/",
                 "CODESYSSPV3/3S/IecVarAccess"
             };
-            m1 = new MPSNodeManager(Namespaces[1], Namespaces, MyLogger);
+            NodeManager = new MPSNodeManager(Namespaces[1], Namespaces, MyLogger);
             //server.Configurations
-            server = new OpcServer(URL, m1);
+            server = new OpcServer(URL, NodeManager);
             try
             {
                 server.Address = new Uri(URL);
@@ -73,15 +73,15 @@ namespace Simulator.MPS
             //server.RequestProcessed += HandleRequestProcessed;
             while (true)
             {
-                /*if(m1.InNodes.StatusNodes.busy.Value == true)
+                /*if(NodeManager.InNodes.StatusNodes.busy.Value == true)
                 {
-                    m1.InNodes.StatusNodes.busy.Value = true;
-                    ApplyChanges(m1.InNodes.StatusNodes.busy);
+                    NodeManager.InNodes.StatusNodes.busy.Value = true;
+                    ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
                 }
                 else
                 {
-                    m1.InNodes.StatusNodes.busy.Value = false;
-                    ApplyChanges(m1.InNodes.StatusNodes.busy);
+                    NodeManager.InNodes.StatusNodes.busy.Value = false;
+                    ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
                 }*/
                 Thread.Sleep(50);
             }
@@ -89,7 +89,7 @@ namespace Simulator.MPS
 
         public NodeCollection GetNodeCollection(bool In)
         {
-            return In ? m1.InNodes : m1.BasicNodes;
+            return In ? NodeManager.InNodes : NodeManager.BasicNodes;
         }
         public void ApplyChanges(OpcNode node)
         {
@@ -196,12 +196,12 @@ namespace Simulator.MPS
                         MyLogger.Log(nodeName);
                         if (nodeName.ToLower().Contains("basic"))
                         {
-                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + m1.BasicNodes.ActionId.Value + "] D0[" + m1.BasicNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + NodeManager.BasicNodes.ActionId.Value + "] D0[" + NodeManager.BasicNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
                             BasicEvent.Set();
                         }
                         if(nodeName.ToLower().Contains("in"))
                         {
-                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + NodeManager.InNodes.ActionId.Value + "] D0[" + NodeManager.InNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
                             InEvent.Set();
                         }
                     }

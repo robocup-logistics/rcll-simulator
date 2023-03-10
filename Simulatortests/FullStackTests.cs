@@ -19,7 +19,7 @@ namespace Simulatortests
              * Setup of this Test
              * One Robot, a BaseStation, a CapStation and a Delivery Station
              * Goal is a Produced C0
-             * **/
+             ***/
             var config = new Configurations();
             var startzone = Zone.CZ52;
             var robotconf = new RobotConfig("TestBot", 0, Team.Cyan);
