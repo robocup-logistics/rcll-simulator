@@ -140,8 +140,7 @@ namespace Simulatortests
                 RobotId = 1,
                 Move = new Move
                 {
-                    Waypoint = "C_Z23",
-                    MachinePoint = ""
+                    Waypoint = "C_Z23"
                 }
             };
             robot.SetAgentTasks(task);
