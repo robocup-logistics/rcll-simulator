@@ -149,6 +149,14 @@ namespace Simulator.MPS
                 AllMachineSet = true;
             }
         }
+
+        public void StopAllMachines()
+        {
+            foreach (var machine in Machines)
+            {
+                machine.StopMachine();
+            }
+        }
         public void StartRefboxConnection()
         {
             if (!Config.MockUp)

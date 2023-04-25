@@ -87,6 +87,48 @@ namespace Simulatortests
             _port = 5313;
             var jersey = 1;
             var team = Team.Cyan;
+            var machineName = "M-BS";
+            var robconf = new RobotConfig("TestBot", jersey, team);
+            var mpsconf = new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true);
+            var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
+
+            _configurations = new Configurations();
+            _configurations.AddConfig(robconf);
+            _configurations.AddConfig(mpsconf);
+            _configurations.AddConfig(teamconf);
+            _mpsManager = new MpsManager(_configurations);
+            _robotManager = new RobotManager(_configurations, _mpsManager);
+            _zonesManager = ZonesManager.GetInstance();
+            MachineInfo machineinfo = new MachineInfo();
+            machineinfo.Machines.Add(new Machine
+            {
+                Name = machineName,
+                Type = "BS",
+                TeamColor = team,
+                Zone = Zone.MZ14,
+                Rotation = 180
+            });
+            _mpsManager.PlaceMachines(machineinfo);
+            _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ14));
+            var machine = (MPS_BS) _mpsManager.Machines[0];
+            machine.InNodes.Data0.Value = 1;
+            machine.DispenseBase();
+            machine.InNodes.Data0.Value = (ushort)Positions.Out;
+            machine.InNodes.Data1.Value = (ushort)Direction.FromInToOut;
+            machine.HandleBelt();
+
+            var robot = _robotManager.Robots[0];
+            robot.GripProduct(machine, "output");
+            Assert.IsTrue(_robotManager.Robots[0].IsHoldingSomething());
+            _mpsManager.StopAllMachines();
+            robot.RobotStop();
+        }
+        [TestMethod]
+        public void MethodGrabWithWrongAlignment()
+        {
+            _port = 5314;
+            var jersey = 1;
+            var team = Team.Cyan;
             var robconf = new RobotConfig("TestBot", jersey, team);
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
@@ -108,7 +150,7 @@ namespace Simulatortests
                 Rotation = 180
             });
             _mpsManager.PlaceMachines(machineinfo);
-            _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ24));
+            _robotManager.Robots[0].SetZone(_zonesManager.GetZone(Zone.CZ25));
             var machine = (MPS_BS) _mpsManager.Machines[0];
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
@@ -118,9 +160,10 @@ namespace Simulatortests
 
             var robot = _robotManager.Robots[0];
             robot.GripProduct(machine, "output");
-            Assert.IsTrue(_robotManager.Robots[0].IsHoldingSomething());
+            Assert.IsFalse(_robotManager.Robots[0].IsHoldingSomething());
+            _mpsManager.StopAllMachines();
         }
-
+        
         [TestMethod]
         public void ProtobufShortMove()
         {
@@ -244,6 +287,7 @@ namespace Simulatortests
             Assert.IsTrue(_robotManager.Robots[0].IsHoldingSomething());
             bs.CloseConnection();
             robot.RobotStop();
+            _mpsManager.StopAllMachines();
         }
 
         [TestMethod]
@@ -300,6 +344,7 @@ namespace Simulatortests
             Assert.IsFalse(_robotManager.Robots[0].IsHoldingSomething());
             bs.CloseConnection();
             _robotManager.Robots[0].RobotStop();
+            _mpsManager.StopAllMachines();
         }
     }
 }

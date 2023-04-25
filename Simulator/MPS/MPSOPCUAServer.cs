@@ -22,6 +22,8 @@ namespace Simulator.MPS
         //private readonly static Dictionary<OpcNodeId, int> nodesPerSession = new Dictionary<OpcNodeId, int>();
         private readonly string Prefix;
         private bool isMonitored;
+        private bool Active;
+        
         public MPSOPCUAServer(string name, int port, ManualResetEvent basicEvent, ManualResetEvent inEvent, MyLogger log)
         {
             MyLogger = log;
@@ -46,6 +48,7 @@ namespace Simulator.MPS
             try
             {
                 server.Address = new Uri(URL);
+                Active = true;
                 server.Start();
             }
             catch (Exception e)
@@ -71,7 +74,7 @@ namespace Simulator.MPS
             // server.RequestProcessed += HandleRequestProcessed;*/
             server.RequestValidating += HandleRequestValidating;
             //server.RequestProcessed += HandleRequestProcessed;
-            while (true)
+            while (Active)
             {
                 /*if(NodeManager.InNodes.StatusNodes.busy.Value == true)
                 {
@@ -94,6 +97,11 @@ namespace Simulator.MPS
         public void ApplyChanges(OpcNode node)
         {
             node.ApplyChanges(server.SystemContext);
+        }
+
+        public void Stop()
+        {
+            Active = false;
         }
 
         #region MessageHandler

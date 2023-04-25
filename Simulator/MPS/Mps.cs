@@ -393,5 +393,10 @@ namespace Simulator.MPS
             JsonInformation = JsonSerializer.Serialize(this);
             //Console.WriteLine(JsonInformation);
         }
+
+        public void StopMachine()
+        {
+            Refbox.Stop();
+        }
     }
 }

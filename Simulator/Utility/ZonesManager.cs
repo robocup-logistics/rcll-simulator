@@ -162,8 +162,9 @@ namespace Simulator.Utility
                 {
                     int offset = 0;
                     var orientation = value.Orientation;
-                    if(MachineName.ElementAt(0).Equals("M"))
+                    if((int)key > 1000)
                     {
+                        MyLogger.Log("Changing orientation for machine "+ MachineName +  "as it is on a magenta field ");
                         orientation += 180;
                         orientation %= 360;
                     }
@@ -172,6 +173,7 @@ namespace Simulator.Utility
                         orientation += 180;
                         orientation %= 360;
                     }
+                    MyLogger.Log("Orientation = " + orientation);
                     switch (orientation)
                     {
                         case 0:
@@ -206,6 +208,7 @@ namespace Simulator.Utility
                             offset = 0;
                             break;
                     }
+                    MyLogger.Log("Offset = " + offset );
                     if((((int)key+offset) % 100) < (int)Zone.CZ11)
                     {
                         MyLogger.Log("The key = " + key + " and the offset = " + offset);
