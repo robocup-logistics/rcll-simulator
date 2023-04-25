@@ -162,53 +162,24 @@ namespace Simulator.Utility
                 {
                     int offset = 0;
                     var orientation = value.Orientation;
-                    if((int)key > 1000)
-                    {
-                        MyLogger.Log("Changing orientation for machine "+ MachineName +  "as it is on a magenta field ");
-                        orientation += 180;
-                        orientation %= 360;
-                    }
+                    var neighborhood = value.GetNeighborhood();
                     if (MachineName.Contains("output") || machinepoint.Equals("output"))
                     {
                         orientation += 180;
                         orientation %= 360;
                     }
-                    MyLogger.Log("Orientation = " + orientation);
-                    switch (orientation)
-                    {
-                        case 0:
-                            offset += 10;
-                            break;
-                        case 45:
-                            offset += 10;
-                            offset += 1;
-                            break;
-                        case 90:
-                            offset += 1;
-                            break;
-                        case 135:
-                            offset -= 10;
-                            offset += 1;
-                            break;
-                        case 180:
-                            offset -= 10;
-                            break;
-                        case 225:
-                            offset -= 10;
-                            offset -= 1;
-                            break;
-                        case 270:
-                            offset -= 1;
-                            break;
-                        case 315:
-                            offset += 10;
-                            offset -= 1;
-                            break;
-                        default:
-                            offset = 0;
-                            break;
-                    }
-                    MyLogger.Log("Offset = " + offset );
+
+                    var waypoint = Zone.CZ11;
+
+                    var radians = (Math.PI / 180) * orientation;
+                    MyLogger.Log("Orientation = " + orientation + " and in radians " + radians);
+                    var y = Convert.ToInt32(Math.Sin(radians));
+                    var x = Convert.ToInt32(Math.Cos(radians));
+                    MyLogger.Log("X offset = " + x + " and offset y = " + y);
+                    waypoint = CheckNeighbours(neighborhood, value, x, y);
+                    return waypoint;
+
+                    /*MyLogger.Log("Offset = " + offset );
                     if((((int)key+offset) % 100) < (int)Zone.CZ11)
                     {
                         MyLogger.Log("The key = " + key + " and the offset = " + offset);
@@ -222,7 +193,7 @@ namespace Simulator.Utility
                             offset = 1000;
                         }
                     }
-                    MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());
+                    MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());*/
                     return key + offset;
                 }
             }
@@ -230,6 +201,20 @@ namespace Simulator.Utility
             return 0;
         }
 
+        public Zone CheckNeighbours(List<Zones> Neighbours, Zones compareable, int x, int y)
+        {
+            MyLogger.Log("Checking " + compareable.X + "/" + compareable.Y);
+            foreach (var n in Neighbours)
+            {
+                if (n.X == compareable.X + x && n.Y == compareable.Y + y)
+                {
+                    MyLogger.Log("The searched neighbour is " + n.ZoneId + " with " + n.X + "/" + n.Y );
+                    return n.ZoneId;
+                }
+            }
+            MyLogger.Log("No neighbour found!");
+            return 0;
+        }
         public List<Zones> GetPathToZone(Zone Start, Zone Target)
         {
             List<Zones> Path = new List<Zones>();
