@@ -4,6 +4,7 @@ using LlsfMsgs;
 using System.Threading;
 using Simulator;
 using Opc.UaFx.Client;
+using Simulator.Utility;
 
 namespace Simulatortests
 {
@@ -22,6 +23,27 @@ namespace Simulatortests
             machine.DispenseBase();
             Assert.IsNotNull(machine.ProductOnBelt);
         }
+
+        [TestMethod]
+        public void TestResetMps()
+        {
+            var port = 5104;
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
+            //Setting the shelf number to dispense a base
+            machine.InNodes.Data0.Value = 1;
+            machine.DispenseBase();
+            machine.ProductAtOut = new Products(BaseColor.BaseBlack);
+            machine.ProductAtIn = new Products(BaseColor.BaseRed);
+            Assert.IsNotNull(machine.ProductAtIn);
+            Assert.IsNotNull(machine.ProductOnBelt);
+            Assert.IsNotNull(machine.ProductAtOut);
+            machine.ResetMachine();
+            Assert.IsNull(machine.ProductAtIn);
+            Assert.IsNull(machine.ProductOnBelt);
+            Assert.IsNull(machine.ProductAtOut);
+        }
+        
         [TestMethod]
         public void OPC_DispenseBase()
         {
@@ -39,6 +61,7 @@ namespace Simulatortests
             Thread.Sleep(config.BSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt);
             testHelper.CloseConnection();
+            machine.StopMachine();
         }
         [TestMethod]
         public void OPC_WrongDispenseBase()
@@ -56,6 +79,7 @@ namespace Simulatortests
             testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)5, (ushort)1);
             Assert.IsNull(machine.ProductOnBelt);
             testHelper.CloseConnection();
+            machine.StopMachine();
         }
 
         [TestMethod]
@@ -81,6 +105,7 @@ namespace Simulatortests
             Assert.IsNull(machine.ProductOnBelt);
             Assert.AreEqual(machine.InNodes.StatusNodes.ready.Value, true);
             testHelper.CloseConnection();
+            machine.StopMachine();
         }
 
        

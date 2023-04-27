@@ -25,7 +25,7 @@ namespace Simulator.MPS
             Machines = new List<Mps>();
             AllMachineSet = false;
             CreateMachines();
-            if(!Config.MockUp)
+            //if(!Config.MockUp)
             {
                 RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
                 RefboxThread.Start();

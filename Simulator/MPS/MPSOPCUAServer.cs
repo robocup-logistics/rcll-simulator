@@ -23,6 +23,7 @@ namespace Simulator.MPS
         private readonly string Prefix;
         private bool isMonitored;
         private bool Active;
+        public bool inEnabled;
         
         public MPSOPCUAServer(string name, int port, ManualResetEvent basicEvent, ManualResetEvent inEvent, MyLogger log)
         {
@@ -34,7 +35,7 @@ namespace Simulator.MPS
             BasicEvent = basicEvent;
             InEvent = inEvent;
             isMonitored = false;
-            
+            inEnabled = false;
             Prefix = String.Format("HRP on {0,-6}|", Name);
             string[] Namespaces =
             {
@@ -49,6 +50,8 @@ namespace Simulator.MPS
             {
                 server.Address = new Uri(URL);
                 Active = true;
+                var config = server.Configuration.ServerConfiguration;
+                
                 server.Start();
             }
             catch (Exception e)
@@ -66,7 +69,7 @@ namespace Simulator.MPS
         public void Start()
         {
             //TODO change the start of the Mps OPCUA server to either not use the event handlers or use them differently
-            
+            Console.WriteLine("Server " + Port  + " is Setup!");
             //server.RequestProcessing += HandleRequestProcessing;
             // /*server.RequestProcessing += HandleRequestProcessing;
             // server.RequestValidating += HandleRequestValidating;
@@ -74,6 +77,7 @@ namespace Simulator.MPS
             // server.RequestProcessed += HandleRequestProcessed;*/
             server.RequestValidating += HandleRequestValidating;
             //server.RequestProcessed += HandleRequestProcessed;
+
             while (Active)
             {
                 /*if(NodeManager.InNodes.StatusNodes.busy.Value == true)
@@ -86,7 +90,7 @@ namespace Simulator.MPS
                     NodeManager.InNodes.StatusNodes.busy.Value = false;
                     ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
                 }*/
-                Thread.Sleep(50);
+                Thread.Sleep(10);
             }
         }
 
@@ -210,6 +214,7 @@ namespace Simulator.MPS
                         if(nodeName.ToLower().Contains("in"))
                         {
                             MyLogger.Log("Got a In-Enable with the following data : AiD[" + NodeManager.InNodes.ActionId.Value + "] D0[" + NodeManager.InNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                            inEnabled = true;
                             InEvent.Set();
                         }
                     }

@@ -53,6 +53,7 @@ namespace Simulatortests
             Assert.IsNotNull(machine.StoredCap);
             Assert.IsNull(machine.ProductOnBelt?.RetrieveCap());
             cs.CloseConnection();
+            machine.StopMachine();
         }
 
         [TestMethod]
@@ -86,6 +87,7 @@ namespace Simulatortests
             Thread.Sleep(config.CSTaskDuration + 300);
             Assert.IsNotNull(machine.ProductOnBelt.RetrieveCap());
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
     }
 }

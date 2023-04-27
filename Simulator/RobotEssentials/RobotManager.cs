@@ -30,7 +30,7 @@ namespace Simulator.RobotEssentials
             var configs = Config.RobotConfigs;
             foreach (var rob in configs)
             {
-                var robot = new Robot(Config, rob.Name, this,rob.TeamColor, rob.Jersey, MpsManager, true);
+                var robot = new Robot(Config, rob.Name, this, rob.TeamColor, rob.Jersey, MpsManager, true);
                 robot.WorkingRobotThread = new Thread(() => robot.Run());
                 robot.WorkingRobotThread.Name = "Robot" + robot.JerseyNumber + "_working_thread";
                 robot.WorkingRobotThread.Start();
@@ -54,6 +54,14 @@ namespace Simulator.RobotEssentials
                     x++;
                 }
 
+            }
+        }
+
+        public void StopAllRobots()
+        {
+            foreach (var robot in Robots)
+            {
+                robot.RobotStop();
             }
         }
     }

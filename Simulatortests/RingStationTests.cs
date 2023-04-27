@@ -62,6 +62,7 @@ namespace Simulatortests
             Thread.Sleep(config.RSTaskDuration + 200);
             Assert.AreEqual(1, baseProduct.RingCount);
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
     }
 }

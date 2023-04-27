@@ -115,7 +115,7 @@ namespace Simulator.RobotEssentials
             }*/
             return true;
         }
-
+        
         public bool Stop()
         {
             try
@@ -174,7 +174,9 @@ namespace Simulator.RobotEssentials
                         MyLogger.Log("the connection is lost retry to connect!");
                         while (!Socket.Connected)
                         {
-                            Socket.Connect(Endpoint);
+                            Socket.Close();
+                            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                            Connect();
                         }
                     }
                 }

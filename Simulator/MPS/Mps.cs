@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Simulator.MPS
 {
@@ -32,7 +33,7 @@ namespace Simulator.MPS
         public ManualResetEvent BasicEvent;
         public ManualResetEvent LightEvent;
         public ManualResetEvent BeltEvent;
-        public bool GotConnection;
+        public bool GotConnection { get; protected set; }
         public bool GotPlaced;
         public Products? ProductOnBelt { get; set; }
         public Products? ProductAtIn { get; set; }
@@ -40,7 +41,8 @@ namespace Simulator.MPS
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string JsonInformation;
-        public Configurations Config { get; private set; }
+        protected Configurations Config;
+        
         public bool Working { get; private set; }
         public enum MpsType
         {

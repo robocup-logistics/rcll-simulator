@@ -274,6 +274,7 @@ namespace Simulator
             var jersey = 0;
             var color = Team.Cyan;
             var (yamlNode, yamlNode1) = child;
+            var connection = "tcp";
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes)
             {
@@ -292,9 +293,12 @@ namespace Simulator
                     case "team":
                         color = Team.Cyan;
                         break;
+                    case "connection":
+                        connection = value.ToString().ToLower();
+                        break;
                 }
             }
-            var config = new RobotConfig(yamlNode.ToString(), jersey, color);
+            var config = new RobotConfig(yamlNode.ToString(), jersey, color, connection);
             return config;
         }
 
@@ -564,11 +568,13 @@ namespace Simulator
         public string Name;
         public int Jersey;
         public Team TeamColor;
-        public RobotConfig(string name, int jersey, Team color)
+        public string Connection;
+        public RobotConfig(string name, int jersey, Team color, string connection)
         {
             Name = name;
             Jersey = jersey;
             TeamColor = color;
+            Connection = connection;
         }
         public void PrintConfig()
         {
@@ -576,6 +582,7 @@ namespace Simulator
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Jersey = [" + Jersey + "]");
             Console.WriteLine("Team = [" + TeamColor + "]");
+            Console.WriteLine("Connection = [" + Connection + "]");
         }
     }
 }

@@ -56,6 +56,7 @@ namespace Simulatortests
             bs.EnableTask();
             Assert.AreEqual(machine.InNodes.StatusNodes.enable.Value, value);
             bs.CloseConnection();
+            machine.StopMachine();
         }
 
         [TestMethod]
@@ -78,6 +79,7 @@ namespace Simulatortests
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
 
 
@@ -102,6 +104,7 @@ namespace Simulatortests
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
     }
 }

@@ -50,6 +50,8 @@ namespace Simulator.RobotEssentials
 
         private string JsonInformation;
         private Stopwatch stopwatch;
+        private TeamConfig _teamConfig;
+        private string _connectionType;
         private enum TaskEnum : int
         {
             None,
@@ -200,7 +202,8 @@ namespace Simulator.RobotEssentials
 
         public void Run()
         {
-            MyLogger.Log("Robot " + RobotName + " is starting!");
+            _teamConfig = TeamColor == Team.Cyan ? Config.Teams[0] : Config.Teams[1];
+            MyLogger.Log("Robot " + RobotName + " is starting! Team is " + _teamConfig.Name + " with ip " + _teamConfig.Ip + " and port " + _teamConfig.Port);
 
             if (!Config.MockUp)
             {
@@ -210,14 +213,24 @@ namespace Simulator.RobotEssentials
                         new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
                     UdpConnectionRefbox.Start();
                 }
-                if (Config.RobotConnectionType.Equals("udp"))
+
+                _connectionType = Config.RobotConnectionType;
+                foreach (var robot in Config.RobotConfigs)
                 {
-                    UdpConnectionTeamserver = new UdpConnector(Config, Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger, true);
+                    if (robot.TeamColor == TeamColor && robot.Jersey == JerseyNumber)
+                    {
+                        _connectionType = robot.Connection;
+                        Console.WriteLine("Setting Robot to use connection " + _connectionType);
+                    }
+                }
+                if (_connectionType.Equals("udp"))
+                {
+                    UdpConnectionTeamserver = new UdpConnector(Config, _teamConfig.Ip, _teamConfig.Port, this, MyLogger, true);
                     UdpConnectionTeamserver.Start();
                 }
                 else
                 {
-                    TcpConnectionTeamserver = new TcpConnector(Config, Config.Teams[0].Ip, Config.Teams[0].Port, this, MyLogger);
+                    TcpConnectionTeamserver = new TcpConnector(Config, _teamConfig.Ip, _teamConfig.Port, this, MyLogger);
                     TcpConnectionTeamserver.Start();
                 }
             }
@@ -241,7 +254,7 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Sending a " + type.ToString() + "!");
 
-            if (Config.RobotConnectionType.Equals("udp"))
+            if (_connectionType.Equals("udp"))
             {
                 var message = UdpConnectionTeamserver?.CreateMessage(type);
                 if (message != Array.Empty<byte>())

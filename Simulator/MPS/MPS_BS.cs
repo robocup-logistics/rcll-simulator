@@ -61,9 +61,10 @@ namespace Simulator.MPS
             {
                 //MyLogger.Info("We will wait for a Signal!");
                 InEvent.WaitOne();
+                
                 //MyLogger.Info("We got a write and reset the wait!");
                 InEvent.Reset();
-                GotConnection = true;
+                GotConnection= true;
                 //HandleBasicTasks();
                 switch (InNodes.ActionId.Value)
                 {

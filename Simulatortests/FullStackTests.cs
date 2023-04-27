@@ -251,6 +251,7 @@ namespace Simulatortests
             bs.CloseConnection();
             cs.CloseConnection();
             ds.CloseConnection();
+            machinemanager.StopAllMachines();
         }
 
         [TestMethod]

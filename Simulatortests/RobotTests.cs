@@ -162,6 +162,7 @@ namespace Simulatortests
             robot.GripProduct(machine, "output");
             Assert.IsFalse(_robotManager.Robots[0].IsHoldingSomething());
             _mpsManager.StopAllMachines();
+            _robotManager.StopAllRobots();
         }
         
         [TestMethod]
