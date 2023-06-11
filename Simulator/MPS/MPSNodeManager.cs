@@ -1,5 +1,7 @@
 ﻿using System.Collections.Generic;
+using Opc.Ua;
 using Opc.UaFx;
+using Opc.UaFx.Client;
 using Opc.UaFx.Server;
 using Simulator.Utility;
 
@@ -50,35 +52,38 @@ namespace Simulator.MPS
             var objectsNode = OpcObjectTypes.ObjectsFolder;
             var ns = DefaultNamespaceIndex;
             // Creating the basic structure of the OPC UA communication with the refbox
-            var deviceNode = new OpcFolderNode(new OpcName("DeviceSet", ns));
+            var nodeId = new OpcNodeId(5001, ns);
+            var deviceNode = new OpcObjectNode(new OpcName("DeviceSet",this.DefaultNamespace),nodeId);
             references.Add(deviceNode, objectsNode);
             ns = Namespaces[2].Index;
-            var CPXNode = new OpcFolderNode(deviceNode, new OpcName("CPX-E-CEC-C1-PN", ns)); //changed between "CPX-E-CEC-C1-PN" and "CODESYS Control Win V3" "CODESYS Control Win V3 x64"
-            var resNode = new OpcFolderNode(CPXNode, new OpcName("Resources", ns));
-            var AppNode = new OpcFolderNode(resNode, new OpcName("Application", ns));
-            ns = Namespaces[1].Index;
-            var GlobNode = new OpcFolderNode(AppNode, new OpcName("GlobalVars", ns));
-            ns = Namespaces[2].Index;
-            var GNode = new OpcFolderNode(GlobNode, new OpcName("G", ns));
-            var In = new OpcFolderNode(GNode, new OpcName("In", ns));
-            var Basic = new OpcFolderNode(GNode, new OpcName("Basic", ns));
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN", ns);
+            var CPXNode = new OpcObjectNode(deviceNode, new OpcName("CPX-E-CEC-C1-PN", ns), nodeId); //changed between "CPX-E-CEC-C1-PN" and "CODESYS Control Win V3" "CODESYS Control Win V3 x64"
+            nodeId = new OpcNodeId(1001, ns);
+            var resNode = new OpcObjectNode(CPXNode, new OpcName("Resources", ns),nodeId);
             
-            //Adding the references to correct the naming convention
-            references.Add(CPXNode, deviceNode.Id);
-            references.Add(resNode, CPXNode.Id);
-            references.Add(AppNode, resNode.Id);
-            references.Add(GlobNode, AppNode.Id);
-            references.Add(GNode, GlobNode.Id);
-            references.Add(In, GNode.Id);
-            references.Add(Basic, GNode.Id);
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application", ns);
+            var AppNode = new OpcObjectNode(resNode, new OpcName("Application", ns),nodeId);
+            
+            ns = Namespaces[1].Index;
+            nodeId = new OpcNodeId("|appo|CPX-E-CEC-C1-PN.Application.GlobalVars", ns);
+            var GlobNode = new OpcObjectNode(AppNode, new OpcName("GlobalVars", ns), nodeId);
+            
+            ns = Namespaces[2].Index;
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application.G", ns);
+            var GNode = new OpcFolderNode(GlobNode, new OpcName("G", ns),nodeId);
+            
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application.G.In", ns);
+            var In = new OpcObjectNode(GNode, new OpcName("In", ns), nodeId);
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application.G.Basic", ns);
+            var Basic = new OpcObjectNode(GNode, new OpcName("Basic", ns), nodeId);
 
             //create the local variables for the communication
-            var In_p = new OpcFolderNode(In, new OpcName("p", ns));
-            var Ba_p = new OpcFolderNode(Basic, new OpcName("p", ns));
-            references.Add(In_p, In.Id);
-            references.Add(Ba_p, Basic.Id);
-            BasicNodes = new NodeCollection(Ba_p, ns, references);
-            InNodes = new NodeCollection(In_p, ns, references);
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application.G.In.p", ns);
+            var In_p = new OpcFolderNode(In, new OpcName("p", ns), nodeId);
+            nodeId = new OpcNodeId("|var|CPX-E-CEC-C1-PN.Application.G.Basic.p", ns);
+            var Ba_p = new OpcFolderNode(Basic, new OpcName("p", ns), nodeId);
+            BasicNodes = new NodeCollection(Ba_p, ns, "Basic", references);
+            InNodes = new NodeCollection(In_p, ns, "In", references);
             
             // Yielding of the nodes
             yield return GlobNode;
@@ -142,32 +147,39 @@ namespace Simulator.MPS
         public OpcFolderNode ParentNode;
         public OpcFolderNode Status;
         public Status StatusNodes;
-        public NodeCollection(OpcFolderNode Parent, int ns, OpcNodeReferenceCollection reference)
+        public NodeCollection(OpcFolderNode Parent, int ns, string prefix, OpcNodeReferenceCollection reference)
         {
             //ActionId = new OpcNode();
             ParentNode = Parent;
-            ActionId = new OpcDataVariableNode<ushort>(Parent, new OpcName("ActionId", ns), 0);
-            
+            var path = "|var|CPX-E-CEC-C1-PN.Application.G." + prefix + ".p.";
+            var name = "ActionId";
+            var nodeId = new OpcNodeId(path + name, ns);
+            ActionId = new OpcDataVariableNode<ushort>(ParentNode,new OpcName(name, ns), nodeId ,0);
+            //reference.Add(ActionId, ParentNode.Id);
             //ActionId 
             //OpcText()
-            BarCode = new OpcDataVariableNode<uint>(Parent, new OpcName("BarCode", ns), (uint)0);
-            Data = new OpcDataVariableNode<ushort>(Parent, new OpcName("Data", ns), 0);
-            Data0 = new OpcDataVariableNode<ushort>(Data, new OpcName("Data[0]", ns), 0);
-            Data1 = new OpcDataVariableNode<ushort>(Data, new OpcName("Data[1]", ns), 0);
-            
-            SlideCnt = new OpcDataVariableNode<ushort>(Parent, new OpcName("SlideCnt", ns), 0);
-            ByteError = new OpcDataVariableNode<byte>(Parent, new OpcName("Error", ns), 0);
-            Status = new OpcFolderNode(Parent, new OpcName("Status", ns));
-            // todo add Dimensions with value 1 (uint32); add IndexMax with value 1 (uint32) and IndexMin with value 0 (uint32) 
-            reference.Add(ActionId, Parent.Id);
-            reference.Add(BarCode, Parent.Id);
-            reference.Add(Data, Parent.Id);
-            reference.Add(Data0, Data.Id);
-            reference.Add(Data1, Data.Id);
-            reference.Add(SlideCnt, Parent.Id);
-            reference.Add(ByteError, Parent.Id);
-            reference.Add(Status, Parent.Id);
-            StatusNodes = new Status(Status, ns, reference);
+            name = "BarCode";
+            nodeId = new OpcNodeId(path + name, ns);
+            BarCode = new OpcDataVariableNode<uint>(ParentNode, new OpcName(name, ns), nodeId, (uint)0);
+            name = "Data";
+            nodeId = new OpcNodeId(path + name, ns);
+            Data = new OpcDataVariableNode<ushort>(ParentNode, new OpcName(name, ns), nodeId, 0);
+            name = "Data[0]";
+            nodeId = new OpcNodeId(path + name, ns);
+            Data0 = new OpcDataVariableNode<ushort>(Data, new OpcName(name, ns), nodeId, 0);
+            name = "Data[1]";
+            nodeId = new OpcNodeId(path + name, ns);
+            Data1 = new OpcDataVariableNode<ushort>(Data, new OpcName(name, ns), nodeId,0);
+            name = "SlideCnt";
+            nodeId = new OpcNodeId(path + name, ns);
+            SlideCnt = new OpcDataVariableNode<ushort>(ParentNode,  new OpcName(name, ns), nodeId, 0);
+            name = "Error";
+            nodeId = new OpcNodeId(path + name, ns);
+            ByteError = new OpcDataVariableNode<byte>(ParentNode,  new OpcName(name, ns), nodeId, 0);
+            name = "Status";
+            nodeId = new OpcNodeId(path + name, ns);
+            Status = new OpcFolderNode(ParentNode,  new OpcName(name, ns), nodeId);
+            StatusNodes = new Status(Status, ns, prefix, reference);
         }
     }
     public class Status
@@ -181,24 +193,34 @@ namespace Simulator.MPS
         public OpcDataVariableNode<bool> inSensor;
         public OpcDataVariableNode<bool> outSensor;
 
-        public Status(OpcFolderNode Parent, int ns, OpcNodeReferenceCollection reference)
+        public Status(OpcFolderNode Parent, int ns, string prefix, OpcNodeReferenceCollection reference)
         {
-            busy = new OpcDataVariableNode<bool>(Parent, new OpcName("Busy", ns), false);
-            ready = new OpcDataVariableNode<bool>(Parent, new OpcName("Ready", ns), false);
-            error = new OpcDataVariableNode<bool>(Parent, new OpcName("Error", ns), false);
-            enable = new OpcDataVariableNode<bool>(Parent, new OpcName("Enable", ns), false);
-            unused0 = new OpcDataVariableNode<bool>(Parent, new OpcName("unused0", ns), false);
-            unused1 = new OpcDataVariableNode<bool>(Parent, new OpcName("unused1", ns), false);
-            inSensor = new OpcDataVariableNode<bool>(Parent, new OpcName("inSensor", ns), false);
-            outSensor = new OpcDataVariableNode<bool>(Parent, new OpcName("outSensor", ns), false);
-            reference.Add(busy, Parent.Id);
-            reference.Add(ready, Parent.Id);
-            reference.Add(error, Parent.Id);
-            reference.Add(enable, Parent.Id);
-            reference.Add(unused0, Parent.Id);
-            reference.Add(unused1, Parent.Id);
-            reference.Add(inSensor, Parent.Id);
-            reference.Add(outSensor, Parent.Id);
+            var path = "|var|CPX-E-CEC-C1-PN.Application.G." + prefix + ".p.Status.";
+            var name = "Busy";
+            var nodeId = new OpcNodeId(path + name, ns);
+            busy = new OpcDataVariableNode<bool>(Parent, new OpcName(name, ns), nodeId, false);
+            name = "Ready";
+            nodeId = new OpcNodeId(path + name, ns);
+            ready = new OpcDataVariableNode<bool>(Parent, new OpcName(name, ns), nodeId, false);
+            name = "Error";
+            nodeId = new OpcNodeId(path + name, ns);
+            error = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            name = "Enable";
+            nodeId = new OpcNodeId(path + name, ns);
+            enable = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            name = "unused0";
+            nodeId = new OpcNodeId(path + name, ns);
+            unused0 = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            name = "unused1";
+            nodeId = new OpcNodeId(path + name, ns);
+            unused1 = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            name = "inSensor";
+            nodeId = new OpcNodeId(path + name, ns);
+            inSensor = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            name = "outSensor";
+            nodeId = new OpcNodeId(path + name, ns);
+            outSensor = new OpcDataVariableNode<bool>(Parent,  new OpcName(name, ns),nodeId, false);
+            
         }
     }
 }

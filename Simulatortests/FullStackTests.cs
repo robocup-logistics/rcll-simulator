@@ -22,7 +22,7 @@ namespace Simulatortests
              ***/
             var config = new Configurations();
             var startzone = Zone.CZ52;
-            var robotconf = new RobotConfig("TestBot", 0, Team.Cyan);
+            var robotconf = new RobotConfig("TestBot", 0, Team.Cyan, "udp");
             var bsconfig = new MpsConfig("C-BS", Mps.MpsType.BaseStation, 10000, Team.Cyan, true);
             var csconfig = new MpsConfig("C-CS", Mps.MpsType.CapStation, 10001, Team.Cyan, true);
             var dsconfig = new MpsConfig("C-DS", Mps.MpsType.DeliveryStation, 10002, Team.Cyan, true);

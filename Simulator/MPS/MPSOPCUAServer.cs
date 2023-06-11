@@ -50,8 +50,9 @@ namespace Simulator.MPS
             {
                 server.Address = new Uri(URL);
                 Active = true;
-                var config = server.Configuration.ServerConfiguration;
-                
+                var configuration = new OpcApplicationConfiguration(OpcApplicationType.Server);
+                configuration.ServerConfiguration.MinPublishingInterval = 100;
+                server.Configuration = configuration;
                 server.Start();
             }
             catch (Exception e)
@@ -69,16 +70,15 @@ namespace Simulator.MPS
         public void Start()
         {
             //TODO change the start of the Mps OPCUA server to either not use the event handlers or use them differently
-            Console.WriteLine("Server " + Port  + " is Setup!");
             //server.RequestProcessing += HandleRequestProcessing;
             // /*server.RequestProcessing += HandleRequestProcessing;
-            // server.RequestValidating += HandleRequestValidating;
+             server.RequestValidating += HandleRequestValidating;
             // server.RequestValidated += HandleRequestValidated;
             // server.RequestProcessed += HandleRequestProcessed;*/
-            server.RequestValidating += HandleRequestValidating;
+            //server.RequestValidating += HandleRequestValidating;
             //server.RequestProcessed += HandleRequestProcessed;
 
-            while (Active)
+            //while (Active)
             {
                 /*if(NodeManager.InNodes.StatusNodes.busy.Value == true)
                 {
@@ -90,8 +90,10 @@ namespace Simulator.MPS
                     NodeManager.InNodes.StatusNodes.busy.Value = false;
                     ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
                 }*/
-                Thread.Sleep(10);
+                //Thread.Sleep(5000);
             }
+            Console.WriteLine("Server " + Port  + " is Setup!");
+
         }
 
         public NodeCollection GetNodeCollection(bool In)
@@ -197,8 +199,9 @@ namespace Simulator.MPS
             }
             var Request = (OpcWriteNodesRequest)e.Request; 
             //MyLogger.Log("We got a write for [" + Request.Commands[0].NodeId + "] -> [" + Request.Commands[0].Value + "] on the port [" + Port + "] an we wake up the corresponding machine!");
+            //Console.WriteLine("Got  a request: " + Request.Commands[0].NodeId);
             var nodeName = Request.Commands[0].NodeId.ToString();
-            var parts = nodeName.Split("/");
+            var parts = nodeName.Split(".");
             var nodeValue = Request.Commands[0].Value.ToString();
             switch (parts.Last())
             {
@@ -242,16 +245,42 @@ namespace Simulator.MPS
 
         private void HandleRequestProcessed(object sender, OpcRequestProcessedEventArgs e)
         {
-            /*if (e.Request != OpcRequestType.Write)
+            if (e.Request.GetType() == typeof(OpcWriteNodesRequest))
             {
-                return;
-            }*/
-            bool v = e.Request.GetType() == typeof(OpcWriteNodesRequest);
-            if (!v) return;
-            //MyLogger.Log(e.Request.ToString());
+                var Request = (OpcWriteNodesRequest)e.Request; 
+                var nodeName = Request.Commands[0].NodeId.ToString();
+                var parts = nodeName.Split(".");
+                var nodeValue = Request.Commands[0].Value.ToString();
+                MyLogger.Log("");
+                switch (parts.Last())
+                {
+                    case "Enable":
+                        if (nodeValue.ToLower().Equals("true"))
+                        {
+                            MyLogger.Log(nodeName);
+                            if (nodeName.ToLower().Contains("basic"))
+                            {
+                                MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + NodeManager.BasicNodes.ActionId.Value + "] D0[" + NodeManager.BasicNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                                BasicEvent.Set();
+                            }
+                            if(nodeName.ToLower().Contains("in"))
+                            {
+                                MyLogger.Log("Got a In-Enable with the following data : AiD[" + NodeManager.InNodes.ActionId.Value + "] D0[" + NodeManager.InNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                                inEnabled = true;
+                                InEvent.Set();
+                            }
+                        }
+                        break;
+                    case "ActionId":
+                        if(parts[^3].Equals("In"))
+                            MyLogger.Log("Got a new Value for " + parts.Last() + " [" + nodeValue + "]");
+                        break;
+                    default:
+                        return;
+                }
+            }
             InEvent.Set();
 
-            //WriteEvent.Set();
 
         }
 #endregion

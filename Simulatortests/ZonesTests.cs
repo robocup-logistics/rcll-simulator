@@ -27,7 +27,7 @@ namespace Simulatortests
         {
             _port = 7000;
             _configurations = new Configurations();
-            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team));
+            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team ,"udp"));
             _configurations.AddConfig(new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true));
             _configurations.AddConfig(TeamConfig);
             _mpsManager = new MpsManager(_configurations);
@@ -69,7 +69,7 @@ namespace Simulatortests
             _port = 7001;
             
             _configurations = new Configurations();
-            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team));
+            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team,"udp"));
             _configurations.AddConfig(new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true));
             _configurations.AddConfig(TeamConfig);
             _mpsManager = new MpsManager(_configurations);
@@ -111,7 +111,7 @@ namespace Simulatortests
             _port = 7002;
             
             _configurations = new Configurations();
-            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team));
+            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team, "udp"));
             _configurations.AddConfig(new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true));
             _configurations.AddConfig(TeamConfig);
             _mpsManager = new MpsManager(_configurations);
@@ -153,7 +153,7 @@ namespace Simulatortests
             _port = 7003;
             
             _configurations = new Configurations();
-            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team));
+            _configurations.AddConfig( new RobotConfig("TestBot", jersey, team, "udp"));
             _configurations.AddConfig(new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true));
             _configurations.AddConfig(TeamConfig);
             _mpsManager = new MpsManager(_configurations);

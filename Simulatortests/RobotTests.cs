@@ -24,7 +24,7 @@ namespace Simulatortests
             _port = 5303;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team);
+            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -88,7 +88,7 @@ namespace Simulatortests
             var jersey = 1;
             var team = Team.Cyan;
             var machineName = "M-BS";
-            var robconf = new RobotConfig("TestBot", jersey, team);
+            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
             var mpsconf = new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -129,7 +129,7 @@ namespace Simulatortests
             _port = 5314;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team);
+            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -239,7 +239,7 @@ namespace Simulatortests
             _port = 5303;
             var jersey = 3;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team);
+            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
             var mpsconf = new MpsConfig("C-BS2", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -297,7 +297,7 @@ namespace Simulatortests
             _port = 5304;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team);
+            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 

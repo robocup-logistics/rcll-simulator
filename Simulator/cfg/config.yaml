@@ -9,35 +9,35 @@ stations:
     position: MZ18
     orientation: 0
   C-CS1:
-    active: false
+    active: true
     debug: true
     port:  4841
     type: CS
     position: MZ54
     orientation: 135
   C-CS2:
-    active: false
+    active: true
     debug: true
     port:  4842
     type: CS
     position: CZ77
     orientation: 90
   C-RS1:
-    active: false
+    active: true
     debug: true
     port:  4843
     type: RS
     position: CZ21
     orientation: 180
   C-RS2:
-    active: false
+    active: true
     debug: true
     port:  4844
     type: RS
     position: MZ25
     orientation: 45
   C-DS:
-    active: false
+    active: true
     debug: true
     port:  4845
     type: DS
@@ -160,7 +160,7 @@ webui:
   port: 8000
 general:
   timefactor: 1.0
-  fixed-mps-position: true
+  fixed-mps-position: false
   mockup-connections: false
   robot-connection-type: tcp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
   ignore-teamcolor: true
