@@ -24,7 +24,7 @@ namespace Simulatortests
             _port = 5303;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
+            var robconf = new RobotConfig("TestBot", jersey, team, "Test");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -32,7 +32,7 @@ namespace Simulatortests
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _mpsManager = new MpsManager(_configurations);
+            _mpsManager = new MpsManager(_configurations, false);
             _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();
@@ -88,7 +88,7 @@ namespace Simulatortests
             var jersey = 1;
             var team = Team.Cyan;
             var machineName = "M-BS";
-            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
+            var robconf = new RobotConfig("TestBot", jersey, team, "Test");
             var mpsconf = new MpsConfig(machineName, Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -96,7 +96,7 @@ namespace Simulatortests
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _mpsManager = new MpsManager(_configurations);
+            _mpsManager = new MpsManager(_configurations, false);
             _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();
@@ -129,7 +129,7 @@ namespace Simulatortests
             _port = 5314;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
+            var robconf = new RobotConfig("TestBot", jersey, team, "Test");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -137,7 +137,7 @@ namespace Simulatortests
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _mpsManager = new MpsManager(_configurations);
+            _mpsManager = new MpsManager(_configurations, false);
             _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();
@@ -239,7 +239,7 @@ namespace Simulatortests
             _port = 5303;
             var jersey = 3;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
+            var robconf = new RobotConfig("TestBot", jersey, team, "Test");
             var mpsconf = new MpsConfig("C-BS2", Mps.MpsType.BaseStation, _port, team, true);
             var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
 
@@ -247,7 +247,7 @@ namespace Simulatortests
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _mpsManager = new MpsManager(_configurations);
+            _mpsManager = new MpsManager(_configurations, false);
             _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();
@@ -297,15 +297,16 @@ namespace Simulatortests
             _port = 5304;
             var jersey = 1;
             var team = Team.Cyan;
-            var robconf = new RobotConfig("TestBot", jersey, team, "udp");
+            var robconf = new RobotConfig("TestBot", jersey, team, "Test");
             var mpsconf = new MpsConfig("C-BS", Mps.MpsType.BaseStation, _port, team, true);
-            var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000);
-
+            var teamconf = new TeamConfig("GRIPS", Team.Cyan, "127.0.0.1", 10000); 
+            
             _configurations = new Configurations();
             _configurations.AddConfig(robconf);
             _configurations.AddConfig(mpsconf);
             _configurations.AddConfig(teamconf);
-            _mpsManager = new MpsManager(_configurations);
+            
+            _mpsManager = new MpsManager(_configurations, false);
             _robotManager = new RobotManager(_configurations, _mpsManager);
             _zonesManager = ZonesManager.GetInstance();
             MachineInfo machineinfo = new MachineInfo();

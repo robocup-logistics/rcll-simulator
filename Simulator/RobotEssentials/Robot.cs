@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using System.Threading;
 using LlsfMsgs;
+using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 using Terminal.Gui;
 using Simulator.MPS;
@@ -252,8 +253,13 @@ namespace Simulator.RobotEssentials
 
         private void AddMessage(PBMessageFactoryBase.MessageTypes type)
         {
+            if (Config.MockUp)
+            {
+                MyLogger.Log("Message not added due to Mockup!");
+                return;
+            }
             MyLogger.Log("Sending a " + type.ToString() + "!");
-
+            
             if (_connectionType.Equals("udp"))
             {
                 var message = UdpConnectionTeamserver?.CreateMessage(type);

@@ -27,11 +27,11 @@ namespace Simulatortests
             tcp.CreateConnection();
             var config = new Configurations();
             Thread.Sleep(1000);
-            config.AddConfig(new RobotConfig("TestBot", 1, teamcolor, "udp"));
+            config.AddConfig(new RobotConfig("TestBot", 1, teamcolor, "Test"));
             config.AddConfig(new TeamConfig(teamname, teamcolor, ip, port));
             config.AddConfig(new RefboxConfig(ip, port,port,port,port,port,port,port));
             config.ToggleMockUp();
-            var mpsManager = new MpsManager(config);
+            var mpsManager = new MpsManager(config, false);
             var robotManager = new RobotManager(config,mpsManager);
 
             Thread.Sleep(19000);

@@ -17,7 +17,7 @@ namespace Simulator.MPS
         private TcpConnector Refbox;
         private Configurations Config;
         private Thread RefboxThread;
-        public MpsManager(Configurations config)
+        public MpsManager(Configurations config, bool RefboxConnection = true)
         {
             myLogger = new MyLogger("MpsManager", true);
             Config = config;
@@ -25,7 +25,7 @@ namespace Simulator.MPS
             Machines = new List<Mps>();
             AllMachineSet = false;
             CreateMachines();
-            //if(!Config.MockUp)
+            if(RefboxConnection)
             {
                 RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
                 RefboxThread.Start();

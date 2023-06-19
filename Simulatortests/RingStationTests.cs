@@ -51,12 +51,12 @@ namespace Simulatortests
             var complexity = baseProduct.Complexity;
             machine.ProductAtIn = baseProduct;
             var testhelper = new OPCTestHelper(port);
+            Assert.IsNotNull(machine.ProductAtIn);
             if (!testhelper.CreateConnection())
-                Assert.Fail();
+                Assert.Fail("Wasn't able to create the connection to the server");
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.BandOnUntil, (ushort)Positions.Mid, (ushort)Direction.FromInToOut);
-            var client = new OpcClient("opc.tcp://localhost:" + port + "/");
-            Thread.Sleep(config.BeltActionDuration + 300);
-            Assert.IsNull(machine.ProductAtIn);
+            Thread.Sleep(config.BeltActionDuration + 600);
+            Assert.IsNull(machine.ProductAtIn, "No Product at the input of the machine!");
             Assert.IsNotNull(machine.ProductOnBelt);
             testhelper.SendTask((ushort)MPS_RS.BaseSpecificActions.MountRing, (ushort)1, (ushort)0);
             Thread.Sleep(config.RSTaskDuration + 200);
