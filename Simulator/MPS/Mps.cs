@@ -95,14 +95,26 @@ namespace Simulator.MPS
                 return;*/
             try
             {
-                Refbox = new MPSOPCUAServer(Name, Port, BasicEvent, InEvent, MyLogger);
-                InNodes = Refbox.GetNodeCollection(true);
-                BasicNodes = Refbox.GetNodeCollection(false);
-                var th = new Thread(Refbox.Start);
-                th.Name = Name + "_OpcServerThread";
+                if (true)
+                {
+                    var helper = new MQTThelper(Name, "localhost");
+                    helper.Connect();
+                    helper.Setup();
+                    Thread.Sleep(60000);
+                    helper.Disconnect();
+
+                }
+                else
+                {
+                    Refbox = new MPSOPCUAServer(Name, Port, BasicEvent, InEvent, MyLogger);
+                    InNodes = Refbox.GetNodeCollection(true);
+                    BasicNodes = Refbox.GetNodeCollection(false);
+                    var th = new Thread(Refbox.Start);
+                    th.Name = Name + "_OpcServerThread";
+                    th.Start();
+                }
                 Rotation = 0;
                 Zone = Zone.MZ41;
-                th.Start();
                 Working = true;
             }
             catch (Exception e)
