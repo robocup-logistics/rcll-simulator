@@ -49,12 +49,13 @@ namespace Simulatortests
             var product = new Products(CapColor.CapBlack);
             thread.Start();
             Thread.Sleep(500);
-            var value = true;
+            var value = (ushort) 1;
             var bs = new OPCTestHelper(port);
             if (!bs.CreateConnection())
                 Assert.Fail();
-            bs.EnableTask();
-            Assert.AreEqual(machine.InNodes.StatusNodes.enable.Value, value);
+            Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
+            bs.SendTask(value);
+            Assert.AreEqual(machine.InNodes.ActionId.Value, value);
             bs.CloseConnection();
             machine.StopMachine();
         }
