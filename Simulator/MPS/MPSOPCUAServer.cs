@@ -15,12 +15,16 @@ namespace Simulator.MPS
         private readonly int Port;
         private readonly string URL;
         private readonly OpcServer server;
-        private readonly MPSNodeManager m1;
+        /// <summary></summary>
+        private readonly MPSNodeManager NodeManager;
         private readonly ManualResetEvent BasicEvent;
         private readonly ManualResetEvent InEvent;
         //private readonly static Dictionary<OpcNodeId, int> nodesPerSession = new Dictionary<OpcNodeId, int>();
         private readonly string Prefix;
         private bool isMonitored;
+        private bool Active;
+        public bool inEnabled;
+        
         public MPSOPCUAServer(string name, int port, ManualResetEvent basicEvent, ManualResetEvent inEvent, MyLogger log)
         {
             MyLogger = log;
@@ -31,7 +35,7 @@ namespace Simulator.MPS
             BasicEvent = basicEvent;
             InEvent = inEvent;
             isMonitored = false;
-            
+            inEnabled = false;
             Prefix = String.Format("HRP on {0,-6}|", Name);
             string[] Namespaces =
             {
@@ -39,12 +43,16 @@ namespace Simulator.MPS
                 "http://PLCopen.org/OpcUa/IEC61131-3/",
                 "CODESYSSPV3/3S/IecVarAccess"
             };
-            m1 = new MPSNodeManager(Namespaces[1], Namespaces, MyLogger);
+            NodeManager = new MPSNodeManager(Namespaces[1], Namespaces, MyLogger);
             //server.Configurations
-            server = new OpcServer(URL, m1);
+            server = new OpcServer(URL, NodeManager);
             try
             {
                 server.Address = new Uri(URL);
+                Active = true;
+                var configuration = new OpcApplicationConfiguration(OpcApplicationType.Server);
+                configuration.ServerConfiguration.MinPublishingInterval = 100;
+                server.Configuration = configuration;
                 server.Start();
             }
             catch (Exception e)
@@ -62,37 +70,44 @@ namespace Simulator.MPS
         public void Start()
         {
             //TODO change the start of the Mps OPCUA server to either not use the event handlers or use them differently
-            
             //server.RequestProcessing += HandleRequestProcessing;
             // /*server.RequestProcessing += HandleRequestProcessing;
-            // server.RequestValidating += HandleRequestValidating;
+             server.RequestValidating += HandleRequestValidating;
             // server.RequestValidated += HandleRequestValidated;
             // server.RequestProcessed += HandleRequestProcessed;*/
-            server.RequestValidating += HandleRequestValidating;
+            //server.RequestValidating += HandleRequestValidating;
             //server.RequestProcessed += HandleRequestProcessed;
-            while (true)
+
+            //while (Active)
             {
-                if(m1.InNodes.StatusNodes.busy.Value == true)
+                /*if(NodeManager.InNodes.StatusNodes.busy.Value == true)
                 {
-                    m1.InNodes.StatusNodes.busy.Value = true;
-                    ApplyChanges(m1.InNodes.StatusNodes.busy);
+                    NodeManager.InNodes.StatusNodes.busy.Value = true;
+                    ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
                 }
                 else
                 {
-                    m1.InNodes.StatusNodes.busy.Value = false;
-                    ApplyChanges(m1.InNodes.StatusNodes.busy);
-                }
-                Thread.Sleep(50);
+                    NodeManager.InNodes.StatusNodes.busy.Value = false;
+                    ApplyChanges(NodeManager.InNodes.StatusNodes.busy);
+                }*/
+                //Thread.Sleep(5000);
             }
+            Console.WriteLine("Server " + Port  + " is Setup!");
+
         }
 
         public NodeCollection GetNodeCollection(bool In)
         {
-            return In ? m1.InNodes : m1.BasicNodes;
+            return In ? NodeManager.InNodes : NodeManager.BasicNodes;
         }
         public void ApplyChanges(OpcNode node)
         {
             node.ApplyChanges(server.SystemContext);
+        }
+
+        public void Stop()
+        {
+            Active = false;
         }
 
         #region MessageHandler
@@ -184,8 +199,9 @@ namespace Simulator.MPS
             }
             var Request = (OpcWriteNodesRequest)e.Request; 
             //MyLogger.Log("We got a write for [" + Request.Commands[0].NodeId + "] -> [" + Request.Commands[0].Value + "] on the port [" + Port + "] an we wake up the corresponding machine!");
+            //Console.WriteLine("Got  a request: " + Request.Commands[0].NodeId);
             var nodeName = Request.Commands[0].NodeId.ToString();
-            var parts = nodeName.Split("/");
+            var parts = nodeName.Split(".");
             var nodeValue = Request.Commands[0].Value.ToString();
             switch (parts.Last())
             {
@@ -195,12 +211,13 @@ namespace Simulator.MPS
                         MyLogger.Log(nodeName);
                         if (nodeName.ToLower().Contains("basic"))
                         {
-                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + m1.BasicNodes.ActionId.Value + "] D0[" + m1.BasicNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + NodeManager.BasicNodes.ActionId.Value + "] D0[" + NodeManager.BasicNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
                             BasicEvent.Set();
                         }
                         if(nodeName.ToLower().Contains("in"))
                         {
-                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + m1.InNodes.ActionId.Value + "] D0[" + m1.InNodes.Data0.Value + "] D1[" + m1.InNodes.Data1.Value + "]");
+                            MyLogger.Log("Got a In-Enable with the following data : AiD[" + NodeManager.InNodes.ActionId.Value + "] D0[" + NodeManager.InNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                            inEnabled = true;
                             InEvent.Set();
                         }
                     }
@@ -228,16 +245,42 @@ namespace Simulator.MPS
 
         private void HandleRequestProcessed(object sender, OpcRequestProcessedEventArgs e)
         {
-            /*if (e.Request != OpcRequestType.Write)
+            if (e.Request.GetType() == typeof(OpcWriteNodesRequest))
             {
-                return;
-            }*/
-            bool v = e.Request.GetType() == typeof(OpcWriteNodesRequest);
-            if (!v) return;
-            //MyLogger.Log(e.Request.ToString());
+                var Request = (OpcWriteNodesRequest)e.Request; 
+                var nodeName = Request.Commands[0].NodeId.ToString();
+                var parts = nodeName.Split(".");
+                var nodeValue = Request.Commands[0].Value.ToString();
+                MyLogger.Log("");
+                switch (parts.Last())
+                {
+                    case "Enable":
+                        if (nodeValue.ToLower().Equals("true"))
+                        {
+                            MyLogger.Log(nodeName);
+                            if (nodeName.ToLower().Contains("basic"))
+                            {
+                                MyLogger.Log("Got a Basic-Enable with the following data : AiD[" + NodeManager.BasicNodes.ActionId.Value + "] D0[" + NodeManager.BasicNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                                BasicEvent.Set();
+                            }
+                            if(nodeName.ToLower().Contains("in"))
+                            {
+                                MyLogger.Log("Got a In-Enable with the following data : AiD[" + NodeManager.InNodes.ActionId.Value + "] D0[" + NodeManager.InNodes.Data0.Value + "] D1[" + NodeManager.InNodes.Data1.Value + "]");
+                                inEnabled = true;
+                                InEvent.Set();
+                            }
+                        }
+                        break;
+                    case "ActionId":
+                        if(parts[^3].Equals("In"))
+                            MyLogger.Log("Got a new Value for " + parts.Last() + " [" + nodeValue + "]");
+                        break;
+                    default:
+                        return;
+                }
+            }
             InEvent.Set();
 
-            //WriteEvent.Set();
 
         }
 #endregion

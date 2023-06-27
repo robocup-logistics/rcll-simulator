@@ -14,6 +14,7 @@ export interface Machine {
   RedLight: Light;
   GreenLight: Light;
   SlideCount: number;
+  GotConnection: boolean;
   //GetsMovedTo:boolean;
 }
 

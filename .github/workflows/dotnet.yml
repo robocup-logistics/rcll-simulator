@@ -5,7 +5,7 @@ name: .NET build and test
 
 on:
   push:
-    branches: [ "master", "WIP" ]
+    branches: [ "master", "dominik_wip" ]
   pull_request:
     branches: [ "master" ]
 
@@ -13,7 +13,8 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout the code
+      uses: actions/checkout@v3
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:

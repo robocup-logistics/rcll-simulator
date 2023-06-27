@@ -13,7 +13,7 @@ namespace Simulatortests
         [TestMethod]
         public void EmptyTest()
         {
-  
+            Assert.IsTrue(true);
         }
         
     }

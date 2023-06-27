@@ -12,7 +12,7 @@ namespace Simulator.MPS
         }
         public SSOp SSOp;
 
-        public MPS_SS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
+        public MPS_SS(Configurations config,  string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
         {
             Type = MpsType.StorageStation;
             //if (Configurations.GetInstance().MockUp) return;
@@ -25,12 +25,13 @@ namespace Simulator.MPS
             }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
         private void Work()
         {
             SerializeMachineToJson();
-            while (true)
+            while (Working)
             {
                 InEvent.WaitOne();
                 InEvent.Reset();

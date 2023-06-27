@@ -33,6 +33,7 @@ export class KonvaMachine {
   private ProductAtOutRect: KonvaProduct;
   private ProductOnBeltRect: KonvaProduct;
   private CurrentRotation: number;
+  private BodyColor: string;
   //@ts-ignore
   private SlideCnt: Konva.Text;
   //@ts-ignore
@@ -45,11 +46,11 @@ export class KonvaMachine {
       height: konvaZone.Group.height(),
     });
     this.CurrentRotation = machine.Rotation;
-    let color = "";
+
     if (machine.Name.includes("M-")) {
-      color = "magenta";
+      this.BodyColor = "magenta";
     } else {
-      color = "cyan";
+      this.BodyColor  = "cyan";
     }
     this.Type = this.GetType(machine.Name);
 
@@ -87,7 +88,7 @@ export class KonvaMachine {
       y: this.Group.width() * heightScale,
       width: this.Group.width() * (1 - 2 * widthScale),
       height: this.Group.width() * (1 - 2 * heightScale),
-      fill: color,
+      fill: this.BodyColor ,
       stroke: 'gray',
       strokeWidth: 1,
     });
@@ -179,6 +180,14 @@ export class KonvaMachine {
       this.rotateAroundCenter(this.BodyRect, -machinesData.Rotation);
       this.CurrentRotation = machinesData.Rotation;
     }
+    if(machinesData.GotConnection)
+    {
+      this.BodyRect.fill(this.BodyColor )
+    }
+    else {
+      this.BodyRect.fill("gray")
+    }
+
     this.Group.setPosition(zone.Group.position());
     this.TaskText.text(machinesData.TaskDescription);
     this.ProductOnBeltRect.Update(machinesData.ProductOnBelt, this);

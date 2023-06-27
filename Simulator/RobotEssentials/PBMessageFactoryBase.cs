@@ -15,6 +15,7 @@ namespace Simulator.RobotEssentials
         public ulong SequenzNr;
         public Timer? Timer;
         public readonly MyLogger MyLogger;
+        public readonly Configurations Config;
         public enum MessageTypes
         {
             BeaconSignal, // Sending periodcally to detect refbox and robots
@@ -37,17 +38,18 @@ namespace Simulator.RobotEssentials
 
 
 
-        public PBMessageFactoryBase(MyLogger log)
+        public PBMessageFactoryBase(Configurations config, MyLogger log)
         {
             log.Info("Created a PBMessageFactoryBase!");
             SequenzNr = 0;
             MyLogger = log;
             Timer = null;
+            Config = config;
         }
 
         public virtual byte[] CreateMessage(MessageTypes mtype)
         {
-            Timer ??= Timer.GetInstance();
+            Timer ??= Timer.GetInstance(Config);
             ushort cmp = 0;
             ushort msg = 0;
             uint payloadsize = 0;
@@ -99,8 +101,8 @@ namespace Simulator.RobotEssentials
                         PointsCyan = 0,
                         PointsMagenta = 0,
                         State = GameState.Types.State.Init,
-                        TeamCyan = Configurations.GetInstance().Teams[0].Name,
-                        TeamMagenta = Configurations.GetInstance().Teams[1].Name,
+                        TeamCyan = Config.Teams[0].Name,
+                        TeamMagenta = Config.Teams[1].Name,
                     };
                     cmp = (ushort)GameState.Types.CompType.CompId;
                     msg = (ushort)GameState.Types.CompType.MsgType;
@@ -120,7 +122,7 @@ namespace Simulator.RobotEssentials
        
         public Time GetTimeMessage()
         {
-            Timer ??= Timer.GetInstance();
+            Timer ??= Timer.GetInstance(Config);
             return Timer.GetTime();
         }
 

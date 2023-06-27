@@ -16,7 +16,7 @@ namespace Simulator.MPS
             Reset = 400,
             DeliverToSlot = 401
         }
-        public MPS_DS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
+        public MPS_DS(Configurations config,  string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
         {
             Type = MpsType.DeliveryStation;
             //if (Configurations.GetInstance().MockUp) return;
@@ -29,6 +29,7 @@ namespace Simulator.MPS
             }*/
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
         public bool ProductAtSlot(int slot)
@@ -56,7 +57,7 @@ namespace Simulator.MPS
         private void Work()
         {
             SerializeMachineToJson();
-            while (true)
+            while (Working)
             {
                 InEvent.WaitOne();
                 InEvent.Reset();
@@ -92,7 +93,7 @@ namespace Simulator.MPS
             }
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
-            Thread.Sleep(Configurations.GetInstance().DSTaskDuration);
+            Thread.Sleep(Config.DSTaskDuration);
             switch (slot)
             {
                 case 1:

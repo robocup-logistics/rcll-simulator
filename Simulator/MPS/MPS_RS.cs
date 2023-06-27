@@ -17,7 +17,7 @@ namespace Simulator.MPS
             MountRing = 203
         }
         
-        public MPS_RS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
+        public MPS_RS(Configurations config,  string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
         {
             Type = MpsType.RingStation;
             SlideCount = 0;
@@ -26,12 +26,13 @@ namespace Simulator.MPS
         {
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
         private void Work()
         {
             SerializeMachineToJson();
-            while (true)
+            while (Working)
             {
                 InEvent.WaitOne();
                 InEvent.Reset();
@@ -101,7 +102,7 @@ namespace Simulator.MPS
                 default:
                     return;
             }
-            Thread.Sleep(Configurations.GetInstance().RSTaskDuration);
+            Thread.Sleep(Config.RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
             FinishedTask();
         }

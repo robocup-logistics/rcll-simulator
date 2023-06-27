@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
 using LlsfMsgs;
+using Simulator.MPS;
 using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
@@ -9,30 +10,31 @@ namespace Simulator.RobotEssentials
     {
         public List<Robot> Robots { get; }
         private ZonesManager ZonesManager;
-        private static RobotManager Instance;
+        private MpsManager MpsManager;
+        private Configurations Config;
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
-        public static RobotManager GetInstance()
-        {
-            return Instance ??= new RobotManager();
-        }
 
-        public RobotManager()
+
+        public RobotManager(Configurations config, MpsManager mpsManager)
         {
             Robots = new List<Robot>();
             ZonesManager = ZonesManager.GetInstance();
-            Instance = this;
+            MpsManager = mpsManager;
+            Config = config;
             CreateRobots();
         }
         private void CreateRobots()
         {
-            var configs = Configurations.GetInstance().RobotConfigs;
+            var configs = Config.RobotConfigs;
             foreach (var rob in configs)
             {
-                var robot = new Robot(rob.Name, this,rob.TeamColor, rob.Jersey, true);
+                var robot = new Robot(Config, rob.Name, this, rob.TeamColor, rob.Jersey, MpsManager, true);
                 robot.WorkingRobotThread = new Thread(() => robot.Run());
+                robot.WorkingRobotThread.Name = "Robot" + robot.JerseyNumber + "_working_thread";
                 robot.WorkingRobotThread.Start();
+                
                 Robots.Add(robot);
                 bool set = false;
                 int x = 5;
@@ -52,6 +54,14 @@ namespace Simulator.RobotEssentials
                     x++;
                 }
 
+            }
+        }
+
+        public void StopAllRobots()
+        {
+            foreach (var robot in Robots)
+            {
+                robot.RobotStop();
             }
         }
     }

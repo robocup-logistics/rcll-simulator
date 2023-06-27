@@ -2,6 +2,7 @@
 using Simulator.MPS;
 using LlsfMsgs;
 using System.Threading;
+using Org.BouncyCastle.Pkix;
 using Simulator;
 using Simulator.Utility;
 using Simulator.RobotEssentials;
@@ -19,10 +20,10 @@ namespace Simulatortests
              * Setup of this Test
              * One Robot, a BaseStation, a CapStation and a Delivery Station
              * Goal is a Produced C0
-             * **/
-            var config = Configurations.GetInstance();
+             ***/
+            var config = new Configurations();
             var startzone = Zone.CZ52;
-            var robotconf = new RobotConfig("TestBot", 0, Team.Cyan);
+            var robotconf = new RobotConfig("TestBot", 0, Team.Cyan, "Test");
             var bsconfig = new MpsConfig("C-BS", Mps.MpsType.BaseStation, 10000, Team.Cyan, true);
             var csconfig = new MpsConfig("C-CS", Mps.MpsType.CapStation, 10001, Team.Cyan, true);
             var dsconfig = new MpsConfig("C-DS", Mps.MpsType.DeliveryStation, 10002, Team.Cyan, true);
@@ -34,15 +35,15 @@ namespace Simulatortests
             config.AddConfig(dsconfig);
             config.AddConfig(rsconfig);
             config.AddConfig(teamconf);
-            var robotmanager = RobotManager.GetInstance();
-            var machinemanager = MpsManager.GetInstance();
+            var machinemanager = new MpsManager(config, false);
+            var robotmanager = new RobotManager(config, machinemanager);
             var zonesManager = ZonesManager.GetInstance();
             var rob = robotmanager.Robots[0];
             rob.SetZone(zonesManager.GetZone(startzone));
 
-            var bs = new TestHelper(bsconfig.Port);
-            var cs = new TestHelper(csconfig.Port);
-            var ds = new TestHelper(dsconfig.Port);
+            var bs = new OPCTestHelper(bsconfig.Port);
+            var cs = new OPCTestHelper(csconfig.Port);
+            var ds = new OPCTestHelper(dsconfig.Port);
             if (!bs.CreateConnection())
                 Assert.Fail();
             if (!cs.CreateConnection())
@@ -251,6 +252,7 @@ namespace Simulatortests
             bs.CloseConnection();
             cs.CloseConnection();
             ds.CloseConnection();
+            machinemanager.StopAllMachines();
         }
 
         [TestMethod]

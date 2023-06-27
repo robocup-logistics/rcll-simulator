@@ -1,9 +1,10 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading;
 using LlsfMsgs;
+using Newtonsoft.Json;
 using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Simulator.MPS
 {
@@ -32,7 +33,7 @@ namespace Simulator.MPS
         public ManualResetEvent BasicEvent;
         public ManualResetEvent LightEvent;
         public ManualResetEvent BeltEvent;
-        public bool GotConnection;
+        public bool GotConnection { get; protected set; }
         public bool GotPlaced;
         public Products? ProductOnBelt { get; set; }
         public Products? ProductAtIn { get; set; }
@@ -40,7 +41,9 @@ namespace Simulator.MPS
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string JsonInformation;
-        private Configurations Config;
+        protected Configurations Config;
+        
+        public bool Working { get; private set; }
         public enum MpsType
         {
             BaseStation = 100,
@@ -60,7 +63,7 @@ namespace Simulator.MPS
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(string name, int port, int id, Team team, bool debug = false)
+        protected Mps(Configurations config, string name, int port, int id, Team team, bool debug = false)
         {
             // Constructor for basic member initializations
             Debug = debug;
@@ -85,7 +88,7 @@ namespace Simulator.MPS
             YellowLight = new Light(LightColor.Yellow, LightEvent);
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
-            Config = Configurations.GetInstance();
+            Config = config;
             // Belt = new Belt(this, BeltEvent);
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
@@ -96,9 +99,11 @@ namespace Simulator.MPS
                 InNodes = Refbox.GetNodeCollection(true);
                 BasicNodes = Refbox.GetNodeCollection(false);
                 var th = new Thread(Refbox.Start);
+                th.Name = Name + "_OpcServerThread";
                 Rotation = 0;
                 Zone = Zone.MZ41;
                 th.Start();
+                Working = true;
             }
             catch (Exception e)
             {
@@ -150,9 +155,25 @@ namespace Simulator.MPS
             InNodes.StatusNodes.busy.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.busy);
         }
+        public void HandleMachineType()
+        {
+            MyLogger.Log("MachineTyp!");
+            //TaskDescription = "MachineType!";
+            BasicNodes.StatusNodes.busy.Value = true;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+            Thread.Sleep(400);
+            BasicNodes.Data0.Value = 0;
+            BasicNodes.Data1.Value = 0;
+            //Refbox.ApplyChanges(InNodes.Data0);
+            BasicNodes.StatusNodes.enable.Value = false;
+            //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
+            //Thread.Sleep(20);
+            BasicNodes.StatusNodes.busy.Value = false;
+            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+        }
         public void HandleBasicTasks()
         {
-            while(true)
+            while(Working)
             {
                 BasicEvent.WaitOne();
                 //MyLogger.Info("We got a write and reset the wait!");
@@ -170,19 +191,7 @@ namespace Simulator.MPS
                         MyLogger.Log("No Basic Job!");
                         break;
                     case (ushort)Actions.MachineTyp:
-                        MyLogger.Log("MachineTyp!");
-                        //TaskDescription = "MachineType!";
-                        BasicNodes.StatusNodes.busy.Value = true;
-                        //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-                        Thread.Sleep(400);
-                        BasicNodes.Data0.Value = 0;
-                        BasicNodes.Data1.Value = 0;
-                        //Refbox.ApplyChanges(InNodes.Data0);
-                        BasicNodes.StatusNodes.enable.Value = false;
-                        //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
-                        //Thread.Sleep(20);
-                        BasicNodes.StatusNodes.busy.Value = false;
-                        Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+                        HandleMachineType();
                         break;
                     default:
                         MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
@@ -260,7 +269,7 @@ namespace Simulator.MPS
             MyLogger.Log("Product is moving on the belt!");
             InNodes.StatusNodes.ready.Value = false;
             Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-            Thread.Sleep(Configurations.GetInstance().BeltActionDuration);
+            Thread.Sleep(Config.BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
             {
@@ -385,6 +394,11 @@ namespace Simulator.MPS
         {
             JsonInformation = JsonSerializer.Serialize(this);
             //Console.WriteLine(JsonInformation);
+        }
+
+        public void StopMachine()
+        {
+            Refbox.Stop();
         }
     }
 }

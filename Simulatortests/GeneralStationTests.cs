@@ -14,35 +14,26 @@ namespace Simulatortests
         [TestMethod]
         public void ResetMachine()
         {
-            var machine = new MPS_BS("C-BS", 5001, 0, Team.Cyan, true);
-            var thread = new Thread(machine.Run);
-            thread.Start();
-            Thread.Sleep(500);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", 5001, 0, Team.Cyan, true);
             var testnode = machine.InNodes.ActionId;
             testnode.Value = 10;
             Assert.AreNotEqual(testnode.Value, 0);
             machine.ResetMachine();
-            Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
         }
 
         [TestMethod]
         public void BeltTest1()
         {
-            var machine = new MPS_BS("C-BS", 5002, 0, Team.Cyan, true);
-            var thread = new Thread(machine.Run);
-            var product = new Products(CapColor.CapBlack);
-            thread.Start();
-            Thread.Sleep(500);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", 5002, 0, Team.Cyan, true);
             machine.InNodes.Data0.Value = 1;
             machine.DispenseBase();
-            Thread.Sleep(Configurations.GetInstance().BSTaskDuration + 100);
             Assert.IsNotNull(machine.ProductOnBelt);
-
             machine.InNodes.Data0.Value = (ushort)Positions.Out;
             machine.InNodes.Data1.Value = (ushort)Direction.FromInToOut;
             machine.HandleBelt();
-            Thread.Sleep(Configurations.GetInstance().BeltActionDuration + 100);
             Assert.IsNotNull(machine.ProductAtOut);
             Assert.IsNull(machine.ProductOnBelt);
         }
@@ -52,30 +43,34 @@ namespace Simulatortests
         {
             // Testing the opc connection generally
             var port = 5003;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             var product = new Products(CapColor.CapBlack);
             thread.Start();
             Thread.Sleep(500);
-            var value = true;
-            var bs = new TestHelper(port);
+            var value = (ushort) 1;
+            var bs = new OPCTestHelper(port);
             if (!bs.CreateConnection())
                 Assert.Fail();
-            bs.EnableTask();
-            Assert.AreEqual(machine.InNodes.StatusNodes.enable.Value, value);
+            Assert.AreEqual(machine.InNodes.ActionId.Value, 0);
+            bs.SendTask(value);
+            Assert.AreEqual(machine.InNodes.ActionId.Value, value);
             bs.CloseConnection();
+            machine.StopMachine();
         }
 
         [TestMethod]
         public void OPC_ResetMachine()
         {
             var port = 5004;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)200);
@@ -85,6 +80,7 @@ namespace Simulatortests
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
 
 
@@ -92,12 +88,13 @@ namespace Simulatortests
         public void OPC_SendTaskTwice()
         {
             var port = 5005;
-            var machine = new MPS_BS("C-BS", port, 0, Team.Cyan, true);
+            var config = new Configurations();
+            var machine = new MPS_BS(config, "C-BS", port, 0, Team.Cyan, true);
             var thread = new Thread(machine.Run);
             thread.Start();
             Thread.Sleep(500);
             var testnode = machine.InNodes.ActionId;
-            var testhelper = new TestHelper(port);
+            var testhelper = new OPCTestHelper(port);
             if (!testhelper.CreateConnection())
                 Assert.Fail();
             testhelper.SendTask((ushort)200);
@@ -108,6 +105,7 @@ namespace Simulatortests
             Thread.Sleep(1400);
             Assert.AreEqual(testnode.Value, 0);
             testhelper.CloseConnection();
+            machine.StopMachine();
         }
     }
 }

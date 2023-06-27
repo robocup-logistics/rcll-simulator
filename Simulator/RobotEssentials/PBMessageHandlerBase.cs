@@ -13,10 +13,11 @@ namespace Simulator.RobotEssentials
     class PBMessageHandlerBase
     {
         public MyLogger MyLogger { get; private set; }
-        
-        public PBMessageHandlerBase(MyLogger log)
+        public Configurations Config { get; private set; }
+        public PBMessageHandlerBase(Configurations config, MyLogger log)
         {
             MyLogger = log;
+            Config = config;
         }
 
         public int CheckMessageHeader(byte[] Stream)

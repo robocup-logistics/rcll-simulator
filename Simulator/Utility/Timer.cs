@@ -22,22 +22,24 @@ namespace Simulator.Utility
         private Mutex TimerMutex;
         //private member and getter for my singleton configurations class
         private static Timer? Instance;
+        private Configurations Config;
 
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
-        public static Timer GetInstance()
+        public static Timer GetInstance(Configurations config)
         {
-            return Instance ?? (Instance = new Timer());
+            return Instance ?? (Instance = new Timer(config));
         }
-        private Timer()
+        private Timer(Configurations config)
         {
             Nsec = 0;
             Sec = 0;
             Paused = true;
-            TimeFactor = Configurations.GetInstance().TimeFactor;
+            Config = config;
+            TimeFactor = Config.TimeFactor;
             MyLogger = new MyLogger("Timer", true);
-            FactoryBase = new PBMessageFactoryBase(MyLogger);
+            FactoryBase = new PBMessageFactoryBase(Config, MyLogger);
             //Refbox = new UdpConnector(null, myLogger);
             //Refbox.StartSendThread();
             //Tickthread = new Thread(Tick);

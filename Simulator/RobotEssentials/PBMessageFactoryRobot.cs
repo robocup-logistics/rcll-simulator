@@ -14,14 +14,14 @@ namespace Simulator.RobotEssentials
     {
         private Robot Peer;
         
-        public PBMessageFactoryRobot(Robot peer, MyLogger log) :base(log)
+        public PBMessageFactoryRobot(Configurations config, Robot peer, MyLogger log) :base(config, log)
         {
             log.Info("Created a PBMessageFactoryRobot!");
             Peer = peer;
         }
         public override byte[] CreateMessage(MessageTypes mtype)
         {
-            Timer ??= Utility.Timer.GetInstance();
+            Timer ??= Utility.Timer.GetInstance(Config);
             ushort cmp = 0;
             ushort msg = 0;
             uint payloadsize = 0;
@@ -98,8 +98,8 @@ namespace Simulator.RobotEssentials
                         PointsCyan = 0,
                         PointsMagenta = 0,
                         State = GameState.Types.State.Init,
-                        TeamCyan = Configurations.GetInstance().Teams[0].Name,
-                        TeamMagenta = Configurations.GetInstance().Teams[1].Name,
+                        TeamCyan = Config.Teams[0].Name,
+                        TeamMagenta = Config.Teams[1].Name,
                     };
                     cmp = (ushort)GameState.Types.CompType.CompId;
                     msg = (ushort)GameState.Types.CompType.MsgType;
@@ -142,11 +142,11 @@ namespace Simulator.RobotEssentials
             var bs = new BeaconSignal
             {
                 Time = GetTimeMessage(),
-                TeamColor = Peer?.TeamColor ?? Configurations.GetInstance().Teams[0].Color,
+                TeamColor = Peer?.TeamColor ?? Config.Teams[0].Color,
                 Number = Peer?.JerseyNumber ?? 0
             };
             var pose = GetPose2DMessage();
-            bs.TeamName = Peer?.TeamName ?? Configurations.GetInstance().Teams[0].Name;
+            bs.TeamName = Peer?.TeamName ?? Config.Teams[0].Name;
             bs.PeerName = Peer?.RobotName ?? "Client";
             bs.Seq = ++SequenzNr;
             bs.Number = Peer?.JerseyNumber ?? 9999;

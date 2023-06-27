@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
@@ -18,13 +19,13 @@ namespace Simulator.RobotEssentials
         public IPAddress Address;
         public PBMessageFactoryBase PbFactory;
         protected PBMessageHandlerBase PbHandler;
-
+        public readonly Configurations Config;
         public string IP;
         public int Port;
 
         //public UdpClient UdpSender;
         //public UdpClient UdpReciever;
-        public ConnectorBase(string ip, int port, Robot? rob, MyLogger logger)
+        public ConnectorBase(Configurations config, string ip, int port, Robot? rob, MyLogger logger)
         {
             Messages = new Queue<byte[]>();
             MyLogger = logger;
@@ -32,6 +33,7 @@ namespace Simulator.RobotEssentials
             Port = port;
             this.Owner = rob;
             Address = IPAddress.Any;
+            Config = config;
             //PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
         }
 

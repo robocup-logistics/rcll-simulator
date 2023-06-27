@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Simulator.MPS;
 using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
@@ -16,26 +17,46 @@ namespace Simulator.RobotEssentials
         private Socket Socket;
         private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
-        public TcpConnector(string ip, int port, Robot rob, MyLogger logger) : base(ip, port, rob, logger)
+        public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger)
         {
-            MyLogger.Log("Starting TcpConnector for " + ip + ":" + port + "!");
+            MyLogger.Log("Starting Robot TcpConnector for " + ip + ":" + port + "!");
 
 
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             RecvThread = new Thread(() => ReceiveThreadMethod());
+            RecvThread.Name = "Robot" + rob.JerseyNumber + "_TCP_ReceiveThread";
             if (Owner != null)
             {
                 SendThread = new Thread(() => SendThreadMethod());
+                SendThread.Name = "Robot" + rob.JerseyNumber + "_TCP_SendThread";
+
             }
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
 
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerRobot(Owner, MyLogger);
+            PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
         }
 
+        public TcpConnector(Configurations config, string ip, int port, MpsManager manager, MyLogger logger) : base(
+            config, ip, port, null, logger)
+        {
+            MyLogger.Log("Starting MPS Manager TcpConnector for " + ip + ":" + port + "!");
+
+
+            ResolveIpAddress(ip);
+            Endpoint = new IPEndPoint(Address, Port);
+            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            RecvThread = new Thread(() => ReceiveThreadMethod());
+            RecvThread.Name = "MpsManager_TCP_ReceiveThread";
+            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
+            PbHandler = new PBMessageHandlerMachineManager(Config, manager, MyLogger);
+            Running = true;
+            Connect();
+            RecvThread.Start();
+        }
         public bool Close()
         {
             Socket.Close();
@@ -94,7 +115,7 @@ namespace Simulator.RobotEssentials
             }*/
             return true;
         }
-
+        
         public bool Stop()
         {
             try
@@ -153,7 +174,9 @@ namespace Simulator.RobotEssentials
                         MyLogger.Log("the connection is lost retry to connect!");
                         while (!Socket.Connected)
                         {
-                            Socket.Connect(Endpoint);
+                            Socket.Close();
+                            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                            Connect();
                         }
                     }
                 }
@@ -171,6 +194,7 @@ namespace Simulator.RobotEssentials
                 {
                     if (Socket.Available == 0)
                     {
+                        Thread.Sleep(200);
                         continue;
                     }
                     //MyLogger.Log("Waiting for a message!");

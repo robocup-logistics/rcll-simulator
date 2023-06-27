@@ -11,33 +11,24 @@ namespace Simulator.MPS
 {
     public class MpsManager
     {
-        //private member and getter for my singleton configurations class
-        private static MpsManager Instance;
-        /// <returns>
-        /// Returns the instance of the Configurations Singleton
-        /// </returns>
-        public static MpsManager GetInstance()
-        {
-            return Instance ??= new MpsManager();
-        }
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
         private TcpConnector Refbox;
         private Configurations Config;
-        private MpsManager()
+        private Thread RefboxThread;
+        public MpsManager(Configurations config, bool RefboxConnection = true)
         {
             myLogger = new MyLogger("MpsManager", true);
-            Config = Configurations.GetInstance();
+            Config = config;
             myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
-            CreateMachines();
             AllMachineSet = false;
-            Instance = this;
-            if(!Config.MockUp)
+            CreateMachines();
+            if(RefboxConnection)
             {
-                Refbox = new TcpConnector(Config.Refbox.IP, Config.Refbox.TcpPort, null, myLogger);
-                Refbox.Start();
+                RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
+                RefboxThread.Start();
             }
         }
         private void CreateMachines()
@@ -49,27 +40,27 @@ namespace Simulator.MPS
                 switch (mps.Type)
                 {
                     case Mps.MpsType.BaseStation:
-                        var bs = new MPS_BS(mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
+                        var bs = new MPS_BS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(bs.Run);
                         currentMps = bs;
                         break;
                     case Mps.MpsType.CapStation:
-                        var cs = new MPS_CS(mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
+                        var cs = new MPS_CS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(cs.Run);
                         currentMps = cs;
                         break;
                     case Mps.MpsType.DeliveryStation:
-                        var ds = new MPS_DS(mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
+                        var ds = new MPS_DS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(ds.Run);
                         currentMps = ds;
                         break;
                     case Mps.MpsType.RingStation:
-                        var rs = new MPS_RS(mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
+                        var rs = new MPS_RS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(rs.Run);
                         currentMps = rs;
                         break;
                     case Mps.MpsType.StorageStation:
-                        var ss = new MPS_SS(mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
+                        var ss = new MPS_SS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(ss.Run);
                         currentMps = ss;
                         break;
@@ -79,11 +70,16 @@ namespace Simulator.MPS
                         currentMps = null;
                         break;
                 }
-                thread?.Start();
                 if(currentMps==null)
                 {
                     continue;
                 }
+                if (thread != null)
+                {
+                    thread.Name = currentMps.Name + "_workingThread";
+                }
+
+                thread?.Start();
                 Machines.Add(currentMps);
                 //mps1.Run();
             }
@@ -153,11 +149,19 @@ namespace Simulator.MPS
                 AllMachineSet = true;
             }
         }
+
+        public void StopAllMachines()
+        {
+            foreach (var machine in Machines)
+            {
+                machine.StopMachine();
+            }
+        }
         public void StartRefboxConnection()
         {
             if (!Config.MockUp)
             {
-                var rf = new UdpConnector(Config.Refbox.IP, Config.Refbox.CyanRecvPort, myLogger);
+                var rf = new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanRecvPort, this, myLogger);
                 rf.Start();
             }
         }

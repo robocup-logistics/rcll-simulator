@@ -15,7 +15,7 @@ namespace Simulator.MPS
             Cap = 301,
             BandOnUntil = 302
         }
-        public MPS_CS(string name, int port, int id, Team team, bool debug = false) : base(name, port, id, team, debug)
+        public MPS_CS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
         {
             Type = MpsType.CapStation;
             StoredCap = null;
@@ -24,12 +24,13 @@ namespace Simulator.MPS
         {
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
         private void Work()
         {
             SerializeMachineToJson();
-            while (true)
+            while (Working)
             {
                 InEvent.WaitOne();
                 InEvent.Reset();
@@ -79,7 +80,7 @@ namespace Simulator.MPS
                         else
                         {
                             TaskDescription = "Retrieving Cap";
-                            Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
+                            Thread.Sleep(Config.CSTaskDuration);
                             StoredCap = ProductOnBelt.RetrieveCap();
                         }
                         break;
@@ -95,7 +96,7 @@ namespace Simulator.MPS
                         if (StoredCap != null && ProductOnBelt != null)
                         {
                             TaskDescription = "Mounting Cap";
-                            Thread.Sleep(Configurations.GetInstance().CSTaskDuration);
+                            Thread.Sleep(Config.CSTaskDuration);
                             ProductOnBelt.AddPart(StoredCap);
                         }
                         else

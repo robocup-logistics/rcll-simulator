@@ -30,6 +30,9 @@ namespace Simulator.Utility
             Logger = new LoggerConfiguration()
                 .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
                 .CreateLogger();
+            
+            Log("------------------------------------------");
+            Log("Starting new logging session at " + DateTime.Now);
         }
         public void Log(OpcNode node)
         {

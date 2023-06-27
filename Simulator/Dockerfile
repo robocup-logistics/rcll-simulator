@@ -3,7 +3,7 @@ RUN apt-get update && apt-get -y install xterm libncurses5-dev locales locales-a
 COPY /MPS/ /simulator/MPS
 COPY /protobuff/ /simulator/protobuff
 COPY /RobotEssentials/ /simulator/RobotEssentials
-COPY /TerminalGui/ /simulator/TerminalGui/
+#COPY /TerminalGui/ /simulator/TerminalGui/
 COPY /Utility/ /simulator/Utility
 COPY /Configurations.cs /simulator/
 COPY /MainClass.cs /simulator/

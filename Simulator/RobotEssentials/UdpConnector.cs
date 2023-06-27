@@ -2,6 +2,7 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
+using Simulator.MPS;
 using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
@@ -17,34 +18,35 @@ namespace Simulator.RobotEssentials
         private UdpClient Client;
         
         private string IpString;
-        public UdpConnector(string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(ip, port, rob, logger)
+        public UdpConnector(Configurations config, string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(config, ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            PbHandler = new PBMessageHandlerRobot(rob, MyLogger);
-            Config = Configurations.GetInstance();
-            
+            PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
+
             ResolveIpAddress(ip);
             Endpoint = new IPEndPoint(Address, Port);
             RecvThread = new Thread(() => ReceiveUdpMethod());
+            RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             SendThread = new Thread(() => SendUdpMethod());
-
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+            SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
-        public UdpConnector(string ip, int port, MyLogger logger) : base(ip, port, null, logger)
+        public UdpConnector(Configurations config, string ip, int port, MpsManager mpsManager, MyLogger logger) : base(config, ip, port, null, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             MyLogger.Log("Starting UdpConnector without a robot!");
-            PbHandler = new PBMessageHandlerMachineManager(MyLogger);
-            Config = Configurations.GetInstance();
+            PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, MyLogger);
+
             IpString = ip;
             RecvThread = new Thread(() => ReceiveUdpMethod());
+            RecvThread.Name = "mpsManager_UDP_ReceiveThread";
             //SendThread = new Thread(() => SendUdpMethod());
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
+            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
