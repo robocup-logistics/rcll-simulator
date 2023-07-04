@@ -87,3 +87,15 @@ public class MQTThelper
     }
 
 }
+
+public class MqttHelperEntry<T>
+{
+    public string Name { get; private set; }
+    public T Value { get; private set; }
+
+    public MqttHelperEntry(string name, T value)
+    {
+        Name = name;
+        Value = value;
+    }
+}
