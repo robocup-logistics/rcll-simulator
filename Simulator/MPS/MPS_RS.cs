@@ -38,7 +38,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
+                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -53,12 +53,12 @@ namespace Simulator.MPS
                         MountRingTask();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
                         break;
 
                 }
                 TaskDescription = "Idle";                
-                MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
+                //MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
             }
         }
         public new void PlaceProduct(string machinePoint, Products? heldProduct)
@@ -66,13 +66,21 @@ namespace Simulator.MPS
             MyLogger.Log("Got a PlaceProduct for RingStation!");
             if(machinePoint.Equals("slide"))
             {
-                MyLogger.Log("The Current SlideCnt is = " + InNodes.SlideCnt.Value);
+                MyLogger.Log("The Current SlideCnt is = " + (MQTT ? MqttHelper.InNodes.SlideCnt : InNodes.SlideCnt.Value));
                 MyLogger.Log("Added a Base to the slide!");
-                InNodes.SlideCnt.Value += 1;
-                SlideCount = InNodes.SlideCnt.Value;
-                Thread.Sleep(500);
-                Refbox.ApplyChanges(InNodes.SlideCnt);
-                MyLogger.Log("The Current SlideCnt after is = " + InNodes.SlideCnt.Value);
+                if (MQTT)
+                {
+                    MqttHelper.InNodes.SetSlideCount(MqttHelper.InNodes.SlideCnt + 1);
+                }
+                else
+                {
+                    InNodes.SlideCnt.Value += 1;
+                    SlideCount = InNodes.SlideCnt.Value;
+                    Thread.Sleep(500);
+                    Refbox.ApplyChanges(InNodes.SlideCnt);
+                }
+ 
+                MyLogger.Log("The Current SlideCnt after is = " + (MQTT ? MqttHelper.InNodes.SlideCnt : InNodes.SlideCnt.Value));
             }
             else{
                 base.PlaceProduct(machinePoint, heldProduct);
@@ -83,7 +91,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
-            var ringNumber = InNodes.Data0.Value;
+            var ringNumber = MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
             StartTask();
             for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
             {

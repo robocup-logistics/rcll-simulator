@@ -1,5 +1,4 @@
-﻿
-using Simulator.Utility;
+﻿using Simulator.Utility;
 
 namespace Simulator.MPS
 {

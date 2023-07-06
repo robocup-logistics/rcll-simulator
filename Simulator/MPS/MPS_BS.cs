@@ -31,10 +31,10 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a GetBase Task!");
             TaskDescription = "Dispensing a Base";
-            var stock = InNodes.Data0.Value;
+            var stock = MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
             StartTask();
             Thread.Sleep(Config.BSTaskDuration);
-            MyLogger.Log("Placed a Base from stock " + InNodes.Data0.Value + " on the belt");
+            MyLogger.Log("Placed a Base from stock " + (MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value) + " on the belt");
             switch (stock)
             {
                 case 1:
@@ -50,8 +50,17 @@ namespace Simulator.MPS
                     MyLogger.Log("Unknown Stock to get base from!");
                     break;
             }
-            InNodes.StatusNodes.ready.Value = true;
-            Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+
+            if (MQTT)
+            {   
+                MqttHelper.InNodes.Status.SetReady(true);
+            }
+            else
+            {
+                InNodes.StatusNodes.ready.Value = true;
+                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+            }
+
             FinishedTask();
         }
         private void Work()
@@ -66,7 +75,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection= true;
                 //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
+                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
                 {
                     case (ushort)Actions.NoJob:
                         MyLogger.Log("No In Job!");
@@ -81,7 +90,7 @@ namespace Simulator.MPS
                         DispenseBase();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
                         break;
                 }
                 TaskDescription = "Idle";
