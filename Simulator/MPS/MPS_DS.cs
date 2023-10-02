@@ -92,7 +92,7 @@ namespace Simulator.MPS
                 Thread.Sleep(1000);
             }
             if (ProductAtIn == null) return;
-            MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
+            MyLogger.Log("Deliver to slot " + slot);
             Thread.Sleep(Config.DSTaskDuration);
             switch (slot)
             {

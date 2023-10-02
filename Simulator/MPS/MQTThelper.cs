@@ -3,6 +3,7 @@ using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
 using Org.BouncyCastle.Crypto.Prng;
+using Simulator.Utility;
 using static System.String;
 
 namespace Simulator.MPS;
@@ -36,9 +37,12 @@ public class MQTThelper
     public MqttNodeVariables BasicNodes;
     private ManualResetEvent InEvent;
     private ManualResetEvent BasicEvent;
-    public MQTThelper(string name, string url, ManualResetEvent inevent, ManualResetEvent basicevent)
+    private MyLogger _myLogger;
+    
+    public MQTThelper(string name, string url, ManualResetEvent inevent, ManualResetEvent basicevent, MyLogger logger)
     {
         Name = name;
+        _myLogger = logger;
         BasicTopic = $"MPS/{Name}/{Basic}/";
         InTopic = $"MPS/{Name}/{In}/";
         Url = url;
@@ -50,60 +54,49 @@ public class MQTThelper
 
     public void Connect()
     {
-        Console.WriteLine("Starting connection!");
+        _myLogger.Log("Starting connection!");
         var mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(Url
             )
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();
-        Console.WriteLine("Connected!");
+        _myLogger.Log("Connected!");
     }
 
     public void Setup()
     {
         Client.ApplicationMessageReceivedAsync += HandleUpdate;
-        InNodes = new MqttNodeVariables(InTopic, Client, MqttFactory, InEvent);
-        BasicNodes = new MqttNodeVariables(BasicTopic, Client, MqttFactory, BasicEvent);
+        InNodes = new MqttNodeVariables(InTopic, Client, MqttFactory, InEvent, _myLogger);
+        BasicNodes = new MqttNodeVariables(BasicTopic, Client, MqttFactory, BasicEvent, _myLogger);
         Subscribe();
     }
 
     public Task HandleUpdate(MqttApplicationMessageReceivedEventArgs args)
     {
         var topic = args.ApplicationMessage.Topic;
-        Console.WriteLine($"Handle Message for topic {topic}");
+        //_myLogger.Log($"Handle Message for topic {topic}");
         var parts = topic.Split("/");
         var payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
-        if (parts[2] == In)
+        
+        if (topic.Contains("/Data/"))
         {
-            if (topic.Contains("/Data/"))
-            {
-                parts[3] = parts[3] + "/" + parts[4];
-            }
-            HandleUpdateTopic(InNodes, parts[3], payload);
-            if (parts.Length > 3)
-            {
-                HandleStatusUpdateTopic(InNodes.Status, parts[4], payload);
-            }
+            parts[3] = parts[3] + "/" + parts[4];
+            //_myLogger.Log("for data we rebuild the complete topic");
         }
-        else
+        var isInNodes = (parts[2] == In);
+        _myLogger.Log($"HandleUpdateTopic with {parts[2]}/{parts[3]} -> {payload}");
+        if (HandleUpdateTopic(isInNodes ? InNodes : BasicNodes, parts[3], payload))
+            return Task.CompletedTask;
+        if (parts.Length > 3)
         {
-            if (topic.Contains("/Data/"))
-            {
-                parts[3] = parts[3] + "/" + parts[4];
-            }
-            HandleUpdateTopic(BasicNodes, parts[3], payload);
-            if (parts.Length > 3)
-            {
-                HandleStatusUpdateTopic(BasicNodes.Status, parts[4], payload);
-            }
+            _myLogger.Log($"Handling StatusUpdateTopic for {parts[2]}/{parts[4]} -> {payload}");
+            HandleStatusUpdateTopic(isInNodes ? InNodes.Status : BasicNodes.Status, parts[4], payload);
         }
-        Console.WriteLine("Finished handling the message");
         return Task.CompletedTask;
     }
 
     private bool HandleUpdateTopic(MqttNodeVariables nodes, string topic, string payload)
     {
-        Console.WriteLine($"HandleUpdateTopic with {topic} {payload}");
         switch (topic)
         {
             case var value when value == proto[0]:
@@ -125,9 +118,10 @@ public class MQTThelper
                 nodes.SetSlideCount(int.Parse(payload), false);
                 break;
             case var value when value == proto[6]:
-                break;
+                //_myLogger.Log($"Topic of message is {proto[6]} further handling required");
+                return false;
             default:
-                Console.WriteLine("Unknown Topic to handle!");
+                _myLogger.Log($"Unknown Topic to handle [{topic}]");
                 return false;
         }
 
@@ -136,53 +130,71 @@ public class MQTThelper
 
     private bool HandleStatusUpdateTopic(StatusBits nodes, string topic, string payload)
     {
+        var numericValue = 0;
+        bool isNumeric = int.TryParse(payload, out numericValue);
+        var newValue = false;
+        if (isNumeric)
+        {
+            //_myLogger.Log($"Converting Integer to boolean!");
+            newValue = Convert.ToBoolean(numericValue);
+        }
+        else
+        {
+            newValue = bool.Parse(payload);
+        }
+        //_myLogger.Log($"Setting {topic} to {newValue}");
         switch (topic)
         {
-            case var value when value == Enum.GetName(bits.Enable):
-                nodes.SetEnable(bool.Parse(payload), false);
+            case nameof(bits.Enable):
+                nodes.SetEnable(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.Error):
-                nodes.SetError(bool.Parse(payload), false);
+            case nameof(bits.Error):
+                nodes.SetError(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.unused0):
-                nodes.SetUnused0(bool.Parse(payload), false);
+            case nameof(bits.unused0):
+                nodes.SetUnused0(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.unused1):
-                nodes.SetUnused1(bool.Parse(payload), false);
+            case nameof(bits.unused1):
+                nodes.SetUnused1(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.inSensor):
-                nodes.SetInSensor(bool.Parse(payload), false);
+            case nameof(bits.inSensor):
+                nodes.SetInSensor(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.outSensor):
-                nodes.SetOutSensor(bool.Parse(payload), false);
+            case nameof(bits.outSensor):
+                nodes.SetOutSensor(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.Busy):
-                nodes.SetBusy(bool.Parse(payload), false);
+            case nameof(bits.Busy):
+                nodes.SetBusy(newValue, false);
                 break;
-            case var value when value == Enum.GetName(bits.Ready):
-                nodes.SetReady(bool.Parse(payload), false);
+            case nameof(bits.Ready):
+                nodes.SetReady(newValue, false);
                 break;
             default:
-                Console.WriteLine("Unknown Topic to handle!");
+                _myLogger.Log("Unknown Topic to handle!");
                 return false;
         }
-
         return true;
     }
     public void Subscribe()
     {
-        Console.Write("Creating Subscriptions...");
         var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(
-                f => { f.WithTopic($"MPS/{Name}/#"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/#"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/ActionId"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/BarCode"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Error"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/SlideCnt"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Data/#"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Enable"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Error"); })
             .Build();
+        
         var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
-        Console.WriteLine(" Done");
+        _myLogger.Log("Created Subscriptions");
     }
 
     public async Task Disconnect()
     {
-        Console.WriteLine("Closing the MQTT client.");
+        _myLogger.Log("Closing the MQTT client.");
 
         Client.DisconnectAsync().GetAwaiter().GetResult();
     }
@@ -203,12 +215,14 @@ public class StatusBits
     private string TopicPrefix;
     private MqttFactory MqttFactory;
     private ManualResetEvent ResetEvent;
-    public StatusBits(string topic_prefix, IMqttClient client, MqttFactory mqtt_factory, ManualResetEvent resetEvent)
+    private MyLogger _myLogger;
+    public StatusBits(string topic_prefix, IMqttClient client, MqttFactory mqtt_factory, ManualResetEvent resetEvent, MyLogger logger)
     {
         Client = client;
         TopicPrefix = topic_prefix;
         MqttFactory = mqtt_factory;
         ResetEvent = resetEvent;
+        _myLogger = logger;
         SetBusy(false);
         SetEnable(false);
         SetError(false);
@@ -217,7 +231,7 @@ public class StatusBits
         SetReady(false);
         SetUnused0(false);
         SetUnused1(false);
-        Subscribe();
+        //Subscribe();
     }
 
     public void SetBusy(bool value, bool publish = true)
@@ -282,6 +296,8 @@ public class StatusBits
 
     public void PublishChange(MQTThelper.bits topicid, bool value)
     {
+        Thread.Sleep(40);
+        _myLogger.Log($"Publishing {TopicPrefix}{topicid} to value {value}");
         var applicationMessage = new MqttApplicationMessageBuilder()
             .WithTopic(TopicPrefix + Enum.GetName(topicid))
             .WithPayload(value.ToString())
@@ -296,7 +312,7 @@ public class StatusBits
                 f => { f.WithTopic(TopicPrefix + Enum.GetName(MQTThelper.bits.Enable)); })
             .Build();
         var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
-        Console.WriteLine(response);
+        _myLogger.Log(response.Items.First().ResultCode.ToString());
     }
 }
 
@@ -305,7 +321,7 @@ public class MqttNodeVariables
     //{ "ActionId", "BarCode", "Data/Data[0]", "Data/Data[1]", "Error", "SlideCnt", "Status" };
     public int ActionId { get; private set; }
     public int BarCode{ get; private set; }
-    public int[] Data{ get; private set; }
+    public int[] Data{ get; }
     public int Error{ get; private set; }
     public int SlideCnt{ get; private set; }
     public StatusBits Status;
@@ -313,13 +329,15 @@ public class MqttNodeVariables
     private string TopicPrefix;
     private MqttFactory MqttFactory;
     private ManualResetEvent ResetEvent;
+    private MyLogger _myLogger;
     
-    public MqttNodeVariables(string topic_prefix, IMqttClient client, MqttFactory mqtt_factory, ManualResetEvent resetEvent)
+    public MqttNodeVariables(string topic_prefix, IMqttClient client, MqttFactory mqtt_factory, ManualResetEvent resetEvent, MyLogger logger)
     {
         TopicPrefix = topic_prefix;
         Client = client;
         MqttFactory = mqtt_factory;
         ResetEvent = resetEvent;
+        _myLogger = logger;
         Data = new int[2];
         SetActionId(0);
         SetBarCode(0);
@@ -327,7 +345,7 @@ public class MqttNodeVariables
         SetData1(0);
         SetError(0);
         SetSlideCount(0);
-        Status = new StatusBits(TopicPrefix + MQTThelper.proto[6] + "/", Client, MqttFactory, ResetEvent);
+        Status = new StatusBits(TopicPrefix + MQTThelper.proto[6] + "/", Client, MqttFactory, ResetEvent, logger);
     }
 
     public void SetActionId(int value, bool publish = true)

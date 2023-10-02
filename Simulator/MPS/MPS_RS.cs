@@ -71,6 +71,7 @@ namespace Simulator.MPS
                 if (MQTT)
                 {
                     MqttHelper.InNodes.SetSlideCount(MqttHelper.InNodes.SlideCnt + 1);
+                    SlideCount =(uint) MqttHelper.InNodes.SlideCnt;
                 }
                 else
                 {

@@ -106,9 +106,9 @@ namespace Simulator.MPS
             {
                 list.Add(machine.Zone);
             }
-            if(list.Distinct().Count() != Info.Machines.Count)
+            if(false  && list.Distinct().Count() > Info.Machines.Count)
             {
-                myLogger.Log("Duplicated zones for machines. Will skip this place machines!");
+                myLogger.Log("Duplicated zones for machines. Will skip this place machines! "+ list.Distinct().Count() +"!=" + Info.Machines.Count +"");
                 return;
             }
             foreach (var machineInfo in Info.Machines)

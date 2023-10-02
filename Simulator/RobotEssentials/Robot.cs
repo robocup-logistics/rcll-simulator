@@ -388,14 +388,15 @@ namespace Simulator.RobotEssentials
             {
                 MyLogger.Log("Got a new Product!");
                 MyLogger.Log(HeldProduct.ProductDescription());
+                stopwatch.Reset();
                 return true;
             }
             else
             {
                 MyLogger.Log("Was not able to grasp the product after " + stopwatch.ElapsedMilliseconds.ToString() + "ms!");
+                stopwatch.Reset();
                 return false;
             }
-            stopwatch.Stop(); // stopping the stopwatch
         }
 
         private bool PlaceProduct(Mps mps, string machinePoint = "input", uint shelfNumber = 0)

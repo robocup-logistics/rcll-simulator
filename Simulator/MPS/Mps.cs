@@ -99,12 +99,9 @@ namespace Simulator.MPS
             {
                 if (MQTT)
                 {
-                    MqttHelper= new MQTThelper(Name, "localhost", InEvent, BasicEvent);
+                    MqttHelper= new MQTThelper(Name, "mosquitto", InEvent, BasicEvent, MyLogger);
                     MqttHelper.Connect();
                     MqttHelper.Setup();
-                    //Thread.Sleep(60000);
-                    //helper.Disconnect();
-
                 }
                 else
                 {
@@ -207,18 +204,18 @@ namespace Simulator.MPS
             else
             {
                 MyLogger.Log("MachineTyp!");
-            //TaskDescription = "MachineType!";
-            BasicNodes.StatusNodes.busy.Value = true;
-            //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-            Thread.Sleep(400);
-            BasicNodes.Data0.Value = 0;
-            BasicNodes.Data1.Value = 0;
-            //Refbox.ApplyChanges(InNodes.Data0);
-            BasicNodes.StatusNodes.enable.Value = false;
-            //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
-            //Thread.Sleep(20);
-            BasicNodes.StatusNodes.busy.Value = false;
-            Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
+                //TaskDescription = "MachineType!";
+                BasicNodes.StatusNodes.busy.Value = true;
+                //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
+                Thread.Sleep(400);
+                BasicNodes.Data0.Value = 0;
+                BasicNodes.Data1.Value = 0;
+                //Refbox.ApplyChanges(InNodes.Data0);
+                BasicNodes.StatusNodes.enable.Value = false;
+                //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
+                //Thread.Sleep(20);
+                BasicNodes.StatusNodes.busy.Value = false;
+                Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
             }
         }
         public void HandleBasicTasks()
@@ -357,7 +354,8 @@ namespace Simulator.MPS
             MyLogger.Log("Product is moving on the belt!");
             if (MQTT)
             {
-                MqttHelper.InNodes.Status.SetReady(false);
+                //TODO removed for a test
+                //MqttHelper.InNodes.Status.SetReady(false);
             }
             else
             {
@@ -394,6 +392,7 @@ namespace Simulator.MPS
                     MyLogger.Log("We place the Product onto the OutBeltPosition");
                     if (MQTT)
                     {
+                        MyLogger.Log("Setting Ready to True!");
                         MqttHelper.InNodes.Status.SetReady(true);
                     }
                     else
@@ -416,8 +415,9 @@ namespace Simulator.MPS
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
                     if (MQTT)
-                    {
-                        MqttHelper.InNodes.Status.SetReady(true);
+                    {   
+                        //TODO check if this is correct?
+                        //MqttHelper.InNodes.Status.SetReady(true);
                     }
                     else
                     {
