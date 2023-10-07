@@ -376,13 +376,24 @@ namespace Simulator.MPS
                         if (MQTT)
                         {
                             MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
+
                         }
                         else
                         {
                             InNodes.BarCode.Value = (uint) ProductAtIn.ID;
                             Refbox.ApplyChanges(InNodes.BarCode);  
                         }
-
+                        
+                    }
+                    if (MQTT)
+                    {
+                        MyLogger.Log("Setting Ready to True!");
+                        MqttHelper.InNodes.Status.SetReady(true);
+                    }
+                    else
+                    {
+                        InNodes.StatusNodes.ready.Value = true;
+                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);
                     }
                     /*InNodes.StatusNodes.ready.Value = true;
                     Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
