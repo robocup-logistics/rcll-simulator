@@ -53,7 +53,7 @@ namespace Simulator.MPS
 
             if (MQTT)
             {   
-                MqttHelper.InNodes.Status.SetReady(true);
+                //MqttHelper.InNodes.Status.SetReady(true);
             }
             else
             {

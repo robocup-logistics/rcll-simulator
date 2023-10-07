@@ -441,7 +441,7 @@ namespace Simulator.MPS
 
         public void PlaceProduct(string machinePoint, Products? heldProduct)
         {
-            MyLogger.Log("Got a PlaceProduct!");
+            //MyLogger.Log("Got a PlaceProduct!");
             switch (machinePoint.ToLower())
             {
                 case "input":
@@ -506,7 +506,7 @@ namespace Simulator.MPS
         }
         public bool EmptyMachinePoint(string machinepoint)
         {
-            MyLogger.Log("Checking the MachinePoint " + machinepoint);
+            //MyLogger.Log("Checking the MachinePoint " + machinepoint);
             switch (machinepoint.ToLower())
             {
                 case "input":

@@ -118,7 +118,7 @@ public class MQTThelper
                 nodes.SetSlideCount(int.Parse(payload), false);
                 break;
             case var value when value == proto[6]:
-                //_myLogger.Log($"Topic of message is {proto[6]} further handling required");
+                _myLogger.Log($"Topic of message is {proto[6]} further handling required");
                 return false;
             default:
                 _myLogger.Log($"Unknown Topic to handle [{topic}]");
@@ -142,7 +142,7 @@ public class MQTThelper
         {
             newValue = bool.Parse(payload);
         }
-        //_myLogger.Log($"Setting {topic} to {newValue}");
+        _myLogger.Log($"Setting {topic} to {newValue}");
         switch (topic)
         {
             case nameof(bits.Enable):
@@ -178,14 +178,23 @@ public class MQTThelper
     public void Subscribe()
     {
         var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/#"); })
+
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/ActionId"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/Data/Data[0]"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/Data/Data[1]"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/Status/Error"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/Status/Enable"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/BarCode"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/Basic/#"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/SlideCnt"); })
             .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/ActionId"); })
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/BarCode"); })
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Error"); })
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/SlideCnt"); })
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Data/#"); })
-            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Enable"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Data/Data[0]"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Data/Data[1]"); })
             .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Error"); })
+            .WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Enable"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/BarCode"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/SlideCnt"); })
+            //.WithTopicFilter(f => { f.WithTopic($"MPS/{Name}/In/Status/Error"); })
             .Build();
         
         var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
@@ -297,7 +306,7 @@ public class StatusBits
     public void PublishChange(MQTThelper.bits topicid, bool value)
     {
         Thread.Sleep(40);
-        _myLogger.Log($"Publishing {TopicPrefix}{topicid} to value {value}");
+        _myLogger.Log($"Publishing {TopicPrefix}{topicid.ToString()} to value {value}");
         var applicationMessage = new MqttApplicationMessageBuilder()
             .WithTopic(TopicPrefix + Enum.GetName(topicid))
             .WithPayload(value.ToString())
@@ -396,6 +405,7 @@ public class MqttNodeVariables
             .WithTopic(TopicPrefix + MQTThelper.proto[topicid])
             .WithPayload(value.ToString())
             .Build();
+        _myLogger.Log($"Publishing {TopicPrefix}{MQTThelper.proto[topicid]} to value {value}");
         Client.PublishAsync(applicationMessage, CancellationToken.None).GetAwaiter();
     }
 }
