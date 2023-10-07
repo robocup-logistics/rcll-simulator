@@ -93,8 +93,7 @@ namespace Simulator.MPS
                         MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
                         break;
                 }
-                TaskDescription = "Idle";
-                    // Thread.Sleep(1000);
+                TaskDescription = "Idle"; 
             }
         }
         public void SerializeMachineToJson()
