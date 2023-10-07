@@ -2,6 +2,7 @@
 using System.Text;
 using MQTTnet;
 using MQTTnet.Client;
+using MQTTnet.Protocol;
 using Org.BouncyCastle.Crypto.Prng;
 using Simulator.Utility;
 using static System.String;
@@ -58,6 +59,7 @@ public class MQTThelper
         var mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(Url
             )
+            .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();
         _myLogger.Log("Connected!");
