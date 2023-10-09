@@ -57,9 +57,8 @@ public class MQTThelper
     {
         _myLogger.Log("Starting connection!");
         var mqttClientOptions = new MqttClientOptionsBuilder()
-            .WithTcpServer(Url
-            )
-            .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.AtMostOnce)
+            .WithTcpServer(Url)
+            .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();
         _myLogger.Log("Connected!");
