@@ -194,10 +194,10 @@ namespace Simulator.RobotEssentials
                 {
                     if (Socket.Available == 0)
                     {
-                        Thread.Sleep(200);
+                        Thread.Sleep(50);
                         continue;
                     }
-                    //MyLogger.Log("Waiting for a message!");
+                    MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
                     var payload = PbHandler.CheckMessageHeader(buffer);
@@ -205,12 +205,12 @@ namespace Simulator.RobotEssentials
                     {
                         continue;
                     }
-                    //MyLogger.Log("Lines Receive " + message);
-                    if (payload > message)
+                    MyLogger.Log("Lines Receive " + message + " of " + payload);
+                    while (payload > message)
                     {
-                        //MyLogger.Log("Missing bytes, we need to receive more " + message + "/" + payload);
+                        MyLogger.Log("Missing bytes, we need to receive more " + message + "/" + payload);
                         message = Socket.Receive(buffer, message, payload + 16 - message, SocketFlags.None);
-                        //MyLogger.Log("Lines Receive " + message);
+                        MyLogger.Log("Lines Receive " + message);
                     }
                     //MyLogger.Log("Received a message!");
                     PbHandler.HandleMessage(buffer);

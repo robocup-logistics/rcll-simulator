@@ -182,6 +182,7 @@ namespace Simulator.MPS
         {
             if (MQTT)
             {
+                Thread.Sleep(250);
                 MqttHelper.InNodes.Status.SetBusy(false);
                 Thread.Sleep(250);
             }
