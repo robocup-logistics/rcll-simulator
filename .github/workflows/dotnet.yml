@@ -5,7 +5,7 @@ name: .NET build and test
 
 on:
   push:
-    branches: [ "master", "dominik_wip" ]
+    branches: [ "master", "mqtt-test"]
   pull_request:
     branches: [ "master" ]
 

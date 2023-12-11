@@ -95,6 +95,10 @@ namespace Simulator.Utility
                     result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 5));
                 else
                     result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 4));*/
+                if(target.Contains("C_Z") || target.Contains("M_Z"))
+                {
+                    target = target.Substring(0, 5);
+                }
                 result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
                 MyLogger.Log("Is a Zone Waypoint!");
             }
