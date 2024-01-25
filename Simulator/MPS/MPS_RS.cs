@@ -64,7 +64,7 @@ namespace Simulator.MPS
         public new void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct for RingStation!");
-            if(machinePoint.Equals("slide"))
+            if(machinePoint.Equals("slide") || machinePoint.Equals("SLIDE"))
             {
                 MyLogger.Log("The Current SlideCnt is = " + (MQTT ? MqttHelper.InNodes.SlideCnt : InNodes.SlideCnt.Value));
                 MyLogger.Log("Added a Base to the slide!");
