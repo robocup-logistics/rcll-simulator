@@ -311,6 +311,7 @@ public class StatusBits
         var applicationMessage = new MqttApplicationMessageBuilder()
             .WithTopic(TopicPrefix + Enum.GetName(topicid))
             .WithPayload(value.ToString())
+            .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce) // Set QoS level to Exactly Once (2)
             .Build();
         Client.PublishAsync(applicationMessage, CancellationToken.None).GetAwaiter();
     }
