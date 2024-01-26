@@ -161,6 +161,10 @@ namespace Simulator.RobotEssentials
                 case true:
                     {
                         var check = false;
+                        if(CurrentTask.TaskId == task.TaskId) {
+                            MyLogger.Log("Current Task is already being worked on!");
+                            check = true;
+                        }
                         foreach (var t in Tasks)
                         {
                             if (t.TaskId == task.TaskId)
