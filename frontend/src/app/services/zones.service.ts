@@ -12,10 +12,17 @@ export class ZonesService {
   private Client: HttpClient;
   private robots : Zone[] | undefined;
   private BaseUrl : string;
-  constructor(private http: HttpClient) {
+  constructor(http: HttpClient) {
     this.Client = http;
     this.BaseUrl = "http://localhost:8000/";
-
+    for (let i = 0; i < document.head.children.length; i++) {
+      if(document.head.children.item(i)?.tagName == "BASE") {
+        const baseHref = document.head.children.item(i)?.getAttribute("href");
+        if (baseHref != "/") {
+          this.BaseUrl = "api/";
+        }
+      }
+    }
   }
 
   getZones(): Observable<Zone[]> {

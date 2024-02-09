@@ -73,7 +73,7 @@ namespace Simulator.MPS
                 
                 //MyLogger.Info("We got a write and reset the wait!");
                 InEvent.Reset();
-                GotConnection= true;
+                GotConnection = true;
                 //HandleBasicTasks();
                 switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
                 {

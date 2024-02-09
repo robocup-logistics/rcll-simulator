@@ -227,6 +227,7 @@ namespace Simulator.MPS
                 BasicEvent.WaitOne();
                 //MyLogger.Info("We got a write and reset the wait!");
                 BasicEvent.Reset();
+                GotConnection = true;
                 var actionId = 0;
                 if (MQTT)
                 {
