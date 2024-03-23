@@ -29,5 +29,6 @@ jobs:
         version: '1.6'
         ports: '1883:1883'
         container-name: 'mosquitto'
+        config: ${{ github.workspace }}/.github/workflows/mosquitto.conf
     - name: Test
       run: dotnet test Simulatortests/Simulatortests.csproj --no-build --verbosity normal 
