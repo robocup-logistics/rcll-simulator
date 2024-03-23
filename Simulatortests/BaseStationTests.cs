@@ -1,10 +1,9 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Simulator.MPS;
-using LlsfMsgs;
-using System.Threading;
+﻿using LlsfMsgs;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Simulator;
-using Opc.UaFx.Client;
+using Simulator.MPS;
 using Simulator.Utility;
+using System.Threading;
 
 namespace Simulatortests
 {
@@ -63,6 +62,31 @@ namespace Simulatortests
             testHelper.CloseConnection();
             machine.StopMachine();
         }
+
+        [TestMethod]
+        public void MQTT_DispenseBase()
+        {
+            var ip = "mosquitto";
+            var port = 1883;
+            var name = "C-BS";
+            var config = new Configurations();
+            config.Refbox = new RefboxConfig(ip:"127.0.0.1",0,0,0,0,0,0,0, ip, port, true);
+            var machine = new MPS_BS(config, name, port, 0, Team.Cyan, true);
+            var thread = new Thread(machine.Run);
+            thread.Start();
+            Thread.Sleep(500);
+            Assert.AreEqual(machine.MqttHelper.InNodes.ActionId, 0);
+            var testHelper = new MQTTTestHelper(ip, port, name);
+            if (!testHelper.CreateConnection())
+                Assert.Fail();
+            testHelper.SendTask((ushort)MPS_BS.BaseSpecificActions.GetBase, (ushort)1, (ushort)0);
+            Thread.Sleep(config.BSTaskDuration + 300);
+            Assert.IsNotNull(machine.ProductOnBelt);
+            testHelper.CloseConnection();
+            machine.StopMachine();
+        }
+
+
         [TestMethod]
         public void OPC_WrongDispenseBase()
         {

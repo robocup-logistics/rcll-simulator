@@ -40,7 +40,7 @@ public class MQTThelper
     private ManualResetEvent BasicEvent;
     private MyLogger _myLogger;
     
-    public MQTThelper(string name, string url, ManualResetEvent inevent, ManualResetEvent basicevent, MyLogger logger)
+    public MQTThelper(string name, string url, int port, ManualResetEvent inevent, ManualResetEvent basicevent, MyLogger logger)
     {
         Name = name;
         _myLogger = logger;
@@ -58,6 +58,7 @@ public class MQTThelper
         _myLogger.Log("Starting connection!");
         var mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(Url)
+            .WithClientId(Name)
             .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();

@@ -144,7 +144,7 @@ teams:
     port: 2016
 refbox:
   public:
-    ip: 127.0.0.1
+    ip: 127.0.0.1 # is also used as mqtt broker address
     # THe simulation communicates via tcp to get ground-truth
     tcp: 4444
     send: 4445
@@ -155,6 +155,10 @@ refbox:
   magenta:
     send: 4442
     recv: 4447
+  mqtt:
+    broker_ip: localhost
+    broker_port: 1883
+    active: true
 webui:
   prefix: http  
   port: 8000
