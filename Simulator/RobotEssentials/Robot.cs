@@ -463,7 +463,7 @@ namespace Simulator.RobotEssentials
                 return;
             }
             var Waypoint = CurrentTask.Move.Waypoint;
-            var MachinePoint = CurrentTask.Move.MachinePoint;
+            var MachinePoint = CurrentTask.Move.Waypoint.Split("#")[1];
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint, MachinePoint);
             if (targetZone == 0)
             {
