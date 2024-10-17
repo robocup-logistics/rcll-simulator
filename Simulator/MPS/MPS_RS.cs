@@ -38,7 +38,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
+                switch (MqttHelper.InNodes.ActionId)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -53,7 +53,7 @@ namespace Simulator.MPS
                         MountRingTask();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
+                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
 
                 }
@@ -66,22 +66,12 @@ namespace Simulator.MPS
             MyLogger.Log("Got a PlaceProduct for RingStation!");
             if(machinePoint.Equals("slide"))
             {
-                MyLogger.Log("The Current SlideCnt is = " + (MQTT ? MqttHelper.InNodes.SlideCnt : InNodes.SlideCnt.Value));
+                MyLogger.Log("The Current SlideCnt is = " + (MqttHelper.InNodes.SlideCnt));
                 MyLogger.Log("Added a Base to the slide!");
-                if (MQTT)
-                {
-                    MqttHelper.InNodes.SetSlideCount(MqttHelper.InNodes.SlideCnt + 1);
-                    SlideCount =(uint) MqttHelper.InNodes.SlideCnt;
-                }
-                else
-                {
-                    InNodes.SlideCnt.Value += 1;
-                    SlideCount = InNodes.SlideCnt.Value;
-                    Thread.Sleep(500);
-                    Refbox.ApplyChanges(InNodes.SlideCnt);
-                }
- 
-                MyLogger.Log("The Current SlideCnt after is = " + (MQTT ? MqttHelper.InNodes.SlideCnt : InNodes.SlideCnt.Value));
+                MqttHelper.InNodes.SetSlideCount(MqttHelper.InNodes.SlideCnt + 1);
+                SlideCount =(uint) MqttHelper.InNodes.SlideCnt;
+
+                MyLogger.Log("The Current SlideCnt after is = " + (MqttHelper.InNodes.SlideCnt));
             }
             else{
                 base.PlaceProduct(machinePoint, heldProduct);
@@ -92,7 +82,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
-            var ringNumber = MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
+            var ringNumber = MqttHelper.InNodes.Data[0];
             StartTask();
             for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
             {
@@ -114,11 +104,6 @@ namespace Simulator.MPS
             Thread.Sleep(Config.RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
             FinishedTask();
-        }
-        public void SerializeMachineToJson()
-        {
-            JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
         }
     }
 }

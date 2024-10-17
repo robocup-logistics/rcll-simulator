@@ -11,12 +11,9 @@ namespace Simulator.MPS
     public abstract class Mps
     {
         public readonly MyLogger MyLogger;
-        public readonly MPSOPCUAServer Refbox;
         public string Name { get; private set; }
         public int Port { get; private set; }
         public MpsType Type;
-        public NodeCollection InNodes;
-        public NodeCollection BasicNodes;
         public MachineState MachineState;
         public ExplorationState ExplorationState;
         public MachineSide MachineSide;
@@ -43,7 +40,6 @@ namespace Simulator.MPS
         public string JsonInformation;
         protected Configurations Config;
         public MQTThelper MqttHelper;
-        protected bool MQTT;
         public bool Working { get; private set; }
         public enum MpsType
         {
@@ -90,28 +86,15 @@ namespace Simulator.MPS
             GreenLight = new Light(LightColor.Green, LightEvent);
             TaskDescription = "idle";
             Config = config;
-            MQTT = Config.Refbox != null;
             // Belt = new Belt(this, BeltEvent);
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
                 return;*/
             try
             {
-                if (Config.Refbox != null && Config.Refbox.MqttMode)
-                {
-                    MqttHelper= new MQTThelper(Name, config.Refbox.BrokerIp,config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
-                    MqttHelper.Connect();
-                    MqttHelper.Setup();
-                }
-                else
-                {
-                    Refbox = new MPSOPCUAServer(Name, Port, BasicEvent, InEvent, MyLogger);
-                    InNodes = Refbox.GetNodeCollection(true);
-                    BasicNodes = Refbox.GetNodeCollection(false);
-                    var th = new Thread(Refbox.Start);
-                    th.Name = Name + "_OpcServerThread";
-                    th.Start();
-                }
+                MqttHelper= new MQTThelper(Name, config.Refbox.BrokerIp,config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
+                MqttHelper.Connect();
+                MqttHelper.Setup();
                 Rotation = 0;
                 Zone = Zone.MZ41;
                 Working = true;
@@ -128,117 +111,45 @@ namespace Simulator.MPS
         public void ResetMachine()
         {
             TaskDescription = "Reseting!";
-            if(MQTT)
-            {
-                MqttHelper.InNodes.Status.SetBusy(true);
-                MqttHelper.InNodes.Status.SetEnable(false);
-            }
-            else
-            {
-                InNodes.StatusNodes.busy.Value = true;
-                Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-                InNodes.StatusNodes.enable.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.enable);
-            }
+            MqttHelper.InNodes.Status.SetBusy(true);
+            MqttHelper.InNodes.Status.SetEnable(false);
             Thread.Sleep(1000);
-            if(MQTT)
-            {
-                MqttHelper.InNodes.SetActionId(0);
-                MqttHelper.InNodes.SetData0(0);
-                MqttHelper.InNodes.SetData1(0);
-                MqttHelper.InNodes.SetError(0);
-                MqttHelper.InNodes.Status.SetReady(false);
-                MqttHelper.InNodes.Status.SetError(false);
-            }
-            else
-            {
-                InNodes.ActionId.Value = 0;
-                Refbox.ApplyChanges(InNodes.ActionId);
-                InNodes.Data0.Value = 0;
-                Refbox.ApplyChanges(InNodes.Data0);
-                InNodes.Data1.Value = 0;
-                Refbox.ApplyChanges(InNodes.Data1);
-                InNodes.ByteError.Value = 0;
-                Refbox.ApplyChanges(InNodes.ByteError);
-                InNodes.StatusNodes.ready.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                InNodes.StatusNodes.error.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.error);
-            }
+            MqttHelper.InNodes.SetActionId(0);
+            MqttHelper.InNodes.SetData0(0);
+            MqttHelper.InNodes.SetData1(0);
+            MqttHelper.InNodes.SetError(0);
+            MqttHelper.InNodes.Status.SetReady(false);
+            MqttHelper.InNodes.Status.SetError(false);
 
 
             ProductAtIn = null;
             ProductAtOut = null;
             ProductOnBelt = null;
-            if(MQTT)
-            {
-                MqttHelper.InNodes.Status.SetBusy(false);
-            }
-            else
-            {
-                InNodes.StatusNodes.busy.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-            }
+            MqttHelper.InNodes.Status.SetBusy(false);
 
             TaskDescription = "Idle";
         }
 
         public void StartTask()
         {
-            if (MQTT)
-            {
-                MqttHelper.InNodes.Status.SetBusy(true);
-                MqttHelper.InNodes.Status.SetEnable(false);
-            }
-            else
-            {
-                InNodes.StatusNodes.busy.Value = true;
-                Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-            }
-            
+            MqttHelper.InNodes.Status.SetBusy(true);
+            MqttHelper.InNodes.Status.SetEnable(false);
         }
 
         public void FinishedTask()
         {
-            if (MQTT)
-            {
-                Thread.Sleep(250);
-                MqttHelper.InNodes.Status.SetBusy(false);
-                Thread.Sleep(250);
-            }
-            else
-            {
-                InNodes.StatusNodes.busy.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-            }
+            Thread.Sleep(250);
+            MqttHelper.InNodes.Status.SetBusy(false);
+            Thread.Sleep(250);
         }
         public void HandleMachineType()
         {
-            if (MQTT)
-            {
-                MqttHelper.BasicNodes.Status.SetBusy(true);
-                Thread.Sleep(400);
-                MqttHelper.BasicNodes.SetData0(0);
-                MqttHelper.BasicNodes.SetData1(0);
-                MqttHelper.BasicNodes.Status.SetEnable(false);
-                MqttHelper.BasicNodes.Status.SetBusy(false);
-            }
-            else
-            {
-                MyLogger.Log("MachineTyp!");
-                //TaskDescription = "MachineType!";
-                BasicNodes.StatusNodes.busy.Value = true;
-                //Refbox.ApplyChanges(InNodes.StatusNodes.busy);
-                Thread.Sleep(400);
-                BasicNodes.Data0.Value = 0;
-                BasicNodes.Data1.Value = 0;
-                //Refbox.ApplyChanges(InNodes.Data0);
-                BasicNodes.StatusNodes.enable.Value = false;
-                //Refbox.ApplyChanges(InNodes.StatusNodes.enable);
-                //Thread.Sleep(20);
-                BasicNodes.StatusNodes.busy.Value = false;
-                Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
-            }
+            MqttHelper.BasicNodes.Status.SetBusy(true);
+            Thread.Sleep(400);
+            MqttHelper.BasicNodes.SetData0(0);
+            MqttHelper.BasicNodes.SetData1(0);
+            MqttHelper.BasicNodes.Status.SetEnable(false);
+            MqttHelper.BasicNodes.Status.SetBusy(false);
         }
         public void HandleBasicTasks()
         {
@@ -249,14 +160,7 @@ namespace Simulator.MPS
                 BasicEvent.Reset();
                 GotConnection = true;
                 var actionId = 0;
-                if (MQTT)
-                {
-                    actionId = MqttHelper.BasicNodes.ActionId;
-                }
-                else
-                {
-                    actionId = BasicNodes.ActionId.Value;
-                }
+                actionId = MqttHelper.BasicNodes.ActionId;
                 switch (actionId)
                 {
                     case (ushort)Actions.RedLight:
@@ -273,7 +177,7 @@ namespace Simulator.MPS
                         HandleMachineType();
                         break;
                     default:
-                        MyLogger.Log("Basic Action ID = " + BasicNodes.ActionId.Value);
+                        MyLogger.Log("Basic Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
                 }
                 
@@ -285,20 +189,12 @@ namespace Simulator.MPS
         }
         public void HandleLights()
         {
-            if (MQTT)
-            {
-                MqttHelper.BasicNodes.Status.SetBusy(true);   
-            }
-            else
-            {
-                BasicNodes.StatusNodes.busy.Value = true;
-                Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
-            }
-            var state = MQTT ? MqttHelper.BasicNodes.Data[0].ToString() : BasicNodes.Data0.Value.ToString();
-            var time = MQTT ? MqttHelper.BasicNodes.Data[1] : BasicNodes.Data1.Value; // not in use currently
+            MqttHelper.BasicNodes.Status.SetBusy(true);
+            var state = MqttHelper.BasicNodes.Data[0].ToString();
+            var time = MqttHelper.BasicNodes.Data[1]; // not in use currently
             var LightState = (LightState)Enum.Parse(typeof(LightState), state);
             
-            switch (MQTT ? MqttHelper.BasicNodes.ActionId : BasicNodes.ActionId.Value)
+            switch (MqttHelper.BasicNodes.ActionId)
             {
                 case (ushort)Actions.ResetLights:
                     MyLogger.Log("Handle Lights got a ResetLights task!");
@@ -328,21 +224,9 @@ namespace Simulator.MPS
                     break;
             }
 
-            if (MQTT)
-            {
-                MqttHelper.BasicNodes.SetActionId(0);
-                MqttHelper.BasicNodes.Status.SetEnable(false);
-                MqttHelper.BasicNodes.Status.SetBusy(false);
-            }
-            else
-            {
-                BasicNodes.ActionId.Value = 0;
-                Refbox.ApplyChanges(BasicNodes.ActionId);
-                BasicNodes.StatusNodes.enable.Value = false;
-                Refbox.ApplyChanges(BasicNodes.StatusNodes.enable);
-                BasicNodes.StatusNodes.busy.Value = false;
-                Refbox.ApplyChanges(BasicNodes.StatusNodes.busy);
-            }
+            MqttHelper.BasicNodes.SetActionId(0);
+            MqttHelper.BasicNodes.Status.SetEnable(false);
+            MqttHelper.BasicNodes.Status.SetBusy(false);
         }
 
         public void HandleBelt()
@@ -351,16 +235,8 @@ namespace Simulator.MPS
             TaskDescription = "Move via Belt";
             var target = Positions.NoTarget;
             var direction = Direction.FromInToOut;
-            if (MQTT)
-            {
-                target = (Positions)MqttHelper.InNodes.Data[0];
-                direction = (Direction)MqttHelper.InNodes.Data[1];
-            }
-            else
-            {
-                target = (Positions)InNodes.Data0.Value;
-                direction = (Direction)InNodes.Data1.Value;
-            }
+            target = (Positions)MqttHelper.InNodes.Data[0];
+            direction = (Direction)MqttHelper.InNodes.Data[1];
 
             StartTask();
             MyLogger.Log("Product on belt?");
@@ -375,16 +251,7 @@ namespace Simulator.MPS
             }
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
-            if (MQTT)
-            {
-                //TODO removed for a test
-                //MqttHelper.InNodes.Status.SetReady(false);
-            }
-            else
-            {
-                InNodes.StatusNodes.ready.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-            }
+            MqttHelper.InNodes.Status.SetReady(false);
             Thread.Sleep(Config.BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
             switch (target)
@@ -395,46 +262,17 @@ namespace Simulator.MPS
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
                     if (Config.BarcodeScanner)
                     {
-                        if (MQTT)
-                        {
-                            MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
-
-                        }
-                        else
-                        {
-                            InNodes.BarCode.Value = (uint) ProductAtIn.ID;
-                            Refbox.ApplyChanges(InNodes.BarCode);  
-                        }
-                        
+                        MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
                     }
-                    if (MQTT)
-                    {
-                        MyLogger.Log("Setting Ready to True!");
-                        MqttHelper.InNodes.Status.SetReady(true);
-                    }
-                    else
-                    {
-                        InNodes.StatusNodes.ready.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                    }
-                    /*InNodes.StatusNodes.ready.Value = true;
-                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
+                    MyLogger.Log("Setting Ready to True!");
+                    MqttHelper.InNodes.Status.SetReady(true);
                     break;
                 case Positions.Out:
                     ProductAtOut = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the OutBeltPosition");
-                    if (MQTT)
-                    {
-                        MyLogger.Log("Setting Ready to True!");
-                        MqttHelper.InNodes.Status.SetReady(true);
-                    }
-                    else
-                    {
-                        InNodes.StatusNodes.ready.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                    }
-
+                    MyLogger.Log("Setting Ready to True!");
+                    MqttHelper.InNodes.Status.SetReady(true);
                     break;
                 case Positions.Mid:
                     if (direction == Direction.FromInToOut)
@@ -448,19 +286,8 @@ namespace Simulator.MPS
                         ProductAtOut = null;
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
-                    if (MQTT)
-                    {   
-                        //TODO check if this is correct?
-                        //MqttHelper.InNodes.Status.SetReady(true);
-                    }
-                    else
-                    {
-                        InNodes.StatusNodes.ready.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                        /*InNodes.StatusNodes.ready.Value = false;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);*/
-                    }
-
+                    //TODO check if this is correct?
+                    MqttHelper.InNodes.Status.SetReady(true);
                     break;
                 case Positions.NoTarget:
                     MyLogger.Log("Placing Product on NoTarget?");
@@ -493,15 +320,7 @@ namespace Simulator.MPS
             {
                 if (ProductAtOut != null)
                 {
-                    if (MQTT)
-                    {
-                        MqttHelper.InNodes.Status.SetReady(true);
-                    }
-                    else
-                    {
-                        InNodes.StatusNodes.ready.Value = true;
-                        Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                    }
+                    MqttHelper.InNodes.Status.SetReady(true);
                 }
             }
         }
@@ -526,15 +345,7 @@ namespace Simulator.MPS
             }
             //if (!Configurations.GetInstance().MockUp)
             {
-                if (MQTT)
-                {
-                    MqttHelper.InNodes.Status.SetReady(false);
-                }
-                else
-                {
-                    InNodes.StatusNodes.ready.Value = false;
-                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-                }
+                MqttHelper.InNodes.Status.SetReady(false);
             }
             return returnProduct;
         }
@@ -561,12 +372,6 @@ namespace Simulator.MPS
         {
             JsonInformation = JsonSerializer.Serialize(this);
             //Console.WriteLine(JsonInformation);
-        }
-
-        public void StopMachine()
-        {
-            if (Refbox != null)
-                Refbox.Stop();
         }
     }
 }

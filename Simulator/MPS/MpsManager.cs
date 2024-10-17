@@ -27,6 +27,11 @@ namespace Simulator.MPS
             CreateMachines();
             if(RefboxConnection)
             {
+                if(config.Refbox == null)
+                {
+                    myLogger.Log("Refbox is null. Will public start Refbox Connection!");
+                    throw new Exception("Refbox config is null. Will not start Refbox Connection!");
+                }
                 RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
                 RefboxThread.Start();
             }
@@ -150,13 +155,6 @@ namespace Simulator.MPS
             }
         }
 
-        public void StopAllMachines()
-        {
-            foreach (var machine in Machines)
-            {
-                machine.StopMachine();
-            }
-        }
         public void StartRefboxConnection()
         {
             if (!Config.MockUp)

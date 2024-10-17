@@ -74,17 +74,14 @@ namespace Simulator.MPS
                     {
                         On = false;
                         TargetPosition = Positions.NoTarget;
-                        Machine.InNodes.StatusNodes.ready.Value = true;
-                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.ready);
-                        Machine.InNodes.StatusNodes.busy.Value = false;
-                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.busy);
+                        Machine.MqttHelper.InNodes.Status.SetReady(true);
+                        Machine.MqttHelper.InNodes.Status.SetBusy(false);
                         continue;
                     }
 
-                    if (!Machine.InNodes.StatusNodes.busy.Value)
+                    if (!Machine.MqttHelper.InNodes.Status.GetBusy())
                     {
-                        Machine.InNodes.StatusNodes.busy.Value = true;
-                        Machine.Refbox.ApplyChanges(Machine.InNodes.StatusNodes.busy);
+                        Machine.MqttHelper.InNodes.Status.SetBusy(true);
                     }
 
 

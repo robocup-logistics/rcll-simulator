@@ -245,6 +245,10 @@ public class StatusBits
         //Subscribe();
     }
 
+    public bool GetBusy()
+    {
+        return Busy;
+    }
     public void SetBusy(bool value, bool publish = true)
     {
         Busy = value;

@@ -63,7 +63,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
+                switch (MqttHelper.InNodes.ActionId)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -72,7 +72,7 @@ namespace Simulator.MPS
                         DeliverToSlotTask();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
+                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
 
                 }
@@ -85,7 +85,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("DeliverToSlotTask!");
             TaskDescription = "Delivering Product";
-            var slot = MQTT? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
+            var slot = MqttHelper.InNodes.Data[0];
             StartTask();
             for(var count = 0; count  < 45 && ProductAtIn == null; count++)
             {
@@ -108,11 +108,6 @@ namespace Simulator.MPS
             }
             ProductAtIn = null;
             FinishedTask();
-        }
-        public void SerializeMachineToJson()
-        {
-            JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
         }
     }
 }

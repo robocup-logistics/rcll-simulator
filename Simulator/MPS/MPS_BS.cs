@@ -31,10 +31,10 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a GetBase Task!");
             TaskDescription = "Dispensing a Base";
-            var stock = MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
+            var stock = MqttHelper.InNodes.Data[0];
             StartTask();
             Thread.Sleep(Config.BSTaskDuration);
-            MyLogger.Log("Placed a Base from stock " + (MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value) + " on the belt");
+            MyLogger.Log("Placed a Base from stock " + (MqttHelper.InNodes.Data[0]) + " on the belt");
             switch (stock)
             {
                 case 1:
@@ -51,15 +51,7 @@ namespace Simulator.MPS
                     break;
             }
 
-            if (MQTT)
-            {   
-                //MqttHelper.InNodes.Status.SetReady(true);
-            }
-            else
-            {
-                InNodes.StatusNodes.ready.Value = true;
-                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
-            }
+            MqttHelper.InNodes.Status.SetReady(true);
 
             FinishedTask();
         }
@@ -75,7 +67,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
+                switch (MqttHelper.InNodes.ActionId)
                 {
                     case (ushort)Actions.NoJob:
                         MyLogger.Log("No In Job!");
@@ -90,21 +82,11 @@ namespace Simulator.MPS
                         DispenseBase();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
+                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
                 }
                 TaskDescription = "Idle"; 
             }
         }
-        public void SerializeMachineToJson()
-        {
-            var options = new JsonSerializerOptions
-            {
-                WriteIndented = true
-            };
-            JsonInformation = JsonSerializer.Serialize<MPS_BS>(this, options);
-            //Console.WriteLine(JsonInformation);
-        }
     }
-
 }

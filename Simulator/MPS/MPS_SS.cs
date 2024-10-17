@@ -37,7 +37,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
+                switch (MqttHelper.InNodes.ActionId)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -46,18 +46,12 @@ namespace Simulator.MPS
                         HandleBelt();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
 
                 }
                 TaskDescription = "Idle";                
-                MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
             }
-        }
-        public void SerializeMachineToJson()
-        {
-            JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
         }
     }
 }
