@@ -1,6 +1,4 @@
-﻿using System.Text.Json;
-using LlsfMsgs;
-using System.Threading;
+﻿using LlsfMsgs;
 using Simulator.Utility;
 
 namespace Simulator.MPS {
@@ -17,16 +15,7 @@ namespace Simulator.MPS {
             Type = MpsType.DeliveryStation;
             //if (Configurations.GetInstance().MockUp) return;
         }
-        public new void Run() {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
-        }
+
         public bool ProductAtSlot(int slot) {
             switch (slot) {
                 case 1:
@@ -47,7 +36,7 @@ namespace Simulator.MPS {
             }
             return false;
         }
-        private void Work() {
+        protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
                 InEvent.WaitOne();

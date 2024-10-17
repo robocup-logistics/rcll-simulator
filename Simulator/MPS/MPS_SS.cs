@@ -13,17 +13,8 @@ namespace Simulator.MPS {
             Type = MpsType.StorageStation;
             //if (Configurations.GetInstance().MockUp) return;
         }
-        public new void Run() {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
-        }
-        private void Work() {
+
+        protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
                 InEvent.WaitOne();

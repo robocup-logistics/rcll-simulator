@@ -1,8 +1,4 @@
 ﻿using Simulator.Utility;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using LlsfMsgs;
 using Simulator.RobotEssentials;
 
@@ -12,7 +8,7 @@ namespace Simulator.MPS {
         public bool AllMachineSet { get; private set; }
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
-        private Configurations Config;
+        private readonly Configurations Config;
         private Thread? RefboxThread;
         public MpsManager(Configurations config, bool RefboxConnection = true) {
             myLogger = new MyLogger("MpsManager", true);
@@ -22,10 +18,6 @@ namespace Simulator.MPS {
             AllMachineSet = false;
             CreateMachines();
             if (RefboxConnection) {
-                if (config.Refbox == null) {
-                    myLogger.Log("Refbox is null. Will public start Refbox Connection!");
-                    throw new Exception("Refbox config is null. Will not start Refbox Connection!");
-                }
                 RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
                 RefboxThread.Start();
             }
@@ -66,16 +58,13 @@ namespace Simulator.MPS {
                         currentMps = null;
                         break;
                 }
-                if (currentMps == null) {
+                if (currentMps == null || thread == null) {
                     continue;
                 }
-                if (thread != null) {
-                    thread.Name = currentMps.Name + "_workingThread";
-                }
 
-                thread?.Start();
+                thread.Name = currentMps.Name + "_workingThread";
+                thread.Start();
                 Machines.Add(currentMps);
-                //mps1.Run();
             }
 
         }

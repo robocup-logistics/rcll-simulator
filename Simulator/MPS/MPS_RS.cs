@@ -18,13 +18,8 @@ namespace Simulator.MPS {
             Type = MpsType.RingStation;
             SlideCount = 0;
         }
-        public new void Run() {
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
-        }
-        private void Work() {
+
+        protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
                 InEvent.WaitOne();

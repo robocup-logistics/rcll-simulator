@@ -1,8 +1,5 @@
-﻿using System.Collections.Generic;
-using LlsfMsgs;
+﻿using LlsfMsgs;
 using Simulator.Utility;
-using System.Threading;
-using System.Text.Json;
 
 
 namespace Simulator.MPS {
@@ -15,12 +12,6 @@ namespace Simulator.MPS {
 
         public MPS_BS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug) {
             Type = MpsType.BaseStation;
-        }
-        public new void Run() {
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
         }
         public void DispenseBase() {
             MyLogger.Log("Got a GetBase Task!");
@@ -48,7 +39,7 @@ namespace Simulator.MPS {
 
             FinishedTask();
         }
-        private void Work() {
+        protected override void Work() {
             SerializeMachineToJson();
             while (true) {
                 //MyLogger.Info("We will wait for a Signal!");

@@ -16,13 +16,8 @@ namespace Simulator.MPS {
             Type = MpsType.CapStation;
             StoredCap = null;
         }
-        public new void Run() {
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
-        }
-        private void Work() {
+
+        protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
                 InEvent.WaitOne();

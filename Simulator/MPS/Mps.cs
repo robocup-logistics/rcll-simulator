@@ -1,8 +1,4 @@
-﻿using System;
-using System.Threading;
-using LlsfMsgs;
-using Newtonsoft.Json;
-using Org.BouncyCastle.Math.EC;
+﻿using LlsfMsgs;
 using Simulator.Utility;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
@@ -99,9 +95,15 @@ namespace Simulator.MPS {
                 //TODO add recovery
             }
         }
+
+        protected abstract void Work();
         public void Run() {
-            MyLogger.Log("BaseClass has no run function!");
+            var BasicThread = new Thread(HandleBasicTasks);
+            BasicThread.Start();
+            BasicThread.Name = Name + "_HandleBasicThread";
+            Work();
         }
+
         public void ResetMachine() {
             TaskDescription = "Reseting!";
             MqttHelper.InNodes.Status.SetBusy(true);
