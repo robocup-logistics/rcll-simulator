@@ -9,91 +9,91 @@ stations:
     position: MZ18
     orientation: 0
   C-CS1:
-    active: false
+    active: true
     debug: true
     port:  4841
     type: CS
     position: MZ54
     orientation: 135
   C-CS2:
-    active: false
+    active: true
     debug: true
     port:  4842
     type: CS
     position: CZ77
     orientation: 90
   C-RS1:
-    active: false
+    active: true
     debug: true
     port:  4843
     type: RS
     position: CZ21
     orientation: 180
   C-RS2:
-    active: false
+    active: true
     debug: true
     port:  4844
     type: RS
     position: MZ25
     orientation: 45
   C-DS:
-    active: false
+    active: true
     debug: true
     port:  4845
     type: DS
     position: MZ72
     orientation: 90
   C-SS:
-    active: false
+    active: true
     debug: true
     port:  4846
     type: SS
     position: MZ77
     orientation: 270
   M-BS:
-    active: false
+    active: true
     debug: True
     port:  4850
     type: BS
     position: MZ28
     orientation: 0
   M-CS1:
-    active: false
+    active: true
     debug: True
     port:  4851
     type: CS
     position: CZ54
     orientation: 45
   M-CS2:
-    active: false
+    active: true
     debug: True
     port:  4852
     type: CS
     position: CZ47
     orientation: 90
   M-RS1:
-    active: false
+    active: true
     debug: True
     port:  4853
     type: RS
     position: MZ21
     orientation: 135
   M-RS2:
-    active: false
+    active: true
     debug: True
     port:  4854
     type: RS
     position: CZ15
     orientation: 180
   M-DS:
-    active: false
+    active: true
     debug: True
     port:  4855
     type: DS
     position: CZ72
     orientation: 225
   M-SS:
-    active: false
+    active: true
     debug: True
     port:  4856
     type: SS
@@ -101,32 +101,32 @@ stations:
     orientation: 0
 robots:
   Grips1:
-    active: false
+    active: true
     jersey: 1
     team: cyan
-    connection: tcp
+    connection: udp
   Grips2:
-    active: false
+    active: true
     jersey: 2
     team: cyan
-    connection: tcp
+    connection: udp
   Grips3:
-    active: false
+    active: true
     jersey: 3
     team: cyan
-    connection: tcp
+    connection: udp
   Caro1:
-    active: false
+    active: true
     jersey: 1
     team: magenta
     connection: udp
   Caro2:
-    active: false
+    active: true
     jersey: 2
     team: magenta
     connection: udp
   Caro3:
-    active: false
+    active: true
     jersey: 3
     team: magenta
     connection: udp
@@ -134,12 +134,12 @@ teams:
   CYAN:
     name: GRIPS
     active: True
-    host: 192.168.2.160
+    host: 127.0.0.1
     port: 2016
   MAGENTA:
     name: Carologistics
-    active: false
-    host: 192.168.2.199
+    active: true
+    host: 127.0.0.1
     #host: 192.168.2.255
     port: 2016
 refbox:
@@ -156,7 +156,7 @@ refbox:
     send: 4442
     recv: 4447
   mqtt:
-    broker_ip: localhost
+    broker_ip: 127.0.0.1
     broker_port: 1883
     active: true
 webui:
@@ -166,7 +166,7 @@ general:
   timefactor: 1.0
   fixed-mps-position: false
   mockup-connections: false
-  robot-connection-type: tcp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
+  robot-connection-type: udp  # connection can be UDP and TCP currently. if nothing is given we default to tcp
   ignore-teamcolor: true
   robot-prepare-mps: true # robot is responsible to send prepare machine messages, option might be removed in future as teams tend to send prepare via their main control unit
   robot-direct-beacon: false  # Robot is expected to send his beaconsignals directly to the refbox via udp
