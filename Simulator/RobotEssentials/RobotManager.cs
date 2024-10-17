@@ -49,7 +49,11 @@ namespace Simulator.RobotEssentials
                         zone = (Zone)(x * 10 + y);
                     if (ZonesManager.PlaceRobot(zone, 0, robot))
                     {
-                        robot.SetZone(ZonesManager.GetZone(zone));
+                        var z = ZonesManager.GetZone(zone);
+                        if(z == null) {
+                            throw new Exception("Zone is null");
+                        }
+                        robot.SetZone(z);
                         set = true;
                     }
                     x++;

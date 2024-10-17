@@ -47,9 +47,9 @@ namespace Simulator.RobotEssentials
         [JsonIgnore]
         public List<FinishedTasks> FinishedTasksList { get; }
 
-        private string JsonInformation;
+        private string? JsonInformation;
         private Stopwatch stopwatch;
-        private TeamConfig _teamConfig;
+        private TeamConfig? _teamConfig;
         private string _connectionType;
         private enum TaskEnum : int
         {
@@ -90,6 +90,8 @@ namespace Simulator.RobotEssentials
             UdpConnectionTeamserver = null;
             UdpConnectionRefbox = null;
             nextZone = null;
+
+            _connectionType = Config.RobotConnectionType;
         }
 
         public string GetHeldProductString()
@@ -131,11 +133,11 @@ namespace Simulator.RobotEssentials
                     CurrentTask.Successful = true;
                     if (Config.RobotConnectionType.Equals("udp"))
                     {
-                        UdpConnectionTeamserver.AddMessage(UdpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
+                        UdpConnectionTeamserver?.AddMessage(UdpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
                     else
                     {
-                        TcpConnectionTeamserver.AddMessage(TcpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
+                        TcpConnectionTeamserver?.AddMessage(TcpConnectionTeamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.AgentTask));
                     }
                     return;
                 case true:
@@ -195,7 +197,6 @@ namespace Simulator.RobotEssentials
                     UdpConnectionRefbox.Start();
                 }
 
-                _connectionType = Config.RobotConnectionType;
                 foreach (var robot in Config.RobotConfigs)
                 {
                     if (robot.TeamColor == TeamColor && robot.Jersey == JerseyNumber)
@@ -222,7 +223,7 @@ namespace Simulator.RobotEssentials
             Work();
             if (Config.RobotConnectionType.Equals("udp"))
             {
-                UdpConnectionTeamserver.Stop();
+                UdpConnectionTeamserver?.Stop();
             }
             else
             {
@@ -239,11 +240,11 @@ namespace Simulator.RobotEssentials
                 return;
             }
             MyLogger.Log("Sending a " + type.ToString() + "!");
-            
+
             if (_connectionType.Equals("udp"))
             {
                 var message = UdpConnectionTeamserver?.CreateMessage(type);
-                if (message != Array.Empty<byte>())
+                if (message != null && message != Array.Empty<byte>())
                 {
                     UdpConnectionTeamserver?.AddMessage(message);
                 }
@@ -255,7 +256,7 @@ namespace Simulator.RobotEssentials
             else
             {
                 var message = TcpConnectionTeamserver?.CreateMessage(type);
-                if (message != Array.Empty<byte>())
+                if (message != null && message != Array.Empty<byte>())
                 {
                     TcpConnectionTeamserver?.AddMessage(message);
                 }
@@ -274,7 +275,14 @@ namespace Simulator.RobotEssentials
         {
             var attempt = 0;
 
-            var path = ZonesManager.GetInstance().Astar(CurrentZone, ZonesManager.GetInstance().GetZone(TargetZone));
+            var end = ZonesManager.GetInstance().GetZone(TargetZone);
+            if(CurrentZone == null || end == null)
+            {
+                MyLogger.Log("Current Zone OR TargetZone is null!");
+                return false;
+            }
+
+            var path = ZonesManager.GetInstance().Astar(CurrentZone, end);
             if (path.Count == 0 && CurrentZone.ZoneId == TargetZone)
             {
                 MyLogger.Log("Finished the move as I'm already in place!");
@@ -325,6 +333,10 @@ namespace Simulator.RobotEssentials
             {
                 MyLogger.Log("Failed due to exceding amount of try's");
                 nextZone = null;
+                if(CurrentTask == null)
+                {
+                    return false;
+                }
                 CurrentTask.Successful = false;
                 return false;
             }
@@ -339,7 +351,7 @@ namespace Simulator.RobotEssentials
 
         public bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0)
         {
-            if (CurrentZone.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint))
+            if (CurrentZone?.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint))
             {
                 MyLogger.Log("Unable to GRIP, not yet in position!");
                 return false;
@@ -510,7 +522,7 @@ namespace Simulator.RobotEssentials
             }
             else
             {
-                if (mps.Type == Mps.MpsType.CapStation && !target.Equals("output"))
+                if (mps?.Type == Mps.MpsType.CapStation && !target.Equals("output"))
                 {
                     MyLogger.Log("Prepare in case of a CapStation!");
                     if (Config.SendPrepare)
@@ -530,16 +542,12 @@ namespace Simulator.RobotEssentials
             {
 
                 MyLogger.Log("At station sending a prepare machine task!");
-                switch (mps.Type)
+                if(mps?.Type == Mps.MpsType.BaseStation)
                 {
-                    case Mps.MpsType.BaseStation:
-                        {
-                            if (Config.SendPrepare)
-                            {
-                                AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                            }
-                            break;
-                        }
+                    if (Config.SendPrepare)
+                    {
+                        AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                    }
                 }
             }
             if (mps == null)
@@ -570,7 +578,7 @@ namespace Simulator.RobotEssentials
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);
 
-            if (targetZone == CurrentZone.ZoneId)
+            if (targetZone == CurrentZone?.ZoneId)
             {
                 MyLogger.Log("I am in position to do my task!");
             }
@@ -586,6 +594,14 @@ namespace Simulator.RobotEssentials
             }
             MyLogger.Log("Placing the product on the machine!");
             var mps = MpsManager.GetMachineViaId(machine);
+            if (mps == null)
+            {
+                MyLogger.Log("The Machine was not found? Placing not possible? Machine: " + machine);
+                CurrentTask = null;
+                // TODO REMOVE
+                Console.WriteLine("The Machine was not found? Placing not possible? Machine: " + machine);
+                return;
+            }
             CurrentTask.Successful = PlaceProduct(mps, target);
             if (!Config.MockUp)
             {
@@ -596,9 +612,22 @@ namespace Simulator.RobotEssentials
         private void BufferCapStation()
         {
             MyLogger.Log("BufferCapStation!");
-            var machine = CurrentTask?.Buffer.MachineId;
-            var target = CurrentTask?.Buffer.ShelfNumber;
+            if (CurrentTask == null)
+            {
+                MyLogger.Log("Current task is null!");
+                return;
+            }
+            var machine = CurrentTask.Buffer.MachineId;
+            var target = CurrentTask.Buffer.ShelfNumber;
             var mps = MpsManager.GetMachineViaId(machine);
+            if (mps == null)
+            {
+                MyLogger.Log("The Machine was not found? Griping not possible? Machine: " + machine);
+                CurrentTask = null;
+                // TODO REMOVE
+                Console.WriteLine("The Machine was not found? Griping not possible? Machine: " + machine);
+                return;
+            }
             if (GripProduct(mps, "shelf" + target.ToString()))
             {
                 MyLogger.Log("Was able to get a Product from the shelf" + target.ToString());
@@ -611,10 +640,6 @@ namespace Simulator.RobotEssentials
             if (Config.SendPrepare)
             {
                 AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-            }
-            if (CurrentTask == null)
-            {
-                return;
             }
             MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
             AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
@@ -634,7 +659,13 @@ namespace Simulator.RobotEssentials
 
         private void Explore()
         {
-            MyLogger.Log("Current Zone = " + CurrentZone.ToString());
+            if(CurrentZone == null)
+            {
+                MyLogger.Log("Current Zone is null!");
+                return;
+            } else {
+                MyLogger.Log("Current Zone = " + CurrentZone.ToString());
+            }
         }
 
         #endregion
@@ -748,15 +779,15 @@ namespace Simulator.RobotEssentials
         }
         private TaskEnum CheckTaskType()
         {
-            if (CurrentTask.Move != null)
+            if (CurrentTask?.Move != null)
                 return TaskEnum.Move;
-            else if (CurrentTask.Retrieve != null)
+            else if (CurrentTask?.Retrieve != null)
                 return TaskEnum.Retrieve;
-            else if (CurrentTask.Deliver != null)
+            else if (CurrentTask?.Deliver != null)
                 return TaskEnum.Deliver;
-            else if (CurrentTask.Buffer != null)
+            else if (CurrentTask?.Buffer != null)
                 return TaskEnum.Buffer;
-            else if (CurrentTask.ExploreMachine != null)
+            else if (CurrentTask?.ExploreMachine != null)
                 return TaskEnum.Explore;
             else
                 return TaskEnum.None;

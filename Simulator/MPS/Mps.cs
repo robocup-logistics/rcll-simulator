@@ -37,7 +37,7 @@ namespace Simulator.MPS
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
-        public string JsonInformation;
+        public string? JsonInformation;
         protected Configurations Config;
         public MQTThelper MqttHelper;
         public bool Working { get; private set; }
@@ -102,6 +102,8 @@ namespace Simulator.MPS
             catch (Exception e)
             {
                 Console.WriteLine(e);
+                throw new Exception("Could not connect to MQTT Broker!");
+                //TODO add recovery
             }
         }
         public void Run()
@@ -260,7 +262,7 @@ namespace Simulator.MPS
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
-                    if (Config.BarcodeScanner)
+                    if (Config.BarcodeScanner && ProductAtIn != null)
                     {
                         MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
                     }
@@ -300,7 +302,7 @@ namespace Simulator.MPS
             FinishedTask();
         }
 
-        public void PlaceProduct(string machinePoint, Products? heldProduct)
+        public virtual void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             //MyLogger.Log("Got a PlaceProduct!");
             switch (machinePoint.ToLower())
@@ -324,7 +326,7 @@ namespace Simulator.MPS
                 }
             }
         }
-        public Products RemoveProduct(string machinePoint)
+        public virtual Products? RemoveProduct(string machinePoint)
         {
             Products? returnProduct;
             switch (machinePoint.ToLower())

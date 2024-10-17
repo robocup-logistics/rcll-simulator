@@ -110,6 +110,8 @@ namespace Simulator.WebGui
                                 task.Move = Move;
                                 break;
                             case "buffer":
+                                if(taskJson.MachinePoint == null)
+                                    break;
                                 var buffer = new BufferStation
                                 {
                                     MachineId = taskJson.Target,
@@ -136,7 +138,7 @@ namespace Simulator.WebGui
                         }
 
 
-                        _robotManager.Robots[0].SetAgentTasks(task);
+                        _robotManager?.Robots[0]?.SetAgentTasks(task);
                         resp.StatusCode = (byte)HttpStatusCode.OK;
                         resp.ContentLength64 = 0;
                         resp.Close();
@@ -167,7 +169,9 @@ namespace Simulator.WebGui
                     case "GET":
                     {
                         //timer.Start();
-                        var pageData = "";
+                        if(req.Url == null) {
+                           return;
+                        }
                         var segment = req.Url.Segments[req.Url.Segments.Length - 1];
                         MyLogger.Log("The query = " + req.Url.Query.ToString());
 

@@ -15,7 +15,7 @@ namespace Simulator.MPS
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
         private Configurations Config;
-        private Thread RefboxThread;
+        private Thread? RefboxThread;
         public MpsManager(Configurations config, bool RefboxConnection = true)
         {
             myLogger = new MyLogger("MpsManager", true);
@@ -158,6 +158,11 @@ namespace Simulator.MPS
         {
             if (!Config.MockUp)
             {
+                if (Config.Refbox == null)
+                {
+                    myLogger.Log("Refbox is null. Will public start Refbox Connection!");
+                    throw new Exception("Refbox config is null. Will not start Refbox Connection!");
+                }
                 var rf = new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanRecvPort, this, myLogger);
                 rf.Start();
             }

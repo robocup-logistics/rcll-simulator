@@ -79,6 +79,11 @@ namespace Simulator.Utility
         public void ShowNeighbourhood(Zone z)
         {
             var zones = GetZone(z);
+            if(zones == null) {
+                MyLogger.Log("Zone not found!");
+                //TODO FIXME make it more beatiful
+                return;
+            }
             foreach (var n in zones.GetNeighborhood())
             {
                 n.GetsMovedTo = true;
@@ -101,13 +106,13 @@ namespace Simulator.Utility
                 }
                 result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
                 MyLogger.Log("Is a Zone Waypoint!");
+                return result;
             }
             catch (Exception )
             {
                 MyLogger.Log("Is not a Zone Waypoint!");
                 return GetZoneNextToMachine(target, machinepoint); ;
             }
-            return result;
         }
         public static Zone GetZoneFromString(string? zoneString)
         {
@@ -164,7 +169,7 @@ namespace Simulator.Utility
             {
                 if (value.Machine != null && MachineName.Contains(value.Machine.Name))
                 {
-                    int offset = 0;
+                    // int offset = 0;
                     var orientation = value.Orientation;
                     var neighborhood = value.GetNeighborhood();
                     if (MachineName.Contains("output") || machinepoint.Equals("output"))
@@ -198,7 +203,7 @@ namespace Simulator.Utility
                         }
                     }
                     MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());*/
-                    return key + offset;
+                    // return key + offset;
                 }
             }
             MyLogger.Log("Couldn't find the machine " + MachineName);
@@ -229,7 +234,7 @@ namespace Simulator.Utility
             {
                 var list = currentZone.GetNeighborhood();
                 double shortest = 100;
-                Zones shortestZone = null;
+                Zones? shortestZone = null;
                 MyLogger.Log("Start search for " + targetZone.ZoneId.ToString() + " from zone " + currentZone.ZoneId.ToString());
                 foreach (var e in list)
                 {

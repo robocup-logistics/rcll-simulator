@@ -70,8 +70,7 @@ namespace Simulator
                 Console.WriteLine("Something like \"-cfg cfg\\config.yaml should work if you just pulled the project!");
                 return;
             }
-            Config = new Configurations();
-            Config.LoadConfig(path);
+            Config = new Configurations(path);
             MainLogger = new MyLogger("MainClass", true);
             Console.Write("Starting the Machines ... ");
             MachineManager = new MpsManager(Config);

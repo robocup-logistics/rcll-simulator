@@ -51,6 +51,8 @@ public class MQTThelper
         InEvent = inevent;
         BasicEvent = basicevent;
         Client = MqttFactory.CreateMqttClient();
+        InNodes = new MqttNodeVariables(InTopic, Client, MqttFactory, InEvent, _myLogger);
+        BasicNodes = new MqttNodeVariables(BasicTopic, Client, MqttFactory, BasicEvent, _myLogger);
     }
 
     public void Connect()
@@ -207,7 +209,7 @@ public class MQTThelper
     {
         _myLogger.Log("Closing the MQTT client.");
 
-        Client.DisconnectAsync().GetAwaiter().GetResult();
+        await Client.DisconnectAsync();
     }
 }
 

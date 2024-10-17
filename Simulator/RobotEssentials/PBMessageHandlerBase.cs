@@ -72,7 +72,7 @@ namespace Simulator.RobotEssentials
             //MyLogger.Log("The payload has : " + payloadsize.ToString() + " bytes!");
             int cmpId = BytesToInt(Stream, 8, 2);
             int msgtype = BytesToInt(Stream, 10, 2);
-            string msg = "";
+            // string msg = "";
             //MyLogger.Log("The Recieved message is from component : " + cmpId.ToString() + " and the message type is = " + msgtype.ToString() + " and payloadsize = " + payloadsize);
             //MyLogger.Log("Length of the stream = " + Stream.Length);
             if (payloadsize == 0)

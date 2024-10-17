@@ -108,15 +108,15 @@ namespace Simulator.MPS
             }
             FinishedTask();
         }
-        public new void PlaceProduct(string machinePoint, Products? heldProduct)
+        public override void PlaceProduct(string machinePoint, Products? heldProduct)
         {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
             base.PlaceProduct(machinePoint, heldProduct);
         }
 
-        public new Products RemoveProduct(string machinePoint)
+        public override Products? RemoveProduct(string machinePoint)
         {
-            Products returnProduct;
+            Products? returnProduct;
             MyLogger.Log("Someone trys to grabs a Item from!");
 
             switch (machinePoint.ToLower())

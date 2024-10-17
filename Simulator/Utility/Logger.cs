@@ -49,7 +49,7 @@ namespace Simulator.Utility
             if (Debug)
             {
                 Mutex.WaitOne();
-                Logger.Information(text);
+                Logger?.Information(text);
                 Mutex.ReleaseMutex();
             }
         }
@@ -71,7 +71,7 @@ namespace Simulator.Utility
             if (Debug)
             {
                 Mutex.WaitOne();
-                Logger.Information(text);
+                Logger?.Information(text);
                 Mutex.ReleaseMutex();
             }
         }
@@ -129,7 +129,7 @@ namespace Simulator.Utility
         }
         public static void DumpLog(StreamReader r)
         {
-            string line;
+            string? line;
             while ((line = r.ReadLine()) != null)
             {
                 Console.WriteLine(line);

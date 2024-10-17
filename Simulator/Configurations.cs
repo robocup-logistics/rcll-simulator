@@ -19,7 +19,7 @@ namespace Simulator
         public List<MpsConfig> MpsConfigs { get; set; }
         public List<RobotConfig> RobotConfigs { get; set; }
         public List<TeamConfig> Teams { get; set; }
-        public RefboxConfig? Refbox { get; set; }
+        public RefboxConfig Refbox { get; set; }
         public float TimeFactor { get; private set; } = 1f;
 
         // definitions for the web gui
@@ -50,7 +50,7 @@ namespace Simulator
         public uint WebguiPort { get; private set;}
         public bool BarcodeScanner { get; private set; }
 
-        public Configurations()
+        public Configurations(string path)
         {
             MpsConfigs = new List<MpsConfig>();
             RobotConfigs = new List<RobotConfig>();
@@ -71,9 +71,14 @@ namespace Simulator
             RobotDirectBeaconSignals = false;
             BarcodeScanner = false;
             WebguiPrefix = "http";
+            LoadConfig(path);
+            if(Refbox == null)
+            {
+                throw new Exception("Refbox config is null.");
+            }
         }
 
-        public void LoadConfig(string path)
+        private void LoadConfig(string path)
         {
             using var reader = new StreamReader(path);
             // Load the stream
@@ -114,8 +119,11 @@ namespace Simulator
                     Teams.Add(config);
                 }
             }
-
-            Refbox = CreateRefboxConfig(refbox);
+            RefboxConfig? _refbox = CreateRefboxConfig(refbox);
+            if(_refbox == null){
+                throw new Exception("Refbox config is null.");
+            }
+            Refbox = _refbox;
             foreach (var (key, value) in general.Children)
             {
 

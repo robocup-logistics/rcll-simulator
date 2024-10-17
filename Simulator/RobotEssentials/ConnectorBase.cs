@@ -31,7 +31,7 @@ namespace Simulator.RobotEssentials
             IP = ip;
             Port = port;
             Endpoint = new IPEndPoint(Address, Port);
-            this.Owner = rob;
+            Owner = rob;
             Address = IPAddress.Any;
             Config = config;
         }
@@ -63,6 +63,10 @@ namespace Simulator.RobotEssentials
         }
         public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type)
         {
+            if(PbFactory == null)
+            {
+                throw new Exception("PbFactory is null");
+            }
             return PbFactory.CreateMessage(type);
         }
     }

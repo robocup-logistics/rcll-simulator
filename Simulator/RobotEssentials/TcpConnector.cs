@@ -16,7 +16,7 @@ namespace Simulator.RobotEssentials
 
         private Socket Socket;
         // private EventWaitHandle WaitSend;
-        private ManualResetEvent WakePeerUpEvent;
+        private ManualResetEvent? WakePeerUpEvent;
         public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger)
         {
             MyLogger.Log("Starting Robot TcpConnector for " + ip + ":" + port + "!");
@@ -26,15 +26,14 @@ namespace Simulator.RobotEssentials
             RecvThread.Name = "Robot" + rob.JerseyNumber + "_TCP_ReceiveThread";
             if (Owner != null)
             {
+                Console.WriteLine("Owner is not null");
                 SendThread = new Thread(() => SendThreadMethod());
                 SendThread.Name = "Robot" + rob.JerseyNumber + "_TCP_SendThread";
 
+                //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
+                PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
             }
-
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
         }
 
         public TcpConnector(Configurations config, string ip, int port, MpsManager manager, MyLogger logger) : base(
@@ -89,7 +88,8 @@ namespace Simulator.RobotEssentials
                     {
                         SendThread.Start();
                     }
-                    RecvThread.Start();
+                    if(RecvThread != null)
+                        RecvThread.Start();
                 }
                 else
                 {
@@ -194,7 +194,12 @@ namespace Simulator.RobotEssentials
                     MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    var payload = PbHandler.CheckMessageHeader(buffer);
+                    if(PbHandler == null)
+                    {
+                        MyLogger.Log("No PbHandler found!");
+                        continue;
+                    }
+                    int payload = PbHandler.CheckMessageHeader(buffer);
                     if (payload == -1)
                     {
                         continue;

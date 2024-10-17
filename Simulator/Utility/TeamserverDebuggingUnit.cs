@@ -11,8 +11,9 @@ namespace Simulator.Utility
 {
     class TeamserverDebuggingUnit
     {
-        PBMessageFactoryRobot Factory;
-        PBMessageHandlerRobot Handler;
+        // GRIPS: Fix your compile warnings
+        // PBMessageFactoryRobot Factory;
+        // PBMessageHandlerRobot Handler;
         Configurations Config;
         MyLogger MyLogger;
         public IPEndPoint? SendEndpoint;
@@ -22,10 +23,13 @@ namespace Simulator.Utility
         public TeamserverDebuggingUnit(Configurations config)
         {
             MyLogger = new MyLogger("Teamserver", true);
-            Factory = new PBMessageFactoryRobot(Config, null, MyLogger);
-            Handler = new PBMessageHandlerRobot(Config, null, MyLogger);
+            // GRIPS: Fix your compile warnings
+            // Factory = new PBMessageFactoryRobot(Config, null, MyLogger);
+            // Handler = new PBMessageHandlerRobot(Config, null, MyLogger);
             Config = config;
-            if (Config == null || Config.Refbox == null) return;
+            if (Config == null || Config.Refbox == null) {
+                throw new Exception("No Refbox Configuration is found!");
+            }
             Running = true;
 
             MyLogger.Log("Starting the public receive thread");
@@ -59,9 +63,10 @@ namespace Simulator.Utility
                 {
                     MyLogger.Log(prefix + "Waiting on message on port " + port);
                     var message = udpServer.Receive(ref SendEndpoint);
-                    var payload = Handler.CheckMessageHeader(message);
-                    MyLogger.Log(prefix + "Received " + message.Length + " bytes and decoded the payload as being " + payload);
-                    Handler.HandleMessage(message);
+                    // GRIPS: Fix your compile warnings
+                    // var payload = Handler.CheckMessageHeader(message);
+                    // MyLogger.Log(prefix + "Received " + message.Length + " bytes and decoded the payload as being " + payload);
+                    // Handler.HandleMessage(message);
                 }
                 catch (Exception e)
                 {

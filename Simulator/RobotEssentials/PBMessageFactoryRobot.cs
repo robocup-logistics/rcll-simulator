@@ -107,6 +107,11 @@ namespace Simulator.RobotEssentials
                     bytes = gamestate.ToByteArray();
                     break;
                 case MessageTypes.AgentTask:
+                    if(Peer.CurrentTask == null)
+                    {
+                        MyLogger.Log("Can't create an AgentTask as there is no task!");
+                        throw new Exception("Can't create an AgentTask as there is no task!");
+                    }
                     var answer = new AgentTask()
                     {
                         TeamColor = Peer.TeamColor,

@@ -65,9 +65,9 @@ namespace Simulator.RobotEssentials
                 {
                     MyLogger.Log("Waiting on message on port " + Port);
                     var message = Client.Receive(ref recvEndpoint);
-                    var payload = PbHandler.CheckMessageHeader(message);
+                    var payload = PbHandler?.CheckMessageHeader(message);
                     MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
-                    PbHandler.HandleMessage(message);
+                    PbHandler?.HandleMessage(message);
                 }
                 catch (Exception e)
                 {
@@ -89,6 +89,10 @@ namespace Simulator.RobotEssentials
                     if(Messages.Count == 0)
                     {
                         MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
+                        if(PbFactory == null)
+                        {
+                            throw new Exception("PbFactory is null");
+                        }
                         message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
                         if (Owner != null)
                         {
@@ -125,15 +129,15 @@ namespace Simulator.RobotEssentials
             //PublicSendThread.Start();
             if(Owner == null)
             {
-                RecvThread.Start();
+                RecvThread?.Start();
             }
             else
             {
-                SendThread.Start();
+                SendThread?.Start();
                 Thread.Sleep(400);
                 if (!OnlySending)
                 {
-                    RecvThread.Start();
+                    RecvThread?.Start();
                 }
             }
             return true;
