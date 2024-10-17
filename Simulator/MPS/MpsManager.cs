@@ -14,7 +14,6 @@ namespace Simulator.MPS
         public bool AllMachineSet {get; private set;}
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
-        private TcpConnector Refbox;
         private Configurations Config;
         private Thread RefboxThread;
         public MpsManager(Configurations config, bool RefboxConnection = true)

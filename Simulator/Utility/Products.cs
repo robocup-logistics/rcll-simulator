@@ -88,6 +88,7 @@ namespace Simulator.Utility
 
         public Products(RingColor color)
         {
+            RingList = new List<RingElement>();
             RingList.Add(new RingElement(color));
             Complexity = (Complexity) 1;
             RingCount = 0;
@@ -95,6 +96,7 @@ namespace Simulator.Utility
         }
         public Products()
         {
+            RingList = new List<RingElement>();
             Complexity = 0;
         }
         public CapElement? RetrieveCap()

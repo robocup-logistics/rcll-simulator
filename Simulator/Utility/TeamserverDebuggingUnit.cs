@@ -16,8 +16,7 @@ namespace Simulator.Utility
         Configurations Config;
         MyLogger MyLogger;
         public IPEndPoint? SendEndpoint;
-        public IPEndPoint? RecvEndpoint;
-        private Thread? PublicRecvThread; 
+        private Thread? PublicRecvThread;
         private Thread? PrivateRecvThread;
         private bool Running;
         public TeamserverDebuggingUnit(Configurations config)

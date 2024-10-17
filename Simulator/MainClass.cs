@@ -22,7 +22,7 @@ namespace Simulator
         private static RobotManager? RobotManager;
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
-        private static Configurations Config;
+        private static Configurations? Config;
         
 
         private static void Main(string[] args)

@@ -15,15 +15,12 @@ namespace Simulator.RobotEssentials
         //TODO add second condition to assign team 2
 
         private Socket Socket;
-        private EventWaitHandle WaitSend;
+        // private EventWaitHandle WaitSend;
         private ManualResetEvent WakePeerUpEvent;
         public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger)
         {
             MyLogger.Log("Starting Robot TcpConnector for " + ip + ":" + port + "!");
 
-
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
             Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             RecvThread = new Thread(() => ReceiveThreadMethod());
             RecvThread.Name = "Robot" + rob.JerseyNumber + "_TCP_ReceiveThread";
@@ -45,9 +42,6 @@ namespace Simulator.RobotEssentials
         {
             MyLogger.Log("Starting MPS Manager TcpConnector for " + ip + ":" + port + "!");
 
-
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
             Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
             RecvThread = new Thread(() => ReceiveThreadMethod());
             RecvThread.Name = "MpsManager_TCP_ReceiveThread";

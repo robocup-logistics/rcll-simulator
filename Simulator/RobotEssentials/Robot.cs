@@ -26,8 +26,6 @@ namespace Simulator.RobotEssentials
         private UdpConnector? UdpConnectionRefbox;
         private bool Running;
         public Products? HeldProduct { get; private set; }
-        private GameState.Types.State GameState;
-        private GameState.Types.Phase GamePhase;
         private RobotState RobotState;
         public Zones? CurrentZone { get; private set; }
         public Zones? nextZone { get; private set; }
@@ -120,24 +118,6 @@ namespace Simulator.RobotEssentials
         {
             CurrentZone = zone;
             Position = new CPosition(zone.X, zone.Y, 0);
-        }
-
-        public void SetGameState(GameState gs)
-        {
-            if (gs.HasPhase)
-            {
-                GamePhase = gs.Phase;
-            }
-
-            if (gs.HasState)
-            {
-                GameState = gs.State;
-            }
-
-            if (gs.HasTeamCyan)
-            {
-                //gs.TeamCyan;
-            }
         }
 
         public void SetAgentTasks(AgentTask task)
@@ -761,8 +741,7 @@ namespace Simulator.RobotEssentials
                     taskstring = CurrentTask.TaskId.ToString();
                 }
 
-                MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring + "! Gamephase is [" +
-                             GamePhase.ToString() + "] and GameState = [" + GameState.ToString() + "]");
+                MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring);
 
                 Thread.Sleep(500);
             }

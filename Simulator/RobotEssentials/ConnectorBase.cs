@@ -7,34 +7,33 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials
 {
-    class ConnectorBase
+    abstract class ConnectorBase
     {
         public Robot? Owner;
         public bool Running;
         public IPEndPoint Endpoint;
         public MyLogger MyLogger;
         public Queue<byte[]> Messages;
-        public Thread SendThread;
-        public Thread RecvThread;
-        public IPAddress Address;
-        public PBMessageFactoryBase PbFactory;
-        protected PBMessageHandlerBase PbHandler;
+        public Thread? SendThread;
+        public Thread? RecvThread;
+        public IPAddress Address = IPAddress.Any;
+        public PBMessageFactoryBase? PbFactory;
+        public PBMessageHandlerBase? PbHandler;
         public readonly Configurations Config;
         public string IP;
         public int Port;
 
-        //public UdpClient UdpSender;
-        //public UdpClient UdpReciever;
-        public ConnectorBase(Configurations config, string ip, int port, Robot? rob, MyLogger logger)
+        protected ConnectorBase(Configurations config, string ip, int port, Robot? rob, MyLogger logger)
         {
+            ResolveIpAddress(ip);
             Messages = new Queue<byte[]>();
             MyLogger = logger;
             IP = ip;
             Port = port;
+            Endpoint = new IPEndPoint(Address, Port);
             this.Owner = rob;
             Address = IPAddress.Any;
             Config = config;
-            //PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
         }
 
         public bool ResolveIpAddress(string ip)
@@ -49,7 +48,9 @@ namespace Simulator.RobotEssentials
                 catch (Exception)
                 {
                     MyLogger.Log("Not able to get DNS? Retrying");
+                    Address = IPAddress.Any;
                     Thread.Sleep(1000);
+                    return false;
                 }
             }
             return true;

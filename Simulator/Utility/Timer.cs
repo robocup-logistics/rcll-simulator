@@ -14,9 +14,9 @@ namespace Simulator.Utility
         public long Sec { get; private set; }
         public bool Paused { get; private set; }
         public float TimeFactor { get; private set; }
-        private Thread? Tickthread;
+        // private Thread? Tickthread;
         //private Logger Logger;
-        private UdpConnector Refbox;
+        // private UdpConnector Refbox;
         private readonly PBMessageFactoryBase FactoryBase;
         private MyLogger MyLogger;
         private Mutex TimerMutex;
@@ -83,11 +83,11 @@ namespace Simulator.Utility
                         Nsec -= 1000;
                     }
                 }
-                var message = FactoryBase.CreateMessage(PBMessageFactoryBase.MessageTypes.SimSynchTime);
-                if(message != null)
-                {
-                    Refbox.Messages.Enqueue(message);
-                }
+                // var message = FactoryBase.CreateMessage(PBMessageFactoryBase.MessageTypes.SimSynchTime);
+                // if(message != null)
+                // {
+                //     Refbox.Messages.Enqueue(message);
+                // }
                 Thread.Sleep(500);
             }
         }

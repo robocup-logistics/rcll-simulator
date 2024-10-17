@@ -12,19 +12,18 @@ namespace Simulator.RobotEssentials
     /// </summary>
     class UdpConnector : ConnectorBase
     {
-        private readonly PBMessageHandlerBase PbHandler;
-        private Configurations Config;
         private bool OnlySending;
         private UdpClient Client;
         
         private string IpString;
-        public UdpConnector(Configurations config, string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(config, ip, port, rob, logger)
+        public UdpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger, bool onlySend) : base(config, ip, port, rob, logger)
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
+            OnlySending = onlySend;
             PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
 
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
+            IpString = ip;
+
             RecvThread = new Thread(() => ReceiveUdpMethod());
             RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             SendThread = new Thread(() => SendUdpMethod());
@@ -39,6 +38,7 @@ namespace Simulator.RobotEssentials
         {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             MyLogger.Log("Starting UdpConnector without a robot!");
+
             PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, MyLogger);
 
             IpString = ip;

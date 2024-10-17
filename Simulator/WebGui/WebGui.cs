@@ -18,27 +18,21 @@ namespace Simulator.WebGui
     {
         public HttpListener listener;
 
-        //public string url = "http://localhost:8000/";
-        //public string Url = "https://localhost:8000/";
         public string Url;
         public int pageViews = 0;
         public int requestCount = 0;
         private MyLogger MyLogger;
         private RobotManager _robotManager;
         private MpsManager _mpsManager;
-        private string Path;
         private Configurations Config;
         Stopwatch timer = new Stopwatch();
 
         public WebGui(Configurations config, MpsManager mpsManager, RobotManager robotManager)
         {
-            var path = Directory.GetCurrentDirectory();
-            //Console.WriteLine(path);
             listener = new HttpListener();
             Config = config;
             Url = Config.WebguiPrefix + "://*:" + Config.WebguiPort + "/";
             listener.Prefixes.Add(Url);
-            //listener.Prefixes.Add(url2);
 
             listener.Start();
             MyLogger = new MyLogger("Web", true);
@@ -46,9 +40,11 @@ namespace Simulator.WebGui
             Console.WriteLine($"Listening for the WebGUI to connect to {Url}");
             _robotManager = robotManager;
             _mpsManager = mpsManager;
+
             // Handle requests
             Task listenTask = HandleIncomingConnections();
             listenTask.GetAwaiter().GetResult();
+
             // Close the listener
             listener.Close();
         }
@@ -69,7 +65,9 @@ namespace Simulator.WebGui
 
                 // Print out some info about the request
                 //Console.WriteLine("Request #: {0}", ++requestCount);
-                MyLogger.Log(req.Url.ToString());
+                if(req.Url != null) {
+                    MyLogger.Log(req.Url.ToString());
+                }
                 //Console.WriteLine(req.Url.ToString());
                 MyLogger.Log(req.HttpMethod);
                 //Console.WriteLine(req.HttpMethod);
@@ -83,7 +81,7 @@ namespace Simulator.WebGui
                 switch (req.HttpMethod)
                 {
                     // If `shutdown` url requested w/ POST, then shutdown the server after serving the page
-                    case "POST" when (req.Url.AbsolutePath == "/shutdown"):
+                    case "POST" when (req.Url?.AbsolutePath == "/shutdown"):
                         MyLogger.Log("Shutdown requested");
                         runServer = false;
                         break;
@@ -98,6 +96,8 @@ namespace Simulator.WebGui
 
                         JsonTask? taskJson = JsonSerializer.Deserialize<JsonTask>(s);
 
+                        if(taskJson == null)
+                            break;
                         var task = new AgentTask();
                         switch (taskJson.Task)
                         {
@@ -243,8 +243,8 @@ namespace Simulator.WebGui
 
     internal class JsonTask
     {
-        public string Task { get; set; }
-        public string Target { get; set; }
-        public string MachinePoint { get; set; }
+        public string? Task { get; set; }
+        public string? Target { get; set; }
+        public string? MachinePoint { get; set; }
     }
 }

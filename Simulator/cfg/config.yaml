@@ -1,4 +1,4 @@
-﻿version: 2
+version: 2
 # Color of machine gets taken from a prefix of C-xxx or M-xxx
 stations:
   C-BS: 
@@ -52,49 +52,49 @@ stations:
     orientation: 270
   M-BS:
     active: true
-    debug: True
+    debug: true
     port:  4850
     type: BS
     position: MZ28
     orientation: 0
   M-CS1:
     active: true
-    debug: True
+    debug: true
     port:  4851
     type: CS
     position: CZ54
     orientation: 45
   M-CS2:
     active: true
-    debug: True
+    debug: true
     port:  4852
     type: CS
     position: CZ47
     orientation: 90
   M-RS1:
     active: true
-    debug: True
+    debug: true
     port:  4853
     type: RS
     position: MZ21
     orientation: 135
   M-RS2:
     active: true
-    debug: True
+    debug: true
     port:  4854
     type: RS
     position: CZ15
     orientation: 180
   M-DS:
     active: true
-    debug: True
+    debug: true
     port:  4855
     type: DS
     position: CZ72
     orientation: 225
   M-SS:
     active: true
-    debug: True
+    debug: true
     port:  4856
     type: SS
     position: MZ78
@@ -133,9 +133,9 @@ robots:
 teams:
   CYAN:
     name: GRIPS
-    active: True
+    active: true
     host: 127.0.0.1
-    port: 2016
+    port: 2017
   MAGENTA:
     name: Carologistics
     active: true
