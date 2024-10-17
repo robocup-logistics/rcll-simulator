@@ -38,7 +38,7 @@ namespace Simulator.RobotEssentials
 
         public bool ResolveIpAddress(string ip)
         {
-            MyLogger.Log("Starting the ResolveIpFunction");
+            // MyLogger.Log("Starting the ResolveIpFunction");
             while (Address.Equals(IPAddress.Any))
             {
                 try
