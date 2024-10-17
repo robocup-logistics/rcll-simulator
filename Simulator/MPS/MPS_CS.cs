@@ -36,7 +36,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
+                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -48,11 +48,11 @@ namespace Simulator.MPS
                         HandleBelt();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Log("In Action ID = " + (MQTT? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
                         break;
 
                 }
-                MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
+                //MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
                 TaskDescription = "Idle";
             }
         }
@@ -61,7 +61,7 @@ namespace Simulator.MPS
         {
             MyLogger.Log("Got a Cap Task!");
             StartTask();
-            switch (InNodes.Data0.Value)
+            switch (MQTT ? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value)
             {
                 case (ushort)CSOp.RetrieveCap:
                     {
@@ -74,8 +74,16 @@ namespace Simulator.MPS
                         if (ProductOnBelt == null)
                         {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            InNodes.StatusNodes.error.Value = true;
-                            Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                            if (MQTT)
+                            {
+                                MqttHelper.InNodes.Status.SetError(true);
+                            }
+                            else
+                            {
+                                InNodes.StatusNodes.error.Value = true;
+                                Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                            }
+
                         }
                         else
                         {
@@ -102,8 +110,15 @@ namespace Simulator.MPS
                         else
                         {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            InNodes.StatusNodes.error.Value = true;
-                            Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                            if (MQTT)
+                            {
+                                MqttHelper.InNodes.Status.SetError(true);
+                            }
+                            else
+                            {
+                                InNodes.StatusNodes.error.Value = true;
+                                Refbox.ApplyChanges(InNodes.StatusNodes.error);
+                            }
                         }
 
                         break;
@@ -148,8 +163,15 @@ namespace Simulator.MPS
             }
             //if (!Configurations.GetInstance().MockUp)
             {
-                InNodes.StatusNodes.ready.Value = false;
-                Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+                if (MQTT)
+                {
+                    MqttHelper.InNodes.Status.SetReady(false);
+                }
+                else
+                {
+                    InNodes.StatusNodes.ready.Value = false;
+                    Refbox.ApplyChanges(InNodes.StatusNodes.ready);
+                }
             }
             return returnProduct;
         }

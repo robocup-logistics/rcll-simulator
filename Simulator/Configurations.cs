@@ -50,7 +50,6 @@ namespace Simulator
         public uint WebguiPort { get; private set;}
         public bool BarcodeScanner { get; private set; }
 
-
         public Configurations()
         {
             MpsConfigs = new List<MpsConfig>();
@@ -357,8 +356,10 @@ namespace Simulator
         private static RefboxConfig? CreateRefboxConfig(YamlMappingNode refbox)
         {
             string? ip = null;
-            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0;
+            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0, broker_port = 1883;
             var children = refbox.Children;
+            var broker_ip = "";
+            var mqtt_active = false;
             // Step into the public information
             //Console.WriteLine(children[0].Key.ToString());
             var map = (YamlMappingNode)children[0].Value;
@@ -427,9 +428,31 @@ namespace Simulator
                             }
                         }
                         break;
+                    case "mqtt":
+                        var mqttChild = ((YamlMappingNode)value).Children;
+                        foreach (var (yamlNode, yamlNode1) in mqttChild)
+                        {
+                            switch (yamlNode.ToString().ToLower())
+                            {
+                                case "broker_ip":
+                                    broker_ip = yamlNode1.ToString().ToLower();
+                                    break;
+                                case "broker_port":
+                                    broker_port = int.Parse(yamlNode1.ToString());
+                                    break;
+                                case "active":
+                                    mqtt_active = bool.Parse(yamlNode1.ToString());
+                                    break;
+                                default:
+                                    Console.WriteLine("Unknown key " + yamlNode.ToString());
+                                    return null;
+                            }
+                        }
+                        break;
                     default:
                         Console.WriteLine("Unknown key " + key.ToString());
                         return null;
+
                 }
 
                 //Console.WriteLine(val);
@@ -439,7 +462,7 @@ namespace Simulator
                 return null;
             }
             var config = new RefboxConfig(ip, tcpPort, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
-                magentaSendPort, magentaRecvPort);
+                magentaSendPort, magentaRecvPort,broker_ip,broker_port ,mqtt_active);
             return config;
         }
 
@@ -537,8 +560,11 @@ namespace Simulator
         public int CyanRecvPort { get; }
         public int MagentaSendPort { get; }
         public int MagentaRecvPort { get; }
+        public string BrokerIp { get; }
+        public int BrokerPort { get; }
+        public bool MqttMode { get; }
 
-        public RefboxConfig(string ip,int tcpPort, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv)
+        public RefboxConfig(string ip,int tcpPort, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv, string broker_ip = "localhost", int brokerPort = 1883, bool active = false)
         {
             IP = ip;
             TcpPort = tcpPort;
@@ -548,6 +574,9 @@ namespace Simulator
             CyanSendPort = cyanSend;
             MagentaRecvPort = magentaRecv;
             MagentaSendPort = magentaSend;
+            BrokerIp = broker_ip;
+            BrokerPort = brokerPort;
+            MqttMode = active;
         }
         public void PrintConfig()
         {
@@ -560,6 +589,9 @@ namespace Simulator
             Console.WriteLine("CyanSendPort = [" + CyanSendPort + "]");
             Console.WriteLine("MagentaRecvPort = [" + MagentaRecvPort + "]");
             Console.WriteLine("MagentaSendPort = [" + MagentaSendPort + "]");
+            Console.WriteLine("BrokerIp = [" + BrokerIp + "]");
+            Console.WriteLine("BrokerPort = [" + BrokerPort + "]");
+            Console.WriteLine("MqttMode = [" + MqttMode + "]");
         }
     }
 

@@ -4,19 +4,45 @@ name: Docker Container Build
 
 on:
   push:
-    branches: [ "master"]
+    branches: [ "master", "mqtt-test"]
   pull_request:
     branches: [ "master" ]
-
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 jobs:
 
   build:
-
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v2
-    - name: Build the Simulator image
-      run: docker build Simulator/. --tag simulator_frontend:$(date +%s)
-    - name: Build the Frontend image
-      run: docker build frontend/. --tag simulator_backend:$(date +%s)
+    - name: Log in to the Container registry
+      uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: metaSimulator
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/simulator
+    - name: Build and push simulator image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: "Simulator"
+        push: true
+        tags: ${{ steps.metaSimulator.outputs.tags }}
+        labels: ${{ steps.metaSimulator.outputs.labels }}
+    - name: Extract metadata (tags, labels) for Docker
+      id: metaFrontend
+      uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+      with:
+        images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}/frontend
+    - name: Build and push frontend image
+      uses: docker/build-push-action@ad44023a93711e3deb337508980b4b5e9bcdc5dc
+      with:
+        context: "frontend"
+        push: true
+        tags: ${{ steps.metaFrontend.outputs.tags }}
+        labels: ${{ steps.metaFrontend.outputs.labels }}

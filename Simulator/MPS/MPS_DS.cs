@@ -63,7 +63,7 @@ namespace Simulator.MPS
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
+                switch (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value)
                 {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
@@ -72,11 +72,11 @@ namespace Simulator.MPS
                         DeliverToSlotTask();
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Log("In Action ID = " + (MQTT ? MqttHelper.InNodes.ActionId : InNodes.ActionId.Value));
                         break;
 
                 }
-                MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
+                //MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
                 TaskDescription = "Idle";
             }
         }
@@ -85,14 +85,14 @@ namespace Simulator.MPS
         {
             MyLogger.Log("DeliverToSlotTask!");
             TaskDescription = "Delivering Product";
-            var slot = InNodes.Data0.Value;
+            var slot = MQTT? MqttHelper.InNodes.Data[0] : InNodes.Data0.Value;
             StartTask();
             for(var count = 0; count  < 45 && ProductAtIn == null; count++)
             {
                 Thread.Sleep(1000);
             }
             if (ProductAtIn == null) return;
-            MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
+            MyLogger.Log("Deliver to slot " + slot);
             Thread.Sleep(Config.DSTaskDuration);
             switch (slot)
             {

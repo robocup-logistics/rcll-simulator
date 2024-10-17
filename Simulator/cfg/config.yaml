@@ -9,35 +9,35 @@ stations:
     position: MZ18
     orientation: 0
   C-CS1:
-    active: true
+    active: false
     debug: true
     port:  4841
     type: CS
     position: MZ54
     orientation: 135
   C-CS2:
-    active: true
+    active: false
     debug: true
     port:  4842
     type: CS
     position: CZ77
     orientation: 90
   C-RS1:
-    active: true
+    active: false
     debug: true
     port:  4843
     type: RS
     position: CZ21
     orientation: 180
   C-RS2:
-    active: true
+    active: false
     debug: true
     port:  4844
     type: RS
     position: MZ25
     orientation: 45
   C-DS:
-    active: true
+    active: false
     debug: true
     port:  4845
     type: DS
@@ -144,7 +144,7 @@ teams:
     port: 2016
 refbox:
   public:
-    ip: 127.0.0.1
+    ip: 127.0.0.1 # is also used as mqtt broker address
     # THe simulation communicates via tcp to get ground-truth
     tcp: 4444
     send: 4445
@@ -155,6 +155,10 @@ refbox:
   magenta:
     send: 4442
     recv: 4447
+  mqtt:
+    broker_ip: localhost
+    broker_port: 1883
+    active: true
 webui:
   prefix: http  
   port: 8000

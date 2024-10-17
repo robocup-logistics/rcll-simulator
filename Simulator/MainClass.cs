@@ -18,7 +18,7 @@ namespace Simulator
 {
     internal class MainClass
     {
-        private static MyLogger? Mainlogger;
+        private static MyLogger? MainLogger;
         private static RobotManager? RobotManager;
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
@@ -72,7 +72,7 @@ namespace Simulator
             }
             Config = new Configurations();
             Config.LoadConfig(path);
-            Mainlogger = new MyLogger("MainClass", true);
+            MainLogger = new MyLogger("MainClass", true);
             Console.Write("Starting the Machines ... ");
             MachineManager = new MpsManager(Config);
             Console.WriteLine("done!");
@@ -114,9 +114,9 @@ namespace Simulator
             {
                 foreach (var robot in RobotManager.Robots)
                 {
-                    Mainlogger?.Log("Starting the Cleanup....");
+                    MainLogger?.Log("Starting the Cleanup....");
                     robot.RobotStop();
-                    Mainlogger?.Log("Finished the Cleanup....");
+                    MainLogger?.Log("Finished the Cleanup....");
 
                 }
             }

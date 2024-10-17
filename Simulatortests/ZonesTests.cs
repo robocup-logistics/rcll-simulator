@@ -188,5 +188,29 @@ namespace Simulatortests
             _mpsManager.StopAllMachines();
             robot.RobotStop();
         }
+        [TestMethod]
+        public void PathPlanningWaitingZoneGrips()
+        {
+            _configurations = new Configurations();
+            _configurations.AddConfig(new RobotConfig("TestBot", jersey, team, "Test"));
+            _configurations.AddConfig(TeamConfig);
+            _mpsManager = new MpsManager(_configurations, false);
+            _robotManager = new RobotManager(_configurations, _mpsManager);
+            _zonesManager = ZonesManager.GetInstance();
+            var initialZone = _zonesManager.GetZone(Zone.CZ11);
+            var robot = _robotManager.Robots[0];
+            robot.SetZone(initialZone);
+            Assert.AreEqual(robot.GetZone().ZoneId, initialZone.ZoneId);
+            var targetZone = _zonesManager.GetZone(Zone.CZ12);
+            var task = new AgentTask();
+            task.Move = new Move()
+            {
+                Waypoint = "C_Z12_waiting"
+            };
+            robot.SetAgentTasks(task);
+            Thread.Sleep(1 * _configurations.RobotMoveZoneDuration + 1300);
+            Assert.AreEqual(robot.GetZone().ZoneId, targetZone.ZoneId);
+            robot.RobotStop();
+        }
     }
 }

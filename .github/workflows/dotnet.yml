@@ -5,7 +5,7 @@ name: .NET build and test
 
 on:
   push:
-    branches: [ "master", "dominik_wip" ]
+    branches: [ "master", "mqtt-test" ]
   pull_request:
     branches: [ "master" ]
 
@@ -23,5 +23,12 @@ jobs:
       run: dotnet restore
     - name: Build
       run: dotnet build --no-restore
+    - name: Start Mosquitto
+      uses: namoshek/mosquitto-github-action@v1
+      with:
+        version: '1.6'
+        ports: '1883:1883'
+        container-name: 'mosquitto'
+        config: ${{ github.workspace }}/.github/workflows/mosquitto.conf
     - name: Test
       run: dotnet test Simulatortests/Simulatortests.csproj --no-build --verbosity normal 
