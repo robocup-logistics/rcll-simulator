@@ -1,7 +1,5 @@
-﻿namespace Simulator.RobotEssentials
-{
-    interface IConnector
-    {
+﻿namespace Simulator.RobotEssentials {
+    interface IConnector {
         bool Connect();
         bool Close();
         bool Start();

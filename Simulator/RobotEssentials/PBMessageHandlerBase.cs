@@ -8,40 +8,32 @@ using Simulator.MPS;
 using Simulator.Utility;
 using Timer = Simulator.Utility.Timer;
 
-namespace Simulator.RobotEssentials
-{
-    class PBMessageHandlerBase
-    {
+namespace Simulator.RobotEssentials {
+    class PBMessageHandlerBase {
         public MyLogger MyLogger { get; private set; }
         public Configurations Config { get; private set; }
-        public PBMessageHandlerBase(Configurations config, MyLogger log)
-        {
+        public PBMessageHandlerBase(Configurations config, MyLogger log) {
             MyLogger = log;
             Config = config;
         }
 
-        public int CheckMessageHeader(byte[] Stream)
-        {
-            if (Stream.Length < 4)
-            {
+        public int CheckMessageHeader(byte[] Stream) {
+            if (Stream.Length < 4) {
                 MyLogger.Log("The received Message is to short to be parsed!");
                 return -1;
             }
-            if (FrameHeader.Version != Stream[0])
-            {
+            if (FrameHeader.Version != Stream[0]) {
                 MyLogger.Log("Version is different!");
                 return -1;
             }
-            if (FrameHeader.Cipher != Stream[1])
-            {
+            if (FrameHeader.Cipher != Stream[1]) {
                 MyLogger.Log("Cipher is different!");
                 return -1;
             }
             var payloadsize = BytesToInt(Stream, 4, 4);
             return payloadsize;
         }
-        public virtual bool HandleMessage(byte[] Stream)
-        {
+        public virtual bool HandleMessage(byte[] Stream) {
 
             /*      Each row is 4 bytes
              * 1.   Protocol version, Cipher, Reserved byte1 , reserved byte2
@@ -49,18 +41,15 @@ namespace Simulator.RobotEssentials
              * 3.   component ID and Message type each 2 bytes. Used to detect the Protobuff message
              * 
              * */
-            if (Stream.Length < 4)
-            {
+            if (Stream.Length < 4) {
                 MyLogger.Log("The received Message is to short to be parsed!");
                 return false;
             }
-            if (FrameHeader.Version != Stream[0])
-            {
+            if (FrameHeader.Version != Stream[0]) {
                 MyLogger.Log("Version is different!");
                 return false;
             }
-            if (FrameHeader.Cipher != Stream[1])
-            {
+            if (FrameHeader.Cipher != Stream[1]) {
                 MyLogger.Log("Cipher is different!");
                 return false;
             }
@@ -75,20 +64,17 @@ namespace Simulator.RobotEssentials
             // string msg = "";
             //MyLogger.Log("The Recieved message is from component : " + cmpId.ToString() + " and the message type is = " + msgtype.ToString() + " and payloadsize = " + payloadsize);
             //MyLogger.Log("Length of the stream = " + Stream.Length);
-            if (payloadsize == 0)
-            {
+            if (payloadsize == 0) {
                 MyLogger.Log("The payload is " + payloadsize + " so we stop here!");
                 return false;
             }
-            
+
             return true;
         }
-        public static int BytesToInt(byte[] bytes, int start, int length)
-        {
+        public static int BytesToInt(byte[] bytes, int start, int length) {
 
             var ret = 0;
-            switch (length)
-            {
+            switch (length) {
                 case 2:
                     ret += (bytes[start] << 8);
                     ret += bytes[start + 1];

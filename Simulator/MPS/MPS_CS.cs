@@ -4,40 +4,32 @@ using LlsfMsgs;
 using System.Threading;
 using Simulator.Utility;
 
-namespace Simulator.MPS
-{
-    public class MPS_CS : Mps
-    {
+namespace Simulator.MPS {
+    public class MPS_CS : Mps {
         public CapElement? StoredCap { get; private set; }
-        public enum BaseSpecificActions
-        {
+        public enum BaseSpecificActions {
             Reset = 300,
             Cap = 301,
             BandOnUntil = 302
         }
-        public MPS_CS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
-        {
+        public MPS_CS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug) {
             Type = MpsType.CapStation;
             StoredCap = null;
         }
-        public new void Run()
-        {
+        public new void Run() {
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
             BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
-        private void Work()
-        {
+        private void Work() {
             SerializeMachineToJson();
-            while (Working)
-            {
+            while (Working) {
                 InEvent.WaitOne();
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId)
-                {
+                switch (MqttHelper.InNodes.ActionId) {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
                         break;
@@ -56,49 +48,41 @@ namespace Simulator.MPS
             }
         }
 
-        public void CapTask()
-        {
+        public void CapTask() {
             MyLogger.Log("Got a Cap Task!");
             StartTask();
-            switch (MqttHelper.InNodes.Data[0])
-            {
-                case (ushort)CSOp.RetrieveCap:
-                    {
+            switch (MqttHelper.InNodes.Data[0]) {
+                case (ushort)CSOp.RetrieveCap: {
                         TaskDescription = "Cap Retrieve";
                         MyLogger.Log("Got a Retrieve CAP task!");
                         /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                         {
                             Thread.Sleep(1000);
                         }*/
-                        if (ProductOnBelt == null)
-                        {
+                        if (ProductOnBelt == null) {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
                             MqttHelper.InNodes.Status.SetError(true);
                         }
-                        else
-                        {
+                        else {
                             TaskDescription = "Retrieving Cap";
                             Thread.Sleep(Config.CSTaskDuration);
                             StoredCap = ProductOnBelt.RetrieveCap();
                         }
                         break;
                     }
-                case (ushort)CSOp.MountCap:
-                    {
+                case (ushort)CSOp.MountCap: {
                         TaskDescription = "Cap Mount";
                         MyLogger.Log("Got a Mount Cap TASK!");
                         /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
                         {
                             Thread.Sleep(1000);
                         }*/
-                        if (StoredCap != null && ProductOnBelt != null)
-                        {
+                        if (StoredCap != null && ProductOnBelt != null) {
                             TaskDescription = "Mounting Cap";
                             Thread.Sleep(Config.CSTaskDuration);
                             ProductOnBelt.AddPart(StoredCap);
                         }
-                        else
-                        {
+                        else {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
                             MqttHelper.InNodes.Status.SetError(true);
                         }
@@ -108,19 +92,16 @@ namespace Simulator.MPS
             }
             FinishedTask();
         }
-        public override void PlaceProduct(string machinePoint, Products? heldProduct)
-        {
+        public override void PlaceProduct(string machinePoint, Products? heldProduct) {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
             base.PlaceProduct(machinePoint, heldProduct);
         }
 
-        public override Products? RemoveProduct(string machinePoint)
-        {
+        public override Products? RemoveProduct(string machinePoint) {
             Products? returnProduct;
             MyLogger.Log("Someone trys to grabs a Item from!");
 
-            switch (machinePoint.ToLower())
-            {
+            switch (machinePoint.ToLower()) {
                 case "output":
                     MyLogger.Log("my Output!");
                     returnProduct = ProductAtOut;

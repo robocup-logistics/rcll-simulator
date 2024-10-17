@@ -6,10 +6,8 @@ using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 
-namespace Simulator.MPS
-{
-    public abstract class Mps
-    {
+namespace Simulator.MPS {
+    public abstract class Mps {
         public readonly MyLogger MyLogger;
         public string Name { get; private set; }
         public int Port { get; private set; }
@@ -41,16 +39,14 @@ namespace Simulator.MPS
         protected Configurations Config;
         public MQTThelper MqttHelper;
         public bool Working { get; private set; }
-        public enum MpsType
-        {
+        public enum MpsType {
             BaseStation = 100,
             RingStation = 200,
             CapStation = 300,
             DeliveryStation = 400,
             StorageStation = 500
         }
-        public enum Actions : ushort
-        {
+        public enum Actions : ushort {
             Reset = 0,
             NoJob = 0,
             MachineTyp = 10,
@@ -60,8 +56,7 @@ namespace Simulator.MPS
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(Configurations config, string name, int port, int id, Team team, bool debug = false)
-        {
+        protected Mps(Configurations config, string name, int port, int id, Team team, bool debug = false) {
             // Constructor for basic member initializations
             Debug = debug;
             MachineState = MachineState.Idle;
@@ -90,28 +85,24 @@ namespace Simulator.MPS
             // Checking whether we have mockup mode or normal mode
             /*if (Configurations.GetInstance().MockUp)
                 return;*/
-            try
-            {
-                MqttHelper= new MQTThelper(Name, config.Refbox.BrokerIp,config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
+            try {
+                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
                 MqttHelper.Connect();
                 MqttHelper.Setup();
                 Rotation = 0;
                 Zone = Zone.MZ41;
                 Working = true;
             }
-            catch (Exception e)
-            {
+            catch (Exception e) {
                 Console.WriteLine(e);
                 throw new Exception("Could not connect to MQTT Broker!");
                 //TODO add recovery
             }
         }
-        public void Run()
-        {
+        public void Run() {
             MyLogger.Log("BaseClass has no run function!");
         }
-        public void ResetMachine()
-        {
+        public void ResetMachine() {
             TaskDescription = "Reseting!";
             MqttHelper.InNodes.Status.SetBusy(true);
             MqttHelper.InNodes.Status.SetEnable(false);
@@ -132,20 +123,17 @@ namespace Simulator.MPS
             TaskDescription = "Idle";
         }
 
-        public void StartTask()
-        {
+        public void StartTask() {
             MqttHelper.InNodes.Status.SetBusy(true);
             MqttHelper.InNodes.Status.SetEnable(false);
         }
 
-        public void FinishedTask()
-        {
+        public void FinishedTask() {
             Thread.Sleep(250);
             MqttHelper.InNodes.Status.SetBusy(false);
             Thread.Sleep(250);
         }
-        public void HandleMachineType()
-        {
+        public void HandleMachineType() {
             MqttHelper.BasicNodes.Status.SetBusy(true);
             Thread.Sleep(400);
             MqttHelper.BasicNodes.SetData0(0);
@@ -153,18 +141,15 @@ namespace Simulator.MPS
             MqttHelper.BasicNodes.Status.SetEnable(false);
             MqttHelper.BasicNodes.Status.SetBusy(false);
         }
-        public void HandleBasicTasks()
-        {
-            while(Working)
-            {
+        public void HandleBasicTasks() {
+            while (Working) {
                 BasicEvent.WaitOne();
                 //MyLogger.Info("We got a write and reset the wait!");
                 BasicEvent.Reset();
                 GotConnection = true;
                 var actionId = 0;
                 actionId = MqttHelper.BasicNodes.ActionId;
-                switch (actionId)
-                {
+                switch (actionId) {
                     case (ushort)Actions.RedLight:
                     case (ushort)Actions.YellowLight:
                     case (ushort)Actions.GreenLight:
@@ -182,22 +167,19 @@ namespace Simulator.MPS
                         MyLogger.Log("Basic Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
                 }
-                
+
             }
-            if(RedLight.LightOn && !YellowLight.LightOn && !GreenLight.LightOn)
-            {
+            if (RedLight.LightOn && !YellowLight.LightOn && !GreenLight.LightOn) {
                 TaskDescription = "Broken";
             }
         }
-        public void HandleLights()
-        {
+        public void HandleLights() {
             MqttHelper.BasicNodes.Status.SetBusy(true);
             var state = MqttHelper.BasicNodes.Data[0].ToString();
             var time = MqttHelper.BasicNodes.Data[1]; // not in use currently
             var LightState = (LightState)Enum.Parse(typeof(LightState), state);
-            
-            switch (MqttHelper.BasicNodes.ActionId)
-            {
+
+            switch (MqttHelper.BasicNodes.ActionId) {
                 case (ushort)Actions.ResetLights:
                     MyLogger.Log("Handle Lights got a ResetLights task!");
                     RedLight.SetLight(LightState.Off);
@@ -231,8 +213,7 @@ namespace Simulator.MPS
             MqttHelper.BasicNodes.Status.SetBusy(false);
         }
 
-        public void HandleBelt()
-        {
+        public void HandleBelt() {
             MyLogger.Log("Got a Band on Task!");
             TaskDescription = "Move via Belt";
             var target = Positions.NoTarget;
@@ -242,12 +223,10 @@ namespace Simulator.MPS
 
             StartTask();
             MyLogger.Log("Product on belt?");
-            for(var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++)
-            {
+            for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
                 Thread.Sleep(200);
             }
-            if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null)
-            {
+            if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
                 MyLogger.Log("Still no Product on the Belt!");
                 return;
             }
@@ -256,14 +235,12 @@ namespace Simulator.MPS
             MqttHelper.InNodes.Status.SetReady(false);
             Thread.Sleep(Config.BeltActionDuration);
             MyLogger.Log("Product has reached its destination [" + target + "]!");
-            switch (target)
-            {
+            switch (target) {
                 case Positions.In:
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
-                    if (Config.BarcodeScanner && ProductAtIn != null)
-                    {
+                    if (Config.BarcodeScanner && ProductAtIn != null) {
                         MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
                     }
                     MyLogger.Log("Setting Ready to True!");
@@ -277,13 +254,11 @@ namespace Simulator.MPS
                     MqttHelper.InNodes.Status.SetReady(true);
                     break;
                 case Positions.Mid:
-                    if (direction == Direction.FromInToOut)
-                    {
+                    if (direction == Direction.FromInToOut) {
                         ProductOnBelt = ProductAtIn;
                         ProductAtIn = null;
                     }
-                    else
-                    {
+                    else {
                         ProductOnBelt = ProductAtOut;
                         ProductAtOut = null;
                     }
@@ -302,11 +277,9 @@ namespace Simulator.MPS
             FinishedTask();
         }
 
-        public virtual void PlaceProduct(string machinePoint, Products? heldProduct)
-        {
+        public virtual void PlaceProduct(string machinePoint, Products? heldProduct) {
             //MyLogger.Log("Got a PlaceProduct!");
-            switch (machinePoint.ToLower())
-            {
+            switch (machinePoint.ToLower()) {
                 case "input":
                     ProductAtIn = heldProduct;
                     break;
@@ -320,17 +293,14 @@ namespace Simulator.MPS
             }
             //if (!Configurations.GetInstance().MockUp)
             {
-                if (ProductAtOut != null)
-                {
+                if (ProductAtOut != null) {
                     MqttHelper.InNodes.Status.SetReady(true);
                 }
             }
         }
-        public virtual Products? RemoveProduct(string machinePoint)
-        {
+        public virtual Products? RemoveProduct(string machinePoint) {
             Products? returnProduct;
-            switch (machinePoint.ToLower())
-            {
+            switch (machinePoint.ToLower()) {
                 case "input":
                     returnProduct = ProductAtIn;
                     ProductAtIn = null;
@@ -351,11 +321,9 @@ namespace Simulator.MPS
             }
             return returnProduct;
         }
-        public bool EmptyMachinePoint(string machinepoint)
-        {
+        public bool EmptyMachinePoint(string machinepoint) {
             //MyLogger.Log("Checking the MachinePoint " + machinepoint);
-            switch (machinepoint.ToLower())
-            {
+            switch (machinepoint.ToLower()) {
                 case "input":
                     return ProductAtIn == null;
                 case "output":
@@ -370,8 +338,7 @@ namespace Simulator.MPS
                     return false;
             }
         }
-        public void SerializeMachineToJson()
-        {
+        public void SerializeMachineToJson() {
             JsonInformation = JsonSerializer.Serialize(this);
             //Console.WriteLine(JsonInformation);
         }

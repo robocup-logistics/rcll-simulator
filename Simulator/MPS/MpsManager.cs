@@ -1,4 +1,4 @@
-﻿ using Simulator.Utility;
+﻿using Simulator.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,27 +7,22 @@ using LlsfMsgs;
 using Simulator.RobotEssentials;
 
 
-namespace Simulator.MPS
-{
-    public class MpsManager
-    {
-        public bool AllMachineSet {get; private set;}
+namespace Simulator.MPS {
+    public class MpsManager {
+        public bool AllMachineSet { get; private set; }
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
         private Configurations Config;
         private Thread? RefboxThread;
-        public MpsManager(Configurations config, bool RefboxConnection = true)
-        {
+        public MpsManager(Configurations config, bool RefboxConnection = true) {
             myLogger = new MyLogger("MpsManager", true);
             Config = config;
             myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
             AllMachineSet = false;
             CreateMachines();
-            if(RefboxConnection)
-            {
-                if(config.Refbox == null)
-                {
+            if (RefboxConnection) {
+                if (config.Refbox == null) {
                     myLogger.Log("Refbox is null. Will public start Refbox Connection!");
                     throw new Exception("Refbox config is null. Will not start Refbox Connection!");
                 }
@@ -35,14 +30,11 @@ namespace Simulator.MPS
                 RefboxThread.Start();
             }
         }
-        private void CreateMachines()
-        {
-            foreach (var mps in Config.MpsConfigs)
-            {
+        private void CreateMachines() {
+            foreach (var mps in Config.MpsConfigs) {
                 Mps? currentMps;
                 Thread? thread;
-                switch (mps.Type)
-                {
+                switch (mps.Type) {
                     case Mps.MpsType.BaseStation:
                         var bs = new MPS_BS(Config, mps.Name, mps.Port, Machines.Count, mps.Team, mps.Debug);
                         thread = new Thread(bs.Run);
@@ -74,12 +66,10 @@ namespace Simulator.MPS
                         currentMps = null;
                         break;
                 }
-                if(currentMps==null)
-                {
+                if (currentMps == null) {
                     continue;
                 }
-                if (thread != null)
-                {
+                if (thread != null) {
                     thread.Name = currentMps.Name + "_workingThread";
                 }
 
@@ -89,38 +79,29 @@ namespace Simulator.MPS
             }
 
         }
-        public Mps? GetMachineViaId(string machineId)
-        {
-            foreach(var m in Machines)
-            {
-                if(machineId.Equals(m.Name))
-                {
+        public Mps? GetMachineViaId(string machineId) {
+            foreach (var m in Machines) {
+                if (machineId.Equals(m.Name)) {
                     return m;
                 }
             }
-            
+
             return null;
         }
-        public void PlaceMachines(MachineInfo Info)
-        {
+        public void PlaceMachines(MachineInfo Info) {
             myLogger.Log("Starting to PlaceMachines!");
             myLogger.Log("Received Information = " + Info.ToString());
             var list = new List<Zone>();
-            foreach (var machine in Info.Machines)
-            {
+            foreach (var machine in Info.Machines) {
                 list.Add(machine.Zone);
             }
-            if(false  && list.Distinct().Count() > Info.Machines.Count)
-            {
-                myLogger.Log("Duplicated zones for machines. Will skip this place machines! "+ list.Distinct().Count() +"!=" + Info.Machines.Count +"");
+            if (false && list.Distinct().Count() > Info.Machines.Count) {
+                myLogger.Log("Duplicated zones for machines. Will skip this place machines! " + list.Distinct().Count() + "!=" + Info.Machines.Count + "");
                 return;
             }
-            foreach (var machineInfo in Info.Machines)
-            {
-                foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name)))
-                {
-                    if(machine.GotPlaced)
-                    {
+            foreach (var machineInfo in Info.Machines) {
+                foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name))) {
+                    if (machine.GotPlaced) {
                         continue;
                     }
                     myLogger.Log("Placed " + machine.Name + "!");
@@ -141,25 +122,19 @@ namespace Simulator.MPS
                 }*/
             }
             var notset = false;
-            foreach(var machine in Machines)
-            {
-                if(machine.GotPlaced == false)
-                {
+            foreach (var machine in Machines) {
+                if (machine.GotPlaced == false) {
                     notset = true;
                 }
             }
-            if (notset == false)
-            {
+            if (notset == false) {
                 AllMachineSet = true;
             }
         }
 
-        public void StartRefboxConnection()
-        {
-            if (!Config.MockUp)
-            {
-                if (Config.Refbox == null)
-                {
+        public void StartRefboxConnection() {
+            if (!Config.MockUp) {
+                if (Config.Refbox == null) {
                     myLogger.Log("Refbox is null. Will public start Refbox Connection!");
                     throw new Exception("Refbox config is null. Will not start Refbox Connection!");
                 }
@@ -167,12 +142,9 @@ namespace Simulator.MPS
                 rf.Start();
             }
         }
-        internal bool FindMachine(string machine, ref Zone Target)
-        {
-            foreach (var m in Machines)
-            {
-                if (m.Name.Equals(machine))
-                {
+        internal bool FindMachine(string machine, ref Zone Target) {
+            foreach (var m in Machines) {
+                if (m.Name.Equals(machine)) {
 
                     Target = m.Zone;
                     return true;

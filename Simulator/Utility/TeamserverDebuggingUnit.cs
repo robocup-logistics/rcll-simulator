@@ -7,10 +7,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Simulator.RobotEssentials;
 
-namespace Simulator.Utility
-{
-    class TeamserverDebuggingUnit
-    {
+namespace Simulator.Utility {
+    class TeamserverDebuggingUnit {
         // GRIPS: Fix your compile warnings
         // PBMessageFactoryRobot Factory;
         // PBMessageHandlerRobot Handler;
@@ -20,8 +18,7 @@ namespace Simulator.Utility
         private Thread? PublicRecvThread;
         private Thread? PrivateRecvThread;
         private bool Running;
-        public TeamserverDebuggingUnit(Configurations config)
-        {
+        public TeamserverDebuggingUnit(Configurations config) {
             MyLogger = new MyLogger("Teamserver", true);
             // GRIPS: Fix your compile warnings
             // Factory = new PBMessageFactoryRobot(Config, null, MyLogger);
@@ -41,26 +38,21 @@ namespace Simulator.Utility
 
 
         }
-        public void ReceiveUdpMethod(int port, string prefix)
-        {
+        public void ReceiveUdpMethod(int port, string prefix) {
             MyLogger.Log("Starting the " + prefix + " ReceiveUDPMethod!");
-            if (Config?.Refbox == null)
-            {
+            if (Config?.Refbox == null) {
                 MyLogger.Log("No Refbox Configuration is found!");
                 return;
             }
             MyLogger.Log(prefix + " Waiting on message on port " + port);
             var addr = IPAddress.Parse(Config.Refbox.IP);
             SendEndpoint = new IPEndPoint(IPAddress.Any, port);
-            var udpServer = new UdpClient(port)
-            {
+            var udpServer = new UdpClient(port) {
                 EnableBroadcast = true
             };
             MyLogger.Log("Broadcasts are = " + udpServer.EnableBroadcast);
-            while (Running)
-            {
-                try
-                {
+            while (Running) {
+                try {
                     MyLogger.Log(prefix + "Waiting on message on port " + port);
                     var message = udpServer.Receive(ref SendEndpoint);
                     // GRIPS: Fix your compile warnings
@@ -68,8 +60,7 @@ namespace Simulator.Utility
                     // MyLogger.Log(prefix + "Received " + message.Length + " bytes and decoded the payload as being " + payload);
                     // Handler.HandleMessage(message);
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     MyLogger.Log(e + " - Something went wrong with the" + prefix + " ReceiveThread!");
                 }
             }

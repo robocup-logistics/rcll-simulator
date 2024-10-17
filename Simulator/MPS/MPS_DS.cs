@@ -3,26 +3,21 @@ using LlsfMsgs;
 using System.Threading;
 using Simulator.Utility;
 
-namespace Simulator.MPS
-{
-    public class MPS_DS : Mps
-    {
+namespace Simulator.MPS {
+    public class MPS_DS : Mps {
         // TODO Add some more space to the slots
         private Products? Slot1;
         private Products? Slot2;
         private Products? Slot3;
-        public enum BaseSpecificActions
-        {
+        public enum BaseSpecificActions {
             Reset = 400,
             DeliverToSlot = 401
         }
-        public MPS_DS(Configurations config,  string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
-        {
+        public MPS_DS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug) {
             Type = MpsType.DeliveryStation;
             //if (Configurations.GetInstance().MockUp) return;
         }
-        public new void Run()
-        {
+        public new void Run() {
             /*if (Configurations.GetInstance().MockUp)
             {
                 return;
@@ -32,10 +27,8 @@ namespace Simulator.MPS
             BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
-        public bool ProductAtSlot(int slot)
-        {
-            switch (slot)
-            {
+        public bool ProductAtSlot(int slot) {
+            switch (slot) {
                 case 1:
                     if (Slot1 != null)
                         return true;
@@ -54,17 +47,14 @@ namespace Simulator.MPS
             }
             return false;
         }
-        private void Work()
-        {
+        private void Work() {
             SerializeMachineToJson();
-            while (Working)
-            {
+            while (Working) {
                 InEvent.WaitOne();
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId)
-                {
+                switch (MqttHelper.InNodes.ActionId) {
                     case (ushort)BaseSpecificActions.Reset:
                         ResetMachine();
                         break;
@@ -81,21 +71,18 @@ namespace Simulator.MPS
             }
         }
 
-        private void DeliverToSlotTask()
-        {
+        private void DeliverToSlotTask() {
             MyLogger.Log("DeliverToSlotTask!");
             TaskDescription = "Delivering Product";
             var slot = MqttHelper.InNodes.Data[0];
             StartTask();
-            for(var count = 0; count  < 45 && ProductAtIn == null; count++)
-            {
+            for (var count = 0; count < 45 && ProductAtIn == null; count++) {
                 Thread.Sleep(1000);
             }
             if (ProductAtIn == null) return;
             MyLogger.Log("Deliver to slot " + slot);
             Thread.Sleep(Config.DSTaskDuration);
-            switch (slot)
-            {
+            switch (slot) {
                 case 1:
                     Slot1 = ProductAtIn;
                     break;

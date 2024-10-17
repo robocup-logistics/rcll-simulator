@@ -10,18 +10,14 @@ using Simulator.Utility;
 using Timer = Simulator.Utility.Timer;
 
 
-namespace Simulator.RobotEssentials
-{
-    class PBMessageHandlerMachineManager : PBMessageHandlerBase
-    {
+namespace Simulator.RobotEssentials {
+    class PBMessageHandlerMachineManager : PBMessageHandlerBase {
         private readonly MpsManager Manager;
-        public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, MyLogger log) : base(config, log)
-        {
+        public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, MyLogger log) : base(config, log) {
             Manager = mpsManager;
         }
 
-        public override bool HandleMessage(byte[] stream)
-        {
+        public override bool HandleMessage(byte[] stream) {
 
             /*      Each row is 4 bytes
              * 1.   Protocol version, Cipher, Reserved byte1 , reserved byte2
@@ -29,18 +25,15 @@ namespace Simulator.RobotEssentials
              * 3.   component ID and Message type each 2 bytes. Used to detect the Protobuff message
              * 
              * */
-            if (stream.Length < 4)
-            {
+            if (stream.Length < 4) {
                 MyLogger.Log("The received Message is to short to be parsed!");
                 return false;
             }
-            if (FrameHeader.Version != stream[0])
-            {
+            if (FrameHeader.Version != stream[0]) {
                 MyLogger.Log("Version is different!");
                 return false;
             }
-            if (FrameHeader.Cipher != stream[1])
-            {
+            if (FrameHeader.Cipher != stream[1]) {
                 MyLogger.Log("Cipher is different!");
                 return false;
             }
@@ -55,25 +48,20 @@ namespace Simulator.RobotEssentials
             string msg = "";
             //MyLogger.Log("The Recieved message is from component : " + cmpId.ToString() + " and the message type is = " + msgtype.ToString() + " and payloadsize = " + payloadsize);
             //MyLogger.Log("Length of the stream = " + Stream.Length);
-            if (payloadsize == 0)
-            {
+            if (payloadsize == 0) {
                 MyLogger.Log("The payload is " + payloadsize + " so we stop here!");
                 return false;
             }
-            switch (msgtype)
-            {
-                case (int)Machine.Types.CompType.MsgType:
-                    {
+            switch (msgtype) {
+                case (int)Machine.Types.CompType.MsgType: {
                         MessageParser<Machine> mp = new(() => new Machine());
                         Machine m = mp.ParseFrom(stream, 12, payloadsize - 4);
                         MyLogger.Log("Parsing of the MachineInfo Message was successful!");
                         msg = m.ToString();
                         break;
                     }
-                case (int)MachineInfo.Types.CompType.MsgType:
-                    {
-                        if ((int)MachineInfo.Types.CompType.CompId != cmpId)
-                        {
+                case (int)MachineInfo.Types.CompType.MsgType: {
+                        if ((int)MachineInfo.Types.CompType.CompId != cmpId) {
                             MyLogger.Log("Parsing of MachineInfo Message was aborted due to wrong CMP id!" + (int)MachineInfo.Types.CompType.CompId + "!=" + cmpId);
                             return false;
                         }
@@ -81,12 +69,10 @@ namespace Simulator.RobotEssentials
                         MessageParser<MachineInfo> mip = new(() => new MachineInfo());
                         MachineInfo mi;
                         MyLogger.Log("Parsing of MachineInfo Message! cmpId = " + cmpId + " msg type = " + msgtype);
-                        try
-                        {
+                        try {
                             mi = mip.ParseFrom(stream, 12, payloadsize - 4);
                         }
-                        catch (Exception e)
-                        {
+                        catch (Exception e) {
                             MyLogger.Log(e.ToString());
                             return false;
                         }
@@ -94,14 +80,12 @@ namespace Simulator.RobotEssentials
                         MyLogger.Log("Parsing of MachineInfo Message was successful!");
                         msg = mi.ToString();
                         MyLogger.Log("The Parsed message = " + msg);
-                        if (mi.Machines.Count < Manager.Machines.Count)
-                        {
+                        if (mi.Machines.Count < Manager.Machines.Count) {
                             MyLogger.Log("MachineInfo is not containing all machines!");
                             return false;
                         }
                         ZonesManager.GetInstance().ZoneManagerMutex.WaitOne();
-                        if (Manager.AllMachineSet)
-                        {
+                        if (Manager.AllMachineSet) {
                             //MyLogger.Log("All machines already placed! (after parsed)");
                             ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
                             return true;
@@ -110,8 +94,7 @@ namespace Simulator.RobotEssentials
                         ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
                         break;
                     }
-                case (int)GameState.Types.CompType.MsgType:
-                    {
+                case (int)GameState.Types.CompType.MsgType: {
                         MessageParser<GameState> gsp = new(() => new GameState());
                         GameState gs = gsp.ParseFrom(stream, 12, payloadsize - 4);
                         Timer.GetInstance(Config).UpdateTime(gs.GameTime);
@@ -123,8 +106,7 @@ namespace Simulator.RobotEssentials
                         msg = gs.ToString();
                         break;
                     }
-                default:
-                    {
+                default: {
                         MyLogger.Log("Unknown MsgType " + msgtype + " for component " + cmpId);
                         break;
                     }

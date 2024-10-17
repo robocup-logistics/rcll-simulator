@@ -5,38 +5,31 @@ using System.Threading;
 using System.Text.Json;
 
 
-namespace Simulator.MPS
-{
-    public class MPS_BS : Mps
-    {
-        public enum BaseSpecificActions
-        {
+namespace Simulator.MPS {
+    public class MPS_BS : Mps {
+        public enum BaseSpecificActions {
             Reset = 100,
             GetBase = 101,
             BandOnUntil = 102
         }
 
-        public MPS_BS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
-        {
+        public MPS_BS(Configurations config, string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug) {
             Type = MpsType.BaseStation;
         }
-        public new void Run()
-        {
+        public new void Run() {
             var BasicThread = new Thread(base.HandleBasicTasks);
             BasicThread.Start();
             BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
-        public void DispenseBase()
-        {
+        public void DispenseBase() {
             MyLogger.Log("Got a GetBase Task!");
             TaskDescription = "Dispensing a Base";
             var stock = MqttHelper.InNodes.Data[0];
             StartTask();
             Thread.Sleep(Config.BSTaskDuration);
             MyLogger.Log("Placed a Base from stock " + (MqttHelper.InNodes.Data[0]) + " on the belt");
-            switch (stock)
-            {
+            switch (stock) {
                 case 1:
                     ProductOnBelt = new Products(BaseColor.BaseRed);
                     break;
@@ -55,20 +48,17 @@ namespace Simulator.MPS
 
             FinishedTask();
         }
-        private void Work()
-        {
+        private void Work() {
             SerializeMachineToJson();
-            while (true)
-            {
+            while (true) {
                 //MyLogger.Info("We will wait for a Signal!");
                 InEvent.WaitOne();
-                
+
                 //MyLogger.Info("We got a write and reset the wait!");
                 InEvent.Reset();
                 GotConnection = true;
                 //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId)
-                {
+                switch (MqttHelper.InNodes.ActionId) {
                     case (ushort)Actions.NoJob:
                         MyLogger.Log("No In Job!");
                         break;
@@ -85,7 +75,7 @@ namespace Simulator.MPS
                         MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
                         break;
                 }
-                TaskDescription = "Idle"; 
+                TaskDescription = "Idle";
             }
         }
     }

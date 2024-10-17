@@ -8,19 +8,15 @@ using LlsfMsgs;
 using Simulator.Utility;
 using Timer = System.Threading.Timer;
 
-namespace Simulator.RobotEssentials
-{
-    internal class PBMessageFactoryRobot : PBMessageFactoryBase
-    {
+namespace Simulator.RobotEssentials {
+    internal class PBMessageFactoryRobot : PBMessageFactoryBase {
         private Robot Peer;
-        
-        public PBMessageFactoryRobot(Configurations config, Robot peer, MyLogger log) :base(config, log)
-        {
+
+        public PBMessageFactoryRobot(Configurations config, Robot peer, MyLogger log) : base(config, log) {
             log.Info("Created a PBMessageFactoryRobot!");
             Peer = peer;
         }
-        public override byte[] CreateMessage(MessageTypes mtype)
-        {
+        public override byte[] CreateMessage(MessageTypes mtype) {
             Timer ??= Utility.Timer.GetInstance(Config);
             ushort cmp = 0;
             ushort msg = 0;
@@ -28,10 +24,8 @@ namespace Simulator.RobotEssentials
             byte[] bytes;
 
             MyLogger.Log("[RobotMessageFactory] Creating a : " + mtype + " message!");
-            switch (mtype)
-            {
-                case MessageTypes.BeaconSignal:
-                    {
+            switch (mtype) {
+                case MessageTypes.BeaconSignal: {
                         var Signal = new BeaconSignal();
                         Signal = CreateBeaconSignal();
                         cmp = (ushort)BeaconSignal.Types.CompType.CompId;
@@ -40,8 +34,7 @@ namespace Simulator.RobotEssentials
                         bytes = Signal.ToByteArray();
                         break;
                     }
-                case MessageTypes.GripsBeaconSignal:
-                    {
+                case MessageTypes.GripsBeaconSignal: {
                         var Signal = new GripsBeaconSignal();
                         var bs = CreateBeaconSignal();
                         Signal.BeaconSignal = bs;
@@ -55,26 +48,21 @@ namespace Simulator.RobotEssentials
                 case MessageTypes.GripsPrepareMachine:
                     var machineId = "";
                     var machinePoint = "";
-                    if (Peer is { CurrentTask: { } })
-                    {
+                    if (Peer is { CurrentTask: { } }) {
                         var robotId = Peer.JerseyNumber;
-                        if (Peer.CurrentTask.Deliver != null)
-                        {
+                        if (Peer.CurrentTask.Deliver != null) {
                             machineId = Peer.CurrentTask.Deliver.MachineId;
                             machinePoint = Peer.CurrentTask.Deliver.MachinePoint;
                         }
-                        else if (Peer.CurrentTask.Buffer != null)
-                        {
+                        else if (Peer.CurrentTask.Buffer != null) {
                             machineId = Peer.CurrentTask.Buffer.MachineId;
                             machinePoint = "input"; // Peer.CurrentTask.BufferCapStation.ShelfNumber.ToString();
                         }
-                        else if (Peer.CurrentTask.Retrieve != null)
-                        {
+                        else if (Peer.CurrentTask.Retrieve != null) {
                             machineId = Peer.CurrentTask.Retrieve.MachineId;
                             machinePoint = Peer.CurrentTask.Retrieve.MachinePoint;
                         }
-                        var machine = new GripsPrepareMachine()
-                        {
+                        var machine = new GripsPrepareMachine() {
                             RobotId = robotId,
                             MachineId = machineId,
                             MachinePoint = machinePoint,
@@ -91,8 +79,7 @@ namespace Simulator.RobotEssentials
                     MyLogger.Log("Cant't create the GripPrepareMachineTask as the Peer is not set or there is no task");
                     return Array.Empty<byte>();
                 case MessageTypes.GameState:
-                    var gamestate = new GameState()
-                    {
+                    var gamestate = new GameState() {
                         GameTime = GetTimeMessage(),
                         Phase = GameState.Types.Phase.Exploration,
                         PointsCyan = 0,
@@ -107,13 +94,11 @@ namespace Simulator.RobotEssentials
                     bytes = gamestate.ToByteArray();
                     break;
                 case MessageTypes.AgentTask:
-                    if(Peer.CurrentTask == null)
-                    {
+                    if (Peer.CurrentTask == null) {
                         MyLogger.Log("Can't create an AgentTask as there is no task!");
                         throw new Exception("Can't create an AgentTask as there is no task!");
                     }
-                    var answer = new AgentTask()
-                    {
+                    var answer = new AgentTask() {
                         TeamColor = Peer.TeamColor,
                         TaskId = Peer.CurrentTask.TaskId,
                         RobotId = Peer.JerseyNumber,
@@ -142,10 +127,8 @@ namespace Simulator.RobotEssentials
             var message = new Message(fh, mh, mb);
             return message.GetBytes();
         }
-        private BeaconSignal CreateBeaconSignal()
-        {
-            var bs = new BeaconSignal
-            {
+        private BeaconSignal CreateBeaconSignal() {
+            var bs = new BeaconSignal {
                 Time = GetTimeMessage(),
                 TeamColor = Peer?.TeamColor ?? Config.Teams[0].Color,
                 Number = Peer?.JerseyNumber ?? 0
@@ -158,12 +141,9 @@ namespace Simulator.RobotEssentials
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
             bs.Task = Peer?.CurrentTask;
-            if (Peer != null && Peer.FinishedTasksList.Count != 0)
-            {
-                foreach (var t in Peer.FinishedTasksList)
-                {
-                    var task = new FinishedTask
-                    {
+            if (Peer != null && Peer.FinishedTasksList.Count != 0) {
+                foreach (var t in Peer.FinishedTasksList) {
+                    var task = new FinishedTask {
                         TaskId = t.TaskId,
                         Successful = t.Successful
                     };
@@ -174,10 +154,8 @@ namespace Simulator.RobotEssentials
             return bs;
         }
 
-        private Pose2D GetPose2DMessage()
-        {
-            return new Pose2D
-            {
+        private Pose2D GetPose2DMessage() {
+            return new Pose2D {
                 Timestamp = GetTimeMessage(),
                 Ori = Peer.Position.Orientation,
                 X = Peer.Position.X,

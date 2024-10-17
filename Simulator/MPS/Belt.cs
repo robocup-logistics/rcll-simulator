@@ -1,22 +1,18 @@
 ﻿using Simulator.Utility;
 
-namespace Simulator.MPS
-{
-    public enum Positions
-    {
+namespace Simulator.MPS {
+    public enum Positions {
         NoTarget = 0,
         In = 1,
         Mid = 2,
         Out = 3
 
     }
-    public enum Direction
-    {
+    public enum Direction {
         FromInToOut = 1,
         FromOutToIn = 2
     }
-    public class Belt
-    {
+    public class Belt {
         private Positions Position;
         private Positions TargetPosition;
         public Direction Direction { get; private set; }
@@ -26,8 +22,7 @@ namespace Simulator.MPS
         private Products? ProductOnBelt;
         private bool Work;
         private Configurations Config;
-        public Belt(Configurations config, Mps machine, ManualResetEvent mre)
-        {
+        public Belt(Configurations config, Mps machine, ManualResetEvent mre) {
             Position = Positions.In;
             Direction = Direction.FromInToOut;
             TargetPosition = Positions.NoTarget;
@@ -40,20 +35,16 @@ namespace Simulator.MPS
             beltThread.Start();
         }
 
-        private void UpdatePosition()
-        {
+        private void UpdatePosition() {
             //TODO add handling of several products on the belt!
-            Position = Direction switch
-            {
-                Direction.FromInToOut => Position switch
-                {
+            Position = Direction switch {
+                Direction.FromInToOut => Position switch {
                     Positions.In => Positions.Mid,
                     Positions.Mid => Positions.Out,
                     Positions.Out => Positions.Out,
                     _ => Position
                 },
-                Direction.FromOutToIn => Position switch
-                {
+                Direction.FromOutToIn => Position switch {
                     Positions.In => Positions.In,
                     Positions.Mid => Positions.In,
                     Positions.Out => Positions.Mid,
@@ -63,15 +54,11 @@ namespace Simulator.MPS
             };
         }
 
-        private void StateMachine()
-        {
-            while (Work)
-            {
-                if (On)
-                {
+        private void StateMachine() {
+            while (Work) {
+                if (On) {
 
-                    if (TargetPosition == Position)
-                    {
+                    if (TargetPosition == Position) {
                         On = false;
                         TargetPosition = Positions.NoTarget;
                         Machine.MqttHelper.InNodes.Status.SetReady(true);
@@ -79,15 +66,13 @@ namespace Simulator.MPS
                         continue;
                     }
 
-                    if (!Machine.MqttHelper.InNodes.Status.GetBusy())
-                    {
+                    if (!Machine.MqttHelper.InNodes.Status.GetBusy()) {
                         Machine.MqttHelper.InNodes.Status.SetBusy(true);
                     }
 
 
                     Thread.Sleep(Config.BeltActionDuration);
-                    switch (Direction)
-                    {
+                    switch (Direction) {
                         case Direction.FromInToOut:
                             UpdatePosition();
                             break;
@@ -99,8 +84,7 @@ namespace Simulator.MPS
                     }
 
                 }
-                else
-                {
+                else {
                     //Nothing to do when belt is switched off
 
                 }
@@ -112,27 +96,22 @@ namespace Simulator.MPS
             return;
         }
 
-        public void SetTarget(Positions target, Direction direction)
-        {
+        public void SetTarget(Positions target, Direction direction) {
             TargetPosition = target;
             Direction = direction;
         }
 
-        public void PlaceProduct(Products prod)
-        {
+        public void PlaceProduct(Products prod) {
             ProductOnBelt = prod;
         }
-        public Products? GetProduct(Positions pos)
-        {
-            if(Position ==  pos)
-            {
+        public Products? GetProduct(Positions pos) {
+            if (Position == pos) {
                 var product = ProductOnBelt;
                 ProductOnBelt = null;
 
                 return product;
             }
-            else
-            {
+            else {
                 return null;
             }
         }

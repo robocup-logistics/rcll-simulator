@@ -3,10 +3,8 @@ using System.Threading;
 using Simulator.RobotEssentials;
 using LlsfMsgs;
 
-namespace Simulator.Utility
-{
-    public class Timer
-    {
+namespace Simulator.Utility {
+    public class Timer {
         // TODO build up TICK system with separate thread to increase the time
         // it might be that only seconds are needed as NSecs are not important.
 
@@ -27,12 +25,10 @@ namespace Simulator.Utility
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
-        public static Timer GetInstance(Configurations config)
-        {
+        public static Timer GetInstance(Configurations config) {
             return Instance ?? (Instance = new Timer(config));
         }
-        private Timer(Configurations config)
-        {
+        private Timer(Configurations config) {
             Nsec = 0;
             Sec = 0;
             Paused = true;
@@ -44,24 +40,21 @@ namespace Simulator.Utility
             //Refbox.StartSendThread();
             //Tickthread = new Thread(Tick);
             //Tickthread.Start();
-            
+
             TimerMutex = new Mutex();
         }
 
-        public void ContinueTicking()
-        {
+        public void ContinueTicking() {
             Paused = !Paused;
         }
-        public void UpdateTime(Time gameTime)
-        {
+        public void UpdateTime(Time gameTime) {
             TimerMutex.WaitOne();
             MyLogger.Log("Got Update time message!");
             Sec = gameTime.Sec;
             Nsec = gameTime.Nsec;
             TimerMutex.ReleaseMutex();
         }
-        public Time GetTime()
-        {
+        public Time GetTime() {
             var time = new Time();
             TimerMutex.WaitOne();
             time.Sec = Sec;
@@ -69,16 +62,12 @@ namespace Simulator.Utility
             TimerMutex.ReleaseMutex();
             return time;
         }
-        public void Tick()
-        {
-            while (true)
-            {
+        public void Tick() {
+            while (true) {
                 //Logger.Log("Current time = " + Sec + " and Paused = " + Paused.ToString());
-                if (!Paused)
-                {
+                if (!Paused) {
                     Nsec += Convert.ToInt64(500 * TimeFactor);
-                    if (Nsec >= 1000)
-                    {
+                    if (Nsec >= 1000) {
                         Sec += Convert.ToInt64(1);
                         Nsec -= 1000;
                     }
@@ -92,8 +81,7 @@ namespace Simulator.Utility
             }
         }
 
-        public void Reset()
-        {
+        public void Reset() {
             Sec = 0;
             Nsec = 0;
         }

@@ -1,45 +1,35 @@
 using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
-using System;
-using System.Drawing.Printing;
 using LlsfMsgs;
-using Serilog;
 
 // TODO Test Robot with teamserver
-// Todo test Mps with refbox and teamserver
-// todo GUI - split from console application 
-// todo finish up robot sim and mps sim
-// todo robot sim and mps sim communication needs to be finished
+// TODO test Mps with refbox and teamserver
+// TODO GUI - split from console application
+// TODO finish up robot sim and mps sim
+// TODO robot sim and mps sim communication needs to be finished
 // TODO check if time can be updated with timer messages
 
 
-namespace Simulator
-{
-    internal class MainClass
-    {
+namespace Simulator {
+    internal class MainClass {
         private static MyLogger? MainLogger;
         private static RobotManager? RobotManager;
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
         private static Configurations? Config;
-        
 
-        private static void Main(string[] args)
-        {
+
+        private static void Main(string[] args) {
             var next = false;
             var path = "";
-            foreach (var argument in args)
-            {
-                switch (argument.ToLower())
-                {
+            foreach (var argument in args) {
+                switch (argument.ToLower()) {
                     case "-cfg":
                         next = true;
                         continue;
-                    default:
-                        {
-                            if (next)
-                            {
+                    default: {
+                            if (next) {
                                 path = argument;
                                 next = false;
                             }
@@ -49,22 +39,18 @@ namespace Simulator
             }
 
             var logfolder = "logs" + Path.DirectorySeparatorChar;
-            if (!Directory.Exists(logfolder))
-            {
+            if (!Directory.Exists(logfolder)) {
                 Directory.CreateDirectory(logfolder);
             }
-            else
-            {
+            else {
 
                 var di = new DirectoryInfo(logfolder);
-                foreach (var file in di.GetFiles())
-                {
+                foreach (var file in di.GetFiles()) {
                     file.Delete();
                 }
             }
 
-            if (path.Equals(""))
-            {
+            if (path.Equals("")) {
                 Console.WriteLine("No path to the Configuration file is given!");
                 Console.WriteLine("Please use \"-cfg path\\to\\file\"!");
                 Console.WriteLine("Something like \"-cfg cfg\\config.yaml should work if you just pulled the project!");
@@ -81,14 +67,11 @@ namespace Simulator
             Console.Write("Creating the Zones ... ");
             ZoneManager = ZonesManager.GetInstance();
             Console.WriteLine("done!");
-            if (Config.FixedMPSplacement)
-            {
+            if (Config.FixedMPSplacement) {
                 Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
                 var mi = new MachineInfo();
-                foreach (var m in Config.MpsConfigs)
-                {
-                    var machine = new Machine()
-                    {
+                foreach (var m in Config.MpsConfigs) {
+                    var machine = new Machine() {
                         Name = m.Name,
                         Zone = m.Zone,
                         Rotation = (uint)m.Orientation
@@ -103,16 +86,13 @@ namespace Simulator
 
             var web = new WebGui.WebGui(Config, MachineManager, RobotManager);
             Console.WriteLine("Everything is set up! Waiting for connections!");
-            
+
         }
 
-        public static void CloseApplication()
-        {
+        public static void CloseApplication() {
             Console.Write("Starting the cleanup ..");
-            if(RobotManager != null)
-            {
-                foreach (var robot in RobotManager.Robots)
-                {
+            if (RobotManager != null) {
+                foreach (var robot in RobotManager.Robots) {
                     MainLogger?.Log("Starting the Cleanup....");
                     robot.RobotStop();
                     MainLogger?.Log("Finished the Cleanup....");

@@ -8,16 +8,13 @@ using Simulator.Utility;
 using Team = LlsfMsgs.Team;
 using Timer = Simulator.Utility.Timer;
 
-namespace Simulator.RobotEssentials
-{
-    class PBMessageFactoryBase
-    {
+namespace Simulator.RobotEssentials {
+    class PBMessageFactoryBase {
         public ulong SequenzNr;
         public Timer? Timer;
         public readonly MyLogger MyLogger;
         public readonly Configurations Config;
-        public enum MessageTypes
-        {
+        public enum MessageTypes {
             BeaconSignal, // Sending periodcally to detect refbox and robots
             RobotInfo,
             ReportAllMachines,
@@ -38,8 +35,7 @@ namespace Simulator.RobotEssentials
 
 
 
-        public PBMessageFactoryBase(Configurations config, MyLogger log)
-        {
+        public PBMessageFactoryBase(Configurations config, MyLogger log) {
             log.Info("Created a PBMessageFactoryBase!");
             SequenzNr = 0;
             MyLogger = log;
@@ -47,8 +43,7 @@ namespace Simulator.RobotEssentials
             Config = config;
         }
 
-        public virtual byte[] CreateMessage(MessageTypes mtype)
-        {
+        public virtual byte[] CreateMessage(MessageTypes mtype) {
             Timer ??= Timer.GetInstance(Config);
             ushort cmp = 0;
             ushort msg = 0;
@@ -56,22 +51,18 @@ namespace Simulator.RobotEssentials
             byte[] bytes;
             var time = new Time();
             // Insert the Time for Message-Types Beacon,Robot,Machine
-            if (mtype is MessageTypes.RobotInfo or MessageTypes.MachineReport)
-            {
+            if (mtype is MessageTypes.RobotInfo or MessageTypes.MachineReport) {
                 time.Nsec = Timer.Nsec;
                 time.Sec = Timer.Sec;
             }
             MyLogger.Log("[BaseMessageFactory] Creating a : " + mtype + " message!");
-            switch (mtype)
-            {
-                case MessageTypes.BeaconSignal:
-                    {
-                        var Signal = new BeaconSignal()
-                        {
+            switch (mtype) {
+                case MessageTypes.BeaconSignal: {
+                        var Signal = new BeaconSignal() {
                             Number = 0,
                             PeerName = "Test"
                         };
-                        
+
                         cmp = (ushort)BeaconSignal.Types.CompType.CompId;
                         msg = (ushort)BeaconSignal.Types.CompType.MsgType;
                         payloadsize = (uint)Signal.CalculateSize() + 4;
@@ -80,8 +71,7 @@ namespace Simulator.RobotEssentials
                     }
 
                 case MessageTypes.SimSynchTime:
-                    var simtime = new SimTimeSync
-                    {
+                    var simtime = new SimTimeSync {
                         Paused = Timer.Paused,
                         RealTimeFactor = Timer.TimeFactor,
                         SimTime = GetTimeMessage()
@@ -94,8 +84,7 @@ namespace Simulator.RobotEssentials
                     //Configurations.GetInstance().Time;
                     break;
                 case MessageTypes.GameState:
-                    var gamestate = new GameState()
-                    {
+                    var gamestate = new GameState() {
                         GameTime = GetTimeMessage(),
                         Phase = GameState.Types.Phase.Exploration,
                         PointsCyan = 0,
@@ -119,24 +108,21 @@ namespace Simulator.RobotEssentials
             return message.GetBytes();
         }
 
-       
-        public Time GetTimeMessage()
-        {
+
+        public Time GetTimeMessage() {
             Timer ??= Timer.GetInstance(Config);
             return Timer.GetTime();
         }
 
     }
 
-    class Message
-    {
+    class Message {
         readonly byte[] Bytes;
         FrameHeader framehead;
         MessageHeader messagehead;
         MessageBody messagebody;
 
-        public Message(FrameHeader fh, MessageHeader mh, MessageBody mb)
-        {
+        public Message(FrameHeader fh, MessageHeader mh, MessageBody mb) {
             framehead = fh;
             messagehead = mh;
             messagebody = mb;
@@ -148,16 +134,13 @@ namespace Simulator.RobotEssentials
             //PrintBytes(Bytes);
         }
 
-        public byte[] GetBytes()
-        {
+        public byte[] GetBytes() {
             return Bytes;
         }
 
-        private void PrintBytes(IEnumerable<byte> toPrint)
-        {
+        private void PrintBytes(IEnumerable<byte> toPrint) {
             Console.WriteLine("Printing Bytes = ");
-            foreach (var b in toPrint)
-            {
+            foreach (var b in toPrint) {
                 Console.Write("\\x{0}", b.ToString().PadLeft(2, '0'));
             }
             Console.WriteLine("");
@@ -165,16 +148,14 @@ namespace Simulator.RobotEssentials
 
     }
 
-    class FrameHeader
-    {
+    class FrameHeader {
         public static byte Version = 2;
         public static byte Cipher = 0;
         public static byte Reserved = 0;
         public static byte Reserved2 = 0;
         byte[] Bytes;
         public int Length;
-        public FrameHeader(uint payload)
-        {
+        public FrameHeader(uint payload) {
             Bytes = new byte[8];
             Bytes[0] = Version;
             Bytes[1] = Cipher;
@@ -187,39 +168,32 @@ namespace Simulator.RobotEssentials
             Bytes[7] = payloadbytes[3];
             Length = Bytes.Length;
         }
-        public byte[] GetBytes()
-        {
+        public byte[] GetBytes() {
             return Bytes;
         }
-        public byte[] GetBytesfrom32(uint val)
-        {
+        public byte[] GetBytesfrom32(uint val) {
             var netorder = IPAddress.HostToNetworkOrder(checked((int)val));
             var res = BitConverter.GetBytes(netorder);
             return res;
         }
     }
 
-    class MessageBody
-    {
+    class MessageBody {
         byte[] Bytes;
         public int Length;
-        public MessageBody(byte[] bytearray)
-        {
+        public MessageBody(byte[] bytearray) {
             Bytes = bytearray;
             Length = Bytes.Length;
         }
-        public byte[] GetBytes()
-        {
+        public byte[] GetBytes() {
             return Bytes;
         }
     }
 
-    class MessageHeader
-    {
+    class MessageHeader {
         byte[] Bytes;
         public int Length;
-        public MessageHeader(ushort cmp, ushort msg)
-        {
+        public MessageHeader(ushort cmp, ushort msg) {
             Bytes = new byte[4];
             var cmpBytes = GetBytesfrom16(cmp);
             var msgBytes = GetBytesfrom16(msg);
@@ -229,14 +203,12 @@ namespace Simulator.RobotEssentials
             Bytes[3] = msgBytes[1];
             Length = Bytes.Length;
         }
-        public byte[] GetBytesfrom16(ushort val)
-        {
+        public byte[] GetBytesfrom16(ushort val) {
             var netorder = IPAddress.HostToNetworkOrder(checked((short)val));
             var res = BitConverter.GetBytes(netorder);
             return res;
         }
-        public byte[] GetBytes()
-        {
+        public byte[] GetBytes() {
             return Bytes;
         }
     }
