@@ -37,7 +37,6 @@ namespace Simulator.RobotEssentials {
                 robot.WorkingRobotThread.Start();
 
                 Robots.Add(robot);
-
             }
         }
 

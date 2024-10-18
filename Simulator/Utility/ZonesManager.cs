@@ -25,10 +25,13 @@ namespace Simulator.Utility {
             MyLogger.Log("Creating General Zones");
             foreach (Zone z in Enum.GetValues(typeof(Zone))) {
                 int val = (int)z;
+                // Y value is the last digit
                 var y = val % 10;
                 val /= 10;
+                // X value is the second last digit
                 var x = val % 10;
                 val /= 10;
+                // Team side is determind by adding 1000 to Magenta
                 Team color = Team.Cyan;
                 if (val > 0) {
                     color = Team.Magenta;

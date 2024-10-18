@@ -55,6 +55,7 @@ namespace Simulator {
             Console.Write("Creating the Zones ... ");
             ZoneManager = ZonesManager.GetInstance();
             Console.WriteLine("done!");
+
             if (Config.FixedMPSplacement) {
                 Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
                 var mi = new MachineInfo();
