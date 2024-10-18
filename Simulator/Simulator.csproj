@@ -1,5 +1,5 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk" InitialTargets="GenerateProtobuf">
+
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net6.0</TargetFramework>
@@ -11,17 +11,9 @@
     <ProtobufOutput>./protobuf/</ProtobufOutput>
     <StartupObject>Simulator.MainClass</StartupObject>
   </PropertyGroup>
-  <ItemGroup>
-    <!-- Specify each proto file -->
-    <Protobuf Include="$(ProtobufDir)/*.proto" ProtoRoot="$(ProtobufDir)" GrpcServices="None" OutputDir="$(ProtobufOutput)" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <!-- Google Protobuf library for .NET -->
-    <PackageReference Include="Google.Protobuf" Version="3.21.0" />
-  </ItemGroup>
-  <Target Name="GenerateProtobuf" BeforeTargets="BeforeCompile">
-    <!-- Call protoc to generate C# files -->
+  <!-- Ensure protobuf files are generated before CoreCompile -->
+  <Target Name="GenerateProtobuf">
+    <!-- Generate protobuf files -->
     <Exec Command="protoc --csharp_out=$(ProtobufOutput) --proto_path=$(ProtobufDir) $(ProtobufDir)/*.proto" />
   </Target>
   <ItemGroup>
@@ -50,9 +42,10 @@
     <Content Include="RobotEssentials\IConnector.cs" />
     <Content Include="WebGui\WebGui.cs" />
   </ItemGroup>
-
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.19.1" />
+    <PackageReference Include="Grpc" Version="2.44.0" />
+    <PackageReference Include="Grpc.Tools" Version="2.44.0" PrivateAssets="All" />
     <PackageReference Include="MQTTnet" Version="4.2.1.781" />
     <PackageReference Include="Opc.UaFx.Advanced" Version="2.30.0" />
     <PackageReference Include="Serilog" Version="3.0.0-dev-01958" />
