@@ -22,7 +22,6 @@ namespace Simulator.MPS {
         //public Belt Belt;
         public ManualResetEvent InEvent;
         public ManualResetEvent BasicEvent;
-        public ManualResetEvent LightEvent;
         public ManualResetEvent BeltEvent;
         public bool GotConnection { get; protected set; }
         public bool GotPlaced;
@@ -64,7 +63,6 @@ namespace Simulator.MPS {
             GotPlaced = false;
             InEvent = new ManualResetEvent(false); // block threads till a write event occurs
             BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
-            LightEvent = new ManualResetEvent(false); // block threads till a write event occurs
             BeltEvent = new ManualResetEvent(false); // block threads till a write event occurs
             ProductAtOut = null;
             ProductAtIn = null;
@@ -72,9 +70,9 @@ namespace Simulator.MPS {
             // Initializing simulated machine parts and logger
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
-            RedLight = new Light(LightColor.Red, LightEvent);
-            YellowLight = new Light(LightColor.Yellow, LightEvent);
-            GreenLight = new Light(LightColor.Green, LightEvent);
+            RedLight = new Light(LightColor.Red);
+            YellowLight = new Light(LightColor.Yellow);
+            GreenLight = new Light(LightColor.Green);
             TaskDescription = "idle";
             Config = config;
             // Belt = new Belt(this, BeltEvent);
