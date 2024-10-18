@@ -86,8 +86,6 @@ namespace Simulator.MPS {
             // TODO MOCKUP
             try {
                 MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
-                MqttHelper.Connect();
-                MqttHelper.Setup();
             }
             catch (Exception e) {
                 Console.WriteLine(e);

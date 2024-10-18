@@ -48,9 +48,6 @@ public class MQTThelper {
         InEvent = inevent;
         BasicEvent = basicevent;
         Client = MqttFactory.CreateMqttClient();
-    }
-
-    public void Connect() {
         _myLogger.Log("Starting connection!");
         var mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(Url)
@@ -59,9 +56,6 @@ public class MQTThelper {
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();
         _myLogger.Log("Connected!");
-    }
-
-    public void Setup() {
         Client.ApplicationMessageReceivedAsync += HandleUpdate;
         InNodes = new MqttNodeVariables(InTopic, Client, MqttFactory, InEvent, _myLogger);
         BasicNodes = new MqttNodeVariables(BasicTopic, Client, MqttFactory, BasicEvent, _myLogger);
