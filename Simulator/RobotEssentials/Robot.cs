@@ -27,7 +27,6 @@ namespace Simulator.RobotEssentials {
 
         public AgentTask? CurrentTask { get; set; }
         private DateTime MoveStart = DateTime.MinValue;
-        public List<RobotMachineReportEntry> Machines { get; set; }
         [JsonIgnore]
         public Thread? WorkingRobotThread { get; set; }
         private RobotManager MyManager;
@@ -86,7 +85,6 @@ namespace Simulator.RobotEssentials {
                 throw new Exception("Couldn't place the robot in the starting zone!");
             }
             Tasks = new Queue<AgentTask>();
-            Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
             MpsManager = mpsManager;
             TcpConnectionTeamserver = null;
@@ -354,24 +352,24 @@ namespace Simulator.RobotEssentials {
             switch (mps.Type) {
                 case MPS.Mps.MpsType.RingStation: {
                         ((MPS_RS)mps).PlaceProduct(machinePoint, HeldProduct);
-                        if (!machinePoint.Equals("slide") && Config.SendPrepare) {
-                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                        }
+                        // if (!machinePoint.Equals("slide") && Config.SendPrepare) {
+                        //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        // }
                         break;
                     }
                 case MPS.Mps.MpsType.DeliveryStation: {
                         mps.PlaceProduct(machinePoint, HeldProduct);
-                        if (Config.SendPrepare) {
-                            AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                        }
+                        // if (Config.SendPrepare) {
+                        //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                        // }
 
                         break;
                     }
                 case MPS.Mps.MpsType.CapStation:
                     ((MPS_CS)mps).PlaceProduct(machinePoint, HeldProduct);
-                    if (Config.SendPrepare) {
-                        AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                    }
+                    // if (Config.SendPrepare) {
+                    //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                    // }
                     break;
                 default:
                     mps.PlaceProduct(machinePoint, HeldProduct);
@@ -454,9 +452,9 @@ namespace Simulator.RobotEssentials {
             else {
                 if (mps?.Type == Mps.MpsType.CapStation && !target.Equals("output")) {
                     MyLogger.Log("Prepare in case of a CapStation!");
-                    if (Config.SendPrepare) {
-                        AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                    }
+                    // if (Config.SendPrepare) {
+                    //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                    // }
 
                 }
                 CurrentTask.Successful = Move(targetZone);
@@ -469,9 +467,9 @@ namespace Simulator.RobotEssentials {
 
                 MyLogger.Log("At station sending a prepare machine task!");
                 if (mps?.Type == Mps.MpsType.BaseStation) {
-                    if (Config.SendPrepare) {
-                        AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-                    }
+                    // if (Config.SendPrepare) {
+                    //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+                    // }
                 }
             }
             if (mps == null) {
@@ -548,9 +546,9 @@ namespace Simulator.RobotEssentials {
             CurrentTask.Successful = PlaceProduct(mps);
 
             MyLogger.Log("Next we need to send a prepare machine to the teamserver!");
-            if (Config.SendPrepare) {
-                AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
-            }
+            // if (Config.SendPrepare) {
+            //     AddMessage(PBMessageFactoryBase.MessageTypes.GripsPrepareMachine);
+            // }
             MyLogger.Log("Buffered the machine " + (CurrentTask.Successful ? "successful" : "unsuccessful") + "!");
             AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
             TaskDescription = "Idle";

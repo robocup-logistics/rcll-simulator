@@ -147,15 +147,15 @@ namespace Simulator.RobotEssentials {
                         msg = task.ToString();
                         break;
                     }
-                case (int)GripsPrepareMachine.Types.CompType.MsgType: {
-                        MessageParser<GripsPrepareMachine> prepareParser =
-                            new(() => new GripsPrepareMachine());
+                // case (int)GripsPrepareMachine.Types.CompType.MsgType: {
+                //         MessageParser<GripsPrepareMachine> prepareParser =
+                //             new(() => new GripsPrepareMachine());
 
-                        GripsPrepareMachine prepareTask = prepareParser.ParseFrom(Stream, 12, payloadsize - 4);
-                        MyLogger.Log("Parsing of PrepareMachineTask was successful");
-                        MyLogger.Log(prepareTask.ToString());
-                        break;
-                    }
+                //         GripsPrepareMachine prepareTask = prepareParser.ParseFrom(Stream, 12, payloadsize - 4);
+                //         MyLogger.Log("Parsing of PrepareMachineTask was successful");
+                //         MyLogger.Log(prepareTask.ToString());
+                //         break;
+                //     }
                 case (int)AttentionMessage.Types.CompType.MsgType:
                     MessageParser<AttentionMessage> attentionParser =
                         new(() => new AttentionMessage());

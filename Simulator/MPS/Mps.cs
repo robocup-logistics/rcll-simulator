@@ -9,8 +9,8 @@ namespace Simulator.MPS {
         public int Port { get; private set; }
         public MpsType Type;
         public MachineState MachineState;
+        //TODO EXPLORATION
         public ExplorationState ExplorationState;
-        public MachineSide MachineSide;
         public Zone Zone { get; set; }
         public uint Rotation { get; set; }
         public bool Debug;
@@ -32,7 +32,7 @@ namespace Simulator.MPS {
         public string TaskDescription { get; set; }
         public uint SlideCount { get; set; }
         public string? JsonInformation;
-        protected Configurations Config;
+        protected readonly Configurations Config;
         public MQTThelper MqttHelper;
         public bool Working { get; private set; }
         public enum MpsType {

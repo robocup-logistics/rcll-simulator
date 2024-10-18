@@ -3,7 +3,6 @@ using System.Net;
 using System.Collections.Generic;
 using Google.Protobuf;
 using LlsfMsgs;
-using MachineStates;
 using Simulator.Utility;
 using Team = LlsfMsgs.Team;
 using Timer = Simulator.Utility.Timer;

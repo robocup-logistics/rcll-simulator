@@ -29,50 +29,50 @@ namespace Simulator.RobotEssentials {
                         bytes = Signal.ToByteArray();
                         break;
                     }
-                case MessageTypes.GripsBeaconSignal: {
-                        var Signal = new GripsBeaconSignal();
-                        var bs = CreateBeaconSignal();
-                        Signal.BeaconSignal = bs;
-                        cmp = (ushort)GripsBeaconSignal.Types.CompType.CompId;
-                        msg = (ushort)GripsBeaconSignal.Types.CompType.MsgType;
-                        payloadsize = (uint)Signal.CalculateSize() + 4;
-                        bytes = Signal.ToByteArray();
-                        break;
-                    }
-                case MessageTypes.PrepareMachine:
-                case MessageTypes.GripsPrepareMachine:
-                    var machineId = "";
-                    var machinePoint = "";
-                    if (Peer is { CurrentTask: { } }) {
-                        var robotId = Peer.JerseyNumber;
-                        if (Peer.CurrentTask.Deliver != null) {
-                            machineId = Peer.CurrentTask.Deliver.MachineId;
-                            machinePoint = Peer.CurrentTask.Deliver.MachinePoint;
-                        }
-                        else if (Peer.CurrentTask.Buffer != null) {
-                            machineId = Peer.CurrentTask.Buffer.MachineId;
-                            machinePoint = "input"; // Peer.CurrentTask.BufferCapStation.ShelfNumber.ToString();
-                        }
-                        else if (Peer.CurrentTask.Retrieve != null) {
-                            machineId = Peer.CurrentTask.Retrieve.MachineId;
-                            machinePoint = Peer.CurrentTask.Retrieve.MachinePoint;
-                        }
-                        var machine = new GripsPrepareMachine() {
-                            RobotId = robotId,
-                            MachineId = machineId,
-                            MachinePoint = machinePoint,
-                            MachinePrepared = true
-                        };
-                        cmp = (ushort)GripsPrepareMachine.Types.CompType.CompId;
-                        msg = (ushort)GripsPrepareMachine.Types.CompType.MsgType;
-                        payloadsize = (uint)machine.CalculateSize() + 4;
-                        bytes = machine.ToByteArray();
-                        MyLogger.Log("Created a prepare machine message!");
-                        MyLogger.Log(machine.ToString());
-                        break;
-                    }
-                    MyLogger.Log("Cant't create the GripPrepareMachineTask as the Peer is not set or there is no task");
-                    return Array.Empty<byte>();
+                // case MessageTypes.GripsBeaconSignal: {
+                //         var Signal = new GripsBeaconSignal();
+                //         var bs = CreateBeaconSignal();
+                //         Signal.BeaconSignal = bs;
+                //         cmp = (ushort)GripsBeaconSignal.Types.CompType.CompId;
+                //         msg = (ushort)GripsBeaconSignal.Types.CompType.MsgType;
+                //         payloadsize = (uint)Signal.CalculateSize() + 4;
+                //         bytes = Signal.ToByteArray();
+                //         break;
+                //     }
+                // case MessageTypes.PrepareMachine:
+                // case MessageTypes.GripsPrepareMachine:
+                //     var machineId = "";
+                //     var machinePoint = "";
+                //     if (Peer is { CurrentTask: { } }) {
+                //         var robotId = Peer.JerseyNumber;
+                //         if (Peer.CurrentTask.Deliver != null) {
+                //             machineId = Peer.CurrentTask.Deliver.MachineId;
+                //             machinePoint = Peer.CurrentTask.Deliver.MachinePoint;
+                //         }
+                //         else if (Peer.CurrentTask.Buffer != null) {
+                //             machineId = Peer.CurrentTask.Buffer.MachineId;
+                //             machinePoint = "input"; // Peer.CurrentTask.BufferCapStation.ShelfNumber.ToString();
+                //         }
+                //         else if (Peer.CurrentTask.Retrieve != null) {
+                //             machineId = Peer.CurrentTask.Retrieve.MachineId;
+                //             machinePoint = Peer.CurrentTask.Retrieve.MachinePoint;
+                //         }
+                //         var machine = new GripsPrepareMachine() {
+                //             RobotId = robotId,
+                //             MachineId = machineId,
+                //             MachinePoint = machinePoint,
+                //             MachinePrepared = true
+                //         };
+                //         cmp = (ushort)GripsPrepareMachine.Types.CompType.CompId;
+                //         msg = (ushort)GripsPrepareMachine.Types.CompType.MsgType;
+                //         payloadsize = (uint)machine.CalculateSize() + 4;
+                //         bytes = machine.ToByteArray();
+                //         MyLogger.Log("Created a prepare machine message!");
+                //         MyLogger.Log(machine.ToString());
+                //         break;
+                //     }
+                //     MyLogger.Log("Cant't create the GripPrepareMachineTask as the Peer is not set or there is no task");
+                //     return Array.Empty<byte>();
                 case MessageTypes.GameState:
                     var gamestate = new GameState() {
                         GameTime = GetTimeMessage(),
