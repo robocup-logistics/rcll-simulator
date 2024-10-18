@@ -4,6 +4,17 @@ using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace Simulator.MPS {
     public abstract class Mps {
+        public enum Positions {
+            NoTarget = 0,
+            In = 1,
+            Mid = 2,
+            Out = 3
+
+        }
+        public enum Direction {
+            FromInToOut = 1,
+            FromOutToIn = 2
+        }
         public readonly MyLogger MyLogger;
         public string Name { get; private set; }
         public int Port { get; private set; }
@@ -19,10 +30,8 @@ namespace Simulator.MPS {
         public Light RedLight { get; }
         public Light GreenLight { get; }
         public Light YellowLight { get; }
-        //public Belt Belt;
         public ManualResetEvent InEvent;
         public ManualResetEvent BasicEvent;
-        public ManualResetEvent BeltEvent;
         public bool GotConnection { get; protected set; }
         public bool GotPlaced;
         public Products? ProductOnBelt { get; set; }
@@ -63,29 +72,32 @@ namespace Simulator.MPS {
             GotPlaced = false;
             InEvent = new ManualResetEvent(false); // block threads till a write event occurs
             BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
-            BeltEvent = new ManualResetEvent(false); // block threads till a write event occurs
             ProductAtOut = null;
             ProductAtIn = null;
             ProductOnBelt = null;
+            Rotation = 0;
+            Zone = Zone.MZ41;
+            Working = true;
+
             // Initializing simulated machine parts and logger
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
+
             RedLight = new Light(LightColor.Red);
             YellowLight = new Light(LightColor.Yellow);
             GreenLight = new Light(LightColor.Green);
+
             TaskDescription = "idle";
             Config = config;
-            // Belt = new Belt(this, BeltEvent);
+
             // Checking whether we have mockup mode or normal mode
+            // TODO MOCKUP
             /*if (Configurations.GetInstance().MockUp)
                 return;*/
             try {
                 MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
                 MqttHelper.Connect();
                 MqttHelper.Setup();
-                Rotation = 0;
-                Zone = Zone.MZ41;
-                Working = true;
             }
             catch (Exception e) {
                 Console.WriteLine(e);
