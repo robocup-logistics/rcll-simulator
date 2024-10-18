@@ -551,7 +551,7 @@ namespace Simulator {
         public Team TeamColor;
         public string Connection;
         public RobotConfig(string name, uint jersey, Team color, string connection) {
-            if(jersey != 1 && jersey != 2 && jersey != 3) {
+            if (jersey != 1 && jersey != 2 && jersey != 3) {
                 throw new Exception("Jersey number has to be 1, 2 or 3! Name: " + name);
             }
             Name = name;

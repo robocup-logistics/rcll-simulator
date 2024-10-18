@@ -18,7 +18,7 @@ namespace Simulator.RobotEssentials {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
             Console.WriteLine("ip" + ip + "port" + port, "rob" + rob, "logger" + logger, "onlySend" + onlySend);
             OnlySending = onlySend;
-            if(rob != null) {
+            if (rob != null) {
                 PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
                 RecvThread = new Thread(() => ReceiveUdpMethod());
                 RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";

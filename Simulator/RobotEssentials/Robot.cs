@@ -81,7 +81,8 @@ namespace Simulator.RobotEssentials {
                     throw new Exception("Zone is null");
                 }
                 CurrentZone = z;
-            } else {
+            }
+            else {
                 throw new Exception("Couldn't place the robot in the starting zone!");
             }
             Tasks = new Queue<AgentTask>();
