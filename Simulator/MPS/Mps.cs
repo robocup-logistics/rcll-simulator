@@ -17,7 +17,6 @@ namespace Simulator.MPS {
         }
         public readonly MyLogger MyLogger;
         public string Name { get; private set; }
-        public int Port { get; private set; }
         public MpsType Type;
         public MachineState MachineState;
         //TODO EXPLORATION
@@ -60,18 +59,18 @@ namespace Simulator.MPS {
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(Configurations config, string name, int port, int id, Team team, bool debug = false) {
+        protected Mps(Configurations config, string name, int id, Team team, bool debug = false) {
             // Constructor for basic member initializations
-            Debug = debug;
-            MachineState = MachineState.Idle;
+            Config = config;
             Name = name;
-            Port = port;
             InternalId = id;
             Team = team;
+            Debug = debug;
+
+            TaskDescription = "Idle";
             GotConnection = false;
             GotPlaced = false;
-            InEvent = new ManualResetEvent(false); // block threads till a write event occurs
-            BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            MachineState = MachineState.Idle;
             ProductAtOut = null;
             ProductAtIn = null;
             ProductOnBelt = null;
@@ -79,7 +78,9 @@ namespace Simulator.MPS {
             Zone = Zone.MZ41;
             Working = true;
 
-            // Initializing simulated machine parts and logger
+            InEvent = new ManualResetEvent(false); // block threads till a write event occurs
+            BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
+
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
 
@@ -87,13 +88,8 @@ namespace Simulator.MPS {
             YellowLight = new Light(LightColor.Yellow);
             GreenLight = new Light(LightColor.Green);
 
-            TaskDescription = "idle";
-            Config = config;
 
-            // Checking whether we have mockup mode or normal mode
             // TODO MOCKUP
-            /*if (Configurations.GetInstance().MockUp)
-                return;*/
             try {
                 MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
                 MqttHelper.Connect();

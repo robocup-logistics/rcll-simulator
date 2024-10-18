@@ -201,8 +201,6 @@ namespace Simulator {
 
 
         private static MpsConfig? CreateMachineConfig(KeyValuePair<YamlNode, YamlNode> child) {
-
-            var port = 0;
             var orientation = 0;
             var zone = Zone.CZ11;
             var debug = false;
@@ -239,9 +237,6 @@ namespace Simulator {
                             _ => MpsType.CapStation
                         };
                         break;
-                    case "port":
-                        port = int.Parse(value.ToString());
-                        break;
                     case "orientation":
                         orientation = int.Parse(value.ToString());
                         break;
@@ -252,7 +247,7 @@ namespace Simulator {
             }
 
             var color = yamlNode.ToString().Contains("M-") ? Team.Magenta : Team.Cyan;
-            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug, zone, orientation);
+            var config = new MpsConfig(yamlNode.ToString(), type, color, debug, zone, orientation);
             return config;
         }
 
@@ -461,15 +456,13 @@ namespace Simulator {
     public class MpsConfig {
         public string Name { get; }
         public MPS.Mps.MpsType Type { get; }
-        public int Port { get; }
         public Team Team { get; }
         public bool Debug { get; }
         public Zone Zone { get; }
         public int Orientation { get; }
-        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug, Zone zone = 0, int orientation = -1) {
+        public MpsConfig(string name, MPS.Mps.MpsType type, Team team, bool debug, Zone zone = 0, int orientation = -1) {
             Name = name;
             Type = type;
-            Port = port;
             Team = team;
             Debug = debug;
             Zone = zone;
@@ -480,7 +473,6 @@ namespace Simulator {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Type = [" + Type + "]");
-            Console.WriteLine("Port = [" + Port + "]");
             Console.WriteLine("Team = [" + Team + "]");
             Console.WriteLine("Debug = [" + Debug + "]");
             Console.WriteLine("Zone = [" + Zone + "]");
