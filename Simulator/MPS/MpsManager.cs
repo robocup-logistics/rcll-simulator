@@ -28,27 +28,27 @@ namespace Simulator.MPS {
                 Thread? thread;
                 switch (mps.Type) {
                     case Mps.MpsType.BaseStation:
-                        var bs = new MPS_BS(Config, mps.Name, Machines.Count, mps.Team, mps.Debug);
+                        var bs = new MPS_BS(Config, mps.Name, mps.Team, mps.Debug);
                         thread = new Thread(bs.Run);
                         currentMps = bs;
                         break;
                     case Mps.MpsType.CapStation:
-                        var cs = new MPS_CS(Config, mps.Name, Machines.Count, mps.Team, mps.Debug);
+                        var cs = new MPS_CS(Config, mps.Name, mps.Team, mps.Debug);
                         thread = new Thread(cs.Run);
                         currentMps = cs;
                         break;
                     case Mps.MpsType.DeliveryStation:
-                        var ds = new MPS_DS(Config, mps.Name, Machines.Count, mps.Team, mps.Debug);
+                        var ds = new MPS_DS(Config, mps.Name, mps.Team, mps.Debug);
                         thread = new Thread(ds.Run);
                         currentMps = ds;
                         break;
                     case Mps.MpsType.RingStation:
-                        var rs = new MPS_RS(Config, mps.Name, Machines.Count, mps.Team, mps.Debug);
+                        var rs = new MPS_RS(Config, mps.Name, mps.Team, mps.Debug);
                         thread = new Thread(rs.Run);
                         currentMps = rs;
                         break;
                     case Mps.MpsType.StorageStation:
-                        var ss = new MPS_SS(Config, mps.Name,  Machines.Count, mps.Team, mps.Debug);
+                        var ss = new MPS_SS(Config, mps.Name, mps.Team, mps.Debug);
                         thread = new Thread(ss.Run);
                         currentMps = ss;
                         break;

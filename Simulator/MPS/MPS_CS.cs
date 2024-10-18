@@ -9,7 +9,7 @@ namespace Simulator.MPS {
             Cap = 301,
             BandOnUntil = 302
         }
-        public MPS_CS(Configurations config, string name, int id, Team team, bool debug = false) : base(config, name, id, team, debug) {
+        public MPS_CS(Configurations config, string name, Team team, bool debug = false) : base(config, name, team, debug) {
             Type = MpsType.CapStation;
             StoredCap = null;
         }

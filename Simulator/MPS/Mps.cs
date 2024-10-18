@@ -18,13 +18,11 @@ namespace Simulator.MPS {
         public readonly MyLogger MyLogger;
         public string Name { get; private set; }
         public MpsType Type;
-        public MachineState MachineState;
         //TODO EXPLORATION
         public ExplorationState ExplorationState;
         public Zone Zone { get; set; }
         public uint Rotation { get; set; }
         public bool Debug;
-        public int InternalId { get; }
         public Team Team;
         public Light RedLight { get; }
         public Light GreenLight { get; }
@@ -59,18 +57,16 @@ namespace Simulator.MPS {
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(Configurations config, string name, int id, Team team, bool debug = false) {
+        protected Mps(Configurations config, string name, Team team, bool debug = false) {
             // Constructor for basic member initializations
             Config = config;
             Name = name;
-            InternalId = id;
             Team = team;
             Debug = debug;
 
             TaskDescription = "Idle";
             GotConnection = false;
             GotPlaced = false;
-            MachineState = MachineState.Idle;
             ProductAtOut = null;
             ProductAtIn = null;
             ProductOnBelt = null;

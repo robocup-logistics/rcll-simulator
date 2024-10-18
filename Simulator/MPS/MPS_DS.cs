@@ -11,7 +11,7 @@ namespace Simulator.MPS {
             Reset = 400,
             DeliverToSlot = 401
         }
-        public MPS_DS(Configurations config, string name, int id, Team team, bool debug = false) : base(config, name, id, team, debug) {
+        public MPS_DS(Configurations config, string name, Team team, bool debug = false) : base(config, name, team, debug) {
             Type = MpsType.DeliveryStation;
             //if (Configurations.GetInstance().MockUp) return;
         }

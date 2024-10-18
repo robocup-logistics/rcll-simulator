@@ -10,7 +10,7 @@ namespace Simulator.MPS {
             BandOnUntil = 102
         }
 
-        public MPS_BS(Configurations config, string name, int id, Team team, bool debug = false) : base(config, name, id, team, debug) {
+        public MPS_BS(Configurations config, string name, Team team, bool debug = false) : base(config, name, team, debug) {
             Type = MpsType.BaseStation;
         }
         public void DispenseBase() {

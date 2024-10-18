@@ -1,7 +1,7 @@
 version: 2
 # Color of machine gets taken from a prefix of C-xxx or M-xxx
 stations:
-  C-BS: 
+  C-BS:
     active: true
     debug: true
     type: BS

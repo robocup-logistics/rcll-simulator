@@ -14,7 +14,7 @@ namespace Simulator.MPS {
             MountRing = 203
         }
 
-        public MPS_RS(Configurations config, string name, int id, Team team, bool debug = false) : base(config, name, id, team, debug) {
+        public MPS_RS(Configurations config, string name, Team team, bool debug = false) : base(config, name, team, debug) {
             Type = MpsType.RingStation;
             SlideCount = 0;
         }
