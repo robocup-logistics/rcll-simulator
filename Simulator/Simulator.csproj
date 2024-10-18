@@ -48,47 +48,9 @@
     <Content Include="RobotEssentials\PBMessageHandlerBase.cs" />
     <Content Include="RobotEssentials\PBMessageFactoryBase.cs" />
     <Content Include="RobotEssentials\IConnector.cs" />
-    <Content Include="protobuff\Zone.cs" />
-    <Content Include="protobuff\WorkpieceInfo.cs" />
-    <Content Include="protobuff\AttentionMessage.cs" />
-    <Content Include="protobuff\BeaconSignal.cs" />
-    <Content Include="protobuff\ExplorationInfo.cs" />
-    <Content Include="protobuff\Float.cs" />
-    <Content Include="protobuff\GameInfo.cs" />
-    <Content Include="protobuff\GameState.cs" />
-    <Content Include="protobuff\GripsBeaconSignal.cs" />
-    <Content Include="protobuff\GripsMidlevelTasks.cs" />
-    <Content Include="protobuff\GripsPrepareMachine.cs" />
-    <Content Include="protobuff\GripsReportAllSeenMachines.cs" />
-    <Content Include="protobuff\GripsReportMachine.cs" />
-    <Content Include="protobuff\LightSignalDetection.cs" />
-    <Content Include="protobuff\MachineCommands.cs" />
-    <Content Include="protobuff\MachineDescription.cs" />
-    <Content Include="protobuff\MachineInfo.cs" />
-    <Content Include="protobuff\MachineInstructions.cs" />
-    <Content Include="protobuff\MachineOrientationStateUpdate.cs" />
-    <Content Include="protobuff\MachineReport.cs" />
-    <Content Include="protobuff\NavigationChallenge.cs" />
-    <Content Include="protobuff\NewPuck.cs" />
-    <Content Include="protobuff\OrderInfo.cs" />
-    <Content Include="protobuff\Pose2D.cs" />
-    <Content Include="protobuff\ProductColor.cs" />
-    <Content Include="protobuff\PrsTask.cs" />
-    <Content Include="protobuff\ReportAllMachines.cs" />
-    <Content Include="protobuff\RingInfo.cs" />
-    <Content Include="protobuff\RobotBeaconSignal.cs" />
-    <Content Include="protobuff\RobotCommands.cs" />
-    <Content Include="protobuff\RobotInfo.cs" />
-    <Content Include="protobuff\RobotMachineReport.cs" />
-    <Content Include="protobuff\SimTime.cs" />
-    <Content Include="protobuff\SimTimeSync.cs" />
-    <Content Include="protobuff\Team.cs" />
-    <Content Include="protobuff\Time.cs" />
-    <Content Include="protobuff\VersionInfo.cs" />
-    <Content Include="protobuff\WorkpieceCommand.cs" />
     <Content Include="WebGui\WebGui.cs" />
-
   </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Google.Protobuf" Version="3.19.1" />
     <PackageReference Include="MQTTnet" Version="4.2.1.781" />
