@@ -21,34 +21,10 @@ namespace Simulator {
 
 
         private static void Main(string[] args) {
-            var next = false;
-            var path = "";
-            foreach (var argument in args) {
-                switch (argument.ToLower()) {
-                    case "-cfg":
-                        next = true;
-                        continue;
-                    default: {
-                            if (next) {
-                                path = argument;
-                                next = false;
-                            }
-                            break;
-                        }
-                }
-            }
-
-            var logfolder = "logs" + Path.DirectorySeparatorChar;
-            if (!Directory.Exists(logfolder)) {
-                Directory.CreateDirectory(logfolder);
-            }
-            else {
-
-                var di = new DirectoryInfo(logfolder);
-                foreach (var file in di.GetFiles()) {
-                    file.Delete();
-                }
-            }
+            string path = args
+                .SkipWhile(arg => arg.ToLower() != "-cfg")
+                .Skip(1)
+                .FirstOrDefault() ?? "";
 
             if (path.Equals("")) {
                 Console.WriteLine("No path to the Configuration file is given!");
@@ -56,6 +32,18 @@ namespace Simulator {
                 Console.WriteLine("Something like \"-cfg cfg\\config.yaml should work if you just pulled the project!");
                 return;
             }
+
+            string logfolder = "logs" + Path.DirectorySeparatorChar;
+            if (!Directory.Exists(logfolder)) {
+                Directory.CreateDirectory(logfolder);
+            }
+            else {
+                DirectoryInfo di = new DirectoryInfo(logfolder);
+                foreach (var file in di.GetFiles()) {
+                    file.Delete();
+                }
+            }
+
             Config = new Configurations(path);
             MainLogger = new MyLogger("MainClass", true);
             Console.Write("Starting the Machines ... ");

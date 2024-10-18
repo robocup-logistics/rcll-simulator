@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using LlsfMsgs;
-using Org.BouncyCastle.Math.EC;
 using Simulator.Utility;
-using Terminal.Gui;
 using Simulator.MPS;
 
 
@@ -25,7 +20,7 @@ namespace Simulator.RobotEssentials {
         private bool Running;
         public Products? HeldProduct { get; private set; }
         private RobotState RobotState;
-        public Zones? CurrentZone { get; private set; }
+        public Zones CurrentZone { get; private set; }
         public Zones? nextZone { get; private set; }
 
         private readonly Queue<AgentTask> Tasks;
@@ -47,7 +42,7 @@ namespace Simulator.RobotEssentials {
 
         private string? JsonInformation;
         private Stopwatch stopwatch;
-        private TeamConfig? _teamConfig;
+        private TeamConfig _teamConfig;
         private string _connectionType;
         private enum TaskEnum : int {
             None,
@@ -58,26 +53,37 @@ namespace Simulator.RobotEssentials {
             Explore
         }
 
-        public Robot(Configurations config, string name, RobotManager manager, Team color, int jersey, MpsManager mpsManager, bool debug = false) {
+        public Robot(Configurations config, RobotConfig robotConfig, RobotManager manager,
+                     MpsManager mpsManager, Zone startZone, bool debug = false) {
             Config = config;
-            RobotName = name;
+            RobotName = robotConfig.Name;
             TeamName = Config.Teams[0].Name;
-            TeamColor = color;
+            TeamColor = robotConfig.TeamColor;
+            //TODO Fix the crash when only one team is there
+            _teamConfig = TeamColor == Team.Cyan ? Config.Teams[0] : Config.Teams[1];
+            Console.WriteLine("TeamConfig: " + _teamConfig.Name + "IP: " + _teamConfig.Ip + "Port: " + _teamConfig.Port);
 
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
-            JerseyNumber = (uint)jersey;
+            JerseyNumber = robotConfig.Jersey;
             FinishedTasksList = new List<FinishedTasks>();
 
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
-            MyLogger.Log("--------------------------------------------------------");
             MyLogger.Log(RobotName + " is ready for production!");
             Running = true;
             RobotState = RobotState.Active;
             WaitForPrepare = new ManualResetEvent(false);
 
             stopwatch = new Stopwatch();
-            CurrentZone = null;
+            if (ZonesManager.GetInstance().PlaceRobot(startZone, 0, this)) {
+                var z = ZonesManager.GetInstance().GetZone(startZone);
+                if (z == null) {
+                    throw new Exception("Zone is null");
+                }
+                CurrentZone = z;
+            } else {
+                throw new Exception("Couldn't place the robot in the starting zone!");
+            }
             Tasks = new Queue<AgentTask>();
             Machines = new List<RobotMachineReportEntry>();
             TaskDescription = "Idle";
@@ -96,7 +102,7 @@ namespace Simulator.RobotEssentials {
         public bool IsHoldingSomething() {
             return HeldProduct != null;
         }
-        public Zones? GetZone() {
+        public Zones GetZone() {
             return CurrentZone;
         }
         public Products? GetHeldProduct() {
@@ -163,7 +169,6 @@ namespace Simulator.RobotEssentials {
         }
 
         public void Run() {
-            _teamConfig = TeamColor == Team.Cyan ? Config.Teams[0] : Config.Teams[1];
             MyLogger.Log("Robot " + RobotName + " is starting! Team is " + _teamConfig.Name + " with ip " + _teamConfig.Ip + " and port " + _teamConfig.Port);
 
             if (!Config.MockUp) {
@@ -237,8 +242,8 @@ namespace Simulator.RobotEssentials {
             var attempt = 0;
 
             var end = ZonesManager.GetInstance().GetZone(TargetZone);
-            if (CurrentZone == null || end == null) {
-                MyLogger.Log("Current Zone OR TargetZone is null!");
+            if (end == null) {
+                MyLogger.Log("TargetZone is null!");
                 return false;
             }
 
@@ -301,7 +306,7 @@ namespace Simulator.RobotEssentials {
         }
 
         public bool GripProduct(Mps mps, string machinePoint = "output", uint shelfNumber = 0) {
-            if (CurrentZone?.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint)) {
+            if (CurrentZone.ZoneId != ZonesManager.GetInstance().GetZoneNextToMachine(mps.Name, machinePoint)) {
                 MyLogger.Log("Unable to GRIP, not yet in position!");
                 return false;
             }
@@ -442,7 +447,7 @@ namespace Simulator.RobotEssentials {
                 }
                 return;
             }
-            if (targetZone == CurrentZone?.ZoneId) {
+            if (targetZone == CurrentZone.ZoneId) {
                 MyLogger.Log("I am in position to do my task!");
             }
             else {
@@ -492,7 +497,7 @@ namespace Simulator.RobotEssentials {
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             MyLogger.Log("Target zone = " + targetZone);
 
-            if (targetZone == CurrentZone?.ZoneId) {
+            if (targetZone == CurrentZone.ZoneId) {
                 MyLogger.Log("I am in position to do my task!");
             }
             else {
@@ -560,13 +565,7 @@ namespace Simulator.RobotEssentials {
         }
 
         private void Explore() {
-            if (CurrentZone == null) {
-                MyLogger.Log("Current Zone is null!");
-                return;
-            }
-            else {
-                MyLogger.Log("Current Zone = " + CurrentZone.ToString());
-            }
+            MyLogger.Log("Current Zone = " + CurrentZone.ToString());
         }
 
         #endregion

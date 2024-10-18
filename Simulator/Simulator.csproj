@@ -7,8 +7,23 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <LangVersion>latest</LangVersion>
     <Nullable>enable</Nullable>
+    <ProtobufDir>./protobuf/rcll-protobuf-msgs</ProtobufDir>
+    <ProtobufOutput>./protobuf/</ProtobufOutput>
     <StartupObject>Simulator.MainClass</StartupObject>
   </PropertyGroup>
+  <ItemGroup>
+    <!-- Specify each proto file -->
+    <Protobuf Include="$(ProtobufDir)/*.proto" ProtoRoot="$(ProtobufDir)" GrpcServices="None" OutputDir="$(ProtobufOutput)" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Google Protobuf library for .NET -->
+    <PackageReference Include="Google.Protobuf" Version="3.21.0" />
+  </ItemGroup>
+  <Target Name="GenerateProtobuf" BeforeTargets="BeforeCompile">
+    <!-- Call protoc to generate C# files -->
+    <Exec Command="protoc --csharp_out=$(ProtobufOutput) --proto_path=$(ProtobufDir) $(ProtobufDir)/*.proto" />
+  </Target>
   <ItemGroup>
     <Content Include="cfg\config.yaml" />
     <Content Include="MainClass.cs" />

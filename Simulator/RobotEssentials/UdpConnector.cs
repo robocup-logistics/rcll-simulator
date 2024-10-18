@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Threading;
 using Simulator.MPS;
 using Simulator.Utility;
 
@@ -14,10 +12,15 @@ namespace Simulator.RobotEssentials {
         private UdpClient Client;
 
         private string IpString;
-        public UdpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger, bool onlySend) : base(config, ip, port, rob, logger) {
+        public UdpConnector(Configurations config, string ip, int port,
+                            Robot? rob, MyLogger logger, bool onlySend)
+            : base(config, ip, port, rob, logger) {
             //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
+            Console.WriteLine("ip" + ip + "port" + port, "rob" + rob, "logger" + logger, "onlySend" + onlySend);
             OnlySending = onlySend;
-            PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
+            if(rob != null) {
+                PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
+            }
 
             IpString = ip;
 

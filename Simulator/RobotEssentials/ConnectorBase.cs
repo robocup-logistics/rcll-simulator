@@ -29,7 +29,6 @@ namespace Simulator.RobotEssentials {
             Port = port;
             Endpoint = new IPEndPoint(Address, Port);
             Owner = rob;
-            Address = IPAddress.Any;
             Config = config;
         }
 

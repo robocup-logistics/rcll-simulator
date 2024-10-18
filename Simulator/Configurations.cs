@@ -257,7 +257,7 @@ namespace Simulator {
         }
 
         private static RobotConfig? CreateRobotConfig(KeyValuePair<YamlNode, YamlNode> child) {
-            var jersey = 0;
+            uint jersey = 0;
             var color = Team.Cyan;
             var (yamlNode, yamlNode1) = child;
             var connection = "tcp";
@@ -269,7 +269,7 @@ namespace Simulator {
                         //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "jersey":
-                        jersey = int.Parse(value.ToString());
+                        jersey = uint.Parse(value.ToString());
                         break;
                     case "team" when yamlNode1.ToString().ToLower().Contains("magenta"):
                         color = Team.Magenta;
@@ -547,10 +547,13 @@ namespace Simulator {
 
     public class RobotConfig {
         public string Name;
-        public int Jersey;
+        public uint Jersey;
         public Team TeamColor;
         public string Connection;
-        public RobotConfig(string name, int jersey, Team color, string connection) {
+        public RobotConfig(string name, uint jersey, Team color, string connection) {
+            if(jersey != 1 && jersey != 2 && jersey != 3) {
+                throw new Exception("Jersey number has to be 1, 2 or 3! Name: " + name);
+            }
             Name = name;
             Jersey = jersey;
             TeamColor = color;
