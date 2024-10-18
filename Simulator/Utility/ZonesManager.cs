@@ -40,18 +40,6 @@ namespace Simulator.Utility {
                 ZoneList.Add(zone);
             }
 
-            //Todo add deployment zones for robots
-            MyLogger.Log("Creating Deployment Zones");
-            for (int i = 0; i < 3; i++) {
-                var DeployZoneCyan = (Zone)((5 + i) * 10 + 1);
-                var deploymentZoneCyan = new Zones(5 + i + 6, 1, 0, Team.Cyan, DeployZoneCyan);
-                var DeployZoneMagenta = (Zone)(1000 + (5 + i) * 10 + 1);
-                var deploymentZoneMagenta = new Zones(7 - 5 - i, 1, 0, Team.Magenta, DeployZoneMagenta);
-                ZoneList.Add(deploymentZoneMagenta);
-                ZoneList.Add(deploymentZoneCyan);
-                Dictionary.Add(DeployZoneCyan, deploymentZoneCyan);
-                Dictionary.Add(DeployZoneMagenta, deploymentZoneMagenta);
-            }
             MyLogger.Log("Starting to add Neighborhood");
             AddNeighborhood();
 

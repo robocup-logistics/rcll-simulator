@@ -20,14 +20,14 @@ namespace Simulator.RobotEssentials {
             OnlySending = onlySend;
             if(rob != null) {
                 PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
+                RecvThread = new Thread(() => ReceiveUdpMethod());
+                RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
+                SendThread = new Thread(() => SendUdpMethod());
+                SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             }
 
             IpString = ip;
 
-            RecvThread = new Thread(() => ReceiveUdpMethod());
-            RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
-            SendThread = new Thread(() => SendUdpMethod());
-            SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
             PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
             Client = new UdpClient();
             Client.EnableBroadcast = true;
