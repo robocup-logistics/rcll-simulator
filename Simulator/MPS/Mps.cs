@@ -23,7 +23,6 @@ namespace Simulator.MPS {
         public Zone Zone { get; set; }
         public uint Rotation { get; set; }
         public bool Debug;
-        public Team Team;
         public Light RedLight { get; }
         public Light GreenLight { get; }
         public Light YellowLight { get; }
@@ -57,11 +56,10 @@ namespace Simulator.MPS {
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(Configurations config, string name, Team team, bool debug = false) {
+        protected Mps(Configurations config, string name, bool debug = false) {
             // Constructor for basic member initializations
             Config = config;
             Name = name;
-            Team = team;
             Debug = debug;
 
             TaskDescription = "Idle";

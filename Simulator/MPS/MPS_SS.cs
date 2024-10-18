@@ -9,7 +9,7 @@ namespace Simulator.MPS {
         }
         public SSOp SSOp;
 
-        public MPS_SS(Configurations config, string name, Team team, bool debug = false) : base(config, name, team, debug) {
+        public MPS_SS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
             Type = MpsType.StorageStation;
             //if (Configurations.GetInstance().MockUp) return;
         }
