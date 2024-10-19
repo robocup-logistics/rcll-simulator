@@ -1,6 +1,10 @@
 ﻿using LlsfMsgs;
 using Simulator.Utility;
 using JsonSerializer = System.Text.Json.JsonSerializer;
+using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
+using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
+using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
 namespace Simulator.MPS {
     public abstract class Mps {
@@ -26,8 +30,6 @@ namespace Simulator.MPS {
         public Light RedLight { get; }
         public Light GreenLight { get; }
         public Light YellowLight { get; }
-        public ManualResetEvent InEvent;
-        public ManualResetEvent BasicEvent;
         public bool GotConnection { get; protected set; }
         public bool GotPlaced;
         public Products? ProductOnBelt { get; set; }
@@ -38,6 +40,7 @@ namespace Simulator.MPS {
         public string? JsonInformation;
         protected readonly Configurations Config;
         public MQTThelper MqttHelper;
+        protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
         public bool Working { get; private set; }
         public enum MpsType {
             BaseStation = 100,
@@ -56,7 +59,7 @@ namespace Simulator.MPS {
             GreenLight = 23,
             RYGLight = 25
         }
-        protected Mps(Configurations config, string name, bool debug = false) {
+        protected Mps(Configurations config, string name, bool debug = false, bool slideCount = false) {
             // Constructor for basic member initializations
             Config = config;
             Name = name;
@@ -72,9 +75,6 @@ namespace Simulator.MPS {
             Zone = Zone.MZ41;
             Working = true;
 
-            InEvent = new ManualResetEvent(false); // block threads till a write event occurs
-            BasicEvent = new ManualResetEvent(false); // block threads till a write event occurs
-
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
 
@@ -85,7 +85,7 @@ namespace Simulator.MPS {
 
             // TODO MOCKUP
             try {
-                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, InEvent, BasicEvent, MyLogger);
+                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, CommandEvent, MyLogger, slideCount);
             }
             catch (Exception e) {
                 Console.WriteLine(e);
@@ -96,131 +96,78 @@ namespace Simulator.MPS {
 
         protected abstract void Work();
         public void Run() {
-            var BasicThread = new Thread(HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
             Work();
         }
 
         public void ResetMachine() {
             TaskDescription = "Reseting!";
-            MqttHelper.InNodes.Status.SetBusy(true);
-            MqttHelper.InNodes.Status.SetEnable(false);
+            MqttHelper.SetStatus(MQTTStatus.BUSY);
             Thread.Sleep(1000);
-            MqttHelper.InNodes.SetActionId(0);
-            MqttHelper.InNodes.SetData0(0);
-            MqttHelper.InNodes.SetData1(0);
-            MqttHelper.InNodes.SetError(0);
-            MqttHelper.InNodes.Status.SetReady(false);
-            MqttHelper.InNodes.Status.SetError(false);
-
 
             ProductAtIn = null;
             ProductAtOut = null;
             ProductOnBelt = null;
-            MqttHelper.InNodes.Status.SetBusy(false);
-
+            MqttHelper.SetStatus(MQTTStatus.READY);
             TaskDescription = "Idle";
         }
 
         public void StartTask() {
-            MqttHelper.InNodes.Status.SetBusy(true);
-            MqttHelper.InNodes.Status.SetEnable(false);
+            MqttHelper.SetStatus(MQTTStatus.BUSY);
         }
 
         public void FinishedTask() {
             Thread.Sleep(250);
-            MqttHelper.InNodes.Status.SetBusy(false);
+            MqttHelper.SetStatus(MQTTStatus.READY);
             Thread.Sleep(250);
         }
-        public void HandleMachineType() {
-            MqttHelper.BasicNodes.Status.SetBusy(true);
-            Thread.Sleep(400);
-            MqttHelper.BasicNodes.SetData0(0);
-            MqttHelper.BasicNodes.SetData1(0);
-            MqttHelper.BasicNodes.Status.SetEnable(false);
-            MqttHelper.BasicNodes.Status.SetBusy(false);
-        }
-        public void HandleBasicTasks() {
-            while (Working) {
-                BasicEvent.WaitOne();
-                //MyLogger.Info("We got a write and reset the wait!");
-                BasicEvent.Reset();
-                GotConnection = true;
-                var actionId = 0;
-                actionId = MqttHelper.BasicNodes.ActionId;
-                switch (actionId) {
-                    case (ushort)Actions.RedLight:
-                    case (ushort)Actions.YellowLight:
-                    case (ushort)Actions.GreenLight:
-                    case (ushort)Actions.RYGLight:
-                    case (ushort)Actions.ResetLights:
-                        HandleLights();
-                        break;
-                    case (ushort)Actions.NoJob:
-                        MyLogger.Log("No Basic Job!");
-                        break;
-                    case (ushort)Actions.MachineTyp:
-                        HandleMachineType();
-                        break;
-                    default:
-                        MyLogger.Log("Basic Action ID = " + (MqttHelper.InNodes.ActionId));
-                        break;
-                }
 
-            }
-            if (RedLight.LightOn && !YellowLight.LightOn && !GreenLight.LightOn) {
-                TaskDescription = "Broken";
-            }
-        }
-        public void HandleLights() {
-            MqttHelper.BasicNodes.Status.SetBusy(true);
-            var state = MqttHelper.BasicNodes.Data[0].ToString();
-            var time = MqttHelper.BasicNodes.Data[1]; // not in use currently
-            var LightState = (LightState)Enum.Parse(typeof(LightState), state);
+        public void HandleLights(MQTTCommand command) {
+            StartTask();
 
-            switch (MqttHelper.BasicNodes.ActionId) {
-                case (ushort)Actions.ResetLights:
+            switch (command.arg1) {
+                case ARG1.RESET:
                     MyLogger.Log("Handle Lights got a ResetLights task!");
                     RedLight.SetLight(LightState.Off);
                     YellowLight.SetLight(LightState.Off);
                     GreenLight.SetLight(LightState.Off);
                     break;
-                case (ushort)Actions.RedLight:
-                    MyLogger.Log("Handle Lights got a RedLight task with [" + LightState.ToString() + "]!");
-                    RedLight.SetLight(LightState);
+                case ARG1.RED:
+                    if(command.arg2 == ARG2.ON)
+                        RedLight.SetLight(LightState.On);
+                    else if(command.arg2 == ARG2.OFF)
+                        RedLight.SetLight(LightState.Off);
+                    else if(command.arg2 == ARG2.BLINK)
+                        RedLight.SetLight(LightState.Blink);
+                    MyLogger.Log("Handle Lights got a RedLight task with [" + nameof(command.arg2) + "]!");
                     break;
-                case (ushort)Actions.YellowLight:
-                    MyLogger.Log("Handle Lights got a YellowLight task [" + LightState.ToString() + "]!");
-                    YellowLight.SetLight(LightState);
+                case ARG1.YELLOW:
+                    if(command.arg2 == ARG2.ON)
+                        YellowLight.SetLight(LightState.On);
+                    else if(command.arg2 == ARG2.OFF)
+                        YellowLight.SetLight(LightState.Off);
+                    else if(command.arg2 == ARG2.BLINK)
+                        YellowLight.SetLight(LightState.Blink);
+                    MyLogger.Log("Handle Lights got a YellowLight task with [" + nameof(command.arg2) + "]!");
                     break;
-                case (ushort)Actions.GreenLight:
-                    MyLogger.Log("Handle Lights got a GreenLight task [" + LightState.ToString() + "]!");
-                    GreenLight.SetLight(LightState);
-                    break;
-                case (ushort)Actions.RYGLight:
-                    MyLogger.Log("Handle Lights got a RYGLight task [" + LightState.ToString() + "]!");
-                    RedLight.SetLight(LightState.Off);
-                    YellowLight.SetLight(LightState.Off);
-                    GreenLight.SetLight(LightState.Off);
+                case ARG1.GREEN:
+                    if(command.arg2 == ARG2.ON)
+                        GreenLight.SetLight(LightState.On);
+                    else if(command.arg2 == ARG2.OFF)
+                        GreenLight.SetLight(LightState.Off);
+                    else if(command.arg2 == ARG2.BLINK)
+                        GreenLight.SetLight(LightState.Blink);
+                    MyLogger.Log("Handle Lights got a GreenLight task with [" + nameof(command.arg2) + "]!");
                     break;
                 default:
                     break;
             }
 
-            MqttHelper.BasicNodes.SetActionId(0);
-            MqttHelper.BasicNodes.Status.SetEnable(false);
-            MqttHelper.BasicNodes.Status.SetBusy(false);
+            FinishedTask();
         }
 
-        public void HandleBelt() {
+        public void HandleBelt(MQTTCommand command) {
             MyLogger.Log("Got a Band on Task!");
             TaskDescription = "Move via Belt";
-            var target = Positions.NoTarget;
-            var direction = Direction.FromInToOut;
-            target = (Positions)MqttHelper.InNodes.Data[0];
-            direction = (Direction)MqttHelper.InNodes.Data[1];
-
             StartTask();
             MyLogger.Log("Product on belt?");
             for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
@@ -232,29 +179,24 @@ namespace Simulator.MPS {
             }
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
-            MqttHelper.InNodes.Status.SetReady(false);
             Thread.Sleep(Config.BeltActionDuration);
-            MyLogger.Log("Product has reached its destination [" + target + "]!");
-            switch (target) {
-                case Positions.In:
+            MyLogger.Log("Product has reached its destination [" + nameof(command.arg2) + "]!");
+            switch (command.arg2) {
+                case ARG2.IN:
                     ProductAtIn = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the InputBeltPosition");
                     if (Config.BarcodeScanner && ProductAtIn != null) {
-                        MqttHelper.InNodes.SetBarCode(ProductAtIn.ID);
+                        MqttHelper.SetBarcode(ProductAtIn.ID);
                     }
-                    MyLogger.Log("Setting Ready to True!");
-                    MqttHelper.InNodes.Status.SetReady(true);
                     break;
-                case Positions.Out:
+                case ARG2.OUT:
                     ProductAtOut = ProductOnBelt;
                     ProductOnBelt = null;
                     MyLogger.Log("We place the Product onto the OutBeltPosition");
-                    MyLogger.Log("Setting Ready to True!");
-                    MqttHelper.InNodes.Status.SetReady(true);
                     break;
-                case Positions.Mid:
-                    if (direction == Direction.FromInToOut) {
+                case ARG2.MID:
+                    if (command.arg1 == ARG1.TO_OUTPUT) {
                         ProductOnBelt = ProductAtIn;
                         ProductAtIn = null;
                     }
@@ -263,14 +205,6 @@ namespace Simulator.MPS {
                         ProductAtOut = null;
                     }
                     MyLogger.Log("We place the Product onto the Middle of the belt");
-                    //TODO check if this is correct?
-                    MqttHelper.InNodes.Status.SetReady(true);
-                    break;
-                case Positions.NoTarget:
-                    MyLogger.Log("Placing Product on NoTarget?");
-                    break;
-                default:
-                    MyLogger.Log("Default!?");
                     break;
             }
             //Belt.SetTarget(target, direction);
@@ -291,12 +225,6 @@ namespace Simulator.MPS {
                     ProductAtIn = heldProduct;
                     break;
             }
-            //if (!Configurations.GetInstance().MockUp)
-            {
-                if (ProductAtOut != null) {
-                    MqttHelper.InNodes.Status.SetReady(true);
-                }
-            }
         }
         public virtual Products? RemoveProduct(string machinePoint) {
             Products? returnProduct;
@@ -314,10 +242,6 @@ namespace Simulator.MPS {
                     returnProduct = ProductAtIn;
                     ProductAtIn = null;
                     break;
-            }
-            //if (!Configurations.GetInstance().MockUp)
-            {
-                MqttHelper.InNodes.Status.SetReady(false);
             }
             return returnProduct;
         }

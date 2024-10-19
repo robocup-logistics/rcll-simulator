@@ -1,38 +1,43 @@
 ﻿using LlsfMsgs;
 using Simulator.Utility;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
+using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
+using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS {
     public class MPS_CS : Mps {
         public CapElement? StoredCap { get; private set; }
-        public enum BaseSpecificActions {
-            Reset = 300,
-            Cap = 301,
-            BandOnUntil = 302
-        }
-        public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+        public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug, true) {
             Type = MpsType.CapStation;
+            MqttHelper.ResetSlideCount();
             StoredCap = null;
         }
 
         protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
-                InEvent.WaitOne();
-                InEvent.Reset();
+                CommandEvent.WaitOne();
+                CommandEvent.Reset();
                 GotConnection = true;
-                //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId) {
-                    case (ushort)BaseSpecificActions.Reset:
+
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
+                        StoredCap = null;
+                        MqttHelper.ResetSlideCount();
                         ResetMachine();
                         break;
-                    case (ushort)BaseSpecificActions.Cap:
-                        CapTask();
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
                         break;
-                    case (ushort)BaseSpecificActions.BandOnUntil:
-                        HandleBelt();
+                    case COMMAND.CAP_ACTION:
+                        CapTask(command);
+                        break;
+                    case COMMAND.MOVE_CONVEYOR:
+                        HandleBelt(command);
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
                         break;
 
                 }
@@ -40,20 +45,16 @@ namespace Simulator.MPS {
             }
         }
 
-        public void CapTask() {
+        public void CapTask(MQTTCommand command) {
             MyLogger.Log("Got a Cap Task!");
             StartTask();
-            switch (MqttHelper.InNodes.Data[0]) {
-                case (ushort)CSOp.RetrieveCap: {
+            switch (command.arg1) {
+                case ARG1.RETRIEVE: {
                         TaskDescription = "Cap Retrieve";
                         MyLogger.Log("Got a Retrieve CAP task!");
-                        /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
-                        {
-                            Thread.Sleep(1000);
-                        }*/
-                        if (ProductOnBelt == null) {
+                        if (ProductOnBelt == null || StoredCap != null) {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            MqttHelper.InNodes.Status.SetError(true);
+                            MqttHelper.SetStatus(MQTTStatus.ERROR);
                         }
                         else {
                             TaskDescription = "Retrieving Cap";
@@ -62,13 +63,9 @@ namespace Simulator.MPS {
                         }
                         break;
                     }
-                case (ushort)CSOp.MountCap: {
+                case ARG1.MOUNT: {
                         TaskDescription = "Cap Mount";
                         MyLogger.Log("Got a Mount Cap TASK!");
-                        /*for(var count = 0; count  < 45 && ProductOnBelt == null; count++)
-                        {
-                            Thread.Sleep(1000);
-                        }*/
                         if (StoredCap != null && ProductOnBelt != null) {
                             TaskDescription = "Mounting Cap";
                             Thread.Sleep(Config.CSTaskDuration);
@@ -76,7 +73,7 @@ namespace Simulator.MPS {
                         }
                         else {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            MqttHelper.InNodes.Status.SetError(true);
+                            MqttHelper.SetStatus(MQTTStatus.ERROR);
                         }
 
                         break;
@@ -84,6 +81,8 @@ namespace Simulator.MPS {
             }
             FinishedTask();
         }
+
+        //TODO SLIDE PAYMENT
         public override void PlaceProduct(string machinePoint, Products? heldProduct) {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
             base.PlaceProduct(machinePoint, heldProduct);
@@ -115,10 +114,6 @@ namespace Simulator.MPS {
                     MyLogger.Log("Defaulting!?");
                     returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
                     break;
-            }
-            //if (!Configurations.GetInstance().MockUp)
-            {
-                MqttHelper.InNodes.Status.SetReady(false);
             }
             return returnProduct;
         }
