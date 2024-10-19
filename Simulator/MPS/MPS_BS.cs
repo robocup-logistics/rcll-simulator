@@ -34,7 +34,6 @@ namespace Simulator.MPS {
             FinishedTask();
         }
         protected override void Work() {
-            SerializeMachineToJson();
             while (Working) {
                 CommandEvent.WaitOne();
                 CommandEvent.Reset();

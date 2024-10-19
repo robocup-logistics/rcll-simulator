@@ -2,23 +2,11 @@
 using Simulator.Utility;
 using JsonSerializer = System.Text.Json.JsonSerializer;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
-using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
 namespace Simulator.MPS {
     public abstract class Mps {
-        public enum Positions {
-            NoTarget = 0,
-            In = 1,
-            Mid = 2,
-            Out = 3
-
-        }
-        public enum Direction {
-            FromInToOut = 1,
-            FromOutToIn = 2
-        }
         public readonly MyLogger MyLogger;
         public string Name { get; private set; }
         public MpsType Type;
@@ -36,7 +24,6 @@ namespace Simulator.MPS {
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
-        public string? JsonInformation;
         protected readonly Configurations Config;
         public MQTThelper MqttHelper;
         protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
@@ -262,10 +249,6 @@ namespace Simulator.MPS {
                 default:
                     return false;
             }
-        }
-        public void SerializeMachineToJson() {
-            JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
         }
     }
 }

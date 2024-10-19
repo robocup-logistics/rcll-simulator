@@ -11,7 +11,6 @@ namespace Simulator.MPS {
         }
 
         protected override void Work() {
-            SerializeMachineToJson();
             while (Working) {
                 CommandEvent.WaitOne();
                 CommandEvent.Reset();
