@@ -36,7 +36,6 @@ namespace Simulator.MPS {
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
         public string TaskDescription { get; set; }
-        public uint SlideCount { get; set; }
         public string? JsonInformation;
         protected readonly Configurations Config;
         public MQTThelper MqttHelper;
@@ -124,6 +123,7 @@ namespace Simulator.MPS {
         public void HandleLights(MQTTCommand command) {
             StartTask();
 
+            string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
             switch (command.arg1) {
                 case ARG1.RESET:
                     MyLogger.Log("Handle Lights got a ResetLights task!");
@@ -138,7 +138,7 @@ namespace Simulator.MPS {
                         RedLight.SetLight(LightState.Off);
                     else if(command.arg2 == ARG2.BLINK)
                         RedLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a RedLight task with [" + nameof(command.arg2) + "]!");
+                    MyLogger.Log("Handle Lights got a RedLight task with [" + name + "]!");
                     break;
                 case ARG1.YELLOW:
                     if(command.arg2 == ARG2.ON)
@@ -147,7 +147,7 @@ namespace Simulator.MPS {
                         YellowLight.SetLight(LightState.Off);
                     else if(command.arg2 == ARG2.BLINK)
                         YellowLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a YellowLight task with [" + nameof(command.arg2) + "]!");
+                    MyLogger.Log("Handle Lights got a YellowLight task with [" + name+ "]!");
                     break;
                 case ARG1.GREEN:
                     if(command.arg2 == ARG2.ON)
@@ -156,7 +156,7 @@ namespace Simulator.MPS {
                         GreenLight.SetLight(LightState.Off);
                     else if(command.arg2 == ARG2.BLINK)
                         GreenLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a GreenLight task with [" + nameof(command.arg2) + "]!");
+                    MyLogger.Log("Handle Lights got a GreenLight task with [" + name + "]!");
                     break;
                 default:
                     break;
@@ -180,7 +180,8 @@ namespace Simulator.MPS {
             MyLogger.Log("Product on belt!");
             MyLogger.Log("Product is moving on the belt!");
             Thread.Sleep(Config.BeltActionDuration);
-            MyLogger.Log("Product has reached its destination [" + nameof(command.arg2) + "]!");
+            string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
+            MyLogger.Log("Product has reached its destination [" + name + "]!");
             switch (command.arg2) {
                 case ARG2.IN:
                     ProductAtIn = ProductOnBelt;

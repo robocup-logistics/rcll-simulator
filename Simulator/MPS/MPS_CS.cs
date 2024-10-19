@@ -7,9 +7,8 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 namespace Simulator.MPS {
     public class MPS_CS : Mps {
         public CapElement? StoredCap { get; private set; }
-        public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug, true) {
+        public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
             Type = MpsType.CapStation;
-            MqttHelper.ResetSlideCount();
             StoredCap = null;
         }
 
@@ -24,7 +23,6 @@ namespace Simulator.MPS {
                 switch (command.command) {
                     case COMMAND.RESET:
                         StoredCap = null;
-                        MqttHelper.ResetSlideCount();
                         ResetMachine();
                         break;
                     case COMMAND.LIGHT:
@@ -82,7 +80,6 @@ namespace Simulator.MPS {
             FinishedTask();
         }
 
-        //TODO SLIDE PAYMENT
         public override void PlaceProduct(string machinePoint, Products? heldProduct) {
             MyLogger.Log("Got a PlaceProduct for CapStation!");
             base.PlaceProduct(machinePoint, heldProduct);

@@ -236,8 +236,10 @@ public class MQTThelper {
 
     public void SetStatus(MQTTStatus value, bool publish = true) {
         Status = value;
-        if (publish)
-            PublishChange("Status", nameof(Status));
+        if (publish){
+            string name = Enum.GetName(typeof(MQTTStatus), value) ?? "";
+            PublishChange("Status", name);
+        }
     }
 
     public void SetBarcode(int value, bool publish = true) {

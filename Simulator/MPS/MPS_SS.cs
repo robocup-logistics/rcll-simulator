@@ -1,12 +1,8 @@
-﻿using System.Text.Json;
-using LlsfMsgs;
+﻿using LlsfMsgs;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 
 namespace Simulator.MPS {
     public class MPS_SS : Mps {
-        public enum BaseSpecificActions {
-            Reset = 500,
-            BandOnUntil = 502
-        }
         public SSOp SSOp;
 
         public MPS_SS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
@@ -17,19 +13,35 @@ namespace Simulator.MPS {
         protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
-                InEvent.WaitOne();
-                InEvent.Reset();
+                CommandEvent.WaitOne();
+                CommandEvent.Reset();
                 GotConnection = true;
-                //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId) {
-                    case (ushort)BaseSpecificActions.Reset:
+
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
                         ResetMachine();
                         break;
-                    case (ushort)BaseSpecificActions.BandOnUntil:
-                        HandleBelt();
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
+                        break;
+                    case COMMAND.MOVE_CONVEYOR:
+                        HandleBelt(command);
+                        break;
+                    case COMMAND.STORE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
+                        break;
+                    case COMMAND.RETRIEVE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
+                        break;
+                    case COMMAND.RELOCATE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
                         break;
 
                 }

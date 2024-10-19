@@ -1,90 +1,83 @@
-﻿using System.Collections.Generic;
-using System.Reflection.Metadata;
-using System.Text.Json;
-using System.Threading;
-using LlsfMsgs;
+﻿using LlsfMsgs;
 using Simulator.Utility;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
+using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
+
 namespace Simulator.MPS {
     public class MPS_RS : Mps {
 
-        public enum BaseSpecificActions {
-            Reset = 200,
-            WaitForXBases = 201,
-            BandOnUntil = 202,
-            MountRing = 203
-        }
-
-        public MPS_RS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+        public MPS_RS(Configurations config, string name, bool debug = false) : base(config, name, debug, true) {
             Type = MpsType.RingStation;
-            SlideCount = 0;
+            MqttHelper.ResetSlideCount();
         }
 
         protected override void Work() {
             SerializeMachineToJson();
             while (Working) {
-                InEvent.WaitOne();
-                InEvent.Reset();
+                CommandEvent.WaitOne();
+                CommandEvent.Reset();
                 GotConnection = true;
-                //HandleBasicTasks();
-                switch (MqttHelper.InNodes.ActionId) {
-                    case (ushort)BaseSpecificActions.Reset:
+
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
+                        MqttHelper.ResetSlideCount();
                         ResetMachine();
                         break;
-                    case (ushort)BaseSpecificActions.BandOnUntil:
-                        HandleBelt();
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
                         break;
-                    case (ushort)BaseSpecificActions.WaitForXBases:
-                        MyLogger.Log("Not Implemented!");
+                    case COMMAND.MOUNT_RING:
+                        MountRingTask(command);
                         break;
-                    case (ushort)BaseSpecificActions.MountRing:
-                        MountRingTask();
+                    case COMMAND.MOVE_CONVEYOR:
+                        HandleBelt(command);
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + (MqttHelper.InNodes.ActionId));
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
                         break;
 
                 }
                 TaskDescription = "Idle";
-                //MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
             }
         }
+
         public new void PlaceProduct(string machinePoint, Products? heldProduct) {
             MyLogger.Log("Got a PlaceProduct for RingStation!");
             if (machinePoint.Equals("slide")) {
-                MyLogger.Log("The Current SlideCnt is = " + (MqttHelper.InNodes.SlideCnt));
                 MyLogger.Log("Added a Base to the slide!");
-                MqttHelper.InNodes.SetSlideCount(MqttHelper.InNodes.SlideCnt + 1);
-                SlideCount = (uint)MqttHelper.InNodes.SlideCnt;
-
-                MyLogger.Log("The Current SlideCnt after is = " + (MqttHelper.InNodes.SlideCnt));
+                MqttHelper.IncreaseSlideCount();
+                MyLogger.Log("The Current SlideCnt is = " + (MqttHelper.SlideCnt));
             }
             else {
                 base.PlaceProduct(machinePoint, heldProduct);
             }
         }
 
-        public void MountRingTask() {
+        public void MountRingTask(MQTTCommand command) {
             MyLogger.Log("Got a Mount Ring Task!");
             TaskDescription = "Mount Ring Task";
-            var ringNumber = MqttHelper.InNodes.Data[0];
             StartTask();
             for (var count = 0; count < 45 && ProductOnBelt == null; count++) {
                 Thread.Sleep(1000);
             }
             if (ProductOnBelt == null) return;
             RingElement ringToMount;
-            switch (ringNumber) {
-                case 1:
+            switch (command.arg1) {
+                case ARG1.RING0:
+                    //TODO GET COLOR FROM REFBOX
                     ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingYellow) : new RingElement(RingColor.RingBlue);
                     break;
-                case 2:
+                case ARG1.RING1:
                     ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingGreen) : new RingElement(RingColor.RingOrange);
                     break;
                 default:
+                    FinishedTask();
                     return;
             }
             Thread.Sleep(Config.RSTaskDuration);
             ProductOnBelt.AddPart(ringToMount);
+            MyLogger.Log("Ring Mounted!");
             FinishedTask();
         }
     }
