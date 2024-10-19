@@ -119,29 +119,29 @@ namespace Simulator.MPS {
                     GreenLight.SetLight(LightState.Off);
                     break;
                 case ARG1.RED:
-                    if(command.arg2 == ARG2.ON)
+                    if (command.arg2 == ARG2.ON)
                         RedLight.SetLight(LightState.On);
-                    else if(command.arg2 == ARG2.OFF)
+                    else if (command.arg2 == ARG2.OFF)
                         RedLight.SetLight(LightState.Off);
-                    else if(command.arg2 == ARG2.BLINK)
+                    else if (command.arg2 == ARG2.BLINK)
                         RedLight.SetLight(LightState.Blink);
                     MyLogger.Log("Handle Lights got a RedLight task with [" + name + "]!");
                     break;
                 case ARG1.YELLOW:
-                    if(command.arg2 == ARG2.ON)
+                    if (command.arg2 == ARG2.ON)
                         YellowLight.SetLight(LightState.On);
-                    else if(command.arg2 == ARG2.OFF)
+                    else if (command.arg2 == ARG2.OFF)
                         YellowLight.SetLight(LightState.Off);
-                    else if(command.arg2 == ARG2.BLINK)
+                    else if (command.arg2 == ARG2.BLINK)
                         YellowLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a YellowLight task with [" + name+ "]!");
+                    MyLogger.Log("Handle Lights got a YellowLight task with [" + name + "]!");
                     break;
                 case ARG1.GREEN:
-                    if(command.arg2 == ARG2.ON)
+                    if (command.arg2 == ARG2.ON)
                         GreenLight.SetLight(LightState.On);
-                    else if(command.arg2 == ARG2.OFF)
+                    else if (command.arg2 == ARG2.OFF)
                         GreenLight.SetLight(LightState.Off);
-                    else if(command.arg2 == ARG2.BLINK)
+                    else if (command.arg2 == ARG2.BLINK)
                         GreenLight.SetLight(LightState.Blink);
                     MyLogger.Log("Handle Lights got a GreenLight task with [" + name + "]!");
                     break;

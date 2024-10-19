@@ -39,7 +39,7 @@ public class MQTTCommand {
         TO_INPUT,
         TO_OUTPUT
     }
-    public enum ARG2{
+    public enum ARG2 {
         NONE,
         ON,
         OFF,
@@ -57,8 +57,8 @@ public class MQTTCommand {
 
     public MQTTCommand(string command_string) {
         string[] command_parts = command_string.Split(" ");
-        command = (COMMAND) Enum.Parse(typeof(COMMAND), command_parts[0]);
-        if(command == COMMAND.STORE || command == COMMAND.RETRIEVE || command == COMMAND.RELOCATE){
+        command = (COMMAND)Enum.Parse(typeof(COMMAND), command_parts[0]);
+        if (command == COMMAND.STORE || command == COMMAND.RETRIEVE || command == COMMAND.RELOCATE) {
             arg1 = ARG1.TARGET;
             arg2 = ARG2.NONE;
             var parts = command_parts[1].Split(",");
@@ -68,7 +68,7 @@ public class MQTTCommand {
             if (parts.Length > 1)
                 uint.TryParse(parts[1], out uint arg1_slot);
 
-            if(command == COMMAND.RELOCATE && command_parts.Length > 2){
+            if (command == COMMAND.RELOCATE && command_parts.Length > 2) {
                 arg2 = ARG2.TARGET;
                 parts = command_parts[2].Split(",");
 
@@ -80,8 +80,8 @@ public class MQTTCommand {
             return;
         }
 
-        arg1 = (command_parts.Length > 1) ? (ARG1) Enum.Parse(typeof(ARG1), command_parts[1]) : ARG1.NONE;
-        arg2 = (command_parts.Length > 2) ? (ARG2) Enum.Parse(typeof(ARG2), command_parts[2]) : ARG2.NONE;
+        arg1 = (command_parts.Length > 1) ? (ARG1)Enum.Parse(typeof(ARG1), command_parts[1]) : ARG1.NONE;
+        arg2 = (command_parts.Length > 2) ? (ARG2)Enum.Parse(typeof(ARG2), command_parts[2]) : ARG2.NONE;
     }
     public MQTTCommand() {
         command = COMMAND.NONE;
@@ -90,18 +90,18 @@ public class MQTTCommand {
     }
 
     public bool validate() {
-        switch(command){
-            case(COMMAND.GET_BASE):
-                if(arg1 == ARG1.SILVER || arg1 == ARG1.BLACK || arg1 == ARG1.RED)
+        switch (command) {
+            case (COMMAND.GET_BASE):
+                if (arg1 == ARG1.SILVER || arg1 == ARG1.BLACK || arg1 == ARG1.RED)
                     return true;
                 else
                     return false;
-            case(COMMAND.LIGHT):
-                switch(arg1){
+            case (COMMAND.LIGHT):
+                switch (arg1) {
                     case ARG1.GREEN:
                     case ARG1.YELLOW:
                     case ARG1.RED:
-                        if(arg2 == ARG2.ON || arg2 == ARG2.OFF || arg2 == ARG2.BLINK)
+                        if (arg2 == ARG2.ON || arg2 == ARG2.OFF || arg2 == ARG2.BLINK)
                             return true;
                         else
                             return false;
@@ -110,43 +110,43 @@ public class MQTTCommand {
                     default:
                         return false;
                 }
-            case(COMMAND.CAP_ACTION):
-                if(arg1 == ARG1.RETRIEVE || arg1 == ARG1.RESET)
+            case (COMMAND.CAP_ACTION):
+                if (arg1 == ARG1.RETRIEVE || arg1 == ARG1.RESET)
                     return true;
                 else
                     return false;
-            case(COMMAND.MOUNT_RING):
-                if(arg1 == ARG1.RING0 || arg1 == ARG1.RING1)
+            case (COMMAND.MOUNT_RING):
+                if (arg1 == ARG1.RING0 || arg1 == ARG1.RING1)
                     return true;
                 else
                     return false;
-            case(COMMAND.DELIVER):
-                if(arg1 == ARG1.SLOT0 || arg1 == ARG1.SLOT1 || arg1 == ARG1.SLOT2)
-                    return true;
-                else
-                    return false;
-
-            case(COMMAND.RETRIEVE):
-            case(COMMAND.STORE):
-                if(arg1 == ARG1.TARGET && arg1_shelf >= 0 && arg1_shelf <= 5 && arg1_slot >= 0 && arg1_slot <= 7)
+            case (COMMAND.DELIVER):
+                if (arg1 == ARG1.SLOT0 || arg1 == ARG1.SLOT1 || arg1 == ARG1.SLOT2)
                     return true;
                 else
                     return false;
 
-            case(COMMAND.RELOCATE):
-                if(arg1 == ARG1.TARGET && arg2 == ARG2.TARGET &&
+            case (COMMAND.RETRIEVE):
+            case (COMMAND.STORE):
+                if (arg1 == ARG1.TARGET && arg1_shelf >= 0 && arg1_shelf <= 5 && arg1_slot >= 0 && arg1_slot <= 7)
+                    return true;
+                else
+                    return false;
+
+            case (COMMAND.RELOCATE):
+                if (arg1 == ARG1.TARGET && arg2 == ARG2.TARGET &&
                     arg1_shelf >= 0 && arg1_shelf <= 5 && arg1_slot >= 0 && arg1_slot <= 7 &&
                     arg2_shelf >= 0 && arg2_shelf <= 5 && arg2_slot >= 0 && arg2_slot <= 7)
                     return true;
                 else
                     return false;
-            case(COMMAND.MOVE_CONVEYOR):
-                if((arg1 == ARG1.TO_INPUT || arg1 == ARG1.TO_OUTPUT) &&
+            case (COMMAND.MOVE_CONVEYOR):
+                if ((arg1 == ARG1.TO_INPUT || arg1 == ARG1.TO_OUTPUT) &&
                    (arg2 == ARG2.IN || arg2 == ARG2.MID || arg2 == ARG2.OUT))
                     return true;
                 else
                     return false;
-            case(COMMAND.RESET):
+            case (COMMAND.RESET):
                 return true;
         }
         return false;
@@ -200,19 +200,19 @@ public class MQTThelper {
         SetBarcode(0);
         SetStatus(MQTTStatus.READY);
 
-        if(slideCount)
+        if (slideCount)
             ResetSlideCount();
     }
 
     public Task HandleUpdate(MqttApplicationMessageReceivedEventArgs args) {
         var topic = args.ApplicationMessage.Topic;
         //_myLogger.Log($"Handle Message for topic {topic}");
-        string topic_name = topic.Split("/")[^1];;
+        string topic_name = topic.Split("/")[^1];
         string payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
-        if(topic_name == "Command") {
+        if (topic_name == "Command") {
             MyLogger.Log($"Received Command {payload}");
             var m_command = new MQTTCommand(payload);
-            if(m_command.validate()){
+            if (m_command.validate()) {
                 //FIXME POTENTIALY RACY
                 command = m_command;
                 CommandEvent.Set();
@@ -236,7 +236,7 @@ public class MQTThelper {
 
     public void SetStatus(MQTTStatus value, bool publish = true) {
         Status = value;
-        if (publish){
+        if (publish) {
             string name = Enum.GetName(typeof(MQTTStatus), value) ?? "";
             PublishChange("Status", name);
         }
@@ -256,7 +256,7 @@ public class MQTThelper {
 
     public void IncreaseSlideCount(bool publish = true) {
         SlideCnt += 1;
-        if(publish)
+        if (publish)
             PublishChange("SlideCount", SlideCnt.ToString());
     }
 

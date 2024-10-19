@@ -6,10 +6,8 @@ namespace Simulator.MPS {
         public LightColor LightColor { get; }
         public LightState LightState;
         private bool _lightOn;
-        public bool LightOn
-        {
-            get
-            {
+        public bool LightOn {
+            get {
                 switch (LightState) {
                     case LightState.Off:
                         LightOn = false;
@@ -19,7 +17,7 @@ namespace Simulator.MPS {
                         break;
                     case LightState.Blink:
                         // Blink every second based on the current time
-                        if(DateTime.Now.Second % 2 == 0)
+                        if (DateTime.Now.Second % 2 == 0)
                             LightOn = true;
                         else
                             LightOn = false;
@@ -27,8 +25,7 @@ namespace Simulator.MPS {
                 }
                 return _lightOn;
             }
-            private set
-            {
+            private set {
                 _lightOn = value;
             }
         }
