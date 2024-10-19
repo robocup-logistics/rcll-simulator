@@ -63,6 +63,7 @@ namespace Simulator.Utility {
                     ID = WorkpieceColorlessRangeStart;
                     break;
             }
+            //FIXME RACY
             ID += internalProductCounter;
             internalProductCounter++;
         }

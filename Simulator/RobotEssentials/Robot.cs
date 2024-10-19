@@ -26,7 +26,6 @@ namespace Simulator.RobotEssentials {
         private readonly Queue<AgentTask> Tasks;
 
         public AgentTask? CurrentTask { get; set; }
-        private DateTime MoveStart = DateTime.MinValue;
         [JsonIgnore]
         public Thread? WorkingRobotThread { get; set; }
         private RobotManager MyManager;
@@ -41,8 +40,8 @@ namespace Simulator.RobotEssentials {
 
         private string? JsonInformation;
         private Stopwatch stopwatch;
-        private TeamConfig _teamConfig;
-        private string _connectionType;
+        private TeamConfig teamConfig;
+        private string connectionType;
         private enum TaskEnum : int {
             None,
             Move,
@@ -52,6 +51,119 @@ namespace Simulator.RobotEssentials {
             Explore
         }
 
+        public void Run() {
+            MyLogger.Log("Robot " + RobotName + " is starting! Team is " + teamConfig.Name + " with ip " + teamConfig.Ip + " and port " + teamConfig.Port);
+
+            if (Config.RobotDirectBeaconSignals) {
+                var port = TeamColor == Team.Cyan ? Config.Refbox.CyanSendPort : Config.Refbox.MagentaSendPort;
+                UdpConnectionRefbox =
+                    new UdpConnector(Config, Config.Refbox.IP, port, this, MyLogger, false);
+                UdpConnectionRefbox.Start();
+            }
+
+            MyLogger.Log("Starting " + RobotName + "'s working thread!");
+            Work();
+
+            if (Config.RobotDirectBeaconSignals) {
+                UdpConnectionRefbox?.Stop();
+            }
+        }
+
+        public void Work() {
+            SerializeRobotToJson();
+            while (Running) {
+                switch (RobotState) {
+                    case RobotState.Active:
+
+                        if (CurrentTask != null) {
+                            //TODO refactor new task handling
+                            //{ "teamColor": "MAGENTA", "taskId": 57, "robotId": 1, "getFromStation": { "machineId": "C-CS2", "machinePoint": "shelf0" } }
+                            //tasks
+                            MyLogger.Log("Current tasks = " + Tasks.Count.ToString());
+                            //{ "teamColor": "MAGENTA", "taskId": 0, "robotId": 2 }
+                            MyLogger.Log("#######################################################################");
+                            MyLogger.Log("The current task = " + CurrentTask.ToString());
+                            MyLogger.Log("#######################################################################");
+
+                            if (CurrentTask.PauseTask) {
+                                MyLogger.Log("Got a pause robot task [" + CurrentTask.PauseTask.ToString() +
+                                             "] --- task is done!");
+                            }
+                            if (CurrentTask.HasCancelTask) {
+                                MyLogger.Log("Got a Cancel Task!");
+                            }
+                            switch (CheckTaskType()) {
+                                case TaskEnum.Move:
+                                    MoveToWaypoint();
+                                    break;
+                                case TaskEnum.Retrieve:
+                                    GetFromStation();
+                                    break;
+                                case TaskEnum.Deliver:
+                                    DeliverToStation();
+                                    break;
+                                case TaskEnum.Buffer:
+                                    BufferCapStation();
+                                    break;
+                                case TaskEnum.Explore:
+                                    ExploreMachine();
+                                    break;
+                                case TaskEnum.None:
+                                default:
+                                    MyLogger.Log("Somehow an empty task was added?");
+
+                                    if (Config.IgnoreTeamColor) {
+                                        /*
+                                        var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
+                                        if(message != null)
+                                        {
+                                            Teamserver.AddMessage(message);
+                                        }
+                                        */
+
+                                    }
+                                    else {
+                                        if (CurrentTask.TeamColor != TeamColor) {
+                                            MyLogger.Log("Got a task thats not for me. I ignore it!");
+                                        }
+                                    }
+                                    break;
+                            }
+                            FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
+                            SerializeRobotToJson();
+                            CurrentTask = null;
+                        }
+                        else {
+                            if (Tasks.Count != 0) {
+                                MyLogger.Log("No Current task, fetching a new one from my task list!");
+                                CurrentTask = Tasks.Dequeue();
+                                MyLogger.Log("The new task = " + CurrentTask.ToString());
+                            }
+                            else {
+                                MyLogger.Log("No Tasks currently!");
+                                //TestMove();
+                            }
+                        }
+                        break;
+                    case RobotState.Disqualified:
+                        break;
+                    case RobotState.Maintenance:
+                        break;
+                    default:
+                        break;
+                }
+
+                string taskstring = "No task!";
+                if (CurrentTask is { HasTaskId: true }) {
+                    taskstring = CurrentTask.TaskId.ToString();
+                }
+
+                MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring);
+
+                Thread.Sleep(500);
+            }
+        }
+
         public Robot(Configurations config, RobotConfig robotConfig, RobotManager manager,
                      MpsManager mpsManager, Zone startZone, bool debug = false) {
             Config = config;
@@ -59,8 +171,8 @@ namespace Simulator.RobotEssentials {
             TeamName = Config.Teams[0].Name;
             TeamColor = robotConfig.TeamColor;
             //TODO Fix the crash when only one team is there
-            _teamConfig = TeamColor == Team.Cyan ? Config.Teams[0] : Config.Teams[1];
-            Console.WriteLine("TeamConfig: " + _teamConfig.Name + "IP: " + _teamConfig.Ip + "Port: " + _teamConfig.Port);
+            teamConfig = TeamColor == Team.Cyan ? Config.Teams[0] : Config.Teams[1];
+            connectionType = robotConfig.Connection;
 
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
@@ -87,31 +199,12 @@ namespace Simulator.RobotEssentials {
             Tasks = new Queue<AgentTask>();
             TaskDescription = "Idle";
             MpsManager = mpsManager;
-            TcpConnectionTeamserver = null;
-            UdpConnectionTeamserver = null;
             UdpConnectionRefbox = null;
             nextZone = null;
 
-            _connectionType = Config.RobotConnectionType;
+            connectionType = Config.RobotConnectionType;
         }
 
-        public string GetHeldProductString() {
-            return HeldProduct == null ? "no Product" : HeldProduct.ProductDescription();
-        }
-        public bool IsHoldingSomething() {
-            return HeldProduct != null;
-        }
-        public Zones GetZone() {
-            return CurrentZone;
-        }
-        public Products? GetHeldProduct() {
-            //MyLogger.Log("Checking if a Product is held. Currently = " + (HeldProduct == null ? "null" : HeldProduct.ProductDescription()));
-            return HeldProduct;
-        }
-        public void DropItem() {
-            MyLogger.Log("Dropping my Product!");
-            HeldProduct = null;
-        }
         public void SetZone(Zones zone) {
             CurrentZone = zone;
             Position = new CPosition(zone.X, zone.Y, 0);
@@ -167,45 +260,6 @@ namespace Simulator.RobotEssentials {
             }
         }
 
-        public void Run() {
-            MyLogger.Log("Robot " + RobotName + " is starting! Team is " + _teamConfig.Name + " with ip " + _teamConfig.Ip + " and port " + _teamConfig.Port);
-
-            if (!Config.MockUp) {
-                if (Config.RobotDirectBeaconSignals) {
-                    UdpConnectionRefbox =
-                        new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanSendPort, this, MyLogger, false);
-                    UdpConnectionRefbox.Start();
-                }
-
-                foreach (var robot in Config.RobotConfigs) {
-                    if (robot.TeamColor == TeamColor && robot.Jersey == JerseyNumber) {
-                        _connectionType = robot.Connection;
-                        Console.WriteLine("Setting Robot to use connection " + _connectionType);
-                    }
-                }
-                if (_connectionType.Equals("udp")) {
-                    UdpConnectionTeamserver = new UdpConnector(Config, _teamConfig.Ip, _teamConfig.Port, this, MyLogger, true);
-                    UdpConnectionTeamserver.Start();
-                }
-                else {
-                    TcpConnectionTeamserver = new TcpConnector(Config, _teamConfig.Ip, _teamConfig.Port, this, MyLogger);
-                    TcpConnectionTeamserver.Start();
-                }
-            }
-
-
-            MyLogger.Log("Starting " + RobotName + "'s working thread! Mockup = " +
-                         Config.MockUp.ToString());
-            Work();
-            if (Config.RobotConnectionType.Equals("udp")) {
-                UdpConnectionTeamserver?.Stop();
-            }
-            else {
-
-                TcpConnectionTeamserver?.Stop();
-            }
-        }
-
         private void AddMessage(PBMessageFactoryBase.MessageTypes type) {
             if (Config.MockUp) {
                 MyLogger.Log("Message not added due to Mockup!");
@@ -213,7 +267,7 @@ namespace Simulator.RobotEssentials {
             }
             MyLogger.Log("Sending a " + type.ToString() + "!");
 
-            if (_connectionType.Equals("udp")) {
+            if (connectionType.Equals("udp")) {
                 var message = UdpConnectionTeamserver?.CreateMessage(type);
                 if (message != null && message != Array.Empty<byte>()) {
                     UdpConnectionTeamserver?.AddMessage(message);
@@ -232,8 +286,6 @@ namespace Simulator.RobotEssentials {
                 }
             }
         }
-
-
 
         #region BasicBehaviour
 
@@ -563,105 +615,7 @@ namespace Simulator.RobotEssentials {
             AddMessage(PBMessageFactoryBase.MessageTypes.AgentTask);
         }
 
-        private void Explore() {
-            MyLogger.Log("Current Zone = " + CurrentZone.ToString());
-        }
-
         #endregion
-        public void Work() {
-            SerializeRobotToJson();
-            while (Running) {
-                switch (RobotState) {
-                    case RobotState.Active:
-
-                        if (CurrentTask != null) {
-                            //TODO refactor new task handling
-                            //{ "teamColor": "MAGENTA", "taskId": 57, "robotId": 1, "getFromStation": { "machineId": "C-CS2", "machinePoint": "shelf0" } }
-                            //tasks
-                            MyLogger.Log("Current tasks = " + Tasks.Count.ToString());
-                            //{ "teamColor": "MAGENTA", "taskId": 0, "robotId": 2 }
-                            MyLogger.Log("#######################################################################");
-                            MyLogger.Log("The current task = " + CurrentTask.ToString());
-                            MyLogger.Log("#######################################################################");
-
-                            if (CurrentTask.PauseTask) {
-                                MyLogger.Log("Got a pause robot task [" + CurrentTask.PauseTask.ToString() +
-                                             "] --- task is done!");
-                            }
-                            if (CurrentTask.HasCancelTask) {
-                                MyLogger.Log("Got a Cancel Task!");
-                            }
-                            switch (CheckTaskType()) {
-                                case TaskEnum.Move:
-                                    MoveToWaypoint();
-                                    break;
-                                case TaskEnum.Retrieve:
-                                    GetFromStation();
-                                    break;
-                                case TaskEnum.Deliver:
-                                    DeliverToStation();
-                                    break;
-                                case TaskEnum.Buffer:
-                                    BufferCapStation();
-                                    break;
-                                case TaskEnum.Explore:
-                                    ExploreMachine();
-                                    break;
-                                case TaskEnum.None:
-                                default:
-                                    MyLogger.Log("Somehow an empty task was added?");
-
-                                    if (Config.IgnoreTeamColor) {
-                                        /*
-                                        var message = Teamserver.CreateMessage(PBMessageFactoryBase.MessageTypes.GripsMidlevelTasks);
-                                        if(message != null)
-                                        {
-                                            Teamserver.AddMessage(message);
-                                        }
-                                        */
-
-                                    }
-                                    else {
-                                        if (CurrentTask.TeamColor != TeamColor) {
-                                            MyLogger.Log("Got a task thats not for me. I ignore it!");
-                                        }
-                                    }
-                                    break;
-                            }
-                            FinishedTasksList.Add(new FinishedTasks(CurrentTask.TaskId, CurrentTask.Successful));
-                            SerializeRobotToJson();
-                            CurrentTask = null;
-                        }
-                        else {
-                            if (Tasks.Count != 0) {
-                                MyLogger.Log("No Current task, fetching a new one from my task list!");
-                                CurrentTask = Tasks.Dequeue();
-                                MyLogger.Log("The new task = " + CurrentTask.ToString());
-                            }
-                            else {
-                                MyLogger.Log("No Tasks currently!");
-                                //TestMove();
-                            }
-                        }
-                        break;
-                    case RobotState.Disqualified:
-                        break;
-                    case RobotState.Maintenance:
-                        break;
-                    default:
-                        break;
-                }
-
-                string taskstring = "No task!";
-                if (CurrentTask is { HasTaskId: true }) {
-                    taskstring = CurrentTask.TaskId.ToString();
-                }
-
-                MyLogger.Log("is [" + RobotState.ToString() + "] and doing his " + taskstring);
-
-                Thread.Sleep(500);
-            }
-        }
         private TaskEnum CheckTaskType() {
             if (CurrentTask?.Move != null)
                 return TaskEnum.Move;
@@ -677,52 +631,8 @@ namespace Simulator.RobotEssentials {
                 return TaskEnum.None;
         }
 
-        public void TestMove() {
-            AgentTask task = new AgentTask() {
-                RobotId = 0,
-                TaskId = 1,
-                TeamColor = TeamColor,
-                Move = new Move {
-                    Waypoint = "C_Z11"
-                }
-            };
-            CurrentTask = task;
-        }
-
-        public void UpdateProduct(Products prod) {
-            HeldProduct = prod;
-        }
-
         public void RobotStop() {
             Running = false;
-        }
-
-        public string GetTaskDescription() {
-            return TaskDescription;
-        }
-        public string GetDebugLog(int lines) {
-            var format = "Task {0} finished {1}\n";
-            return FinishedTasksList.Aggregate("", (current, task) => current + String.Format(format, task.TaskId, task.Successful ? "successful" : "unsuccessful"));
-            //return MyLogger.GetLines(lines);
-        }
-        public string GetConnectionState() {
-            if (Config.MockUp) {
-                return "Mockup";
-            }
-
-            if (Config.RobotConnectionType.Equals("tcp")) {
-                if (TcpConnectionTeamserver != null) {
-                    return TcpConnectionTeamserver.GetConnected().ToString() ?? string.Empty;
-
-                }
-                else {
-                    return "starting";
-                }
-            }
-            else {
-                return "UDP";
-            }
-
         }
 
         public void SerializeRobotToJson() {
