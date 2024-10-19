@@ -1,12 +1,4 @@
-﻿using System;
-using System.Text;
-using System.Threading;
-using Google.Protobuf;
-using LlsfMsgs;
-using Org.BouncyCastle.Math.EC;
-using Simulator.MPS;
-using Simulator.Utility;
-using Timer = Simulator.Utility.Timer;
+﻿using Simulator.Utility;
 
 namespace Simulator.RobotEssentials {
     class PBMessageHandlerBase {
@@ -33,44 +25,27 @@ namespace Simulator.RobotEssentials {
             var payloadsize = BytesToInt(Stream, 4, 4);
             return payloadsize;
         }
-        public virtual bool HandleMessage(byte[] Stream) {
 
-            /*      Each row is 4 bytes
-             * 1.   Protocol version, Cipher, Reserved byte1 , reserved byte2
-             * 2.   Payload size 
-             * 3.   component ID and Message type each 2 bytes. Used to detect the Protobuff message
-             * 
-             * */
-            if (Stream.Length < 4) {
-                MyLogger.Log("The received Message is to short to be parsed!");
-                return false;
-            }
-            if (FrameHeader.Version != Stream[0]) {
-                MyLogger.Log("Version is different!");
-                return false;
-            }
-            if (FrameHeader.Cipher != Stream[1]) {
-                MyLogger.Log("Cipher is different!");
-                return false;
-            }
-            /*if (FrameHeader.Reserved != Stream[2] && FrameHeader.Reserved2 != Stream[3])
-            {
-                MyLogger.Log("Reserved is different!");
-            }*/
-            int payloadsize = BytesToInt(Stream, 4, 4);
-            //MyLogger.Log("The payload has : " + payloadsize.ToString() + " bytes!");
-            int cmpId = BytesToInt(Stream, 8, 2);
-            int msgtype = BytesToInt(Stream, 10, 2);
-            // string msg = "";
-            //MyLogger.Log("The Recieved message is from component : " + cmpId.ToString() + " and the message type is = " + msgtype.ToString() + " and payloadsize = " + payloadsize);
-            //MyLogger.Log("Length of the stream = " + Stream.Length);
-            if (payloadsize == 0) {
-                MyLogger.Log("The payload is " + payloadsize + " so we stop here!");
-                return false;
-            }
-
-            return true;
+        protected virtual bool ProcessMessage(byte[] stream, int componentId, int messageType, int payloadSize) {
+            throw new NotImplementedException();
         }
+
+        public bool HandleMessage(byte[] stream) {
+            if (CheckMessageHeader(stream) == -1)
+                return false;
+
+            int payloadSize = BytesToInt(stream, 4, 4);
+            int componentId = BytesToInt(stream, 8, 2);
+            int messageType = BytesToInt(stream, 10, 2);
+
+            if (payloadSize == 0) {
+                MyLogger.Log($"The payload size is {payloadSize}, no further processing.");
+                return false;
+            }
+
+            return ProcessMessage(stream, componentId, messageType, payloadSize);
+        }
+
         public static int BytesToInt(byte[] bytes, int start, int length) {
 
             var ret = 0;

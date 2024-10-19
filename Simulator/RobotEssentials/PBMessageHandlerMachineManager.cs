@@ -15,49 +15,7 @@ namespace Simulator.RobotEssentials {
 
         #region Message Handling
 
-        public override bool HandleMessage(byte[] stream) {
-            if (!IsValidStream(stream))
-                return false;
-
-            int payloadSize = BytesToInt(stream, 4, 4);
-            int componentId = BytesToInt(stream, 8, 2);
-            int messageType = BytesToInt(stream, 10, 2);
-
-            if (payloadSize == 0) {
-                MyLogger.Log($"The payload size is {payloadSize}, no further processing.");
-                return false;
-            }
-
-            return ProcessMessage(stream, componentId, messageType, payloadSize);
-        }
-
-        private bool IsValidStream(byte[] stream) {
-            /*    Each row is 4 bytes
-             * 1. Protocol version, Cipher, Reserved byte1 , reserved byte2
-             * 2. Payload size
-             * 3. component ID and Message type each 2 bytes. Used to detect the Protobuff message
-             * */
-            if (stream.Length < 4) {
-                MyLogger.Log("The received message is too short to be parsed!");
-                return false;
-            }
-
-            if (FrameHeader.Version != stream[0]) {
-                MyLogger.Log("Version mismatch!");
-                return false;
-            }
-
-            if (FrameHeader.Cipher != stream[1]) {
-                MyLogger.Log("Cipher mismatch!");
-                return false;
-            }
-
-            // Additional checks for reserved bytes can be implemented if needed.
-
-            return true;
-        }
-
-        private bool ProcessMessage(byte[] stream, int componentId, int messageType, int payloadSize) {
+        protected override bool ProcessMessage(byte[] stream, int componentId, int messageType, int payloadSize) {
             switch (messageType) {
                 case (int)Machine.Types.CompType.MsgType:
                     return HandleMachine(stream, payloadSize);
