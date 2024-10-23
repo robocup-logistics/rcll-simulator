@@ -244,6 +244,7 @@ public class MQTThelper {
 
     public void SetBarcode(int value, bool publish = true) {
         BarCode = value;
+        //TODO CONFIG TO NOT PUBSLIH
         if (publish)
             PublishChange("Barcode", BarCode.ToString());
     }

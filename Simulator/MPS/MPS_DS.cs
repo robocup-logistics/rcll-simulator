@@ -44,6 +44,25 @@ namespace Simulator.MPS {
             }
         }
 
+        public override bool PlaceProduct(string machinePoint, Products heldProduct) {
+            //MyLogger.Log("Got a PlaceProduct!");
+            switch (machinePoint.ToLower()) {
+                case "input":
+                    if (ProductAtIn != null)
+                        return false;
+                    ProductAtIn = heldProduct;
+                    return true;
+                case "output":
+                    return false;
+                default:
+                    MyLogger.Log("Defaulting!?");
+                    if (ProductAtIn != null)
+                        return false;
+                    ProductAtIn = heldProduct;
+                    return false;
+            }
+        }
+
         private void DeliverToSlotTask(MQTTCommand command) {
             MyLogger.Log("DeliverToSlotTask!");
             TaskDescription = "Delivering Product";
@@ -51,6 +70,7 @@ namespace Simulator.MPS {
             for (var count = 0; count < 45 && ProductAtIn == null; count++) {
                 Thread.Sleep(1000);
             }
+            //TODO ERROR
             if (ProductAtIn == null) return;
             string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
             MyLogger.Log("Deliver to slot " + name);

@@ -27,6 +27,8 @@ namespace Simulator.MPS {
         protected readonly Configurations Config;
         public MQTThelper MqttHelper;
         protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
+        public Mutex robotAtInput;
+        public Mutex robotAtOutput;
         public bool Working { get; private set; }
         public enum MpsType {
             BaseStation = 100,
@@ -60,6 +62,8 @@ namespace Simulator.MPS {
             Rotation = 0;
             Zone = Zone.MZ41;
             Working = true;
+            robotAtInput = new Mutex();
+            robotAtOutput = new Mutex();
 
             MyLogger = new MyLogger(Name, Debug);
             MyLogger.Info("Starting Machine");
@@ -199,19 +203,25 @@ namespace Simulator.MPS {
             FinishedTask();
         }
 
-        public virtual void PlaceProduct(string machinePoint, Products? heldProduct) {
+        public virtual bool PlaceProduct(string machinePoint, Products heldProduct) {
             //MyLogger.Log("Got a PlaceProduct!");
             switch (machinePoint.ToLower()) {
                 case "input":
+                    if (ProductAtIn != null)
+                        return false;
                     ProductAtIn = heldProduct;
-                    break;
+                    return true;
                 case "output":
+                    if (ProductAtOut != null)
+                        return false;
                     ProductAtOut = heldProduct;
-                    break;
+                    return true;
                 default:
                     MyLogger.Log("Defaulting!?");
+                    if (ProductAtIn != null)
+                        return false;
                     ProductAtIn = heldProduct;
-                    break;
+                    return true;
             }
         }
         public virtual Products? RemoveProduct(string machinePoint) {
@@ -246,6 +256,7 @@ namespace Simulator.MPS {
                 case "shelf2":
                 case "shelf3":
                     return false;
+                //TODO USE OF THE SHELF AND THEN RESTOCKING
                 default:
                     return false;
             }

@@ -3,28 +3,24 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials {
     abstract class ConnectorBase {
-        public Robot? Owner;
-        public bool Running;
+        public bool Running = true;
         public IPEndPoint Endpoint;
         public MyLogger MyLogger;
         public Queue<byte[]> Messages;
-        public Thread? SendThread;
-        public Thread? RecvThread;
         public IPAddress Address = IPAddress.Any;
-        public PBMessageFactoryBase? PbFactory;
+        public PBMessageFactoryRobot? PbFactory;
         public PBMessageHandlerBase? PbHandler;
         public readonly Configurations Config;
         public string IP;
         public int Port;
 
-        protected ConnectorBase(Configurations config, string ip, int port, Robot? rob, MyLogger logger) {
+        protected ConnectorBase(Configurations config, string ip, int port, MyLogger logger) {
             ResolveIpAddress(ip);
             Messages = new Queue<byte[]>();
             MyLogger = logger;
             IP = ip;
             Port = port;
             Endpoint = new IPEndPoint(Address, Port);
-            Owner = rob;
             Config = config;
         }
 
@@ -43,16 +39,13 @@ namespace Simulator.RobotEssentials {
             }
             return true;
         }
-        public void AddMessage(byte[] msg) {
-            MyLogger.Log("Added a Message to the List!");
-            Messages.Enqueue(msg);
-            //WaitSend.Set();
-        }
-        public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type) {
-            if (PbFactory == null) {
-                throw new Exception("PbFactory is null");
+
+        protected void MessageReceived(byte[] message) {
+            if (PbHandler == null) {
+                //TODO CHANGE TO ERROR MESSAGE
+                throw new Exception("PbHandler is null");
             }
-            return PbFactory.CreateMessage(type);
+            PbHandler.HandleMessage(message);
         }
     }
 }

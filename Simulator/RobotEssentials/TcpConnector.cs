@@ -1,165 +1,104 @@
-﻿using System;
+﻿using System.Net.Sockets;
 using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using Simulator.MPS;
 using Simulator.Utility;
+using Simulator.MPS;
+using LlsfMsgs;
 
 namespace Simulator.RobotEssentials {
     /// <summary>
-    /// Class <c>TcpConnector</c> is used for communication with the Teamserver.
+    /// Class <c>TcpConnector</c> is used to communicate with
+    /// The refbox to receive Machine Positions to relay to the MPSManager
+    /// Listen to tcp AgentTask messages to relay to the RobotManager
     /// </summary>
     class TcpConnector : ConnectorBase {
         //TODO add second condition to assign team 2
 
-        private Socket Socket;
-        // private EventWaitHandle WaitSend;
-        private ManualResetEvent? WakePeerUpEvent;
-        public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger) {
-            MyLogger.Log("Starting Robot TcpConnector for " + ip + ":" + port + "!");
+        private Socket ConnectSocket;
+        private Socket? ListenSocket;
+        private IPEndPoint? listenEndpoint;
+        private Robot? Robot;
 
-            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod());
-            RecvThread.Name = "Robot" + rob.JerseyNumber + "_TCP_ReceiveThread";
-            if (Owner != null) {
-                Console.WriteLine("Owner is not null");
-                SendThread = new Thread(() => SendThreadMethod());
-                SendThread.Name = "Robot" + rob.JerseyNumber + "_TCP_SendThread";
+        public Thread? ConnectThread;
+        public Thread? ListenThread;
 
-                //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-                PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
-            }
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-        }
+        public TcpConnector(Configurations config, string ip, int port, MpsManager mpsManager, RobotManager robotManager, MyLogger logger)
+            : base(config, ip, port, logger) {
+            //THIS CONSTRUCTOR IS USED TO COMMUNICATE WITH THE REFBOX TO GET ROBOTINFO MACHIEN INFO AND GAMESTATE
+            MyLogger.Log("Starting Refbox TcpConnector for " + ip + ":" + port + "!");
 
-        public TcpConnector(Configurations config, string ip, int port, MpsManager manager, MyLogger logger) : base(
-            config, ip, port, null, logger) {
-            MyLogger.Log("Starting MPS Manager TcpConnector for " + ip + ":" + port + "!");
+            ConnectSocket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+            ConnectThread = new Thread(() => ReceiveThreadMethod(ConnectSocket));
+            ConnectThread.Name = "Manager_TCP_ReceiveThread";
 
-            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod());
-            RecvThread.Name = "MpsManager_TCP_ReceiveThread";
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerMachineManager(Config, manager, MyLogger);
-            Running = true;
+            PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, robotManager, MyLogger);
+
             Connect();
-            RecvThread.Start();
-        }
-        public bool Close() {
-            Socket.Close();
-            return true;
+            ConnectThread.Start();
         }
 
-        public bool Connect() {
-            MyLogger.Log("Connecting ....");
-            while (!Socket.Connected) {
-                try {
-                    Socket.Connect(Endpoint);
-                    MyLogger.Log(".... connected!");
-                }
-                catch (SocketException) {
-                    MyLogger.Log("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
-                    Thread.Sleep(10000);
-                }
-            }
-            return true;
+        public TcpConnector(Configurations config, Robot robot, MyLogger logger)
+            : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
+            //TODO LISTEN FOR INCOMMING AGENT TASK MESSAGES AND SEND THEM BACK
+            MyLogger.Log("Starting RobotManager TcpConnector on port:" + robot.RobotConfig.SendPort + "!");
+            Robot = robot;
+
+            ConnectSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+            ConnectThread = new Thread(() => SendToAgent());
+            ConnectThread.Name = Robot.RobotName + "Manager_TCP_SendThread";
+
+            PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
+
+            listenEndpoint = new IPEndPoint(IPAddress.Any, robot.RobotConfig.RecvPort);
+            ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+            ListenSocket.Bind(listenEndpoint);
+            ListenSocket.Listen(10);
+
+            ListenThread = new Thread(() => AcceptClients());
+            ListenThread.Name = "Manager_TCP_ReceiveThread";
+
+            Connect();
+            ListenThread.Start();
+            ConnectThread.Start();
         }
 
-        public bool Start() {
-            try {
-                MyLogger.Log("Starting ....");
-                if (Connect()) {
-                    Running = true;
-                    MyLogger.Log(".... Started");
-                    if (SendThread != null) {
-                        SendThread.Start();
-                    }
-                    if (RecvThread != null)
-                        RecvThread.Start();
-                }
-                else {
-                    MyLogger.Log(".... couldn't start..");
-                    return false;
-                }
-            }
-            catch (SocketException) {
-                MyLogger.Log("STARTING the teamserver didn't work");
-                Running = false;
-                return false;
-            }
-            /*finally
-            {
-                Socket?.Close();
-            }*/
-            return true;
+        public void SendToAgent() {
+            //TODO SEND AGENT TASK MESSAGES PERIODICALLY TO THE AGENT PROBABLY IMPLEMENT IN THE BASE CLASS
         }
 
-        public bool Stop() {
-            try {
-                Close();
-                Running = false;
-            }
-            catch (SocketException) {
-                MyLogger.Log(" Something went wrong with closing the Connecting to the Teamserver!");
-                return false;
-            }
-            return true;
-        }
-
-        public void SendThreadMethod() {
-            MyLogger.Log("Starting the SendThread!");
-            if (Socket == null) {
-                return;
-            }
+        public void AcceptClients() {
             while (Running) {
                 try {
-                    //MyLogger.Log("Waiting for a send!");
-                    //WaitSend.WaitOne();
-                    //MyLogger.Log("Got a new Message to send!");
-                    while (true) {
-                        byte[] msg;
-                        if (Messages.Count == 0) {
-                            //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            //msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        }
-                        else {
-                            msg = Messages.Dequeue();
-                        }
-                        if (msg != Array.Empty<byte>()) {
-                            Socket.Send(msg);
-                        }
+                    // Accept incoming connections
+                    Socket? clientSocket = ListenSocket?.Accept();
+                    Console.WriteLine("Accepted a new connection.");
 
+                    if (clientSocket == null) {
                         Thread.Sleep(1000);
+                        continue;
                     }
+                    // Start a new thread to handle this client
+                    Thread clientThread = new Thread(() => ReceiveThreadMethod(clientSocket));
+                    clientThread.Start();
                 }
                 catch (Exception e) {
-                    MyLogger.Log(e + " - Something went wrong with the sending to the Teamserver!");
-                    if (!Socket.Connected) {
-                        MyLogger.Log("the connection is lost retry to connect!");
-                        while (!Socket.Connected) {
-                            Socket.Close();
-                            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                            Connect();
-                        }
-                    }
+                    Console.WriteLine($"Error accepting client: {e.Message}");
                 }
             }
         }
 
 
-
-        public void ReceiveThreadMethod() {
+        public void ReceiveThreadMethod(Socket socket) {
             MyLogger.Log("Starting the ReceiveThread!");
             while (Running) {
                 try {
-                    if (Socket.Available == 0) {
+                    if (ConnectSocket.Available == 0) {
                         Thread.Sleep(50);
                         continue;
                     }
                     MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
-                    var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                    var message = socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
                     if (PbHandler == null) {
                         MyLogger.Log("No PbHandler found!");
                         continue;
@@ -171,13 +110,11 @@ namespace Simulator.RobotEssentials {
                     MyLogger.Log("Lines Receive " + message + " of " + payload);
                     while (payload > message) {
                         MyLogger.Log("Missing bytes, we need to receive more " + message + "/" + payload);
-                        message = Socket.Receive(buffer, message, payload + 16 - message, SocketFlags.None);
+                        message = socket.Receive(buffer, message, payload + 16 - message, SocketFlags.None);
                         MyLogger.Log("Lines Receive " + message);
                     }
-                    //MyLogger.Log("Received a message!");
                     PbHandler.HandleMessage(buffer);
-                    //MyLogger.Log("Handled the message!");
-                    //MyLogger.Log(message.ToString());
+                    //TODO CHECK HOW IT IS SOPPOSED TO CHANGE THE BYTE AND REMOVE THE USED BYTES
                 }
                 catch (Exception e) {
                     MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
@@ -185,15 +122,32 @@ namespace Simulator.RobotEssentials {
             }
         }
 
-        public bool GetConnected() {
-            return Socket.Connected;
+        public bool Connect() {
+            MyLogger.Log("Connecting ....");
+            while (!ConnectSocket.Connected) {
+                try {
+                    ConnectSocket.Connect(Endpoint);
+                    MyLogger.Log(".... connected!");
+                }
+                catch (SocketException) {
+                    MyLogger.Log("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
+                    Thread.Sleep(10000);
+                }
+            }
+            return true;
         }
-        public void HandleMessage(IAsyncResult res) {
 
-        }
-
-        public void SetWakeUpEvent(ManualResetEvent mre) {
-            WakePeerUpEvent = mre;
+        public bool Stop() {
+            try {
+                ConnectSocket.Close();
+                ListenSocket?.Close();
+                Running = false;
+            }
+            catch (SocketException) {
+                MyLogger.Log(" Something went wrong with closing the Connecting to the Teamserver!");
+                return false;
+            }
+            return true;
         }
     }
 }

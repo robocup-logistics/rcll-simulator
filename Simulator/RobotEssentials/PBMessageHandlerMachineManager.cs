@@ -6,23 +6,25 @@ using Timer = Simulator.Utility.Timer;
 
 namespace Simulator.RobotEssentials {
     class PBMessageHandlerMachineManager : PBMessageHandlerBase {
-        private readonly MpsManager Manager;
+        private readonly MpsManager mpsManager_;
+        private readonly RobotManager robotManager_;
 
-        public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, MyLogger log)
+        public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, RobotManager robotManager, MyLogger log)
             : base(config, log) {
-            Manager = mpsManager;
+            mpsManager_ = mpsManager;
+            robotManager_ = robotManager;
         }
 
         #region Message Handling
 
         protected override bool ProcessMessage(byte[] stream, int componentId, int messageType, int payloadSize) {
             switch (messageType) {
-                case (int)Machine.Types.CompType.MsgType:
-                    return HandleMachine(stream, payloadSize);
                 case (int)MachineInfo.Types.CompType.MsgType:
                     return HandleMachineInfo(stream, componentId, payloadSize);
                 case (int)GameState.Types.CompType.MsgType:
                     return HandleGameState(stream, payloadSize);
+                case (int)RobotInfo.Types.CompType.MsgType:
+                    return HandleRobotInfo(stream, componentId, payloadSize);
                 default:
                     MyLogger.Log($"Unknown MessageType {messageType} for Component {componentId}");
                     return false;
@@ -32,14 +34,6 @@ namespace Simulator.RobotEssentials {
         #endregion
 
         #region Message Type Handlers
-
-        private bool HandleMachine(byte[] stream, int payloadSize) {
-            var machineParser = new MessageParser<Machine>(() => new Machine());
-            var machine = machineParser.ParseFrom(stream, 12, payloadSize - 4);
-            MyLogger.Log("MachineInfo message parsed successfully.");
-            MyLogger.Log($"Parsed message: {machine}");
-            return true;
-        }
 
         private bool HandleMachineInfo(byte[] stream, int componentId, int payloadSize) {
             if ((int)MachineInfo.Types.CompType.CompId != componentId) {
@@ -60,11 +54,11 @@ namespace Simulator.RobotEssentials {
                     return false;
                 }
                 ZonesManager.GetInstance().ZoneManagerMutex.WaitOne();
-                if (Manager.AllMachineSet) {
+                if (mpsManager_.AllMachineSet) {
                     ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
                     return true;
                 }
-                Manager.PlaceMachines(machineInfo);
+                mpsManager_.PlaceMachines(machineInfo);
                 ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
                 return true;
             }
@@ -72,6 +66,17 @@ namespace Simulator.RobotEssentials {
                 MyLogger.Log($"Parsing error: {e}");
                 return false;
             }
+        }
+
+        private bool HandleRobotInfo(byte[] stream, int componentId, int payloadSize) {
+            var robotInfoParser = new MessageParser<RobotInfo>(() => new RobotInfo());
+            var robotInfo = robotInfoParser.ParseFrom(stream, 12, payloadSize - 4);
+
+            robotManager_.HandleRobotInfo(robotInfo);
+
+            MyLogger.Log("GameInfo message parsed successfully.");
+            MyLogger.Log($"Parsed message: {robotInfo}");
+            return true;
         }
 
         private bool HandleGameState(byte[] stream, int payloadSize) {

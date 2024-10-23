@@ -79,11 +79,6 @@ namespace Simulator.MPS {
             FinishedTask();
         }
 
-        public override void PlaceProduct(string machinePoint, Products? heldProduct) {
-            MyLogger.Log("Got a PlaceProduct for CapStation!");
-            base.PlaceProduct(machinePoint, heldProduct);
-        }
-
         public override Products? RemoveProduct(string machinePoint) {
             Products? returnProduct;
             MyLogger.Log("Someone trys to grabs a Item from!");
@@ -104,6 +99,7 @@ namespace Simulator.MPS {
                 case "left":
                 case "middle":
                 case "right":
+                    //TODO REPLANISHMENT
                     returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
                     break;
                 default:

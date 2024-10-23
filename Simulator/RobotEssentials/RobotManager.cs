@@ -39,6 +39,15 @@ namespace Simulator.RobotEssentials {
                 Robots.Add(robot);
             }
         }
+        public void HandleRobotInfo(RobotInfo robotInfo) {
+            //TODO
+            foreach (var robot in Robots) {
+                if (robot.JerseyNumber == robotInfo.JerseyNumber) {
+                    robot.HandleRobotInfo(robotInfo);
+                    return;
+                }
+            }
+        }
 
         public void StopAllRobots() {
             foreach (var robot in Robots) {

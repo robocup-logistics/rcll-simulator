@@ -5,127 +5,57 @@ using Simulator.Utility;
 
 namespace Simulator.RobotEssentials {
     /// <summary>
-    /// Class <c>UdpConnector</c> is used for communication with the Refbox.
+    /// Class <c>UdpConnector</c> is used to communicate with
+    /// The refbox to send Beacon signals on behalf of a robot
+    /// Listen to RobotInfo messages to relay to the robot
+    /// Listen to udp AgentTask messages to relay to the RobotManager
     /// </summary>
     class UdpConnector : ConnectorBase {
-        private bool OnlySending;
-        private UdpClient Client;
 
-        private string IpString;
-        public UdpConnector(Configurations config, string ip, int port,
-                            Robot? rob, MyLogger logger, bool onlySend)
-            : base(config, ip, port, rob, logger) {
-            //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            Console.WriteLine("ip" + ip + "port" + port, "rob" + rob, "logger" + logger, "onlySend" + onlySend);
-            OnlySending = onlySend;
-            if (rob != null) {
-                PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
-                RecvThread = new Thread(() => ReceiveUdpMethod());
-                RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
-                SendThread = new Thread(() => SendUdpMethod());
-                SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
-            }
+        public UdpClient? SendClient;
+        public UdpClient? RecvClient;
+        public IPEndPoint? receiveEndpoint;
 
-            IpString = ip;
+        public Thread? SendThread;
+        public Thread? RecvThread;
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-            Client = new UdpClient();
-            Client.EnableBroadcast = true;
+        public UdpConnector(Configurations config, string refboxIp, int refboxPort,
+                            Robot robot, MyLogger logger)
+            : base(config, refboxIp, refboxPort, logger) {
+            // IN THIS CONSTRUCTOR, THIS CLASS IS SENDING THE BEACON SIGNAL TO REFBOX FOR ROBOT
+            Console.WriteLine("ip" + refboxIp + "port" + refboxPort, "rob" + robot, "logger" + logger, "sendBeacon");
+
+            SendThread = new Thread(() => SendBeaconMethod());
+            SendThread.Name = "Robot" + robot.JerseyNumber + "_UDP_SENNDER_THREAD";
+
+            PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
+            SendClient = new UdpClient();
+            SendClient.EnableBroadcast = true;
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
 
-        public UdpConnector(Configurations config, string ip, int port, MpsManager mpsManager, MyLogger logger) : base(config, ip, port, null, logger) {
-            //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            MyLogger.Log("Starting UdpConnector without a robot!");
+        public UdpConnector(Configurations config, Robot robot, MyLogger logger)
+            : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
+            // IN THIS CONSTRUCTOR THE CLASS IS WAITING FOR AGENT TASK MESSAGES ON A SPECIFIC PORT AND SEND BACK ON ANOTHER ONe
+            MyLogger.Log("Starting UdpConnector for RobotManager to receive AgentTask messages!");
 
-            PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, MyLogger);
+            PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
+            PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
 
-            IpString = ip;
-            RecvThread = new Thread(() => ReceiveUdpMethod());
-            RecvThread.Name = "mpsManager_UDP_ReceiveThread";
-            //SendThread = new Thread(() => SendUdpMethod());
+            receiveEndpoint = new IPEndPoint(IPAddress.Any, robot.RobotConfig.RecvPort);
+            RecvClient = new UdpClient();
+            RecvClient.Client.Bind(receiveEndpoint);
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-            Client = new UdpClient();
-            Client.EnableBroadcast = true;
+            RecvThread = new Thread(() => ReceiveAgentTask());
+            RecvThread.Name = robot.RobotName + "mpsManager_UDP_ReceiveThread";
+            SendThread = new Thread(() => SendAgentTask());
+            SendThread.Name = robot.RobotName + "mpsManager_UDP_SendThread";
+
             //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
         }
-
-        public void ReceiveUdpMethod() {
-            MyLogger.Log("Starting the ReceiveUDPMethod!");
-            ResolveIpAddress(IpString);
-            var recvEndpoint = new IPEndPoint(IPAddress.Any, 0);
-            MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
-
-            while (Running) {
-                try {
-                    MyLogger.Log("Waiting on message on port " + Port);
-                    var message = Client.Receive(ref recvEndpoint);
-                    var payload = PbHandler?.CheckMessageHeader(message);
-                    MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
-                    PbHandler?.HandleMessage(message);
-                }
-                catch (Exception e) {
-                    MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
-                    Thread.Sleep(1000);
-                }
-            }
+        public void SendAgentTask() {
+            //TODO SEND AGENT TASK MESSAGES PERIODICALLY TO THE AGENT PROBABLY IMPLEMENT IN THE BASE CLASS
         }
 
-        public void SendUdpMethod() {
-            MyLogger.Log("Sending message to port " + Port);
-
-            while (Running) {
-                try {
-                    byte[] message;
-                    if (Messages.Count == 0) {
-                        MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
-                        if (PbFactory == null) {
-                            throw new Exception("PbFactory is null");
-                        }
-                        message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        if (Owner != null) {
-                            message = ((PBMessageFactoryRobot)PbFactory).CreateMessage((PBMessageFactoryBase
-                                .MessageTypes.BeaconSignal));
-                        }
-                        else {
-                            message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        }
-                    }
-                    else {
-                        MyLogger.Log("Sending Queue message to " + Address + ":" + Port + "!");
-                        message = Messages.Dequeue();
-                    }
-                    if (message != Array.Empty<byte>()) {
-                        Client.Send(message, message.Length, Address.ToString(), Port);
-                    }
-                }
-                catch (Exception e) {
-                    MyLogger.Log(e + " - Something went wrong with the SendThread!");
-                }
-                Thread.Sleep(1000);
-            }
-
-        }
-
-        public bool Start() {
-            Running = true;
-            //PublicSendThread.Start();
-            if (Owner == null) {
-                RecvThread?.Start();
-            }
-            else {
-                SendThread?.Start();
-                Thread.Sleep(400);
-                if (!OnlySending) {
-                    RecvThread?.Start();
-                }
-            }
-            return true;
-        }
-
-        public void Stop() {
-            Running = false;
-        }
     }
 }

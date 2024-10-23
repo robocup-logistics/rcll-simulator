@@ -33,6 +33,7 @@ namespace Simulator.MPS {
 
             FinishedTask();
         }
+
         protected override void Work() {
             while (Working) {
                 CommandEvent.WaitOne();

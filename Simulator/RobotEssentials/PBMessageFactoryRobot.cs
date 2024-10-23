@@ -23,10 +23,27 @@ namespace Simulator.RobotEssentials {
             return Timer.GetTime();
         }
 
-        private BeaconSignal CreateBeaconSignal()
-        {
-            var bs = new BeaconSignal
-            {
+        public byte[] CreateBeaconMessage() {
+            var signal = CreateBeaconSignal();
+
+            // Use a MemoryStream for serialization
+            using (var memoryStream = new MemoryStream()) {
+                // Create a CodedOutputStream that wraps the MemoryStream
+                using (var codedOutputStream = new Google.Protobuf.CodedOutputStream(memoryStream)) {
+                    // Write the signal to the coded output stream
+                    signal.WriteTo(codedOutputStream);
+
+                    // Flush the stream to ensure all data is written to the MemoryStream
+                    codedOutputStream.Flush();
+
+                    // Convert the MemoryStream to a byte array
+                    return memoryStream.ToArray();
+                }
+            }
+        }
+
+        public BeaconSignal CreateBeaconSignal() {
+            var bs = new BeaconSignal {
                 Time = GetTimeMessage(),
                 TeamColor = Peer?.TeamColor ?? Config.Teams[0].Color,
                 Number = Peer?.JerseyNumber ?? 0
@@ -39,16 +56,13 @@ namespace Simulator.RobotEssentials {
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
             bs.Task = Peer?.CurrentTask;
-            if (Peer != null && Peer.FinishedTasksList.Count != 0)
-            {
-                foreach (var t in Peer.FinishedTasksList)
-                {
-                    var task = new FinishedTask
-                    {
+            if (Peer != null && Peer.FinishedTasksList.Count != 0) {
+                foreach (var t in Peer.FinishedTasksList) {
+                    var task = new FinishedTask {
                         TaskId = t.TaskId,
                         Successful = t.Successful
                     };
-                    bs.FinishedTasks.Add(task);
+                    bs.FinishedTasks.Add((IEnumerable<LlsfMsgs.FinishedTask>)task);
                 }
             }
             //MyLogger.Log(bs.ToString());

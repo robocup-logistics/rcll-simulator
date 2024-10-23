@@ -1,7 +1,5 @@
 ﻿using Simulator.Utility;
 using LlsfMsgs;
-using Simulator.RobotEssentials;
-
 
 namespace Simulator.MPS {
     public class MpsManager {
@@ -9,18 +7,23 @@ namespace Simulator.MPS {
         public List<Mps> Machines { get; }
         private MyLogger myLogger;
         private readonly Configurations Config;
-        private Thread? RefboxThread;
-        public MpsManager(Configurations config, bool RefboxConnection = true) {
+        private static MpsManager? Instance;
+
+
+        public static MpsManager GetInstance() {
+            return Instance ??= new MpsManager();
+        }
+        public MpsManager() {
+            throw new NotImplementedException();
+        }
+        public MpsManager(Configurations config) {
+            Instance = this;
             myLogger = new MyLogger("MpsManager", true);
             Config = config;
             myLogger.Log("Started the Mps Manager!");
             Machines = new List<Mps>();
             AllMachineSet = false;
             CreateMachines();
-            if (RefboxConnection) {
-                RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, this, myLogger));
-                RefboxThread.Start();
-            }
         }
         private void CreateMachines() {
             foreach (var mps in Config.MpsConfigs) {
@@ -68,7 +71,7 @@ namespace Simulator.MPS {
             }
 
         }
-        public Mps? GetMachineViaId(string machineId) {
+        public Mps? GetMachineByName(string machineId) {
             foreach (var m in Machines) {
                 if (machineId.Equals(m.Name)) {
                     return m;
@@ -77,6 +80,7 @@ namespace Simulator.MPS {
 
             return null;
         }
+
         public void PlaceMachines(MachineInfo Info) {
             myLogger.Log("Starting to PlaceMachines!");
             myLogger.Log("Received Information = " + Info.ToString());
@@ -100,15 +104,6 @@ namespace Simulator.MPS {
                     ZonesManager.GetInstance().PlaceMachine(machineInfo.Zone, machine.Rotation, machine);
                     machine.GotPlaced = true;
                 }
-                /* TODO check if placement still works
-                 foreach (var machine in Machines)
-                {
-                    if (machineinfo.Name.Equals(machine.Name))
-                    {
-                        machine.Zone = machineinfo.Zone;
-                        machine.Rotation = machineinfo.Rotation;
-                    }
-                }*/
             }
             var notset = false;
             foreach (var machine in Machines) {
@@ -121,16 +116,6 @@ namespace Simulator.MPS {
             }
         }
 
-        public void StartRefboxConnection() {
-            if (!Config.MockUp) {
-                if (Config.Refbox == null) {
-                    myLogger.Log("Refbox is null. Will public start Refbox Connection!");
-                    throw new Exception("Refbox config is null. Will not start Refbox Connection!");
-                }
-                var rf = new UdpConnector(Config, Config.Refbox.IP, Config.Refbox.CyanRecvPort, this, myLogger);
-                rf.Start();
-            }
-        }
         internal bool FindMachine(string machine, ref Zone Target) {
             foreach (var m in Machines) {
                 if (m.Name.Equals(machine)) {

@@ -41,16 +41,16 @@ namespace Simulator.MPS {
             }
         }
 
-        public new void PlaceProduct(string machinePoint, Products? heldProduct) {
+        //TODO BOOL REPLACE IT
+        public override bool PlaceProduct(string machinePoint, Products heldProduct) {
             MyLogger.Log("Got a PlaceProduct for RingStation!");
-            if (machinePoint.Equals("slide")) {
+            if (machinePoint.ToLower().Equals("slide")) {
                 MyLogger.Log("Added a Base to the slide!");
                 MqttHelper.IncreaseSlideCount();
                 MyLogger.Log("The Current SlideCnt is = " + (MqttHelper.SlideCnt));
+                return true;
             }
-            else {
-                base.PlaceProduct(machinePoint, heldProduct);
-            }
+            return base.PlaceProduct(machinePoint, heldProduct);
         }
 
         public void MountRingTask(MQTTCommand command) {

@@ -1,7 +1,6 @@
 ﻿using LlsfMsgs;
 using Simulator.MPS;
 using System.Text.Json.Serialization;
-using Robot = Simulator.RobotEssentials.Robot;
 
 namespace Simulator.Utility {
     public class ZonesManager {
@@ -45,35 +44,20 @@ namespace Simulator.Utility {
 
             MyLogger.Log("Starting to add Neighborhood");
             AddNeighborhood();
-
         }
+
         public Zones? GetZone(Zone zone) {
             return Dictionary.ContainsKey(zone) ? Dictionary[zone] : null;
         }
 
-        public void ShowNeighbourhood(Zone z) {
-            var zones = GetZone(z);
-            if (zones == null) {
-                MyLogger.Log("Zone not found!");
-                //TODO FIXME make it more beatiful
-                return;
-            }
-            foreach (var n in zones.GetNeighborhood()) {
-                n.GetsMovedTo = true;
-            }
-        }
         public Zone GetWaypoint(string target, string machinepoint = "") {
             MyLogger.Log("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
             Zone result;
             try {
-                //TODO update to a fancier handling of strings
-                /*if(target.Contains("CS1") || target.Contains("CS2")||target.Contains("RS1") || target.Contains("RS2"))
-                    result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 5));
-                else
-                    result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 4));*/
                 if (target.Contains("C_Z") || target.Contains("M_Z")) {
                     target = target.Substring(0, 5);
                 }
+                //TODO ARE YOUR SURE WITH THE _ removal because the enum name has it
                 result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
                 MyLogger.Log("Is a Zone Waypoint!");
                 return result;
@@ -83,16 +67,6 @@ namespace Simulator.Utility {
                 return GetZoneNextToMachine(target, machinepoint); ;
             }
         }
-        public static Zone GetZoneFromString(string? zoneString) {
-            if (zoneString == null) {
-                return 0;
-            }
-            if (zoneString.Contains("_")) {
-                zoneString = zoneString.Replace("_", "");
-            }
-            var result = (Zone)Enum.Parse(typeof(Zone), zoneString);
-            return result;
-        }
 
         public void PlaceMachine(Zone zone, uint orientation, Mps machine) {
             if (!Dictionary.ContainsKey(zone)) return;
@@ -101,32 +75,19 @@ namespace Simulator.Utility {
             machine.Zone = zone;
         }
 
-        public void DeployRobot(Robot robot) {
-            if (robot.TeamColor == Team.Cyan) {
-                var DeployZoneCyan = (Zone)((5 + 0) * 10 + 1);
-                if (Dictionary.ContainsKey(DeployZoneCyan) || Dictionary[DeployZoneCyan].Robot != null) {
-                    Dictionary[DeployZoneCyan].PlaceRobot(robot, 0);
+        public Zones? GetMachineZone(string MachineName) {
+            foreach (var (key, value) in Dictionary) {
+                if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
+                    return value;
                 }
             }
-        }
-        public bool PlaceRobot(Zone zone, uint orientation, Robot robot) {
-            if (!Dictionary.ContainsKey(zone) || Dictionary[zone].Robot != null) return false;
-            Dictionary[zone].PlaceRobot(robot, orientation);
-            return true;
-
-        }
-        public bool RemoveRobot(Zone zone, uint orientation, Robot robot) {
-            if (!Dictionary.ContainsKey(zone) || Dictionary[zone].Robot == null) return false;
-            Dictionary[zone].RemoveRobot();
-            return true;
-
+            return null;
         }
 
         public Zone GetZoneNextToMachine(string MachineName, string machinepoint = "") {
             MyLogger.Log("Getting Zone next to machine!" + MachineName);
             foreach (var (key, value) in Dictionary) {
                 if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
-                    // int offset = 0;
                     var orientation = value.Orientation;
                     var neighborhood = value.GetNeighborhood();
                     if (MachineName.Contains("output") || machinepoint.Equals("output")) {
@@ -143,23 +104,6 @@ namespace Simulator.Utility {
                     MyLogger.Log("X offset = " + x + " and offset y = " + y);
                     waypoint = CheckNeighbours(neighborhood, value, x, y);
                     return waypoint;
-
-                    /*MyLogger.Log("Offset = " + offset );
-                    if((((int)key+offset) % 100) < (int)Zone.CZ11)
-                    {
-                        MyLogger.Log("The key = " + key + " and the offset = " + offset);
-                        MyLogger.Log("Below 10, need to switch sides!");
-                        if((int)key > 500)
-                        {
-                            offset = -1000; 
-                        }
-                        else
-                        {
-                            offset = 1000;
-                        }
-                    }
-                    MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());*/
-                    // return key + offset;
                 }
             }
             MyLogger.Log("Couldn't find the machine " + MachineName);
@@ -386,33 +330,26 @@ namespace Simulator.Utility {
         public Mps? Machine { get; private set; }
 
         [JsonIgnore]
-        public Robot? Robot { get; private set; }
         public uint Orientation { get; private set; }
         public Zone ZoneId { get; private set; }
         public int X { get; private set; }
         public int Y { get; private set; }
-        public bool GetsMovedTo { get; set; }
 
-        [JsonIgnore]
-        public Mutex ZoneMutex { get; private set; }
         public Zones(int x, int y, uint orientation, Team color, Zone zoneId) {
             X = x;
             Y = y;
             Orientation = orientation;
             ZoneColor = color;
-            GetsMovedTo = false;
             NeighborsList = new List<Zones>();
             ZoneId = zoneId;
             Machine = null;
-            Robot = null;
-            ZoneMutex = new Mutex();
         }
 
         public void AddNeighbor(Zones newNeighbor) {
             NeighborsList.Add(newNeighbor);
         }
         public bool Free() {
-            if (Machine == null && Robot == null) {
+            if (Machine == null) {
                 return true;
             }
             return false;
@@ -423,21 +360,9 @@ namespace Simulator.Utility {
             Orientation = orientation;
         }
 
-        public void PlaceRobot(Robot robot, uint orientation) {
-            Robot = robot;
-            Orientation = orientation;
-        }
-        public void RemoveRobot() {
-            Robot = null;
-            Orientation = 0;
-        }
         public string GetZoneString() {
             if (Machine != null) {
                 return Machine.Name;
-            }
-
-            if (Robot != null) {
-                return Robot.JerseyNumber + " " + Robot.RobotName;
             }
 
             return ZoneId.ToString();

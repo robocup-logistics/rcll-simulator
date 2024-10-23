@@ -15,7 +15,6 @@ namespace Simulator.Utility {
         // private Thread? Tickthread;
         //private Logger Logger;
         // private UdpConnector Refbox;
-        private readonly PBMessageFactoryBase FactoryBase;
         private MyLogger MyLogger;
         private Mutex TimerMutex;
         //private member and getter for my singleton configurations class
@@ -35,7 +34,6 @@ namespace Simulator.Utility {
             Config = config;
             TimeFactor = Config.TimeFactor;
             MyLogger = new MyLogger("Timer", true);
-            FactoryBase = new PBMessageFactoryBase(Config, MyLogger);
             //Refbox = new UdpConnector(null, myLogger);
             //Refbox.StartSendThread();
             //Tickthread = new Thread(Tick);

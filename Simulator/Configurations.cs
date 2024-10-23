@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using LlsfMsgs;
 using YamlDotNet.RepresentationModel;
 using MpsType = Simulator.MPS.Mps.MpsType;
@@ -23,8 +20,6 @@ namespace Simulator {
         // definitions for the web gui
 
         // all member variables concerning the simulation are here
-        public bool MockUp { get; set; }
-
         public int FieldWidth = 14;
         public int FieldHeight = 8;
 
@@ -42,7 +37,6 @@ namespace Simulator {
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
         public bool AppendLogging { get; private set; }
-        public string RobotConnectionType { get; private set; }
         public bool RobotDirectBeaconSignals { get; private set; }
         public string WebguiPrefix { get; private set; }
         public uint WebguiPort { get; private set; }
@@ -52,7 +46,6 @@ namespace Simulator {
             MpsConfigs = new List<MpsConfig>();
             RobotConfigs = new List<RobotConfig>();
             Teams = new List<TeamConfig>();
-            MockUp = true;
             BeltActionDuration = 100;
             CSTaskDuration = 100;
             BSTaskDuration = 110;
@@ -64,7 +57,6 @@ namespace Simulator {
             RobotMaximumGrabDuration = 30000;  //milliseconds
             RobotGrabProductDuration = 100;
             AppendLogging = false;
-            RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
             BarcodeScanner = false;
             WebguiPrefix = "http";
@@ -132,9 +124,6 @@ namespace Simulator {
                     case "ignore-teamcolor":
                         IgnoreTeamColor = bool.Parse(value.ToString().ToLower());
                         break;
-                    case "mockup-connections":
-                        MockUp = bool.Parse(value.ToString().ToLower());
-                        break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
@@ -170,9 +159,6 @@ namespace Simulator {
                         break;
                     case "fixed-mps-position":
                         FixedMPSplacement = bool.Parse(value.ToString().ToUpper());
-                        break;
-                    case "robot-connection-type":
-                        RobotConnectionType = value.ToString().ToLower();
                         break;
                     case "robot-direct-beacon":
                         RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
@@ -257,11 +243,14 @@ namespace Simulator {
             var (yamlNode, yamlNode1) = child;
             var connection = "tcp";
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
+            string host = "0.0.0.0";
+            int recv = 0;
+            int send = 0;
+
             foreach (var (key, value) in allNodes) {
                 switch (key.ToString().ToLower()) {
                     //Console.WriteLine(entry);
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "jersey":
                         jersey = uint.Parse(value.ToString());
@@ -275,16 +264,38 @@ namespace Simulator {
                     case "connection":
                         connection = value.ToString().ToLower();
                         break;
+                    case "recv":
+                        recv = int.Parse(value.ToString());
+                        break;
+                    case "host":
+                        host = value.ToString().ToLower();
+                        break;
+                    case "send":
+                        send = int.Parse(value.ToString());
+                        break;
                 }
             }
-            var config = new RobotConfig(yamlNode.ToString(), jersey, color, connection);
+
+            ConnectionType connectionType = ConnectionType.TCP;
+            switch (connection) {
+                case "tcp":
+                    connectionType = ConnectionType.TCP;
+                    break;
+                case "udp":
+                    connectionType = ConnectionType.UDP;
+                    break;
+                default:
+                    connectionType = ConnectionType.TCP;
+                    break;
+            }
+
+            var config = new RobotConfig(yamlNode.ToString(), jersey, color,
+                                         connectionType, send, host, recv);
             return config;
         }
 
         private static TeamConfig? CreateTeamConfig(KeyValuePair<YamlNode, YamlNode> child) {
             string? name = null;
-            var port = 0;
-            var ip = "";
             var color = Team.Cyan;
 
             var (yamlNode, yamlNode1) = child;
@@ -303,25 +314,17 @@ namespace Simulator {
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes) {
                 switch (key.ToString().ToLower()) {
-                    //Console.WriteLine(entry);
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "name":
                         name = value.ToString();
-                        break;
-                    case "host":
-                        ip = value.ToString();
-                        break;
-                    case "port":
-                        port = int.Parse(value.ToString());
                         break;
                 }
             }
             if (name == null) {
                 return null;
             }
-            var config = new TeamConfig(name, color, ip, port);
+            var config = new TeamConfig(name, color);
             return config;
         }
 
@@ -330,7 +333,6 @@ namespace Simulator {
             int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0, broker_port = 1883;
             var children = refbox.Children;
             var broker_ip = "";
-            var mqtt_active = false;
             // Step into the public information
             //Console.WriteLine(children[0].Key.ToString());
             var map = (YamlMappingNode)children[0].Value;
@@ -401,9 +403,6 @@ namespace Simulator {
                                 case "broker_port":
                                     broker_port = int.Parse(yamlNode1.ToString());
                                     break;
-                                case "active":
-                                    mqtt_active = bool.Parse(yamlNode1.ToString());
-                                    break;
                                 default:
                                     Console.WriteLine("Unknown key " + yamlNode.ToString());
                                     return null;
@@ -422,13 +421,10 @@ namespace Simulator {
                 return null;
             }
             var config = new RefboxConfig(ip, tcpPort, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
-                magentaSendPort, magentaRecvPort, broker_ip, broker_port, mqtt_active);
+                magentaSendPort, magentaRecvPort, broker_ip, broker_port);
             return config;
         }
 
-        public void AddTestData() {
-            Teams.Add(new TeamConfig("TestTeam", Team.Cyan, "TestIp", 0));
-        }
         public void AddConfig(RobotConfig conf) {
             RobotConfigs.Add(conf);
 
@@ -444,13 +440,7 @@ namespace Simulator {
         public void AddConfig(RefboxConfig refbox) {
             Refbox = refbox;
         }
-        public void SetConnectionType(string connectionType) {
-            RobotConnectionType = connectionType;
-        }
 
-        public void ToggleMockUp() {
-            MockUp = !MockUp;
-        }
     }
 
     public class MpsConfig {
@@ -483,14 +473,10 @@ namespace Simulator {
     public class TeamConfig {
         public string Name { get; }
         public Team Color { get; }
-        public string Ip { get; }
-        public int Port { get; }
         public uint Points { get; set; }
-        public TeamConfig(string name, Team color, string ip, int port) {
+        public TeamConfig(string name, Team color) {
             Name = name;
             Color = color;
-            Ip = ip;
-            Port = port;
             Points = 0;
         }
     }
@@ -506,9 +492,11 @@ namespace Simulator {
         public int MagentaRecvPort { get; }
         public string BrokerIp { get; }
         public int BrokerPort { get; }
-        public bool MqttMode { get; }
 
-        public RefboxConfig(string ip, int tcpPort, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv, string broker_ip = "localhost", int brokerPort = 1883, bool active = false) {
+        public RefboxConfig(string ip, int tcpPort, int publicSend,
+                            int publicRecv, int cyanSend, int cyanRecv,
+                            int magentaSend, int magentaRecv,
+                            string broker_ip = "localhost", int brokerPort = 1883) {
             IP = ip;
             TcpPort = tcpPort;
             PublicRecvPort = publicRecv;
@@ -519,7 +507,6 @@ namespace Simulator {
             MagentaSendPort = magentaSend;
             BrokerIp = broker_ip;
             BrokerPort = brokerPort;
-            MqttMode = active;
         }
         public void PrintConfig() {
             Console.WriteLine("---------------------------");
@@ -533,30 +520,43 @@ namespace Simulator {
             Console.WriteLine("MagentaSendPort = [" + MagentaSendPort + "]");
             Console.WriteLine("BrokerIp = [" + BrokerIp + "]");
             Console.WriteLine("BrokerPort = [" + BrokerPort + "]");
-            Console.WriteLine("MqttMode = [" + MqttMode + "]");
         }
+    }
+
+    public enum ConnectionType {
+        TCP,
+        UDP
     }
 
     public class RobotConfig {
         public string Name;
         public uint Jersey;
         public Team TeamColor;
-        public string Connection;
-        public RobotConfig(string name, uint jersey, Team color, string connection) {
+        public ConnectionType connectionType;
+        public int SendPort;
+        public string Host;
+        public int RecvPort;
+        public RobotConfig(string name, uint jersey, Team color, ConnectionType connection,
+                           int sendPort, string host, int recvPort) {
             if (jersey != 1 && jersey != 2 && jersey != 3) {
                 throw new Exception("Jersey number has to be 1, 2 or 3! Name: " + name);
             }
             Name = name;
             Jersey = jersey;
             TeamColor = color;
-            Connection = connection;
+            connectionType = connection;
+            RecvPort = recvPort;
+            SendPort = sendPort;
+            Host = host;
         }
         public void PrintConfig() {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Jersey = [" + Jersey + "]");
             Console.WriteLine("Team = [" + TeamColor + "]");
-            Console.WriteLine("Connection = [" + Connection + "]");
+            Console.WriteLine("SendPort = [" + SendPort + "]");
+            Console.WriteLine("Host = [" + Host + "]");
+            Console.WriteLine("RecvPort = [" + RecvPort + "]");
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Simulator {
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
         private static Configurations? Config;
+        private static Thread? RefboxThread;
 
 
         private static void Main(string[] args) {
@@ -52,6 +53,8 @@ namespace Simulator {
             Console.Write("Starting the Robots ... ");
             RobotManager = new RobotManager(Config, MachineManager);
             Console.WriteLine("done!");
+            RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, MachineManager, RobotManager, MainLogger));
+            RefboxThread.Start();
             Console.Write("Creating the Zones ... ");
             ZoneManager = ZonesManager.GetInstance();
             Console.WriteLine("done!");
