@@ -31,7 +31,6 @@ namespace Simulator.RobotEssentials {
             PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
             SendClient = new UdpClient();
             SendClient.EnableBroadcast = true;
-            SendClient.Client.Bind(Endpoint);
 
             SendThread.Start();
         }
@@ -51,7 +50,6 @@ namespace Simulator.RobotEssentials {
 
             SendClient = new UdpClient();
             SendClient.EnableBroadcast = true;
-            // SendClient.Client.Bind(Endpoint);
 
             RecvThread = new Thread(() => ReceiveAgentTask());
             RecvThread.Name = robot.RobotName + "mpsManager_UDP_ReceiveThread";
@@ -63,7 +61,6 @@ namespace Simulator.RobotEssentials {
         }
 
         public void ReceiveAgentTask() {
-            Console.WriteLine("adsas");
             MyLogger.Log("Starting the ReceiveUDPMethod!");
 
             if (RecvClient == null) {
@@ -75,13 +72,11 @@ namespace Simulator.RobotEssentials {
 
             while (Running) {
                 try {
-                    Console.WriteLine("HUI");
                     MyLogger.Log("Waiting on message on port " + Port);
 
                     // Receive the message
                     var message = RecvClient.Receive(ref receiveEndpoint);
 
-                    Console.WriteLine("SHSLF");
                     MyLogger.Log("Received " + message.Length + " bytes.");
 
                     // Check the message header and get the payload size
@@ -93,11 +88,9 @@ namespace Simulator.RobotEssentials {
                         continue;
                     }
 
-                    Console.WriteLine("SHSLF");
                     // If the payload indicates missing data
                     if (payload > message.Length - 8) {
                         int remainingBytes = payload + 8 - message.Length;
-                        Console.WriteLine("dsaf");
 
                         MyLogger.Log($"Missing {remainingBytes} bytes, receiving more data...");
 
@@ -116,7 +109,6 @@ namespace Simulator.RobotEssentials {
                     }
 
                     // Now that we have the full message, process it
-                    Console.WriteLine("Received message: " + message.Length + " bytes");
                     PbHandler.HandleMessage(message);
                 }
                 catch (Exception e) {
@@ -154,9 +146,9 @@ namespace Simulator.RobotEssentials {
             if(SendClient == null) {
                 throw new Exception("SendClient is null");
             }
-            while(!Running) {
+            while(Running) {
                 var msg = PbFactory.CreateBeaconSignal();
-                SendClient.Send(msg.GetBytes(), msg.GetBytes().Length);
+                SendClient.Send(msg.GetBytes(), msg.GetBytes().Length, Endpoint);
                 Thread.Sleep(500);
             }
         }

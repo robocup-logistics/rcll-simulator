@@ -147,6 +147,8 @@ namespace Simulator.RobotEssentials {
                         }
                     }
                     CurrentTask = task;
+                } else {
+                    _currentTask = task;
                 }
             }
             finally {
