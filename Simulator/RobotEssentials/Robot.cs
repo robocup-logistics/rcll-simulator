@@ -97,7 +97,12 @@ namespace Simulator.RobotEssentials {
             Config = config;
             RobotName = robotConfig.Name;
             RobotConfig = robotConfig;
-            TeamName = Config.Teams[0].Name;
+            foreach(var team in Config.Teams) {
+                if(team.Color == robotConfig.TeamColor) {
+                    teamConfig = team;
+                }
+            }
+            TeamName = teamConfig.Name;
             TeamColor = robotConfig.TeamColor;
             foreach (var team in Config.Teams) {
                 if (team.Name.Equals(TeamName)) {
@@ -263,7 +268,7 @@ namespace Simulator.RobotEssentials {
         public void HandleActive() {
             AgentTask? task = CurrentTask;
             if (task == null) {
-                MyLogger.Log("No Tasks currently!");
+                // MyLogger.Log("No Tasks currently!");
                 return;
             }
             MyLogger.Log("#######################################################################");
@@ -314,7 +319,8 @@ namespace Simulator.RobotEssentials {
 
         public void SetZone(Zones zone) {
             CurrentZone = zone;
-            Position = new CPosition(zone.X, zone.Y, 0);
+            //FIXME
+            Position = new CPosition(zone.X - 6.5f, zone.Y - 0.5f, 0);
         }
 
         private TaskEnum CheckTaskType(AgentTask task) {
@@ -337,7 +343,6 @@ namespace Simulator.RobotEssentials {
 
         public void SerializeRobotToJson() {
             JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
         }
     }
 

@@ -3,6 +3,7 @@ using Simulator.RobotEssentials;
 using Simulator.Utility;
 using LlsfMsgs;
 
+//TODO dynamic gamefiled size
 
 namespace Simulator {
     internal class MainClass {

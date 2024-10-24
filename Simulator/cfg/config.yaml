@@ -152,8 +152,8 @@ refbox:
     send: 4446
     recv: 4441
   magenta:
-    send: 4442
-    recv: 4447
+    send: 4447
+    recv: 4442
   mqtt:
     broker_ip: 127.0.0.1
     broker_port: 1883

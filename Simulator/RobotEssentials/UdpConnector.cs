@@ -23,7 +23,6 @@ namespace Simulator.RobotEssentials {
                             Robot robot, MyLogger logger)
             : base(config, refboxIp, refboxPort, logger) {
             // IN THIS CONSTRUCTOR, THIS CLASS IS SENDING THE BEACON SIGNAL TO REFBOX FOR ROBOT
-            Console.WriteLine("ip" + refboxIp + "port" + refboxPort, "rob" + robot, "logger" + logger, "sendBeacon");
 
             SendThread = new Thread(() => SendBeaconMethod());
             SendThread.Name = "Robot" + robot.JerseyNumber + "_UDP_SENNDER_THREAD";
