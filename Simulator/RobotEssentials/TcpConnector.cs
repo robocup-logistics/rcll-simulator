@@ -90,31 +90,46 @@ namespace Simulator.RobotEssentials {
 
         public void ReceiveThreadMethod(Socket socket) {
             MyLogger.Log("Starting the ReceiveThread!");
+            if (socket == null) {
+                throw new Exception("Socket is null");
+            }
+            if (PbHandler == null) {
+                throw new Exception("PBHandler is null");
+            }
             while (Running) {
                 try {
-                    if (ConnectSocket.Available == 0) {
+                    if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
+                        MyLogger.Log("Connection closed by remote host.");
+                        break;
+                    }
+                    if (socket.Available == 0) {
                         Thread.Sleep(50);
                         continue;
                     }
                     MyLogger.Log("Waiting for a message!");
                     var buffer = new byte[4096];
                     var message = socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    if (PbHandler == null) {
-                        MyLogger.Log("No PbHandler found!");
-                        continue;
-                    }
                     int payload = PbHandler.CheckMessageHeader(buffer);
                     if (payload == -1) {
                         continue;
                     }
                     MyLogger.Log("Lines Receive " + message + " of " + payload);
-                    while (payload > message) {
-                        MyLogger.Log("Missing bytes, we need to receive more " + message + "/" + payload);
-                        message = socket.Receive(buffer, message, payload + 16 - message, SocketFlags.None);
+                    int remainingBytes = payload + 8 - message;
+                    while (remainingBytes > 0) {
+                        MyLogger.Log($"Missing {remainingBytes} bytes, receiving more data...");
+                        message = socket.Receive(buffer, message, remainingBytes, SocketFlags.None);
                         MyLogger.Log("Lines Receive " + message);
+                        remainingBytes = payload + 8 - message;
+                        if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
+                            MyLogger.Log("Connection closed by remote host.");
+                            break;
+                        }
                     }
                     PbHandler.HandleMessage(buffer);
-                    //TODO CHECK HOW IT IS SOPPOSED TO CHANGE THE BYTE AND REMOVE THE USED BYTES
+                }
+                catch (SocketException se) {
+                    MyLogger.Log(se + " - Socket exception occurred in the ReceiveThread!");
+                    return;
                 }
                 catch (Exception e) {
                     MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
@@ -137,17 +152,16 @@ namespace Simulator.RobotEssentials {
             return true;
         }
 
-        public bool Stop() {
+        public override void Stop() {
             try {
+                Running = false;
                 ConnectSocket.Close();
                 ListenSocket?.Close();
-                Running = false;
             }
             catch (SocketException) {
                 MyLogger.Log(" Something went wrong with closing the Connecting to the Teamserver!");
-                return false;
             }
-            return true;
+            return;
         }
     }
 }

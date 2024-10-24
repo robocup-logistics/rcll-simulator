@@ -3,13 +3,6 @@ using Simulator.RobotEssentials;
 using Simulator.Utility;
 using LlsfMsgs;
 
-// TODO Test Robot with teamserver
-// TODO test Mps with refbox and teamserver
-// TODO GUI - split from console application
-// TODO finish up robot sim and mps sim
-// TODO robot sim and mps sim communication needs to be finished
-// TODO check if time can be updated with timer messages
-
 
 namespace Simulator {
     internal class MainClass {

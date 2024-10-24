@@ -32,6 +32,7 @@ namespace Simulator.RobotEssentials {
         public Mutex TaskMutex;
         //only use the _currentTask if you locked the mutex by hand and need to actually modify the task and not retrieve it .....
         private AgentTask? _currentTask;
+        [JsonIgnore]
         public AgentTask? CurrentTask {
             get {
                 //TODO MAYBE DEADLOCK IF SOME TASK WANTSTO ACCES IT AND THEN THE MUTEX IST LOCKED BY HAND AND NEVER COMES TO THE BARRIER
@@ -51,6 +52,7 @@ namespace Simulator.RobotEssentials {
         }
         private Mutex LastTaskMutex;
         private AgentTask? _lastTask;
+        [JsonIgnore]
         public AgentTask? LastTask {
             get {
                 LastTaskMutex.WaitOne();
@@ -64,7 +66,7 @@ namespace Simulator.RobotEssentials {
             set {
                 TaskMutex.WaitOne();
                 if (value != null) {
-                    FinishedTasks.Add(new FinishedTask(value.TaskId, value.Successful));
+                    FinishedTasks.Add(new CFinishedTask(value.TaskId, value.Successful));
                 }
                 _lastTask = value;
                 TaskMutex.ReleaseMutex();
@@ -77,8 +79,7 @@ namespace Simulator.RobotEssentials {
         private readonly Configurations Config;
         [JsonIgnore]
         private MpsManager MpsManager;
-        [JsonIgnore]
-        public List<FinishedTask> FinishedTasks { get; }
+        public List<CFinishedTask> FinishedTasks { get; }
 
         private string? JsonInformation;
         private TeamConfig teamConfig;
@@ -115,7 +116,7 @@ namespace Simulator.RobotEssentials {
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = robotConfig.Jersey;
-            FinishedTasks = new List<FinishedTask>();
+            FinishedTasks = new List<CFinishedTask>();
 
             MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
             MyLogger.Log(RobotName + " is ready for production!");
@@ -253,6 +254,10 @@ namespace Simulator.RobotEssentials {
             }
         }
 
+        public void HandleRobotInfo(LlsfMsgs.Robot info) {
+            //TODO
+        }
+
         public void HandleActive() {
             AgentTask? task = CurrentTask;
             if (task == null) {
@@ -334,11 +339,12 @@ namespace Simulator.RobotEssentials {
         }
     }
 
-    public class FinishedTask {
+    // The Beaconsignal contains a type named FinishedTask thatswhy the C fo custome
+    public struct CFinishedTask {
         public uint TaskId { get; }
         public bool Successful { get; }
 
-        public FinishedTask(uint taskid, bool success) {
+        public CFinishedTask(uint taskid, bool success) {
             TaskId = taskid;
             Successful = success;
         }

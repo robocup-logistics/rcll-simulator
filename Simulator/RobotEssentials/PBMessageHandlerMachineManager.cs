@@ -49,7 +49,7 @@ namespace Simulator.RobotEssentials {
                 // Additional handling logic...
                 string msg = machineInfo.ToString();
                 MyLogger.Log($"The Parsed message = {msg}");
-                if (machineInfo.Machines.Count < Manager.Machines.Count) {
+                if (machineInfo.Machines.Count < mpsManager_.Machines.Count) {
                     MyLogger.Log("MachineInfo is not containing all machines!");
                     return false;
                 }

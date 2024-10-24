@@ -1,16 +1,11 @@
-﻿using System;
-using System.Diagnostics;
-using System.IO;
+﻿using System.Diagnostics;
 using System.Text;
 using System.Net;
-using System.Threading.Tasks;
 using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
 using System.Text.Json;
 using LlsfMsgs;
-using Opc.Ua.Server;
-using Robot = Simulator.RobotEssentials.Robot;
 
 namespace Simulator.WebGui {
     class WebGui {
@@ -79,59 +74,6 @@ namespace Simulator.WebGui {
                         MyLogger.Log("Shutdown requested");
                         runServer = false;
                         break;
-                    case "PUT": {
-                            Stream body = req.InputStream;
-                            Encoding encoding = req.ContentEncoding;
-                            StreamReader reader = new StreamReader(body, encoding);
-
-                            string s = reader.ReadToEnd();
-                            Console.WriteLine(s);
-
-                            JsonTask? taskJson = JsonSerializer.Deserialize<JsonTask>(s);
-
-                            if (taskJson == null)
-                                break;
-                            var task = new AgentTask();
-                            switch (taskJson.Task) {
-                                case "move":
-                                    var Move = new Move {
-                                        Waypoint = taskJson.Target,
-                                        MachinePoint = taskJson.MachinePoint
-                                    };
-                                    task.Move = Move;
-                                    break;
-                                case "buffer":
-                                    if (taskJson.MachinePoint == null)
-                                        break;
-                                    var buffer = new BufferStation {
-                                        MachineId = taskJson.Target,
-                                        ShelfNumber = UInt32.Parse(taskJson.MachinePoint)
-                                    };
-                                    task.Buffer = buffer;
-                                    break;
-                                case "grab":
-                                    var Grab = new Retrieve {
-                                        MachineId = taskJson.Target,
-                                        MachinePoint = taskJson.MachinePoint
-                                    };
-                                    task.Retrieve = Grab;
-                                    break;
-                                case "place":
-                                    var place = new Deliver {
-                                        MachineId = taskJson.Target,
-                                        MachinePoint = taskJson.MachinePoint,
-                                    };
-                                    task.Deliver = place;
-                                    break;
-                            }
-
-
-                            _robotManager?.Robots[0]?.SetAgentTasks(task);
-                            resp.StatusCode = (byte)HttpStatusCode.OK;
-                            resp.ContentLength64 = 0;
-                            resp.Close();
-                            break;
-                        }
                     case "OPTIONS": {
                             //Console.WriteLine("Got options!");
                             resp.StatusCode = (byte)HttpStatusCode.OK;

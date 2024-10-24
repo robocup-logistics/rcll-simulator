@@ -90,7 +90,7 @@ robots:
     active: true
     jersey: 1
     team: cyan
-    connection: tcp
+    connection: udp
     send: 2016
     host: 127.0.0.1
     recv: 2026
@@ -98,7 +98,7 @@ robots:
     active: true
     jersey: 2
     team: cyan
-    connection: tcp
+    connection: udp
     send: 2017
     host: 127.0.0.1
     recv: 2027
@@ -106,7 +106,7 @@ robots:
     active: true
     jersey: 3
     team: cyan
-    connection: tcp
+    connection: udp
     send: 2018
     host: 127.0.0.1
     recv: 2028

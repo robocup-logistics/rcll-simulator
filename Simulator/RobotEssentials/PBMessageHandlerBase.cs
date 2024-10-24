@@ -10,7 +10,7 @@ namespace Simulator.RobotEssentials {
         }
 
         public int CheckMessageHeader(byte[] Stream) {
-            if (Stream.Length < 4) {
+            if (Stream.Length < 8) {
                 MyLogger.Log("The received Message is to short to be parsed!");
                 return -1;
             }

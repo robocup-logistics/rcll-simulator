@@ -47,5 +47,9 @@ namespace Simulator.RobotEssentials {
             }
             PbHandler.HandleMessage(message);
         }
+
+        public virtual void Stop() {
+            Running = true;
+        }
     }
 }

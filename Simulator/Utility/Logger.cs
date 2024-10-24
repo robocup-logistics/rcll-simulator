@@ -1,11 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using Opc.UaFx;
-using Serilog;
-using Serilog.Core;
+﻿using Serilog;
 
 namespace Simulator.Utility {
     public class MyLogger {
@@ -31,13 +24,6 @@ namespace Simulator.Utility {
 
             Log("------------------------------------------");
             Log("Starting new logging session at " + DateTime.Now);
-        }
-        public void Log(OpcNode node) {
-            if (Debug) {
-                Mutex.WaitOne();
-                WriteLine(Prefix, node.Name + " " + node.Id);
-                Mutex.ReleaseMutex();
-            }
         }
 
         public void Log(string text) {
@@ -97,19 +83,6 @@ namespace Simulator.Utility {
             //w.WriteLine("-------------------------------");
         }
 
-        public string GetLines(int lines) {
-            /*string text = "";
-            mutex.WaitOne();
-            List<string> debugtext = File.ReadLines(filename).Reverse().Take(lines).Reverse().ToList();
-            mutex.ReleaseMutex();
-
-            foreach (var line in debugtext)
-            {
-                text += line + "\n";
-            }
-            */
-            return "";
-        }
         public static void DumpLog(StreamReader r) {
             string? line;
             while ((line = r.ReadLine()) != null) {

@@ -96,6 +96,24 @@ namespace Simulator.Utility {
             }
             return null;
         }
+
+        public LlsfMsgs.WorkpieceDescription GetProtoDescription() {
+            var desc = new LlsfMsgs.WorkpieceDescription {};
+
+            if(Base != null) {
+                desc.BaseColor = Base.BaseColor;
+            }
+
+            foreach(var ring in RingList) {
+                desc.RingColors.Add(ring.RingColor);
+            }
+
+            if(Cap != null) {
+                desc.CapColor = Cap.CapColor;
+            }
+
+            return desc;
+        }
     }
 
     public class BaseElement// : Products

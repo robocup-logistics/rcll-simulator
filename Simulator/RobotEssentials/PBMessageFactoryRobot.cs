@@ -1,80 +1,98 @@
 ﻿using LlsfMsgs;
+using Google.Protobuf;
 using Simulator.Utility;
 // using Timer = System.Threading.Timer;
 using Timer = Simulator.Utility.Timer;
 
 namespace Simulator.RobotEssentials {
     internal class PBMessageFactoryRobot {
-        private Robot Peer;
+        private Robot Robot;
         public ulong SequenzNr;
         public Timer Timer;
         public readonly MyLogger MyLogger;
         public readonly Configurations Config;
 
-        public PBMessageFactoryRobot(Configurations config, Robot peer, MyLogger log) {
-            log.Info("Created a PBMessageFactoryRobot!");
+        public PBMessageFactoryRobot(Configurations config, Robot robot, MyLogger logger) {
+            logger.Info("Created a PBMessageFactoryRobot!");
             SequenzNr = 0;
-            MyLogger = log;
+            MyLogger = logger;
             Config = config;
             Timer = Timer.GetInstance(Config);
-            Peer = peer;
+            Robot = robot;
         }
         public Time GetTimeMessage() {
             return Timer.GetTime();
         }
 
-        public byte[] CreateBeaconMessage() {
-            var signal = CreateBeaconSignal();
-
-            // Use a MemoryStream for serialization
-            using (var memoryStream = new MemoryStream()) {
-                // Create a CodedOutputStream that wraps the MemoryStream
-                using (var codedOutputStream = new Google.Protobuf.CodedOutputStream(memoryStream)) {
-                    // Write the signal to the coded output stream
-                    signal.WriteTo(codedOutputStream);
-
-                    // Flush the stream to ensure all data is written to the MemoryStream
-                    codedOutputStream.Flush();
-
-                    // Convert the MemoryStream to a byte array
-                    return memoryStream.ToArray();
-                }
-            }
+        public Message CreateMessage<T>(T signal, ushort cmp, ushort msg) where T : Google.Protobuf.IMessage<T>
+        {
+            var payloadsize = (uint)signal.CalculateSize() + 4;
+            var bytes = signal.ToByteArray();
+            var fh = new FrameHeader(payloadsize);
+            var mh = new MessageHeader(cmp, msg);
+            var mb = new MessageBody(bytes);
+            return new Message(fh, mh, mb);
         }
 
-        public BeaconSignal CreateBeaconSignal() {
+        public Message CreateBeaconSignal() {
             var bs = new BeaconSignal {
                 Time = GetTimeMessage(),
-                TeamColor = Peer?.TeamColor ?? Config.Teams[0].Color,
-                Number = Peer?.JerseyNumber ?? 0
+                TeamColor = Robot.TeamColor,
+                Number = Robot.JerseyNumber
             };
             var pose = GetPose2DMessage();
-            bs.TeamName = Peer?.TeamName ?? Config.Teams[0].Name;
-            bs.PeerName = Peer?.RobotName ?? "Client";
+            bs.TeamName = Robot.TeamName;
+            bs.PeerName = Robot.RobotName;
             bs.Seq = ++SequenzNr;
-            bs.Number = Peer?.JerseyNumber ?? 9999;
+            bs.Number = Robot.JerseyNumber;
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
-            bs.Task = Peer?.CurrentTask;
-            if (Peer != null && Peer.FinishedTasksList.Count != 0) {
-                foreach (var t in Peer.FinishedTasksList) {
+            bs.Task = Robot.CurrentTask;
+            var desc = Robot.HeldProduct?.GetProtoDescription();
+            if(desc != null && bs.Task != null) {
+                bs.Task.WorkpieceDescription = desc;
+            }
+            if (Robot != null && Robot.FinishedTasks.Count != 0) {
+                foreach (var t in Robot.FinishedTasks) {
                     var task = new FinishedTask {
                         TaskId = t.TaskId,
                         Successful = t.Successful
                     };
-                    bs.FinishedTasks.Add((IEnumerable<LlsfMsgs.FinishedTask>)task);
+                    bs.FinishedTasks.Add(task);
                 }
             }
             //MyLogger.Log(bs.ToString());
-            return bs;
+            var cmp = (ushort)BeaconSignal.Types.CompType.CompId;
+            var msg = (ushort)BeaconSignal.Types.CompType.MsgType;
+            return CreateMessage<BeaconSignal>(bs, cmp, msg);
+        }
+
+        public Message? GetAgentTask() {
+            var task = Robot.CurrentTask;
+            if(task == null){
+                return null;
+            }
+            var cmp = (ushort)AgentTask.Types.CompType.CompId;
+            var msg = (ushort)AgentTask.Types.CompType.MsgType;
+            return CreateMessage<AgentTask>(task, cmp, msg);
+        }
+
+        public Message? GetLastTask() {
+            var task = Robot.LastTask;
+            if(task == null){
+                return null;
+            }
+            var cmp = (ushort)AgentTask.Types.CompType.CompId;
+            var msg = (ushort)AgentTask.Types.CompType.MsgType;
+            return CreateMessage<AgentTask>(task, cmp, msg);
         }
 
         private Pose2D GetPose2DMessage() {
             return new Pose2D {
                 Timestamp = GetTimeMessage(),
-                Ori = Peer.Position.Orientation,
-                X = Peer.Position.X,
-                Y = Peer.Position.Y,
+                Ori = Robot.Position.Orientation,
+                X = Robot.Position.X,
+                Y = Robot.Position.Y,
             };
 
         }

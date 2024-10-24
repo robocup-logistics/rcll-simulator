@@ -19,7 +19,7 @@ namespace Simulator.RobotEssentials {
 
                     AgentTask task = taskParser.ParseFrom(stream, 12, payloadSize - 4);
                     MyLogger.Log("Parsing of the GripsMidLevelTasks was successful!");
-                    Robot.HandleAgentTask(task);
+                    Robot.HandleAgentTaskMessage(task);
                     msg = task.ToString();
                     break;
                 default:
@@ -29,6 +29,7 @@ namespace Simulator.RobotEssentials {
             MyLogger.Log("Handeld message = " + msg);
             return true;
         }
+
 
     }
 }
