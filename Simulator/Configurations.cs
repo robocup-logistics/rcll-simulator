@@ -311,6 +311,7 @@ namespace Simulator {
                 color = Team.Magenta;
             }
 
+            string? keyphrase = null;
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
             foreach (var (key, value) in allNodes) {
                 switch (key.ToString().ToLower()) {
@@ -319,12 +320,15 @@ namespace Simulator {
                     case "name":
                         name = value.ToString();
                         break;
+                    case "keyphrase":
+                        keyphrase = value.ToString();
+                        break;
                 }
             }
             if (name == null) {
-                return null;
+                throw new Exception("Team has no name");
             }
-            var config = new TeamConfig(name, color);
+            var config = new TeamConfig(name, color, keyphrase);
             return config;
         }
 
@@ -474,10 +478,12 @@ namespace Simulator {
         public string Name { get; }
         public Team Color { get; }
         public uint Points { get; set; }
-        public TeamConfig(string name, Team color) {
+        public string? Keyphrase { get; set; }
+        public TeamConfig(string name, Team color, string? keyphrase = null) {
             Name = name;
             Color = color;
             Points = 0;
+            Keyphrase = keyphrase;
         }
     }
 

@@ -20,14 +20,14 @@ namespace Simulator.RobotEssentials {
         public Thread? RecvThread;
 
         public UdpConnector(Configurations config, string refboxIp, int refboxPort,
-                            Robot robot, MyLogger logger)
+                            Robot robot, MyLogger logger, string? keyphrase = null)
             : base(config, refboxIp, refboxPort, logger) {
             // IN THIS CONSTRUCTOR, THIS CLASS IS SENDING THE BEACON SIGNAL TO REFBOX FOR ROBOT
 
             SendThread = new Thread(() => SendBeaconMethod());
             SendThread.Name = "Robot" + robot.JerseyNumber + "_UDP_SENNDER_THREAD";
 
-            PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
+            PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger, keyphrase);
             SendClient = new UdpClient();
             SendClient.EnableBroadcast = true;
 
@@ -148,7 +148,7 @@ namespace Simulator.RobotEssentials {
             while(Running) {
                 var msg = PbFactory.CreateBeaconSignal();
                 SendClient.Send(msg.GetBytes(), msg.GetBytes().Length, Endpoint);
-                Thread.Sleep(500);
+                Thread.Sleep(1000);
             }
         }
     }

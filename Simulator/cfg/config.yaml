@@ -141,6 +141,7 @@ teams:
   MAGENTA:
     name: Carologistics
     active: true
+    keyphrase: randomkey
 refbox:
   public:
     ip: 127.0.0.1

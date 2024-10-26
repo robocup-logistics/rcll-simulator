@@ -233,7 +233,7 @@ namespace Simulator.RobotEssentials {
             if (Config.RobotDirectBeaconSignals) {
                 MyLogger.Log("Robot " + RobotName + " is starting! Team is " + teamConfig.Name
                             + " with ip " + Config.Refbox.IP + " and port " + port);
-                BeaconConnector = new UdpConnector(Config, Config.Refbox.IP, port, this, MyLogger);
+                BeaconConnector = new UdpConnector(Config, Config.Refbox.IP, port, this, MyLogger, teamConfig.Keyphrase);
             }
 
             if (RobotConfig.connectionType == ConnectionType.TCP) {

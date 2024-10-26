@@ -11,14 +11,16 @@ namespace Simulator.RobotEssentials {
         public Timer Timer;
         public readonly MyLogger MyLogger;
         public readonly Configurations Config;
+        private string? Keyphrase;
 
-        public PBMessageFactoryRobot(Configurations config, Robot robot, MyLogger logger) {
+        public PBMessageFactoryRobot(Configurations config, Robot robot, MyLogger logger, string? keyphrase = null) {
             logger.Info("Created a PBMessageFactoryRobot!");
             SequenzNr = 0;
             MyLogger = logger;
             Config = config;
             Timer = Timer.GetInstance(Config);
             Robot = robot;
+            Keyphrase = keyphrase;
         }
         public Time GetTimeMessage() {
             return Timer.GetTime();
@@ -31,7 +33,7 @@ namespace Simulator.RobotEssentials {
             var fh = new FrameHeader(payloadsize);
             var mh = new MessageHeader(cmp, msg);
             var mb = new MessageBody(bytes);
-            return new Message(fh, mh, mb);
+            return new Message(fh, mh, mb, Keyphrase);
         }
 
         public Message CreateBeaconSignal() {

@@ -21,6 +21,7 @@ namespace Simulator.Utility {
         private static Timer? Instance;
         private Configurations Config;
 
+        Thread Tickthread;
         /// <returns>
         /// Returns the instance of the Configurations Singleton
         /// </returns>
@@ -34,10 +35,8 @@ namespace Simulator.Utility {
             Config = config;
             TimeFactor = Config.TimeFactor;
             MyLogger = new MyLogger("Timer", true);
-            //Refbox = new UdpConnector(null, myLogger);
-            //Refbox.StartSendThread();
-            //Tickthread = new Thread(Tick);
-            //Tickthread.Start();
+            Tickthread = new Thread(Tick);
+            Tickthread.Start();
 
             TimerMutex = new Mutex();
         }

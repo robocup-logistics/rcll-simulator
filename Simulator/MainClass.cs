@@ -4,6 +4,9 @@ using Simulator.Utility;
 using LlsfMsgs;
 
 //TODO dynamic gamefiled size
+//TODO Dynamic reload field
+//TODO fix time
+//TODO leave machine only on one side
 
 namespace Simulator {
     internal class MainClass {
