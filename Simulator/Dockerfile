@@ -1,7 +1,11 @@
 FROM mcr.microsoft.com/dotnet/sdk:6.0
 #RUN apt-get update && apt-get -y install xterm libncurses5-dev locales locales-all
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends  protobuf-compiler && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
 COPY /MPS/ /simulator/MPS
-COPY /protobuff/ /simulator/protobuff
+COPY /protobuf/ /simulator/protobuf
 COPY /RobotEssentials/ /simulator/RobotEssentials
 #COPY /TerminalGui/ /simulator/TerminalGui/
 COPY /Utility/ /simulator/Utility
