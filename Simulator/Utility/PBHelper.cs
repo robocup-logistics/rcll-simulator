@@ -119,12 +119,9 @@ namespace Simulator.RobotEssentials
         // Method to generate a random IV
         public byte[] GenerateIV()
         {
-            using (RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider())
-            {
-                byte[] iv = new byte[16]; // AES block size is 16 bytes
-                rng.GetBytes(iv);
-                return iv;
-            }
+            byte[] iv = new byte[16]; // AES block size is 16 bytes
+            RandomNumberGenerator.Fill(iv);
+            return iv;
         }
 
         public byte[] GetBytes()

@@ -35,7 +35,7 @@ namespace Simulator.RobotEssentials {
             }
             if (machines.Contains(task.Move.Waypoint)) {
                 bool input = true;
-                if (task.Move.MachinePoint == "output") {
+                if (task.Move.MachinePoint.ToLower() == "output") {
                     input = false;
                 }
 
@@ -88,7 +88,14 @@ namespace Simulator.RobotEssentials {
                 TaskFailed(task, (uint)ErrorCode.MpsNotFound);
                 return;
             }
+            //TODO Make it grap from the input
             if (mps == null || mps.robotAtOutput != inputOutputMutex) {
+                if(mps == null) {
+                    MyLogger.Log("The Machine not Found!");
+                }
+                else {
+                    MyLogger.Log("sddasf Robot isn't at the Output of the Machine!" + mps.robotAtOutput.GetHashCode() + "ds  " + inputOutputMutex?.GetHashCode());
+                }
                 MyLogger.Log("The Robot isn't at the Output of the Machine!");
                 TaskFailed(task, (uint)ErrorCode.NotAtPosition);
                 return;
@@ -97,6 +104,7 @@ namespace Simulator.RobotEssentials {
             if (HeldProduct != null) {
                 MyLogger.Log("The Robot already has a product in its grip!");
                 TaskFailed(task, (uint)ErrorCode.WorkpieceAlreadyInGripper);
+                return;
             }
             MyLogger.Log("Starting the GRIP Action!");
             SerializeRobotToJson();
@@ -109,13 +117,16 @@ namespace Simulator.RobotEssentials {
             }
             HeldProduct = mps.RemoveProduct(target);
 
-            if (HeldProduct != null) {
-                MyLogger.Log("Got a new Product!");
-                MyLogger.Log(HeldProduct.ProductDescription());
+            if (HeldProduct == null) {
+                MyLogger.Log("The Machine didn't have a product to give!");
                 TaskFailed(task, (uint)ErrorCode.WorkpieceSensorDisagreement);
+                return;
             }
 
+            MyLogger.Log("Got a new Product!");
+            MyLogger.Log(HeldProduct.ProductDescription());
             TaskSucceded(task);
+
         }
 
         private void DeliverToStation(AgentTask task) {
@@ -125,7 +136,7 @@ namespace Simulator.RobotEssentials {
                 return;
             }
             var machine = task.Deliver.MachineId;
-            var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
+            var mps = MpsManager.GetMachineByName(task.Deliver.MachineId);
             var target = task.Deliver.MachinePoint;
             Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
             if (mps == null || targetZone == 0) {
@@ -142,6 +153,7 @@ namespace Simulator.RobotEssentials {
                 MyLogger.Log("Something went wrong with placing. Seems there is already a product at "
                              + target + " of machine " + mps.Name);
                 TaskFailed(task, (uint)ErrorCode.MachinePointOccupied);
+                return;
             }
             SerializeRobotToJson();
             MyLogger.Log("Aligning and starting the place action");

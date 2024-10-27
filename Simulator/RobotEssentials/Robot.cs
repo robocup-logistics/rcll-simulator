@@ -1,7 +1,5 @@
-﻿using System.Diagnostics;
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
-using System.Threading;
 using LlsfMsgs;
 using Simulator.Utility;
 using Simulator.MPS;
@@ -93,7 +91,7 @@ namespace Simulator.RobotEssentials {
         }
 
         public Robot(Configurations config, RobotConfig robotConfig, RobotManager manager,
-                     MpsManager mpsManager, Zone startZone, bool debug = false) {
+                     MpsManager mpsManager, Zones startZone, bool debug = false) {
             Config = config;
             RobotName = robotConfig.Name;
             RobotConfig = robotConfig;
@@ -102,6 +100,10 @@ namespace Simulator.RobotEssentials {
                     teamConfig = team;
                 }
             }
+            if(teamConfig == null) {
+                throw new Exception("TeamConfig for Robot not found:" + robotConfig.Name);
+            }
+
             TeamName = teamConfig.Name;
             TeamColor = robotConfig.TeamColor;
             foreach (var team in Config.Teams) {
@@ -113,11 +115,14 @@ namespace Simulator.RobotEssentials {
                 throw new Exception("TeamConfig for Robot not found:" + robotConfig.Name);
             }
 
+            //I don't know why i have to set it in the constructor it self and the SetZone function but i get compiler warnings otherwise.
+            CurrentZone = startZone;
+            SetZone(startZone);
+
             LastTaskMutex = new Mutex();
             TaskMutex = new Mutex();
             cancelBarrier = new Barrier(2);
 
-            //TODO BEACON CONNECTION
             Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = robotConfig.Jersey;
@@ -319,7 +324,6 @@ namespace Simulator.RobotEssentials {
 
         public void SetZone(Zones zone) {
             CurrentZone = zone;
-            //FIXME
             Position = new CPosition(zone.X - 6.5f, zone.Y - 0.5f, 0);
         }
 
