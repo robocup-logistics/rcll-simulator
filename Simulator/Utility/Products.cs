@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using LlsfMsgs;
+﻿using LlsfMsgs;
 using Newtonsoft.Json;
 using static LlsfMsgs.Order.Types;
 
@@ -10,6 +9,7 @@ namespace Simulator.Utility {
         private int WorkpieceBlackRangeStart = 2000;
         private int WorkpieceSilverRangeStart = 3000;
         private int WorkpieceColorlessRangeStart = 4000;
+        private static Mutex counterMutex = new Mutex();
         private static int internalProductCounter;
         [JsonProperty]
         public int ID { get; private set; }
@@ -63,9 +63,10 @@ namespace Simulator.Utility {
                     ID = WorkpieceColorlessRangeStart;
                     break;
             }
-            //FIXME RACY
+            counterMutex.WaitOne();
             ID += internalProductCounter;
             internalProductCounter++;
+            counterMutex.ReleaseMutex();
         }
         public Products(CapColor color) {
             Base = new BaseElement();
@@ -73,8 +74,10 @@ namespace Simulator.Utility {
             Complexity = (Complexity)0;
             RingCount = 0;
             RingList = new List<RingElement>();
+            counterMutex.WaitOne();
             ID = WorkpieceColorlessRangeStart + internalProductCounter;
             internalProductCounter++;
+            counterMutex.ReleaseMutex();
         }
 
         public Products(RingColor color) {
