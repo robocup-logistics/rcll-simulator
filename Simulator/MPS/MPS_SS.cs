@@ -44,7 +44,6 @@ namespace Simulator.MPS {
                         break;
 
                 }
-                TaskDescription = "Idle";
             }
         }
     }

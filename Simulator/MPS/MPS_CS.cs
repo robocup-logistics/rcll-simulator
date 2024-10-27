@@ -38,7 +38,6 @@ namespace Simulator.MPS {
                         break;
 
                 }
-                TaskDescription = "Idle";
             }
         }
 
@@ -47,24 +46,20 @@ namespace Simulator.MPS {
             StartTask();
             switch (command.arg1) {
                 case ARG1.RETRIEVE: {
-                        TaskDescription = "Cap Retrieve";
                         MyLogger.Log("Got a Retrieve CAP task!");
                         if (ProductOnBelt == null || StoredCap != null) {
                             MyLogger.Log("Can't retrieve the CAP as there is no product!");
                             MqttHelper.SetStatus(MQTTStatus.ERROR);
                         }
                         else {
-                            TaskDescription = "Retrieving Cap";
                             Thread.Sleep(Config.CSTaskDuration);
                             StoredCap = ProductOnBelt.RetrieveCap();
                         }
                         break;
                     }
                 case ARG1.MOUNT: {
-                        TaskDescription = "Cap Mount";
                         MyLogger.Log("Got a Mount Cap TASK!");
                         if (StoredCap != null && ProductOnBelt != null) {
-                            TaskDescription = "Mounting Cap";
                             Thread.Sleep(Config.CSTaskDuration);
                             ProductOnBelt.AddPart(StoredCap);
                         }

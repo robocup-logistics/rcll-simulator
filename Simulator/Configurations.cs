@@ -23,13 +23,10 @@ namespace Simulator {
         public int FieldWidth = 14;
         public int FieldHeight = 8;
 
-        public bool IgnoreTeamColor { get; private set; } = true;
-        public bool SendPrepare { get; private set; } = true;
         public bool FixedMPSplacement { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int RobotPlaceDuration { get; private set; }
         public int RobotGrabProductDuration { get; private set; }
-        public int RobotMaximumGrabDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
@@ -54,7 +51,6 @@ namespace Simulator {
             RobotMoveZoneDuration = 100;
             FixedMPSplacement = false;
             RobotPlaceDuration = 400;
-            RobotMaximumGrabDuration = 30000;  //milliseconds
             RobotGrabProductDuration = 100;
             AppendLogging = false;
             RobotDirectBeaconSignals = false;
@@ -118,12 +114,6 @@ namespace Simulator {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
-                    case "robot-prepare-mps":
-                        SendPrepare = bool.Parse(value.ToString().ToLower());
-                        break;
-                    case "ignore-teamcolor":
-                        IgnoreTeamColor = bool.Parse(value.ToString().ToLower());
-                        break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
@@ -138,9 +128,6 @@ namespace Simulator {
                         RobotPlaceDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
                                   1000); // convert from seconds to milliseconds
-                        break;
-                    case "robot-maximum-grab-duration":
-                        RobotMaximumGrabDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "belt-action-duration":
                         BeltActionDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);

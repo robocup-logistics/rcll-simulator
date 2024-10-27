@@ -174,8 +174,11 @@ public class MQTThelper {
     public uint SlideCnt { get; private set; }
     public MQTTCommand command { get; private set; }
     private ManualResetEvent CommandEvent;
+    private Configurations Config;
 
-    public MQTThelper(string name, string url, int port, ManualResetEvent command_event, MyLogger logger, bool slideCount = false) {
+    public MQTThelper(string name, string url, int port, Configurations config,
+                      ManualResetEvent command_event, MyLogger logger,
+                      bool slideCount = false) {
         Name = name;
         MyLogger = logger;
         Url = url;
@@ -183,6 +186,7 @@ public class MQTThelper {
         TopicPrefix = $"MPS/{Name}/";
         CommandEvent = command_event;
         command = new MQTTCommand();
+        Config = config;
 
         MqttFactory = new MqttFactory();
         Client = MqttFactory.CreateMqttClient();
@@ -234,31 +238,26 @@ public class MQTThelper {
         MyLogger.Log("Created Subscriptions");
     }
 
-    public void SetStatus(MQTTStatus value, bool publish = true) {
+    public void SetStatus(MQTTStatus value) {
         Status = value;
-        if (publish) {
-            string name = Enum.GetName(typeof(MQTTStatus), value) ?? "";
-            PublishChange("Status", name);
-        }
+        string name = Enum.GetName(typeof(MQTTStatus), value) ?? "";
+        PublishChange("Status", name);
     }
 
-    public void SetBarcode(int value, bool publish = true) {
+    public void SetBarcode(int value) {
         BarCode = value;
-        //TODO CONFIG TO NOT PUBSLIH
-        if (publish)
+        if (Config.BarcodeScanner)
             PublishChange("Barcode", BarCode.ToString());
     }
 
-    public void ResetSlideCount(bool publish = true) {
+    public void ResetSlideCount() {
         SlideCnt = 0;
-        if (publish)
-            PublishChange("SlideCount", SlideCnt.ToString());
+        PublishChange("SlideCount", SlideCnt.ToString());
     }
 
-    public void IncreaseSlideCount(bool publish = true) {
+    public void IncreaseSlideCount() {
         SlideCnt += 1;
-        if (publish)
-            PublishChange("SlideCount", SlideCnt.ToString());
+        PublishChange("SlideCount", SlideCnt.ToString());
     }
 
     private void PublishChange(string topic_name, string value) {

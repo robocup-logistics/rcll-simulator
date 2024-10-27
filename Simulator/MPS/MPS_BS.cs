@@ -11,7 +11,6 @@ namespace Simulator.MPS {
         }
         public void DispenseBase(MQTTCommand command) {
             MyLogger.Log("Got a GetBase Task!");
-            TaskDescription = "Dispensing a Base";
             StartTask();
             Thread.Sleep(Config.BSTaskDuration);
             string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
@@ -59,7 +58,6 @@ namespace Simulator.MPS {
                         break;
 
                 }
-                TaskDescription = "Idle";
             }
         }
     }

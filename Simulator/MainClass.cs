@@ -7,6 +7,8 @@ using LlsfMsgs;
 //TODO Dynamic reload field
 //TODO fix time
 //TODO leave machine only on one side
+//TODO Reconnect everything
+//TODO Timeout machine failure
 
 namespace Simulator {
     internal class MainClass {

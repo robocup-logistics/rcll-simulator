@@ -40,7 +40,6 @@ namespace Simulator.MPS {
                         break;
 
                 }
-                TaskDescription = "Idle";
             }
         }
 
@@ -65,7 +64,6 @@ namespace Simulator.MPS {
 
         private void DeliverToSlotTask(MQTTCommand command) {
             MyLogger.Log("DeliverToSlotTask!");
-            TaskDescription = "Delivering Product";
             StartTask();
             for (var count = 0; count < 45 && ProductAtIn == null; count++) {
                 Thread.Sleep(1000);

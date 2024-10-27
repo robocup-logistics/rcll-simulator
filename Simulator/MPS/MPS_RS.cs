@@ -37,7 +37,6 @@ namespace Simulator.MPS {
                         break;
 
                 }
-                TaskDescription = "Idle";
             }
         }
 
@@ -55,7 +54,6 @@ namespace Simulator.MPS {
 
         public void MountRingTask(MQTTCommand command) {
             MyLogger.Log("Got a Mount Ring Task!");
-            TaskDescription = "Mount Ring Task";
             StartTask();
             for (var count = 0; count < 45 && ProductOnBelt == null; count++) {
                 Thread.Sleep(1000);

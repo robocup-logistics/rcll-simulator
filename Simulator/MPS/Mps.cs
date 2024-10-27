@@ -23,7 +23,6 @@ namespace Simulator.MPS {
         public Products? ProductOnBelt { get; set; }
         public Products? ProductAtIn { get; set; }
         public Products? ProductAtOut { get; set; }
-        public string TaskDescription { get; set; }
         protected readonly Configurations Config;
         public MQTThelper MqttHelper;
         protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
@@ -53,7 +52,6 @@ namespace Simulator.MPS {
             Name = name;
             Debug = debug;
 
-            TaskDescription = "Idle";
             GotConnection = false;
             GotPlaced = false;
             ProductAtOut = null;
@@ -73,9 +71,8 @@ namespace Simulator.MPS {
             GreenLight = new Light(LightColor.Green);
 
 
-            // TODO MOCKUP
             try {
-                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, CommandEvent, MyLogger, slideCount);
+                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, config, CommandEvent, MyLogger, slideCount);
             }
             catch (Exception e) {
                 Console.WriteLine(e);
@@ -89,8 +86,8 @@ namespace Simulator.MPS {
             Work();
         }
 
+        //TODO MAKE VIRTUAL AND IMPLEMENT THE DIFFERENT MACHINES
         public void ResetMachine() {
-            TaskDescription = "Reseting!";
             MqttHelper.SetStatus(MQTTStatus.BUSY);
             Thread.Sleep(1000);
 
@@ -98,7 +95,6 @@ namespace Simulator.MPS {
             ProductAtOut = null;
             ProductOnBelt = null;
             MqttHelper.SetStatus(MQTTStatus.READY);
-            TaskDescription = "Idle";
         }
 
         public void StartTask() {
@@ -158,7 +154,6 @@ namespace Simulator.MPS {
 
         public void HandleBelt(MQTTCommand command) {
             MyLogger.Log("Got a Band on Task!");
-            TaskDescription = "Move via Belt";
             StartTask();
             MyLogger.Log("Product on belt?");
             for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
