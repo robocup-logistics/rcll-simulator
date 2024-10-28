@@ -1,8 +1,8 @@
 namespace Simulator.Utility {
-    public struct CPosition {
+    public class CPosition {
         public float X { get; set; }
         public float Y { get; set; }
-        public int Orientation { get; set; }
+        public float Orientation { get; set; }
 
         public CPosition() {
             X = 0f;
@@ -10,7 +10,16 @@ namespace Simulator.Utility {
             Orientation = 0;
         }
 
-        public CPosition(float x, float y, int orientation) {
+        public void SetPosition(float x, float y) {
+            X = x;
+            Y = y;
+        }
+
+        public void SetOrientation(float orientation) {
+            Orientation = orientation;
+        }
+
+        public CPosition(float x, float y, float orientation) {
             X = x;
             Y = y;
             Orientation = orientation;

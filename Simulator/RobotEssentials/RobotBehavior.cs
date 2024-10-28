@@ -6,8 +6,8 @@ using ErrorCode = LlsfMsgs.AgentTask.Types.ErrorCode;
 namespace Simulator.RobotEssentials {
     public partial class Robot {
 
-        // TODO make it nicer
-        // TODO Orientation
+        // TODO leave machine only on one side
+        // TODO 1.4 times slow when diagnoal movement
         List<string> machines = new List<string> {
             "C-CS1", "C-CS2", "C-RS1", "C-RS2", "C-DS", "C-BS", "C-SS",
             "M-CS1", "M-CS2", "M-RS1", "M-RS2", "M-DS", "M-BS", "M-SS"
@@ -53,12 +53,6 @@ namespace Simulator.RobotEssentials {
                     }
                 }
                 inputOutputMutex = mutex;
-
-                if (canceling) {
-                    return;
-                }
-                Thread.Sleep(Config.RobotMoveZoneDuration);
-                //TODO SET POSE WITH OFFSET TO THAT MACHINE
                 if (canceling) {
                     return;
                 }
@@ -68,7 +62,15 @@ namespace Simulator.RobotEssentials {
                     TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
                     return;
                 }
+                LookAtZone(zone);
+
+                Thread.Sleep(Config.RobotMoveZoneDuration);
+                //TODO SET POSE WITH OFFSET TO THAT MACHINE
+                if (canceling) {
+                    return;
+                }
                 SetZone(zone);
+                SetPositionBack(0.5f);
             }
             TaskSucceded(task);
         }
@@ -199,6 +201,7 @@ namespace Simulator.RobotEssentials {
             MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
             foreach (var z in path) {
                 MyLogger.Log("Doing a step towards + " + z.ZoneId);
+                LookAtZone(z);
                 if (canceling) {
                     return false;
                 }

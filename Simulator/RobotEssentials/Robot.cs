@@ -132,6 +132,7 @@ namespace Simulator.RobotEssentials {
             MpsManager = mpsManager;
             //I don't know why i have to set it in the constructor it self and the SetZone function but i get compiler warnings otherwise.
             CurrentZone = startZone;
+            Position = new CPosition(startZone.X, startZone.Y, 180);
             SetZone(startZone);
         }
 
@@ -318,9 +319,29 @@ namespace Simulator.RobotEssentials {
             Thread.Sleep(500);
         }
 
+        public void SetPositionBack(float distance) {
+            // Convert orientation from degrees to radians
+            float orientationRadians = Position.Orientation * (float)(Math.PI / 180.0);
+
+            // Calculate the new position
+            float newX = Position.X + distance * (float)Math.Sin(orientationRadians);
+            float newY = Position.Y + distance * (float)Math.Cos(orientationRadians);
+
+            // Assuming there's a method to set the position, e.g., SetPosition
+            Position.SetPosition(newX, newY);
+        }
+
+
+        public void LookAtZone(CZones zone) {
+            float deltaX = CurrentZone.X - zone.X;
+            float deltaY = CurrentZone.Y - zone.Y;
+            float angle = (float)(Math.Atan2(deltaX, deltaY) * (180.0 / Math.PI));
+            Position.SetOrientation(angle);
+        }
+
         public void SetZone(CZones zone) {
             CurrentZone = zone;
-            Position = new CPosition(zone.X, zone.Y, 0);
+            Position.SetPosition(zone.X, zone.Y);
         }
 
         private TaskEnum CheckTaskType(AgentTask task) {
