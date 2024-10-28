@@ -89,14 +89,14 @@ namespace Simulator.RobotEssentials {
                 TaskFailed(task, (uint)ErrorCode.MpsNotFound);
                 return;
             }
-            //TODO Make it grap from the input
-            if (mps == null || mps.robotAtOutput != inputOutputMutex) {
-                if(mps == null) {
-                    MyLogger.Log("The Machine not Found!");
-                }
-                else {
-                    MyLogger.Log("sddasf Robot isn't at the Output of the Machine!" + mps.robotAtOutput.GetHashCode() + "ds  " + inputOutputMutex?.GetHashCode());
-                }
+
+            Mutex targetMutex = mps.robotAtOutput;
+            if(target.ToLower() == "input" ||
+               target.ToLower() == "left" || target.ToLower() == "right" || target.ToLower() == "middle"
+               || target.ToLower() == "shelf1" || target.ToLower() == "shelf2" || target.ToLower() == "shelf3") {
+                targetMutex = mps.robotAtInput;
+            }
+            if (mps == null || targetMutex != inputOutputMutex) {
                 MyLogger.Log("The Robot isn't at the Output of the Machine!");
                 TaskFailed(task, (uint)ErrorCode.NotAtPosition);
                 return;
@@ -145,8 +145,12 @@ namespace Simulator.RobotEssentials {
                 TaskFailed(task, (uint)ErrorCode.MpsNotFound);
                 return;
             }
-            if (mps == null || mps.robotAtInput != inputOutputMutex) {
-                MyLogger.Log("The Robot isn't at the input of the Machine!");
+            Mutex targetMutex = mps.robotAtInput;
+            if (target.ToLower() == "output") {
+                targetMutex = mps.robotAtOutput;
+            }
+            if (mps == null || targetMutex != inputOutputMutex) {
+                MyLogger.Log("The Robot isn't at the correct Side of the Machine!");
                 TaskFailed(task, (uint)ErrorCode.NotAtPosition);
                 return;
             }

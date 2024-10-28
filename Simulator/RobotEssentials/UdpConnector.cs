@@ -132,7 +132,7 @@ namespace Simulator.RobotEssentials {
                 Thread.Sleep(500);
                 var lastTask = PbFactory.GetLastTask();
                 if(lastTask != null) {
-                    SendClient.Send(lastTask.GetBytes(), lastTask.GetBytes().Length);
+                    SendClient.Send(lastTask.GetBytes(), lastTask.GetBytes().Length, Endpoint);
                 }
                 Thread.Sleep(500);
             }

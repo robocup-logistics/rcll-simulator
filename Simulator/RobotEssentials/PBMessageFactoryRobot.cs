@@ -49,7 +49,7 @@ namespace Simulator.RobotEssentials {
             bs.Number = Robot.JerseyNumber;
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
-            bs.Task = Robot.CurrentTask;
+            bs.Task = Robot.CurrentTask?.Clone();
             var desc = Robot.HeldProduct?.GetProtoDescription();
             if(desc != null && bs.Task != null) {
                 bs.Task.WorkpieceDescription = desc;
