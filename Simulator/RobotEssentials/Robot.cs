@@ -16,7 +16,7 @@ namespace Simulator.RobotEssentials {
         private bool Running;
         public Products? HeldProduct { get; private set; }
         private RobotState RobotState;
-        public Zones CurrentZone { get; private set; }
+        public CZones CurrentZone { get; private set; }
         public RobotConfig RobotConfig;
         //if the robot enters a machine, the input/output mutex that gets locked
         //will be stored here as a reference to make sure it releases it on leaving the input/output
@@ -91,7 +91,7 @@ namespace Simulator.RobotEssentials {
         }
 
         public Robot(Configurations config, RobotConfig robotConfig, RobotManager manager,
-                     MpsManager mpsManager, Zones startZone, bool debug = false) {
+                     MpsManager mpsManager, CZones startZone, bool debug = false) {
             Config = config;
             RobotName = robotConfig.Name;
             RobotConfig = robotConfig;
@@ -115,15 +115,11 @@ namespace Simulator.RobotEssentials {
                 throw new Exception("TeamConfig for Robot not found:" + robotConfig.Name);
             }
 
-            //I don't know why i have to set it in the constructor it self and the SetZone function but i get compiler warnings otherwise.
-            CurrentZone = startZone;
-            SetZone(startZone);
 
             LastTaskMutex = new Mutex();
             TaskMutex = new Mutex();
             cancelBarrier = new Barrier(2);
 
-            Position = new CPosition(5f, 1f, 0);
             MyManager = manager;
             JerseyNumber = robotConfig.Jersey;
             FinishedTasks = new List<CFinishedTask>();
@@ -134,6 +130,9 @@ namespace Simulator.RobotEssentials {
             RobotState = RobotState.Active;
 
             MpsManager = mpsManager;
+            //I don't know why i have to set it in the constructor it self and the SetZone function but i get compiler warnings otherwise.
+            CurrentZone = startZone;
+            SetZone(startZone);
         }
 
         public void HandleAgentTaskMessage(AgentTask task) {
@@ -319,9 +318,9 @@ namespace Simulator.RobotEssentials {
             Thread.Sleep(500);
         }
 
-        public void SetZone(Zones zone) {
+        public void SetZone(CZones zone) {
             CurrentZone = zone;
-            Position = new CPosition(zone.X - 6.5f, zone.Y - 0.5f, 0);
+            Position = new CPosition(zone.X, zone.Y, 0);
         }
 
         private TaskEnum CheckTaskType(AgentTask task) {

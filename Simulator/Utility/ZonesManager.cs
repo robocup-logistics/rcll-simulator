@@ -37,7 +37,7 @@ namespace Simulator.Utility {
                 }
 
                 CZones zone;
-                zone = color == Team.Cyan ? new CZones(x + 6, y, 0, color, z) : new CZones(7 - x, y, 0, color, z);
+                zone = color == Team.Cyan ? new CZones(x - 0.5f, y - 0.5f, 0, color, z) : new CZones(-x + 0.5f, y - 0.5f, 0, color, z);
                 Dictionary.Add(z, zone);
                 ZoneList.Add(zone);
             }
@@ -301,10 +301,10 @@ namespace Simulator.Utility {
         [JsonIgnore]
         public uint Orientation { get; private set; }
         public Zone ZoneId { get; private set; }
-        public int X { get; private set; }
-        public int Y { get; private set; }
+        public float X { get; private set; }
+        public float Y { get; private set; }
 
-        public CZones(int x, int y, uint orientation, Team color, Zone zoneId) {
+        public CZones(float x, float y, uint orientation, Team color, Zone zoneId) {
             X = x;
             Y = y;
             Orientation = orientation;
