@@ -6,7 +6,6 @@ using ErrorCode = LlsfMsgs.AgentTask.Types.ErrorCode;
 namespace Simulator.RobotEssentials {
     public partial class Robot {
 
-        // TODO leave machine only on one side
         // TODO 1.4 times slow when diagnoal movement
         List<string> machines = new List<string> {
             "C-CS1", "C-CS2", "C-RS1", "C-RS2", "C-DS", "C-BS", "C-SS",
@@ -25,6 +24,24 @@ namespace Simulator.RobotEssentials {
                 MyLogger.Log("Couldn't find the machine position!");
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
                 return;
+            }
+            if(EntryZone != null)
+            {
+                LookAtZone(EntryZone);
+                if(canceling){
+                    return;
+                }
+                Thread.Sleep(Config.RobotMoveZoneDuration);
+                if(canceling){
+                    return;
+                }
+                SetZone(EntryZone);
+                EntryZone = null;
+
+                if (inputOutputMutex != null) {
+                    inputOutputMutex.ReleaseMutex();
+                    inputOutputMutex = null;
+                }
             }
             if (Move(targetZone, task)) {
                 MyLogger.Log("Finished the move to waypoint successful!");
@@ -64,11 +81,14 @@ namespace Simulator.RobotEssentials {
                 }
                 LookAtZone(zone);
 
-                Thread.Sleep(Config.RobotMoveZoneDuration);
-                //TODO SET POSE WITH OFFSET TO THAT MACHINE
                 if (canceling) {
                     return;
                 }
+                Thread.Sleep(Config.RobotMoveZoneDuration);
+                if (canceling) {
+                    return;
+                }
+                EntryZone = CurrentZone;
                 SetZone(zone);
                 SetPositionBack(0.5f);
             }
@@ -208,10 +228,6 @@ namespace Simulator.RobotEssentials {
                 Thread.Sleep(Config.RobotMoveZoneDuration);
                 if (canceling) {
                     return false;
-                }
-                if (inputOutputMutex != null) {
-                    inputOutputMutex.ReleaseMutex();
-                    inputOutputMutex = null;
                 }
                 SetZone(z);
             }

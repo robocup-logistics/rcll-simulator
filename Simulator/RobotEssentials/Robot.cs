@@ -16,6 +16,7 @@ namespace Simulator.RobotEssentials {
         private bool Running;
         public Products? HeldProduct { get; private set; }
         private RobotState RobotState;
+        public CZones? EntryZone;
         public CZones CurrentZone { get; private set; }
         public RobotConfig RobotConfig;
         //if the robot enters a machine, the input/output mutex that gets locked
