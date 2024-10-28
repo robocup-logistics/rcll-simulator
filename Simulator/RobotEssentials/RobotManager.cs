@@ -14,7 +14,6 @@ namespace Simulator.RobotEssentials {
             ZonesManager_ = ZonesManager.GetInstance();
             MpsManager = mpsManager;
             Config = config;
-            Console.WriteLine("Creating Robots");
             CreateRobots();
         }
         private void CreateRobots() {

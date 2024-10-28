@@ -165,7 +165,7 @@ general:
   timefactor: 1.0
   fixed-mps-position: false
   robot-direct-beacon: true  # Robot is expected to send his beaconsignals directly to the refbox via udp
-  enable-barcode-scanner: true
+  enable-barcode-scanner: false
   robot-move-zone-duration: 2 # in seconds
   robot-grab-product-duration: 10 # duration for a single try of a grab
   robot-place-product-duration: 10 # duration for a single place try

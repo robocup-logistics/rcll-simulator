@@ -124,7 +124,7 @@ namespace Simulator.RobotEssentials {
             if(SendClient == null) {
                 throw new Exception("SendClient is null");
             }
-            while(!Running) {
+            while(Running) {
                 var task = PbFactory.GetAgentTask();
                 if(task != null) {
                     SendClient.Send(task.GetBytes(), task.GetBytes().Length, Endpoint);

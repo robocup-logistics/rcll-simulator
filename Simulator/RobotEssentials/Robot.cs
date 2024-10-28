@@ -58,16 +58,16 @@ namespace Simulator.RobotEssentials {
                     return _lastTask;
                 }
                 finally {
-                    TaskMutex.ReleaseMutex();
+                    LastTaskMutex.ReleaseMutex();
                 }
             }
             set {
-                TaskMutex.WaitOne();
+                LastTaskMutex.WaitOne();
                 if (value != null) {
                     FinishedTasks.Add(new CFinishedTask(value.TaskId, value.Successful));
                 }
                 _lastTask = value;
-                TaskMutex.ReleaseMutex();
+                LastTaskMutex.ReleaseMutex();
             }
         }
 
@@ -223,7 +223,6 @@ namespace Simulator.RobotEssentials {
                 }
                 _currentTask.Successful = false;
                 _currentTask.ErrorCode = errorCode;
-                errorCode = (uint)LlsfMsgs.AgentTask.Types.ErrorCode.InternalError;
                 LastTask = _currentTask;
                 _currentTask = null;
             }

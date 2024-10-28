@@ -7,6 +7,7 @@ namespace Simulator.RobotEssentials {
     public partial class Robot {
 
         // TODO make it nicer
+        // TODO Orientation
         List<string> machines = new List<string> {
             "C-CS1", "C-CS2", "C-RS1", "C-RS2", "C-DS", "C-BS", "C-SS",
             "M-CS1", "M-CS2", "M-RS1", "M-RS2", "M-DS", "M-BS", "M-SS"
