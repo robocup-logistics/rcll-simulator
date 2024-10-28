@@ -13,12 +13,11 @@ namespace Simulator.RobotEssentials {
             string msg = "";
             switch (messageType) {
                 case (int)AgentTask.Types.CompType.MsgType:
-                    //TODO SEND NEW TASK TO ROBOT MANAGER
                     MessageParser<AgentTask> taskParser =
                         new(() => new AgentTask());
 
                     AgentTask task = taskParser.ParseFrom(stream, 12, payloadSize - 4);
-                    MyLogger.Log("Parsing of the GripsMidLevelTasks was successful!");
+                    MyLogger.Log("Parsing of the AgentTask was successful!");
                     Robot.HandleAgentTaskMessage(task);
                     msg = task.ToString();
                     break;

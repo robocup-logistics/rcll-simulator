@@ -139,7 +139,6 @@ namespace Simulator.RobotEssentials {
         public void HandleAgentTaskMessage(AgentTask task) {
             if (task.TeamColor != TeamColor || task.RobotId != JerseyNumber) {
                 MyLogger.Log("Got a task thats not for me. I ignore it!");
-                //TODO TRANSMMIT REJECTION
                 return;
             }
             TaskMutex.WaitOne();
@@ -247,7 +246,6 @@ namespace Simulator.RobotEssentials {
                 AgentConnector = new UdpConnector(Config, this, MyLogger);
             }
 
-            //TODO INIT CONNECTIOn
             MyLogger.Log("Starting " + RobotName + "'s working thread!");
             SerializeRobotToJson();
             while (Running) {

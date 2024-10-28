@@ -50,6 +50,10 @@ namespace Simulator.RobotEssentials {
             bs.Pose = pose;
             bs.FinishedTasks.Clear();
             bs.Task = Robot.CurrentTask?.Clone();
+            if(bs.Task == null) {
+                bs.Task = Robot.LastTask?.Clone();
+            }
+
             var desc = Robot.HeldProduct?.GetProtoDescription();
             if(desc != null && bs.Task != null) {
                 bs.Task.WorkpieceDescription = desc;
