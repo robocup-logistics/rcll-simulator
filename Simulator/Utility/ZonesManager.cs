@@ -4,8 +4,8 @@ using System.Text.Json.Serialization;
 
 namespace Simulator.Utility {
     public class ZonesManager {
-        public List<Zones> ZoneList { get; private set; }
-        private readonly Dictionary<Zone, Zones> Dictionary;
+        public List<CZones> ZoneList { get; private set; }
+        private readonly Dictionary<Zone, CZones> Dictionary;
         private static ZonesManager? Instance;
         public Mutex ZoneManagerMutex;
         private MyLogger MyLogger;
@@ -17,8 +17,8 @@ namespace Simulator.Utility {
         }
 
         private ZonesManager() {
-            ZoneList = new List<Zones>();
-            Dictionary = new Dictionary<Zone, Zones>();
+            ZoneList = new List<CZones>();
+            Dictionary = new Dictionary<Zone, CZones>();
             MyLogger = new MyLogger("Zones", true);
             ZoneManagerMutex = new Mutex();
             MyLogger.Log("Creating General Zones");
@@ -36,8 +36,8 @@ namespace Simulator.Utility {
                     color = Team.Magenta;
                 }
 
-                Zones zone;
-                zone = color == Team.Cyan ? new Zones(x + 6, y, 0, color, z) : new Zones(7 - x, y, 0, color, z);
+                CZones zone;
+                zone = color == Team.Cyan ? new CZones(x + 6, y, 0, color, z) : new CZones(7 - x, y, 0, color, z);
                 Dictionary.Add(z, zone);
                 ZoneList.Add(zone);
             }
@@ -46,7 +46,7 @@ namespace Simulator.Utility {
             AddNeighborhood();
         }
 
-        public Zones? GetZone(Zone zone) {
+        public CZones? GetZone(Zone zone) {
             return Dictionary.ContainsKey(zone) ? Dictionary[zone] : null;
         }
 
@@ -57,7 +57,6 @@ namespace Simulator.Utility {
                 if (target.Contains("C_Z") || target.Contains("M_Z")) {
                     target = target.Substring(0, 5);
                 }
-                //TODO ARE YOUR SURE WITH THE _ removal because the enum name has it
                 result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
                 MyLogger.Log("Is a Zone Waypoint!");
                 return result;
@@ -75,7 +74,7 @@ namespace Simulator.Utility {
             machine.Zone = zone;
         }
 
-        public Zones? GetMachineZone(string MachineName) {
+        public CZones? GetMachineZone(string MachineName) {
             foreach (var (key, value) in Dictionary) {
                 if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
                     return value;
@@ -110,7 +109,7 @@ namespace Simulator.Utility {
             return 0;
         }
 
-        public Zone CheckNeighbours(List<Zones> Neighbours, Zones compareable, int x, int y) {
+        public Zone CheckNeighbours(List<CZones> Neighbours, CZones compareable, int x, int y) {
             MyLogger.Log("Checking " + compareable.X + "/" + compareable.Y);
             foreach (var n in Neighbours) {
                 if (n.X == compareable.X + x && n.Y == compareable.Y + y) {
@@ -121,49 +120,19 @@ namespace Simulator.Utility {
             MyLogger.Log("No neighbour found!");
             return 0;
         }
-        public List<Zones> GetPathToZone(Zone Start, Zone Target) {
-            List<Zones> Path = new List<Zones>();
-            var currentZone = Dictionary[Start];
-            var targetZone = Dictionary[Target];
-            MyLogger.Log("----------------------------------------");
-            while (currentZone.ZoneId != Target) {
-                var list = currentZone.GetNeighborhood();
-                double shortest = 100;
-                Zones? shortestZone = null;
-                MyLogger.Log("Start search for " + targetZone.ZoneId.ToString() + " from zone " + currentZone.ZoneId.ToString());
-                foreach (var e in list) {
-                    if (e.Machine != null) {
-                        continue;
-                    }
-                    MyLogger.Log("Checking " + e.ZoneId.ToString() + " with coordinates " + e.X + "/" + e.Y);
-                    var dist = CalcDistance(e, targetZone);
-                    MyLogger.Log("Distance = " + dist.ToString());
-                    if (dist < shortest) {
-                        shortest = dist;
-                        shortestZone = e;
-                    }
-                }
 
-                if (shortestZone == null) continue;
-                Path.Add(shortestZone);
-                currentZone = shortestZone;
-            }
-
-            return Path;
-        }
-
-        public List<Zones> Astar(Zones start, Zones end) {
-            var comparer = Comparer<Zones>.Create(
+        public List<CZones> Astar(CZones start, CZones end) {
+            var comparer = Comparer<CZones>.Create(
                 (k1, k2) => k1.ZoneId.CompareTo(k2.ZoneId));
-            SortedDictionary<Zones, double> openList = new SortedDictionary<Zones, double>(comparer);
+            SortedDictionary<CZones, double> openList = new SortedDictionary<CZones, double>(comparer);
             Dictionary<Zone, int> closedList = new Dictionary<Zone, int>();
-            Dictionary<Zones, Zones> cameFrom = new Dictionary<Zones, Zones>();
+            Dictionary<CZones, CZones> cameFrom = new Dictionary<CZones, CZones>();
             openList.Add(start, 0);
             SortedDictionary<Zone, double> gScore = new SortedDictionary<Zone, double>();
             SortedDictionary<Zone, double> fScore = new SortedDictionary<Zone, double>();
             gScore.Add(start.ZoneId, 0);
             fScore.Add(start.ZoneId, CalcDistance(start, end));
-            List<Zones> path = new List<Zones>();
+            List<CZones> path = new List<CZones>();
             while (openList.Count != 0) {
                 /*MyLogger.Log("###########################");
                 MyLogger.Log("OpenList");
@@ -228,11 +197,11 @@ namespace Simulator.Utility {
 
             }
             MyLogger.Log("No Valid Path found for target [" + end.GetZoneString() + "]!");
-            return new List<Zones>();
+            return new List<CZones>();
         }
 
-        private static List<Zones> ReconstructPath(Dictionary<Zones, Zones> cameFrom, Zones current) {
-            var path = new List<Zones>
+        private static List<CZones> ReconstructPath(Dictionary<CZones, CZones> cameFrom, CZones current) {
+            var path = new List<CZones>
             {
                 current
             };
@@ -252,7 +221,7 @@ namespace Simulator.Utility {
             return path;
         }
 
-        public static double CalcDistance(Zones Start, Zones End) {
+        public static double CalcDistance(CZones Start, CZones End) {
             if (Start == null || End == null) {
                 ZonesManager.GetInstance().MyLogger.Log("CalcDistance has a null?");
                 return 1000;
@@ -320,11 +289,11 @@ namespace Simulator.Utility {
         }
     }
 
-    public class Zones {
+    public class CZones {
 
         private readonly Team ZoneColor;
 
-        private readonly List<Zones> NeighborsList;
+        private readonly List<CZones> NeighborsList;
 
         [JsonIgnore]
         public Mps? Machine { get; private set; }
@@ -335,17 +304,17 @@ namespace Simulator.Utility {
         public int X { get; private set; }
         public int Y { get; private set; }
 
-        public Zones(int x, int y, uint orientation, Team color, Zone zoneId) {
+        public CZones(int x, int y, uint orientation, Team color, Zone zoneId) {
             X = x;
             Y = y;
             Orientation = orientation;
             ZoneColor = color;
-            NeighborsList = new List<Zones>();
+            NeighborsList = new List<CZones>();
             ZoneId = zoneId;
             Machine = null;
         }
 
-        public void AddNeighbor(Zones newNeighbor) {
+        public void AddNeighbor(CZones newNeighbor) {
             NeighborsList.Add(newNeighbor);
         }
         public bool Free() {
@@ -368,13 +337,10 @@ namespace Simulator.Utility {
             return ZoneId.ToString();
         }
 
-        public List<Zones> GetNeighborhood() {
+        public List<CZones> GetNeighborhood() {
             return NeighborsList;
         }
 
     }
-
-
-
 
 }
