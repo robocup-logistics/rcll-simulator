@@ -59,11 +59,11 @@ public class MPS_RS : Mps {
         if (ProductOnBelt == null) return;
         RingElement ringToMount;
         switch (command.arg1) {
-            case ARG1.RING0:
+            case ARG1.RING1:
                 //TODO GET COLOR FROM REFBOX
                 ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingYellow) : new RingElement(RingColor.RingBlue);
                 break;
-            case ARG1.RING1:
+            case ARG1.RING2:
                 ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingGreen) : new RingElement(RingColor.RingOrange);
                 break;
             default:

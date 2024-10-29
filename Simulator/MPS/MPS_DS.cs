@@ -4,14 +4,14 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS;
 public class MPS_DS : Mps {
-    private List<Products> Slot0;
     private List<Products> Slot1;
     private List<Products> Slot2;
+    private List<Products> Slot3;
     public MPS_DS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
         Type = MpsType.DeliveryStation;
-        Slot0 = new List<Products>();
         Slot1 = new List<Products>();
         Slot2 = new List<Products>();
+        Slot3 = new List<Products>();
     }
 
     protected override void Work() {
@@ -22,9 +22,9 @@ public class MPS_DS : Mps {
             var command = MqttHelper.command;
             switch (command.command) {
                 case COMMAND.RESET:
-                    Slot0 = new List<Products>();
                     Slot1 = new List<Products>();
                     Slot2 = new List<Products>();
+                    Slot3 = new List<Products>();
                     ResetMachine();
                     break;
                 case COMMAND.LIGHT:
@@ -72,14 +72,14 @@ public class MPS_DS : Mps {
         MyLogger.Log("Deliver to slot " + name);
         Thread.Sleep(Config.DSTaskDuration);
         switch (command.arg1) {
-            case ARG1.SLOT0:
-                Slot0.Add(ProductAtIn);
-                break;
             case ARG1.SLOT1:
                 Slot1.Add(ProductAtIn);
                 break;
             case ARG1.SLOT2:
                 Slot2.Add(ProductAtIn);
+                break;
+            case ARG1.SLOT3:
+                Slot3.Add(ProductAtIn);
                 break;
         }
         ProductAtIn = null;

@@ -57,7 +57,7 @@ public class Timer {
     }
     public void Tick() {
         while (true) {
-            Nsec += (long)(500_000 * TimeFactor);
+            Nsec += (long)(500_000_000 * TimeFactor);
             if (Nsec >= 1_000_000_000) {
                 Sec += 1;
                 Nsec -= 1_000_000_000;

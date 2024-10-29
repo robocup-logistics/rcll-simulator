@@ -7,6 +7,8 @@ using LlsfMsgs;
 //TODO Dynamic reload field
 //TODO Reconnect everything
 //TODO Timeout machine failure
+//TODO INSERTION ZONE
+//TODO don't move into machine zonees
 
 namespace Simulator {
     internal class MainClass {

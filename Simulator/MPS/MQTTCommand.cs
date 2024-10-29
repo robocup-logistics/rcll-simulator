@@ -24,11 +24,11 @@ public class MQTTCommand {
         RESET,
         RETRIEVE,
         MOUNT,
-        RING0,
         RING1,
-        SLOT0,
+        RING2,
         SLOT1,
         SLOT2,
+        SLOT3,
         TARGET,
         TO_INPUT,
         TO_OUTPUT
@@ -110,12 +110,12 @@ public class MQTTCommand {
                 else
                     return false;
             case (COMMAND.MOUNT_RING):
-                if (arg1 == ARG1.RING0 || arg1 == ARG1.RING1)
+                if (arg1 == ARG1.RING1 || arg1 == ARG1.RING2)
                     return true;
                 else
                     return false;
             case (COMMAND.DELIVER):
-                if (arg1 == ARG1.SLOT0 || arg1 == ARG1.SLOT1 || arg1 == ARG1.SLOT2)
+                if (arg1 == ARG1.SLOT1 || arg1 == ARG1.SLOT2 || arg1 == ARG1.SLOT3)
                     return true;
                 else
                     return false;
