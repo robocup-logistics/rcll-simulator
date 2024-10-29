@@ -4,7 +4,6 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS {
     public class MPS_DS : Mps {
-        // TODO Add some more space to the slots
         private List<Products> Slot0;
         private List<Products> Slot1;
         private List<Products> Slot2;

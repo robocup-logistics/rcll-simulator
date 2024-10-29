@@ -11,8 +11,6 @@ namespace Simulator.RobotEssentials {
     /// Listen to tcp AgentTask messages to relay to the RobotManager
     /// </summary>
     class TcpConnector : ConnectorBase {
-        //TODO add second condition to assign team 2
-
         private Socket ConnectSocket;
         private Socket? ListenSocket;
         private IPEndPoint? listenEndpoint;
@@ -38,7 +36,6 @@ namespace Simulator.RobotEssentials {
 
         public TcpConnector(Configurations config, Robot robot, MyLogger logger)
             : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
-            //TODO LISTEN FOR INCOMMING AGENT TASK MESSAGES AND SEND THEM BACK
             MyLogger.Log("Starting RobotManager TcpConnector on port:" + robot.RobotConfig.SendPort + "!");
             Robot = robot;
 
