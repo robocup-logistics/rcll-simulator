@@ -85,7 +85,7 @@ public class MPS_CS : Mps {
         FinishedTask();
     }
 
-    public override Products? RemoveProduct(string machinePoint) {
+    public override Products? RemoveProduct(string machinePoint, bool dryRun = false) {
         Products? returnProduct;
         MyLogger.Log("Someone trys to grabs a Item from!");
 
@@ -93,26 +93,36 @@ public class MPS_CS : Mps {
             case "output":
                 MyLogger.Log("my Output!");
                 returnProduct = ProductAtOut;
-                ProductAtOut = null;
+                if(!dryRun) {
+                    ProductAtOut = null;
+                }
                 break;
             case "input":
                 returnProduct = ProductAtIn;
-                ProductAtIn = null;
+                if(!dryRun) {
+                    ProductAtIn = null;
+                }
                 break;
             case "shelf1":
             case "left":
                 returnProduct = ShelfLeft;
-                ShelfLeft = null;
+                if(!dryRun) {
+                    ShelfLeft = null;
+                }
                 break;
             case "shelf2":
             case "middle":
                 returnProduct = ShelfRight;
-                ShelfRight = null;
+                if(!dryRun) {
+                    ShelfRight = null;
+                }
                 break;
             case "shelf3":
             case "right":
                 returnProduct = ShelfLeft;
-                ShelfLeft = null;
+                if(!dryRun) {
+                    ShelfLeft = null;
+                }
                 break;
             default:
                 MyLogger.Log("Defaulting!?");

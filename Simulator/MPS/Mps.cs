@@ -216,21 +216,27 @@ public abstract class Mps {
                 return true;
         }
     }
-    public virtual Products? RemoveProduct(string machinePoint) {
+    public virtual Products? RemoveProduct(string machinePoint, bool dryRun = false) {
         Products? returnProduct;
         switch (machinePoint.ToLower()) {
             case "input":
                 returnProduct = ProductAtIn;
-                ProductAtIn = null;
+                if(!dryRun){
+                    ProductAtIn = null;
+                }
                 break;
             case "output":
                 returnProduct = ProductAtOut;
-                ProductAtOut = null;
+                if(!dryRun){
+                    ProductAtOut = null;
+                }
                 break;
             default:
                 MyLogger.Log("Defaulting!?");
                 returnProduct = ProductAtIn;
-                ProductAtIn = null;
+                if(!dryRun){
+                    ProductAtIn = null;
+                }
                 break;
         }
         return returnProduct;

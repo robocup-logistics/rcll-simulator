@@ -133,11 +133,14 @@ public partial class Robot {
         if (canceling) {
             return;
         }
+        FutureProduct = mps.RemoveProduct(target, true);
         Thread.Sleep(Config.RobotGrabProductDuration);
         if (canceling) {
+            FutureProduct = null;
             return;
         }
         HeldProduct = mps.RemoveProduct(target);
+        FutureProduct = null;
 
         if (HeldProduct == null) {
             MyLogger.Log("The Machine didn't have a product to give!");

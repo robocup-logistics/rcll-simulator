@@ -15,6 +15,7 @@ public partial class Robot {
     private readonly MyLogger MyLogger;
     private bool Running;
     public Products? HeldProduct { get; private set; }
+    public Products? FutureProduct { get; private set; }
     private RobotState RobotState;
     public CZones? EntryZone;
     public CZones CurrentZone { get; private set; }
