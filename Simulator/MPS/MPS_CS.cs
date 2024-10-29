@@ -4,105 +4,103 @@ using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
-namespace Simulator.MPS {
-    public class MPS_CS : Mps {
-        public CapElement? StoredCap { get; private set; }
-        public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
-            Type = MpsType.CapStation;
-            StoredCap = null;
-        }
+namespace Simulator.MPS;
+public class MPS_CS : Mps {
+    public CapElement? StoredCap { get; private set; }
+    public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+        Type = MpsType.CapStation;
+        StoredCap = null;
+    }
 
-        protected override void Work() {
-            while (Working) {
-                CommandEvent.WaitOne();
-                CommandEvent.Reset();
-                GotConnection = true;
+    protected override void Work() {
+        while (Working) {
+            CommandEvent.WaitOne();
+            CommandEvent.Reset();
 
-                var command = MqttHelper.command;
-                switch (command.command) {
-                    case COMMAND.RESET:
-                        StoredCap = null;
-                        ResetMachine();
-                        break;
-                    case COMMAND.LIGHT:
-                        HandleLights(command);
-                        break;
-                    case COMMAND.CAP_ACTION:
-                        CapTask(command);
-                        break;
-                    case COMMAND.MOVE_CONVEYOR:
-                        HandleBelt(command);
-                        break;
-                    default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
-                        break;
-
-                }
-            }
-        }
-
-        public void CapTask(MQTTCommand command) {
-            MyLogger.Log("Got a Cap Task!");
-            StartTask();
-            switch (command.arg1) {
-                case ARG1.RETRIEVE: {
-                        MyLogger.Log("Got a Retrieve CAP task!");
-                        if (ProductOnBelt == null || StoredCap != null) {
-                            MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            MqttHelper.SetStatus(MQTTStatus.ERROR);
-                        }
-                        else {
-                            Thread.Sleep(Config.CSTaskDuration);
-                            StoredCap = ProductOnBelt.RetrieveCap();
-                        }
-                        break;
-                    }
-                case ARG1.MOUNT: {
-                        MyLogger.Log("Got a Mount Cap TASK!");
-                        if (StoredCap != null && ProductOnBelt != null) {
-                            Thread.Sleep(Config.CSTaskDuration);
-                            ProductOnBelt.AddPart(StoredCap);
-                        }
-                        else {
-                            MyLogger.Log("Can't retrieve the CAP as there is no product!");
-                            MqttHelper.SetStatus(MQTTStatus.ERROR);
-                        }
-
-                        break;
-                    }
-            }
-            FinishedTask();
-        }
-
-        public override Products? RemoveProduct(string machinePoint) {
-            Products? returnProduct;
-            MyLogger.Log("Someone trys to grabs a Item from!");
-
-            switch (machinePoint.ToLower()) {
-                case "output":
-                    MyLogger.Log("my Output!");
-                    returnProduct = ProductAtOut;
-                    ProductAtOut = null;
+            var command = MqttHelper.command;
+            switch (command.command) {
+                case COMMAND.RESET:
+                    StoredCap = null;
+                    ResetMachine();
                     break;
-                case "input":
-                    returnProduct = ProductAtIn;
-                    ProductAtIn = null;
+                case COMMAND.LIGHT:
+                    HandleLights(command);
                     break;
-                case "shelf3":
-                case "shelf2":
-                case "shelf1":
-                case "left":
-                case "middle":
-                case "right":
-                    //TODO REPLANISHMENT
-                    returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                case COMMAND.CAP_ACTION:
+                    CapTask(command);
+                    break;
+                case COMMAND.MOVE_CONVEYOR:
+                    HandleBelt(command);
                     break;
                 default:
-                    MyLogger.Log("Defaulting!?");
-                    returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                    MyLogger.Log("Unhandelt ActionType: " + command.command);
                     break;
+
             }
-            return returnProduct;
         }
+    }
+
+    public void CapTask(MQTTCommand command) {
+        MyLogger.Log("Got a Cap Task!");
+        StartTask();
+        switch (command.arg1) {
+            case ARG1.RETRIEVE: {
+                    MyLogger.Log("Got a Retrieve CAP task!");
+                    if (ProductOnBelt == null || StoredCap != null) {
+                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                        MqttHelper.SetStatus(MQTTStatus.ERROR);
+                    }
+                    else {
+                        Thread.Sleep(Config.CSTaskDuration);
+                        StoredCap = ProductOnBelt.RetrieveCap();
+                    }
+                    break;
+                }
+            case ARG1.MOUNT: {
+                    MyLogger.Log("Got a Mount Cap TASK!");
+                    if (StoredCap != null && ProductOnBelt != null) {
+                        Thread.Sleep(Config.CSTaskDuration);
+                        ProductOnBelt.AddPart(StoredCap);
+                    }
+                    else {
+                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                        MqttHelper.SetStatus(MQTTStatus.ERROR);
+                    }
+
+                    break;
+                }
+        }
+        FinishedTask();
+    }
+
+    public override Products? RemoveProduct(string machinePoint) {
+        Products? returnProduct;
+        MyLogger.Log("Someone trys to grabs a Item from!");
+
+        switch (machinePoint.ToLower()) {
+            case "output":
+                MyLogger.Log("my Output!");
+                returnProduct = ProductAtOut;
+                ProductAtOut = null;
+                break;
+            case "input":
+                returnProduct = ProductAtIn;
+                ProductAtIn = null;
+                break;
+            case "shelf3":
+            case "shelf2":
+            case "shelf1":
+            case "left":
+            case "middle":
+            case "right":
+                //TODO REPLANISHMENT
+                returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                break;
+            default:
+                MyLogger.Log("Defaulting!?");
+                returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                break;
+        }
+        return returnProduct;
     }
 }

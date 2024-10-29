@@ -1,260 +1,256 @@
 ﻿using LlsfMsgs;
 using Simulator.Utility;
-using JsonSerializer = System.Text.Json.JsonSerializer;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
-namespace Simulator.MPS {
-    public abstract class Mps {
-        public readonly MyLogger MyLogger;
-        public string Name { get; private set; }
-        public MpsType Type;
-        //TODO EXPLORATION
-        public ExplorationState ExplorationState;
-        public Zone Zone { get; set; }
-        public uint Rotation { get; set; }
-        public bool Debug;
-        public Light RedLight { get; }
-        public Light GreenLight { get; }
-        public Light YellowLight { get; }
-        public bool GotConnection { get; protected set; }
-        public bool GotPlaced;
-        public Products? ProductOnBelt { get; set; }
-        public Products? ProductAtIn { get; set; }
-        public Products? ProductAtOut { get; set; }
-        protected readonly Configurations Config;
-        public MQTThelper MqttHelper;
-        protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
-        public Mutex robotAtInput;
-        public Mutex robotAtOutput;
-        public bool Working { get; private set; }
-        public enum MpsType {
-            BaseStation = 100,
-            RingStation = 200,
-            CapStation = 300,
-            DeliveryStation = 400,
-            StorageStation = 500
+namespace Simulator.MPS;
+public abstract class Mps {
+    public readonly MyLogger MyLogger;
+    public string Name { get; private set; }
+    public MpsType Type;
+    //TODO EXPLORATION
+    public ExplorationState ExplorationState;
+    public Zone Zone { get; set; }
+    public uint Rotation { get; set; }
+    public bool Debug;
+    public Light RedLight { get; }
+    public Light GreenLight { get; }
+    public Light YellowLight { get; }
+    public bool GotPlaced;
+    public Products? ProductOnBelt { get; set; }
+    public Products? ProductAtIn { get; set; }
+    public Products? ProductAtOut { get; set; }
+    protected readonly Configurations Config;
+    public MQTThelper MqttHelper;
+    protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
+    public Mutex robotAtInput;
+    public Mutex robotAtOutput;
+    public bool Working { get; private set; }
+    public enum MpsType {
+        BaseStation = 100,
+        RingStation = 200,
+        CapStation = 300,
+        DeliveryStation = 400,
+        StorageStation = 500
+    }
+    public enum Actions : ushort {
+        Reset = 0,
+        NoJob = 0,
+        MachineTyp = 10,
+        ResetLights = 20,
+        RedLight = 21,
+        YellowLight = 22,
+        GreenLight = 23,
+        RYGLight = 25
+    }
+    protected Mps(Configurations config, string name, bool debug = false, bool slideCount = false) {
+        // Constructor for basic member initializations
+        Config = config;
+        Name = name;
+        Debug = debug;
+
+        GotPlaced = false;
+        ProductAtOut = null;
+        ProductAtIn = null;
+        ProductOnBelt = null;
+        Rotation = 0;
+        Zone = Zone.MZ41;
+        Working = true;
+        robotAtInput = new Mutex();
+        robotAtOutput = new Mutex();
+
+        MyLogger = new MyLogger(Name, Debug);
+        MyLogger.Info("Starting Machine");
+
+        RedLight = new Light(LightColor.Red);
+        YellowLight = new Light(LightColor.Yellow);
+        GreenLight = new Light(LightColor.Green);
+
+
+        try {
+            MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, config, CommandEvent, MyLogger, slideCount);
         }
-        public enum Actions : ushort {
-            Reset = 0,
-            NoJob = 0,
-            MachineTyp = 10,
-            ResetLights = 20,
-            RedLight = 21,
-            YellowLight = 22,
-            GreenLight = 23,
-            RYGLight = 25
+        catch (Exception e) {
+            Console.WriteLine(e);
+            throw new Exception("Could not connect to MQTT Broker!");
+            //TODO add recovery
         }
-        protected Mps(Configurations config, string name, bool debug = false, bool slideCount = false) {
-            // Constructor for basic member initializations
-            Config = config;
-            Name = name;
-            Debug = debug;
+    }
 
-            GotConnection = false;
-            GotPlaced = false;
-            ProductAtOut = null;
-            ProductAtIn = null;
-            ProductOnBelt = null;
-            Rotation = 0;
-            Zone = Zone.MZ41;
-            Working = true;
-            robotAtInput = new Mutex();
-            robotAtOutput = new Mutex();
+    protected abstract void Work();
+    public void Run() {
+        Work();
+    }
 
-            MyLogger = new MyLogger(Name, Debug);
-            MyLogger.Info("Starting Machine");
+    //TODO MAKE VIRTUAL AND IMPLEMENT THE DIFFERENT MACHINES
+    public void ResetMachine() {
+        MqttHelper.SetStatus(MQTTStatus.BUSY);
+        Thread.Sleep(1000);
 
-            RedLight = new Light(LightColor.Red);
-            YellowLight = new Light(LightColor.Yellow);
-            GreenLight = new Light(LightColor.Green);
+        ProductAtIn = null;
+        ProductAtOut = null;
+        ProductOnBelt = null;
+        MqttHelper.SetStatus(MQTTStatus.READY);
+    }
 
+    public void StartTask() {
+        MqttHelper.SetStatus(MQTTStatus.BUSY);
+    }
 
-            try {
-                MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, config, CommandEvent, MyLogger, slideCount);
-            }
-            catch (Exception e) {
-                Console.WriteLine(e);
-                throw new Exception("Could not connect to MQTT Broker!");
-                //TODO add recovery
-            }
-        }
+    public void FinishedTask() {
+        Thread.Sleep(250);
+        MqttHelper.SetStatus(MQTTStatus.READY);
+        Thread.Sleep(250);
+    }
 
-        protected abstract void Work();
-        public void Run() {
-            Work();
-        }
+    public void HandleLights(MQTTCommand command) {
+        StartTask();
 
-        //TODO MAKE VIRTUAL AND IMPLEMENT THE DIFFERENT MACHINES
-        public void ResetMachine() {
-            MqttHelper.SetStatus(MQTTStatus.BUSY);
-            Thread.Sleep(1000);
-
-            ProductAtIn = null;
-            ProductAtOut = null;
-            ProductOnBelt = null;
-            MqttHelper.SetStatus(MQTTStatus.READY);
-        }
-
-        public void StartTask() {
-            MqttHelper.SetStatus(MQTTStatus.BUSY);
-        }
-
-        public void FinishedTask() {
-            Thread.Sleep(250);
-            MqttHelper.SetStatus(MQTTStatus.READY);
-            Thread.Sleep(250);
-        }
-
-        public void HandleLights(MQTTCommand command) {
-            StartTask();
-
-            string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
-            switch (command.arg1) {
-                case ARG1.RESET:
-                    MyLogger.Log("Handle Lights got a ResetLights task!");
+        string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
+        switch (command.arg1) {
+            case ARG1.RESET:
+                MyLogger.Log("Handle Lights got a ResetLights task!");
+                RedLight.SetLight(LightState.Off);
+                YellowLight.SetLight(LightState.Off);
+                GreenLight.SetLight(LightState.Off);
+                break;
+            case ARG1.RED:
+                if (command.arg2 == ARG2.ON)
+                    RedLight.SetLight(LightState.On);
+                else if (command.arg2 == ARG2.OFF)
                     RedLight.SetLight(LightState.Off);
+                else if (command.arg2 == ARG2.BLINK)
+                    RedLight.SetLight(LightState.Blink);
+                MyLogger.Log("Handle Lights got a RedLight task with [" + name + "]!");
+                break;
+            case ARG1.YELLOW:
+                if (command.arg2 == ARG2.ON)
+                    YellowLight.SetLight(LightState.On);
+                else if (command.arg2 == ARG2.OFF)
                     YellowLight.SetLight(LightState.Off);
+                else if (command.arg2 == ARG2.BLINK)
+                    YellowLight.SetLight(LightState.Blink);
+                MyLogger.Log("Handle Lights got a YellowLight task with [" + name + "]!");
+                break;
+            case ARG1.GREEN:
+                if (command.arg2 == ARG2.ON)
+                    GreenLight.SetLight(LightState.On);
+                else if (command.arg2 == ARG2.OFF)
                     GreenLight.SetLight(LightState.Off);
-                    break;
-                case ARG1.RED:
-                    if (command.arg2 == ARG2.ON)
-                        RedLight.SetLight(LightState.On);
-                    else if (command.arg2 == ARG2.OFF)
-                        RedLight.SetLight(LightState.Off);
-                    else if (command.arg2 == ARG2.BLINK)
-                        RedLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a RedLight task with [" + name + "]!");
-                    break;
-                case ARG1.YELLOW:
-                    if (command.arg2 == ARG2.ON)
-                        YellowLight.SetLight(LightState.On);
-                    else if (command.arg2 == ARG2.OFF)
-                        YellowLight.SetLight(LightState.Off);
-                    else if (command.arg2 == ARG2.BLINK)
-                        YellowLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a YellowLight task with [" + name + "]!");
-                    break;
-                case ARG1.GREEN:
-                    if (command.arg2 == ARG2.ON)
-                        GreenLight.SetLight(LightState.On);
-                    else if (command.arg2 == ARG2.OFF)
-                        GreenLight.SetLight(LightState.Off);
-                    else if (command.arg2 == ARG2.BLINK)
-                        GreenLight.SetLight(LightState.Blink);
-                    MyLogger.Log("Handle Lights got a GreenLight task with [" + name + "]!");
-                    break;
-                default:
-                    break;
-            }
-
-            FinishedTask();
+                else if (command.arg2 == ARG2.BLINK)
+                    GreenLight.SetLight(LightState.Blink);
+                MyLogger.Log("Handle Lights got a GreenLight task with [" + name + "]!");
+                break;
+            default:
+                break;
         }
 
-        public void HandleBelt(MQTTCommand command) {
-            MyLogger.Log("Got a Band on Task!");
-            StartTask();
-            MyLogger.Log("Product on belt?");
-            for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
-                Thread.Sleep(200);
-            }
-            if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
-                MyLogger.Log("Still no Product on the Belt!");
-                return;
-            }
-            MyLogger.Log("Product on belt!");
-            MyLogger.Log("Product is moving on the belt!");
-            Thread.Sleep(Config.BeltActionDuration);
-            string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
-            MyLogger.Log("Product has reached its destination [" + name + "]!");
-            switch (command.arg2) {
-                case ARG2.IN:
-                    ProductAtIn = ProductOnBelt;
-                    ProductOnBelt = null;
-                    MyLogger.Log("We place the Product onto the InputBeltPosition");
-                    if (Config.BarcodeScanner && ProductAtIn != null) {
-                        MqttHelper.SetBarcode(ProductAtIn.ID);
-                    }
-                    break;
-                case ARG2.OUT:
-                    ProductAtOut = ProductOnBelt;
-                    ProductOnBelt = null;
-                    MyLogger.Log("We place the Product onto the OutBeltPosition");
-                    break;
-                case ARG2.MID:
-                    if (command.arg1 == ARG1.TO_OUTPUT) {
-                        ProductOnBelt = ProductAtIn;
-                        ProductAtIn = null;
-                    }
-                    else {
-                        ProductOnBelt = ProductAtOut;
-                        ProductAtOut = null;
-                    }
-                    MyLogger.Log("We place the Product onto the Middle of the belt");
-                    break;
-            }
-            //Belt.SetTarget(target, direction);
-            FinishedTask();
-        }
+        FinishedTask();
+    }
 
-        public virtual bool PlaceProduct(string machinePoint, Products heldProduct) {
-            //MyLogger.Log("Got a PlaceProduct!");
-            switch (machinePoint.ToLower()) {
-                case "input":
-                    if (ProductAtIn != null)
-                        return false;
-                    ProductAtIn = heldProduct;
-                    return true;
-                case "output":
-                    if (ProductAtOut != null)
-                        return false;
-                    ProductAtOut = heldProduct;
-                    return true;
-                default:
-                    MyLogger.Log("Defaulting!?");
-                    if (ProductAtIn != null)
-                        return false;
-                    ProductAtIn = heldProduct;
-                    return true;
-            }
+    public void HandleBelt(MQTTCommand command) {
+        MyLogger.Log("Got a Band on Task!");
+        StartTask();
+        MyLogger.Log("Product on belt?");
+        for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
+            Thread.Sleep(200);
         }
-        public virtual Products? RemoveProduct(string machinePoint) {
-            Products? returnProduct;
-            switch (machinePoint.ToLower()) {
-                case "input":
-                    returnProduct = ProductAtIn;
+        if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
+            MyLogger.Log("Still no Product on the Belt!");
+            return;
+        }
+        MyLogger.Log("Product on belt!");
+        MyLogger.Log("Product is moving on the belt!");
+        Thread.Sleep(Config.BeltActionDuration);
+        string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
+        MyLogger.Log("Product has reached its destination [" + name + "]!");
+        switch (command.arg2) {
+            case ARG2.IN:
+                ProductAtIn = ProductOnBelt;
+                ProductOnBelt = null;
+                MyLogger.Log("We place the Product onto the InputBeltPosition");
+                if (Config.BarcodeScanner && ProductAtIn != null) {
+                    MqttHelper.SetBarcode(ProductAtIn.ID);
+                }
+                break;
+            case ARG2.OUT:
+                ProductAtOut = ProductOnBelt;
+                ProductOnBelt = null;
+                MyLogger.Log("We place the Product onto the OutBeltPosition");
+                break;
+            case ARG2.MID:
+                if (command.arg1 == ARG1.TO_OUTPUT) {
+                    ProductOnBelt = ProductAtIn;
                     ProductAtIn = null;
-                    break;
-                case "output":
-                    returnProduct = ProductAtOut;
+                }
+                else {
+                    ProductOnBelt = ProductAtOut;
                     ProductAtOut = null;
-                    break;
-                default:
-                    MyLogger.Log("Defaulting!?");
-                    returnProduct = ProductAtIn;
-                    ProductAtIn = null;
-                    break;
-            }
-            return returnProduct;
+                }
+                MyLogger.Log("We place the Product onto the Middle of the belt");
+                break;
         }
-        public bool EmptyMachinePoint(string machinepoint) {
-            //MyLogger.Log("Checking the MachinePoint " + machinepoint);
-            switch (machinepoint.ToLower()) {
-                case "input":
-                    return ProductAtIn == null;
-                case "output":
-                    return ProductAtOut == null;
-                case "slide":
-                    return true;
-                case "shelf1":
-                case "shelf2":
-                case "shelf3":
+        //Belt.SetTarget(target, direction);
+        FinishedTask();
+    }
+
+    public virtual bool PlaceProduct(string machinePoint, Products heldProduct) {
+        //MyLogger.Log("Got a PlaceProduct!");
+        switch (machinePoint.ToLower()) {
+            case "input":
+                if (ProductAtIn != null)
                     return false;
-                //TODO USE OF THE SHELF AND THEN RESTOCKING
-                default:
+                ProductAtIn = heldProduct;
+                return true;
+            case "output":
+                if (ProductAtOut != null)
                     return false;
-            }
+                ProductAtOut = heldProduct;
+                return true;
+            default:
+                MyLogger.Log("Defaulting!?");
+                if (ProductAtIn != null)
+                    return false;
+                ProductAtIn = heldProduct;
+                return true;
+        }
+    }
+    public virtual Products? RemoveProduct(string machinePoint) {
+        Products? returnProduct;
+        switch (machinePoint.ToLower()) {
+            case "input":
+                returnProduct = ProductAtIn;
+                ProductAtIn = null;
+                break;
+            case "output":
+                returnProduct = ProductAtOut;
+                ProductAtOut = null;
+                break;
+            default:
+                MyLogger.Log("Defaulting!?");
+                returnProduct = ProductAtIn;
+                ProductAtIn = null;
+                break;
+        }
+        return returnProduct;
+    }
+    public bool EmptyMachinePoint(string machinepoint) {
+        //MyLogger.Log("Checking the MachinePoint " + machinepoint);
+        switch (machinepoint.ToLower()) {
+            case "input":
+                return ProductAtIn == null;
+            case "output":
+                return ProductAtOut == null;
+            case "slide":
+                return true;
+            case "shelf1":
+            case "shelf2":
+            case "shelf3":
+                return false;
+            //TODO USE OF THE SHELF AND THEN RESTOCKING
+            default:
+                return false;
         }
     }
 }

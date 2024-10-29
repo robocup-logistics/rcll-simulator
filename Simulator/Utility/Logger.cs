@@ -1,93 +1,92 @@
 ﻿using Serilog;
 
-namespace Simulator.Utility {
-    public class MyLogger {
-        private readonly bool Debug;
-        private readonly string Prefix;
-        private readonly string Filename;
-        private readonly string LogsFolder;
-        private readonly Mutex Mutex = new Mutex();
-        private Serilog.Core.Logger? Logger;
-        public enum LogTypes {
-            Info, Error, Warning
-        }
-        public MyLogger(string prefix, bool debug) {
-            Debug = debug;
-            Prefix = "[" + prefix + "] ";
-            Prefix = "";
-            LogsFolder = "logs" + Path.DirectorySeparatorChar;
-            Filename = LogsFolder + prefix + ".log";
-            //Console.WriteLine(Directory.GetCurrentDirectory() + "Writing to  : " + Filename);
-            Logger = new LoggerConfiguration()
-                .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-                .CreateLogger();
+namespace Simulator.Utility;
+public class MyLogger {
+    private readonly bool Debug;
+    private readonly string Prefix;
+    private readonly string Filename;
+    private readonly string LogsFolder;
+    private readonly Mutex Mutex = new Mutex();
+    private Serilog.Core.Logger? Logger;
+    public enum LogTypes {
+        Info, Error, Warning
+    }
+    public MyLogger(string prefix, bool debug) {
+        Debug = debug;
+        Prefix = "[" + prefix + "] ";
+        Prefix = "";
+        LogsFolder = "logs" + Path.DirectorySeparatorChar;
+        Filename = LogsFolder + prefix + ".log";
+        //Console.WriteLine(Directory.GetCurrentDirectory() + "Writing to  : " + Filename);
+        Logger = new LoggerConfiguration()
+            .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
 
-            Log("------------------------------------------");
-            Log("Starting new logging session at " + DateTime.Now);
-        }
+        Log("------------------------------------------");
+        Log("Starting new logging session at " + DateTime.Now);
+    }
 
-        public void Log(string text) {
-            if (Debug) {
-                Mutex.WaitOne();
-                Logger?.Information(text);
-                Mutex.ReleaseMutex();
-            }
-        }
-
-        public void Log(byte[] text) {
-            if (Debug) {
-                Mutex.WaitOne();
-                foreach (var b in text) {
-                    Write(b);
-                }
-                Mutex.ReleaseMutex();
-            }
-        }
-        public void Info(string text) {
-            if (Debug) {
-                Mutex.WaitOne();
-                Logger?.Information(text);
-                Mutex.ReleaseMutex();
-            }
-        }
-
-        private void WriteLine(string prefix, string text) {
+    public void Log(string text) {
+        if (Debug) {
             Mutex.WaitOne();
-            using (var w = File.AppendText(Filename)) {
-                Log(prefix, text, w);
-                //Console.WriteLine(prefix + text);
+            Logger?.Information(text);
+            Mutex.ReleaseMutex();
+        }
+    }
+
+    public void Log(byte[] text) {
+        if (Debug) {
+            Mutex.WaitOne();
+            foreach (var b in text) {
+                Write(b);
             }
             Mutex.ReleaseMutex();
-            /*using (StreamReader r = File.OpenText("log.txt"))
-            {
-                DumpLog(r);
-            }*/
         }
-        private void Write(byte text) {
-            using (var w = File.AppendText(Filename)) {
-                Log("", text.ToString(), w);
-                //Console.Write(text);
-            }
+    }
+    public void Info(string text) {
+        if (Debug) {
+            Mutex.WaitOne();
+            Logger?.Information(text);
+            Mutex.ReleaseMutex();
+        }
+    }
 
-            /*using (StreamReader r = File.OpenText("log.txt"))
-            {
-                DumpLog(r);
-            }*/
+    private void WriteLine(string prefix, string text) {
+        Mutex.WaitOne();
+        using (var w = File.AppendText(Filename)) {
+            Log(prefix, text, w);
+            //Console.WriteLine(prefix + text);
         }
-        public static void Log(string prefix, string logMessage, TextWriter w) {
-            //removed prefix for now
-            //w.Write($"{prefix}: ");
-            //w.Write($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-            //w.WriteLine("  :");
-            //Logger.Information($"{logMessage}");
-            //w.WriteLine("-------------------------------");
+        Mutex.ReleaseMutex();
+        /*using (StreamReader r = File.OpenText("log.txt"))
+        {
+            DumpLog(r);
+        }*/
+    }
+    private void Write(byte text) {
+        using (var w = File.AppendText(Filename)) {
+            Log("", text.ToString(), w);
+            //Console.Write(text);
         }
 
-        public static void DumpLog(StreamReader r) {
-            string? line;
-            while ((line = r.ReadLine()) != null) {
-                Console.WriteLine(line);
-            }
+        /*using (StreamReader r = File.OpenText("log.txt"))
+        {
+            DumpLog(r);
+        }*/
+    }
+    public static void Log(string prefix, string logMessage, TextWriter w) {
+        //removed prefix for now
+        //w.Write($"{prefix}: ");
+        //w.Write($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
+        //w.WriteLine("  :");
+        //Logger.Information($"{logMessage}");
+        //w.WriteLine("-------------------------------");
+    }
+
+    public static void DumpLog(StreamReader r) {
+        string? line;
+        while ((line = r.ReadLine()) != null) {
+            Console.WriteLine(line);
         }
     }
 }
