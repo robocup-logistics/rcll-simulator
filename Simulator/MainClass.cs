@@ -5,7 +5,6 @@ using LlsfMsgs;
 
 //TODO dynamic gamefiled size
 //TODO Dynamic reload field
-//TODO fix time
 //TODO Reconnect everything
 //TODO Timeout machine failure
 
