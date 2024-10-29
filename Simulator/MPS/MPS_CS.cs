@@ -7,9 +7,21 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 namespace Simulator.MPS;
 public class MPS_CS : Mps {
     public CapElement? StoredCap { get; private set; }
+    private Products? ShelfLeft;
+    private Products? ShelfMiddle;
+    private Products? ShelfRight;
     public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
         Type = MpsType.CapStation;
         StoredCap = null;
+        Replanish();
+    }
+
+    //TODO CONFIG
+    public void Replanish() {
+        ShelfLeft = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+        ShelfMiddle = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+        ShelfRight = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+
     }
 
     protected override void Work() {
@@ -87,19 +99,28 @@ public class MPS_CS : Mps {
                 returnProduct = ProductAtIn;
                 ProductAtIn = null;
                 break;
-            case "shelf3":
-            case "shelf2":
             case "shelf1":
             case "left":
+                returnProduct = ShelfLeft;
+                ShelfLeft = null;
+                break;
+            case "shelf2":
             case "middle":
+                returnProduct = ShelfRight;
+                ShelfRight = null;
+                break;
+            case "shelf3":
             case "right":
-                //TODO REPLANISHMENT
-                returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                returnProduct = ShelfLeft;
+                ShelfLeft = null;
                 break;
             default:
                 MyLogger.Log("Defaulting!?");
-                returnProduct = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+                returnProduct = null;
                 break;
+        }
+        if(ShelfLeft == null && ShelfMiddle == null && ShelfRight == null) {
+            Replanish();
         }
         return returnProduct;
     }
