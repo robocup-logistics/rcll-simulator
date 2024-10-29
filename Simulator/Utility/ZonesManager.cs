@@ -9,11 +9,20 @@ public class ZonesManager {
     private static ZonesManager? Instance;
     public Mutex ZoneManagerMutex;
     private MyLogger MyLogger;
+
+    private static readonly object _lock = new object();
     /// <returns>
     /// Returns the instance of the Configurations Singleton
     /// </returns>
     public static ZonesManager GetInstance() {
-        return Instance ??= new ZonesManager();
+        if (Instance == null) {
+            lock (_lock) {
+                if (Instance == null) {
+                    Instance = new ZonesManager();
+                }
+            }
+        }
+        return Instance;
     }
 
     private ZonesManager() {

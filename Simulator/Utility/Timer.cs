@@ -7,21 +7,29 @@ public class Timer {
     public float TimeFactor { get; private set; }
 
     private MyLogger MyLogger;
-    private Mutex TimerMutex;
+    private static Mutex TimerMutex = new Mutex();
 
     private static Timer? Instance;
     private Configurations Config;
 
     Thread Tickthread;
+    private static readonly object _lock = new object();
     /// <returns>
     /// Returns the instance of the Configurations Singleton
     /// </returns>
     public static Timer GetInstance(Configurations config) {
-        return Instance ?? (Instance = new Timer(config));
+        if (Instance == null) {
+            lock (_lock) {
+                if (Instance == null) {
+                    Instance = new Timer(config);
+                }
+            }
+        }
+        return Instance;
     }
     private Timer(Configurations config) {
         DateTime now = DateTime.Now;
-        Sec = (int)(now - DateTime.UnixEpoch).TotalSeconds;
+        Sec = 0;
         Nsec = 0;
         Config = config;
         TimeFactor = Config.TimeFactor;
@@ -49,10 +57,10 @@ public class Timer {
     }
     public void Tick() {
         while (true) {
-            Nsec += Convert.ToInt64(500 * TimeFactor);
-            if (Nsec >= 1000) {
-                Sec += Convert.ToInt64(1);
-                Nsec -= 1000;
+            Nsec += (long)(500_000 * TimeFactor);
+            if (Nsec >= 1_000_000_000) {
+                Sec += 1;
+                Nsec -= 1_000_000_000;
             }
             Thread.Sleep(500);
         }
