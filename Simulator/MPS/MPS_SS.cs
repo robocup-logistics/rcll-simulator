@@ -8,6 +8,10 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
 
     public MPS_SS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
         Type = MpsType.StorageStation;
+        ResetStorage();
+    }
+
+    public void ResetStorage() {
         List<Products?> baseList = Enumerable.Repeat<Products?>(null, SlotCount).ToList();
         Storage = Enumerable.Repeat(baseList, ShelfCount).ToList();
         Storage[0][1] = new Products(BaseColor.BaseRed, CapColor.CapGrey);
@@ -55,6 +59,11 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
                 CommandMutex.ReleaseMutex();
             }
         }
+    }
+
+    public override void ResetMachine() {
+        base.ResetMachine();
+        ResetStorage();
     }
 
     public void HandleStore(MQTTCommand command) {

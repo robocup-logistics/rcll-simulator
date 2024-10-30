@@ -16,12 +16,16 @@ public class MPS_CS : Mps {
         Replanish();
     }
 
-    //TODO CONFIG
+    public override void ResetMachine() {
+        base.ResetMachine();
+        StoredCap = null;
+        Replanish();
+    }
+    //TODO CONFIG FROM REFBOX
     public void Replanish() {
         ShelfLeft = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
         ShelfMiddle = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
         ShelfRight = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
-
     }
 
     protected override void Work() {

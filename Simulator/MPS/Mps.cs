@@ -78,8 +78,7 @@ public abstract class Mps {
         Work();
     }
 
-    //TODO MAKE VIRTUAL AND IMPLEMENT THE DIFFERENT MACHINES
-    public void ResetMachine() {
+    public virtual void ResetMachine() {
         MqttHelper.SetStatus(MQTTStatus.BUSY);
         Thread.Sleep(1000);
 
