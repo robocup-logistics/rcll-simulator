@@ -42,7 +42,6 @@ abstract class ConnectorBase {
 
     protected void MessageReceived(byte[] message) {
         if (PbHandler == null) {
-            //TODO CHANGE TO ERROR MESSAGE
             throw new Exception("PbHandler is null");
         }
         PbHandler.HandleMessage(message);

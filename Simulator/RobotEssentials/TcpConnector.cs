@@ -45,6 +45,7 @@ class TcpConnector : ConnectorBase {
         ConnectThread.Name = Robot.RobotName + "Manager_TCP_SendThread";
 
         PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
+        PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
 
         listenEndpoint = new IPEndPoint(IPAddress.Any, robot.RobotConfig.RecvPort);
         ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
@@ -60,7 +61,30 @@ class TcpConnector : ConnectorBase {
     }
 
     public void SendToAgent() {
-        //TODO SEND AGENT TASK MESSAGES PERIODICALLY TO THE AGENT PROBABLY IMPLEMENT IN THE BASE CLASS
+        if (PbFactory == null) {
+            throw new Exception("PBFactory is null");
+        }
+        while (Running) {
+            try {
+                var task = PbFactory.GetAgentTask();
+                if (task != null) {
+                    ConnectSocket.Send(task.GetBytes());
+                }
+                Thread.Sleep(500);
+                var lastTask = PbFactory.GetLastTask();
+                if (lastTask != null) {
+                    ConnectSocket.Send(lastTask.GetBytes());
+                }
+                Thread.Sleep(500);
+            }
+            catch (SocketException se) {
+                MyLogger.Log(se + " - Socket exception occurred in the SendToAgentThread!");
+                return;
+            }
+            catch (Exception e) {
+                MyLogger.Log(e + " - Something went wrong with the SendToAgentThread!");
+            }
+        }
     }
 
     public void AcceptClients() {
