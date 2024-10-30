@@ -8,11 +8,13 @@ namespace Simulator.RobotEssentials;
 class PBMessageHandlerMachineManager : PBMessageHandlerBase {
     private readonly MpsManager mpsManager_;
     private readonly RobotManager robotManager_;
+    private readonly ZonesManager zonesManager_;
 
     public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, RobotManager robotManager, MyLogger log)
         : base(config, log) {
         mpsManager_ = mpsManager;
         robotManager_ = robotManager;
+        zonesManager_ = ZonesManager.GetInstance();
     }
 
     #region Message Handling
@@ -53,13 +55,13 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
                 MyLogger.Log("MachineInfo is not containing all machines!");
                 return false;
             }
-            ZonesManager.GetInstance().ZoneManagerMutex.WaitOne();
+            zonesManager_.ZoneManagerMutex.WaitOne();
             if (mpsManager_.AllMachineSet) {
                 ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
                 return true;
             }
             mpsManager_.PlaceMachines(machineInfo);
-            ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
+            zonesManager_.ZoneManagerMutex.ReleaseMutex();
             return true;
         }
         catch (Exception e) {

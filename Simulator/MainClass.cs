@@ -7,7 +7,6 @@ using LlsfMsgs;
 //TODO Dynamic reload field
 //TODO Reconnect everything
 //TODO Timeout machine failure
-//TODO INSERTION ZONE
 //TODO don't move into machine zonees
 
 namespace Simulator {
@@ -17,7 +16,7 @@ namespace Simulator {
         private static MpsManager? MachineManager;
         private static ZonesManager? ZoneManager;
         private static Configurations? Config;
-        private static Thread? RefboxThread;
+        private static TcpConnector? RefboxConnector;
 
 
         private static void Main(string[] args) {
@@ -52,8 +51,8 @@ namespace Simulator {
             Console.Write("Starting the Robots ... ");
             RobotManager = new RobotManager(Config, MachineManager);
             Console.WriteLine("done!");
-            RefboxThread = new Thread(() => new TcpConnector(Config, Config.Refbox.IP, Config.Refbox.TcpPort, MachineManager, RobotManager, MainLogger));
-            RefboxThread.Start();
+            RefboxConnector = new TcpConnector(Config, Config.Refbox.IP,
+                                                Config.Refbox.TcpPort, MachineManager, RobotManager, new MyLogger("RefboxPublic", true));
             Console.Write("Creating the Zones ... ");
             ZoneManager = ZonesManager.GetInstance();
             Console.WriteLine("done!");

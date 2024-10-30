@@ -53,6 +53,17 @@ public class ZonesManager {
 
         MyLogger.Log("Starting to add Neighborhood");
         AddNeighborhood();
+        SetInsertionZone();
+    }
+
+    //Removes the Insertionzones Connection
+    public void SetInsertionZone() {
+        Dictionary[Zone.MZ71].SetNeighborhood(Dictionary[Zone.MZ61]);
+        Dictionary[Zone.MZ61].SetNeighborhood(Dictionary[Zone.MZ51]);
+        Dictionary[Zone.MZ51].SetNeighborhood(Dictionary[Zone.MZ52]);
+        Dictionary[Zone.CZ71].SetNeighborhood(Dictionary[Zone.CZ61]);
+        Dictionary[Zone.CZ61].SetNeighborhood(Dictionary[Zone.CZ51]);
+        Dictionary[Zone.CZ51].SetNeighborhood(Dictionary[Zone.CZ52]);
     }
 
     public CZones? GetZone(Zone zone) {
@@ -348,6 +359,11 @@ public class CZones {
 
     public List<CZones> GetNeighborhood() {
         return NeighborsList;
+    }
+
+    public void SetNeighborhood(CZones zones) {
+        NeighborsList.Clear();
+        NeighborsList.Add(zones);
     }
 
 }
