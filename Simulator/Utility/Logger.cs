@@ -11,6 +11,7 @@ public class MyLogger {
     public enum LogTypes {
         Info, Error, Warning
     }
+    //TODO Proper Logging
     public MyLogger(string prefix, bool debug) {
         Debug = debug;
         Prefix = "[" + prefix + "] ";

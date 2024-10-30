@@ -19,6 +19,7 @@ public partial class Robot {
     private RobotState RobotState;
     public CZones? EntryZone;
     public CZones CurrentZone { get; private set; }
+    public CZones HomeZone { get; private set; }
     public RobotConfig RobotConfig;
     //if the robot enters a machine, the input/output mutex that gets locked
     //will be stored here as a reference to make sure it releases it on leaving the input/output
@@ -134,15 +135,18 @@ public partial class Robot {
         RobotState = RobotState.Active;
 
         MpsManager = mpsManager;
-        //I don't know why i have to set it in the constructor it self and the SetZone function but i get compiler warnings otherwise.
+        HomeZone = startZone;
         CurrentZone = startZone;
         Position = new CPosition(startZone.X, startZone.Y, 180);
-        SetZone(startZone);
     }
 
     public void HandleAgentTaskMessage(AgentTask task) {
         if (task.TeamColor != TeamColor || task.RobotId != JerseyNumber) {
             MyLogger.Log("Got a task thats not for me. I ignore it!");
+            return;
+        }
+        if (RobotState != RobotState.Active) {
+            MyLogger.Log("Robot is not active. Ignoring the task");
             return;
         }
         TaskMutex.WaitOne();
@@ -170,27 +174,31 @@ public partial class Robot {
         }
     }
 
+    //RobotInfo and AgetTask can both call this function to prevent race conditons
+    private object CancelLock = new Object();
     public bool CancelCurrentTask() {
-        canceling = true;
-        cancelBarrier.SignalAndWait();
-        TaskMutex.WaitOne();
-        // The Robot work thread will be stopped until Signaled Again
-        try {
-            if (_currentTask == null) {
-                // Task already finished
-                return false;
-            }
-
-            _currentTask.Canceled = true;
-            _currentTask.Successful = false;
-            LastTask = _currentTask;
-            return true;
-        }
-        finally {
-            // The Robot work thread can continue now
-            canceling = false;
-            TaskMutex.ReleaseMutex();
+        lock(CancelLock) {
+            canceling = true;
             cancelBarrier.SignalAndWait();
+            TaskMutex.WaitOne();
+            // The Robot work thread will be stopped until Signaled Again
+            try {
+                if (_currentTask == null) {
+                    // Task already finished
+                    return false;
+                }
+
+                _currentTask.Canceled = true;
+                _currentTask.Successful = false;
+                LastTask = _currentTask;
+                return true;
+            }
+            finally {
+                // The Robot work thread can continue now
+                canceling = false;
+                TaskMutex.ReleaseMutex();
+                cancelBarrier.SignalAndWait();
+            }
         }
     }
 
@@ -269,7 +277,19 @@ public partial class Robot {
     }
 
     public void HandleRobotInfo(LlsfMsgs.Robot info) {
-        //TODO
+        if(info.State == RobotState.Maintenance) {
+            RobotState = RobotState.Maintenance;
+            CancelCurrentTask();
+            HeldProduct = null;
+            SetZone(HomeZone);
+        } else if(info.State == RobotState.Disqualified) {
+            RobotState = RobotState.Disqualified;
+            CancelCurrentTask();
+            HeldProduct = null;
+            SetZone(HomeZone);
+        } else {
+            RobotState = RobotState.Active;
+        }
     }
 
     public void HandleActive() {
@@ -312,13 +332,13 @@ public partial class Robot {
                 HandleActive();
                 break;
             case RobotState.Disqualified:
-                //TODO
+                Thread.Sleep(500);
                 break;
             case RobotState.Maintenance:
-                //TODO
+                Thread.Sleep(500);
                 break;
             default:
-                break;
+                throw new Exception("Unknown Robot State");
         }
 
         Thread.Sleep(500);

@@ -38,7 +38,7 @@ public class RobotManager {
     public void HandleRobotInfo(RobotInfo robotInfo) {
         foreach (var info in robotInfo.Robots) {
             foreach (var robot in Robots) {
-                if (robot.JerseyNumber == info.Number) {
+                if (robot.JerseyNumber == info.Number && robot.TeamColor == info.TeamColor) {
                     robot.HandleRobotInfo(info);
                 }
             }
