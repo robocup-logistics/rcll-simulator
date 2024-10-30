@@ -9,6 +9,7 @@ public class MQTThelper {
     private IMqttClient Client;
     private string CommandToppic;
     private MqttFactory MqttFactory;
+    private Mutex CommandMutex;
     private string Name;
     private string Url;
     private string TopicPrefix;
@@ -29,16 +30,17 @@ public class MQTThelper {
     private Configurations Config;
 
     public MQTThelper(string name, string url, int port, Configurations config,
-                      ManualResetEvent command_event, MyLogger logger,
+                      ManualResetEvent commandEvent, Mutex commandMutex, MyLogger logger,
                       bool slideCount = false) {
         Name = name;
         MyLogger = logger;
         Url = url;
         CommandToppic = $"MPS/{Name}/Command";
         TopicPrefix = $"MPS/{Name}/";
-        CommandEvent = command_event;
+        CommandEvent = commandEvent;
         command = new MQTTCommand();
         Config = config;
+        CommandMutex = commandMutex;
 
         MqttFactory = new MqttFactory();
         Client = MqttFactory.CreateMqttClient();
@@ -69,24 +71,28 @@ public class MQTThelper {
             MyLogger.Log($"Received Command {payload}");
             var m_command = new MQTTCommand(payload);
             if (m_command.validate()) {
-                //FIXME POTENTIALY RACY
+            CommandMutex.WaitOne();
+            try{
                 command = m_command;
                 CommandEvent.Set();
+            } finally {
+                CommandMutex.ReleaseMutex();
             }
         }
-        else {
-            MyLogger.Log($"Received unknown topic {topic_name}");
-        }
-
-        return Task.CompletedTask;
+    }
+    else {
+        MyLogger.Log($"Received unknown topic {topic_name}");
     }
 
-    public void Subscribe() {
-        var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => { f.WithTopic(CommandToppic); })
-            .Build();
+    return Task.CompletedTask;
+}
 
-        var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
+public void Subscribe() {
+    var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
+        .WithTopicFilter(f => { f.WithTopic(CommandToppic); })
+        .Build();
+
+    var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
         MyLogger.Log("Created Subscriptions");
     }
 

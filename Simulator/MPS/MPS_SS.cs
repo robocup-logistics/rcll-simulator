@@ -15,33 +15,38 @@ public class MPS_SS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            var command = MqttHelper.command;
-            switch (command.command) {
-                case COMMAND.RESET:
-                    ResetMachine();
-                    break;
-                case COMMAND.LIGHT:
-                    HandleLights(command);
-                    break;
-                case COMMAND.MOVE_CONVEYOR:
-                    HandleBelt(command);
-                    break;
-                case COMMAND.STORE:
-                    //TODO NOT IMPLEMENTED
-                    MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
-                    break;
-                case COMMAND.RETRIEVE:
-                    //TODO NOT IMPLEMENTED
-                    MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
-                    break;
-                case COMMAND.RELOCATE:
-                    //TODO NOT IMPLEMENTED
-                    MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
-                    break;
-                default:
-                    MyLogger.Log("Unhandelt ActionType: " + command.command);
-                    break;
+            CommandMutex.WaitOne();
 
+            try{
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
+                        ResetMachine();
+                        break;
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
+                        break;
+                    case COMMAND.MOVE_CONVEYOR:
+                        HandleBelt(command);
+                        break;
+                    case COMMAND.STORE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
+                        break;
+                    case COMMAND.RETRIEVE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
+                        break;
+                    case COMMAND.RELOCATE:
+                        //TODO NOT IMPLEMENTED
+                        MyLogger.Log("Got a Store Task! NOT IMPLEMENTED");
+                        break;
+                    default:
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        break;
+                }
+            } finally {
+                CommandMutex.ReleaseMutex();
             }
         }
     }

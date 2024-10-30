@@ -23,7 +23,8 @@ public abstract class Mps {
     public Products? ProductAtOut { get; set; }
     protected readonly Configurations Config;
     public MQTThelper MqttHelper;
-    protected ManualResetEvent CommandEvent = new ManualResetEvent(false);
+    protected ManualResetEvent CommandEvent;
+    public Mutex CommandMutex;
     public Mutex robotAtInput;
     public Mutex robotAtOutput;
     public bool Working { get; private set; }
@@ -34,16 +35,7 @@ public abstract class Mps {
         DeliveryStation = 400,
         StorageStation = 500
     }
-    public enum Actions : ushort {
-        Reset = 0,
-        NoJob = 0,
-        MachineTyp = 10,
-        ResetLights = 20,
-        RedLight = 21,
-        YellowLight = 22,
-        GreenLight = 23,
-        RYGLight = 25
-    }
+
     protected Mps(Configurations config, string name, bool debug = false, bool slideCount = false) {
         // Constructor for basic member initializations
         Config = config;
@@ -67,9 +59,12 @@ public abstract class Mps {
         YellowLight = new Light(LightColor.Yellow);
         GreenLight = new Light(LightColor.Green);
 
+        CommandEvent = new ManualResetEvent(false);
+        CommandMutex = new Mutex();
 
         try {
-            MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort, config, CommandEvent, MyLogger, slideCount);
+            MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort,
+                                        config, CommandEvent, CommandMutex, MyLogger, slideCount);
         }
         catch (Exception e) {
             Console.WriteLine(e);

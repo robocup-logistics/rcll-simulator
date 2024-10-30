@@ -37,24 +37,29 @@ public class MPS_BS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            var command = MqttHelper.command;
-            switch (command.command) {
-                case COMMAND.RESET:
-                    ResetMachine();
-                    break;
-                case COMMAND.LIGHT:
-                    HandleLights(command);
-                    break;
-                case COMMAND.GET_BASE:
-                    DispenseBase(command);
-                    break;
-                case COMMAND.MOVE_CONVEYOR:
-                    HandleBelt(command);
-                    break;
-                default:
-                    MyLogger.Log("Unhandelt ActionType: " + command.command);
-                    break;
+            CommandMutex.WaitOne();
 
+            try{
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
+                        ResetMachine();
+                        break;
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
+                        break;
+                    case COMMAND.GET_BASE:
+                        DispenseBase(command);
+                        break;
+                    case COMMAND.MOVE_CONVEYOR:
+                        HandleBelt(command);
+                        break;
+                    default:
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        break;
+                }
+            } finally {
+                CommandMutex.ReleaseMutex();
             }
         }
     }

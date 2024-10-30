@@ -19,24 +19,29 @@ public class MPS_DS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            var command = MqttHelper.command;
-            switch (command.command) {
-                case COMMAND.RESET:
-                    Slot1 = new List<Products>();
-                    Slot2 = new List<Products>();
-                    Slot3 = new List<Products>();
-                    ResetMachine();
-                    break;
-                case COMMAND.LIGHT:
-                    HandleLights(command);
-                    break;
-                case COMMAND.DELIVER:
-                    DeliverToSlotTask(command);
-                    break;
-                default:
-                    MyLogger.Log("Unhandelt ActionType: " + command.command);
-                    break;
+            CommandMutex.WaitOne();
 
+            try{
+                var command = MqttHelper.command;
+                switch (command.command) {
+                    case COMMAND.RESET:
+                        Slot1 = new List<Products>();
+                        Slot2 = new List<Products>();
+                        Slot3 = new List<Products>();
+                        ResetMachine();
+                        break;
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
+                        break;
+                    case COMMAND.DELIVER:
+                        DeliverToSlotTask(command);
+                        break;
+                    default:
+                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        break;
+                }
+            } finally {
+                CommandMutex.ReleaseMutex();
             }
         }
     }
