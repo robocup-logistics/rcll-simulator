@@ -208,11 +208,11 @@ public partial class Robot {
             if (_currentTask == null) {
                 throw new Exception("No Task to finish");
             }
-            //TODO REMOVE IF IT NEVER HAPPENS AND REMOVE THIS TASK PASING
-            //THROUGH AND JUST USE THE CURRENTTASK GLOBAL VARIABLE
+
             if (_currentTask.TaskId != task.TaskId) {
                 throw new Exception("RACECONDITION HAPPENED");
             }
+
             MyLogger.Info("Task " + task.TaskId + " was successful!");
             _currentTask.Successful = true;
             LastTask = _currentTask;
@@ -229,11 +229,11 @@ public partial class Robot {
             if (_currentTask == null) {
                 throw new Exception("No Task to finish");
             }
-            //TODO REMOVE IF IT NEVER HAPPENS AND REMOVE THIS TASK PASING
-            //THROUGH AND JUST USE THE CURRENTTASK GLOBAL VARIABLE
+
             if (_currentTask.TaskId != task.TaskId) {
                 throw new Exception("RACECONDITION HAPPENED");
             }
+
             _currentTask.Successful = false;
             _currentTask.ErrorCode = errorCode;
             LastTask = _currentTask;

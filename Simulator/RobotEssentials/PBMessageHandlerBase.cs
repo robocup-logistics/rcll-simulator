@@ -14,7 +14,7 @@ class PBMessageHandlerBase {
             MyLogger.Debug("The received Message is to short to be parsed!");
             return -1;
         }
-        //TODO FRAME HEADER I MAYBE DELETED TOO MUCH
+
         if (FrameHeader.Version != Stream[0]) {
             MyLogger.Warn("Version is different!");
             return -1;

@@ -233,8 +233,9 @@ public abstract class Mps {
         }
         return returnProduct;
     }
-    public bool EmptyMachinePoint(string machinepoint) {
-        //MyLogger.Log("Checking the MachinePoint " + machinepoint);
+
+    public virtual bool EmptyMachinePoint(string machinepoint) {
+        MyLogger.Debug("Checking the MachinePoint " + machinepoint);
         switch (machinepoint.ToLower()) {
             case "input":
                 return ProductAtIn == null;
@@ -242,11 +243,6 @@ public abstract class Mps {
                 return ProductAtOut == null;
             case "slide":
                 return true;
-            case "shelf1":
-            case "shelf2":
-            case "shelf3":
-                return false;
-            //TODO USE OF THE SHELF AND THEN RESTOCKING
             default:
                 return false;
         }

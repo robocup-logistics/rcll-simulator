@@ -150,4 +150,24 @@ public class MPS_CS : Mps {
         }
         return returnProduct;
     }
+
+    public override bool EmptyMachinePoint(string machinepoint) {
+        MyLogger.Debug("Checking the MachinePoint " + machinepoint);
+        switch (machinepoint.ToLower()) {
+            case "input":
+                return ProductAtIn == null;
+            case "output":
+                return ProductAtOut == null;
+            case "slide":
+                return true;
+            case "shelf1":
+                return ShelfLeft == null;
+            case "shelf2":
+                return ShelfMiddle == null;
+            case "shelf3":
+                return ShelfRight == null;
+            default:
+                return false;
+        }
+    }
 }
