@@ -12,18 +12,18 @@ public partial class Robot {
             "M-CS1", "M-CS2", "M-RS1", "M-RS2", "M-DS", "M-BS", "M-SS"
         };
 
-    private void BufferAtStation(AgentTask task){
+    private void BufferAtStation(AgentTask task) {
         string station = task.Buffer.MachineId;
         uint shelf = task.Buffer.ShelfNumber;
 
         Regex pattern = new Regex("(M|C)-CS(1|2)");
-        if(!pattern.IsMatch(station)){
+        if (!pattern.IsMatch(station)) {
             MyLogger.Log("The station is not a CapStation!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
         }
 
-        if(shelf < 1 || shelf > 3){
+        if (shelf < 1 || shelf > 3) {
             MyLogger.Log("The shelf number is invalid!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
@@ -33,14 +33,14 @@ public partial class Robot {
         gripTask.Retrieve = new Retrieve();
         gripTask.Retrieve.MachineId = station;
         gripTask.Retrieve.MachinePoint = "shelf" + shelf;
-        if(!GetFromStation(gripTask, false)){
+        if (!GetFromStation(gripTask, false)) {
             return;
         }
         AgentTask placeTask = task.Clone();
         placeTask.Deliver = new Deliver();
         placeTask.Deliver.MachineId = station;
         placeTask.Deliver.MachinePoint = "input";
-        if(!DeliverToStation(placeTask, false)){
+        if (!DeliverToStation(placeTask, false)) {
             return;
         }
         TaskSucceded(task);
@@ -187,7 +187,7 @@ public partial class Robot {
 
         MyLogger.Log("Got a new Product!");
         MyLogger.Log(HeldProduct.ProductDescription());
-        if(succedTask){
+        if (succedTask) {
             TaskSucceded(task);
         }
         return true;
@@ -243,7 +243,7 @@ public partial class Robot {
 
         HeldProduct = null;
 
-        if(succedTask){
+        if (succedTask) {
             TaskSucceded(task);
         }
         return true;
@@ -263,7 +263,7 @@ public partial class Robot {
         }
 
         MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
-        if(path.Count == 0) {
+        if (path.Count == 0) {
             return false;
         }
         foreach (var z in path) {

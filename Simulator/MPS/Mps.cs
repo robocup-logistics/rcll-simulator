@@ -216,20 +216,20 @@ public abstract class Mps {
         switch (machinePoint.ToLower()) {
             case "input":
                 returnProduct = ProductAtIn;
-                if(!dryRun){
+                if (!dryRun) {
                     ProductAtIn = null;
                 }
                 break;
             case "output":
                 returnProduct = ProductAtOut;
-                if(!dryRun){
+                if (!dryRun) {
                     ProductAtOut = null;
                 }
                 break;
             default:
                 MyLogger.Log("Defaulting!?");
                 returnProduct = ProductAtIn;
-                if(!dryRun){
+                if (!dryRun) {
                     ProductAtIn = null;
                 }
                 break;

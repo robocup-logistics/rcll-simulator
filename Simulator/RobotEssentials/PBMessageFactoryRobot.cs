@@ -54,7 +54,7 @@ internal class PBMessageFactoryRobot {
         }
 
         var desc = Robot.HeldProduct?.GetProtoDescription();
-        if(desc == null) {
+        if (desc == null) {
             desc = Robot.FutureProduct?.GetProtoDescription();
         }
         if (desc != null && bs.Task != null) {

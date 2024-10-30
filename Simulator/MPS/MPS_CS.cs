@@ -31,7 +31,7 @@ public class MPS_CS : Mps {
 
             CommandMutex.WaitOne();
 
-            try{
+            try {
                 var command = MqttHelper.command;
                 switch (command.command) {
                     case COMMAND.RESET:
@@ -51,7 +51,8 @@ public class MPS_CS : Mps {
                         MyLogger.Log("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            } finally {
+            }
+            finally {
                 CommandMutex.ReleaseMutex();
             }
         }
@@ -98,34 +99,34 @@ public class MPS_CS : Mps {
             case "output":
                 MyLogger.Log("my Output!");
                 returnProduct = ProductAtOut;
-                if(!dryRun) {
+                if (!dryRun) {
                     ProductAtOut = null;
                 }
                 break;
             case "input":
                 returnProduct = ProductAtIn;
-                if(!dryRun) {
+                if (!dryRun) {
                     ProductAtIn = null;
                 }
                 break;
             case "shelf1":
             case "left":
                 returnProduct = ShelfLeft;
-                if(!dryRun) {
+                if (!dryRun) {
                     ShelfLeft = null;
                 }
                 break;
             case "shelf2":
             case "middle":
                 returnProduct = ShelfRight;
-                if(!dryRun) {
+                if (!dryRun) {
                     ShelfRight = null;
                 }
                 break;
             case "shelf3":
             case "right":
                 returnProduct = ShelfLeft;
-                if(!dryRun) {
+                if (!dryRun) {
                     ShelfLeft = null;
                 }
                 break;
@@ -134,7 +135,7 @@ public class MPS_CS : Mps {
                 returnProduct = null;
                 break;
         }
-        if(ShelfLeft == null && ShelfMiddle == null && ShelfRight == null) {
+        if (ShelfLeft == null && ShelfMiddle == null && ShelfRight == null) {
             Replanish();
         }
         return returnProduct;

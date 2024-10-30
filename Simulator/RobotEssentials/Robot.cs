@@ -177,7 +177,7 @@ public partial class Robot {
     //RobotInfo and AgetTask can both call this function to prevent race conditons
     private object CancelLock = new Object();
     public bool CancelCurrentTask() {
-        lock(CancelLock) {
+        lock (CancelLock) {
             canceling = true;
             cancelBarrier.SignalAndWait();
             TaskMutex.WaitOne();
@@ -278,17 +278,19 @@ public partial class Robot {
     }
 
     public void HandleRobotInfo(LlsfMsgs.Robot info) {
-        if(info.State == RobotState.Maintenance) {
+        if (info.State == RobotState.Maintenance) {
             RobotState = RobotState.Maintenance;
             CancelCurrentTask();
             HeldProduct = null;
             SetZone(HomeZone);
-        } else if(info.State == RobotState.Disqualified) {
+        }
+        else if (info.State == RobotState.Disqualified) {
             RobotState = RobotState.Disqualified;
             CancelCurrentTask();
             HeldProduct = null;
             SetZone(HomeZone);
-        } else {
+        }
+        else {
             RobotState = RobotState.Active;
         }
     }
@@ -362,9 +364,10 @@ public partial class Robot {
         float deltaX = CurrentZone.X - zone.X;
         float deltaY = CurrentZone.Y - zone.Y;
         float angle = (float)(Math.Atan2(deltaX, deltaY) * (180.0 / Math.PI));
-        if(deltaX == 0 || deltaY == 0) {
+        if (deltaX == 0 || deltaY == 0) {
             isDiagonal = false;
-        } else {
+        }
+        else {
             isDiagonal = true;
         }
         Position.SetOrientation(angle);

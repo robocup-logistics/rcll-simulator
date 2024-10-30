@@ -71,28 +71,29 @@ public class MQTThelper {
             MyLogger.Log($"Received Command {payload}");
             var m_command = new MQTTCommand(payload);
             if (m_command.validate()) {
-            CommandMutex.WaitOne();
-            try{
-                command = m_command;
-                CommandEvent.Set();
-            } finally {
-                CommandMutex.ReleaseMutex();
+                CommandMutex.WaitOne();
+                try {
+                    command = m_command;
+                    CommandEvent.Set();
+                }
+                finally {
+                    CommandMutex.ReleaseMutex();
+                }
             }
         }
+        else {
+            MyLogger.Log($"Received unknown topic {topic_name}");
+        }
+
+        return Task.CompletedTask;
     }
-    else {
-        MyLogger.Log($"Received unknown topic {topic_name}");
-    }
 
-    return Task.CompletedTask;
-}
+    public void Subscribe() {
+        var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
+            .WithTopicFilter(f => { f.WithTopic(CommandToppic); })
+            .Build();
 
-public void Subscribe() {
-    var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
-        .WithTopicFilter(f => { f.WithTopic(CommandToppic); })
-        .Build();
-
-    var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
+        var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
         MyLogger.Log("Created Subscriptions");
     }
 

@@ -39,7 +39,7 @@ public class MPS_BS : Mps {
 
             CommandMutex.WaitOne();
 
-            try{
+            try {
                 var command = MqttHelper.command;
                 switch (command.command) {
                     case COMMAND.RESET:
@@ -58,7 +58,8 @@ public class MPS_BS : Mps {
                         MyLogger.Log("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            } finally {
+            }
+            finally {
                 CommandMutex.ReleaseMutex();
             }
         }
