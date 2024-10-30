@@ -67,6 +67,7 @@ public class MPS_CS : Mps {
                     if (ProductOnBelt == null || StoredCap != null) {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
                         MqttHelper.SetStatus(MQTTStatus.ERROR);
+                        return;
                     }
                     else {
                         Thread.Sleep(Config.CSTaskDuration);
@@ -83,6 +84,7 @@ public class MPS_CS : Mps {
                     else {
                         MyLogger.Log("Can't retrieve the CAP as there is no product!");
                         MqttHelper.SetStatus(MQTTStatus.ERROR);
+                        return;
                     }
 
                     break;

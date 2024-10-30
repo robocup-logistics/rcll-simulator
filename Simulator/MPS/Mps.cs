@@ -153,6 +153,7 @@ public abstract class Mps {
         }
         if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
             MyLogger.Log("Still no Product on the Belt!");
+            MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
         MyLogger.Log("Product on belt!");
@@ -165,7 +166,7 @@ public abstract class Mps {
                 ProductAtIn = ProductOnBelt;
                 ProductOnBelt = null;
                 MyLogger.Log("We place the Product onto the InputBeltPosition");
-                if (Config.BarcodeScanner && ProductAtIn != null) {
+                if (ProductAtIn != null) {
                     MqttHelper.SetBarcode(ProductAtIn.ID);
                 }
                 break;

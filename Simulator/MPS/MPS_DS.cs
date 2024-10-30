@@ -1,6 +1,7 @@
 ﻿using Simulator.Utility;
 using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
+using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 
 namespace Simulator.MPS;
 public class MPS_DS : Mps {
@@ -72,8 +73,11 @@ public class MPS_DS : Mps {
         for (var count = 0; count < 45 && ProductAtIn == null; count++) {
             Thread.Sleep(1000);
         }
-        //TODO ERROR
-        if (ProductAtIn == null) return;
+
+        if (ProductAtIn == null) {
+            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            return;
+        }
         string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
         MyLogger.Log("Deliver to slot " + name);
         Thread.Sleep(Config.DSTaskDuration);

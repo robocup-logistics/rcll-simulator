@@ -73,8 +73,7 @@ public class MPS_RS : Mps {
                 ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingGreen) : new RingElement(RingColor.RingOrange);
                 break;
             default:
-                FinishedTask();
-                return;
+                throw new Exception("Unknown Ring to mount!");
         }
         Thread.Sleep(Config.RSTaskDuration);
         ProductOnBelt.AddPart(ringToMount);

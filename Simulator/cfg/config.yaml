@@ -174,3 +174,4 @@ general:
   cs-buffer-duration: 3.5  # buffer cap - taken from gazebo
   rs-mount-duration: 3.5  # mounting a ring 3.5 seconds - taken from gazebo
   ds-deliver-duration: 3.5  # time it takes to deliver - taken from gazebo
+  ss-task-duration: 3.5  # time it takes to store/retrieve

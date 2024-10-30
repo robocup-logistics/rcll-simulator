@@ -33,6 +33,7 @@ namespace Simulator {
         public int BSTaskDuration { get; private set; }
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
+        public int SSTaskDuration { get; private set; }
         public bool AppendLogging { get; private set; }
         public bool RobotDirectBeaconSignals { get; private set; }
         public string WebguiPrefix { get; private set; }
@@ -48,6 +49,7 @@ namespace Simulator {
             BSTaskDuration = 110;
             DSTaskDuration = 100;
             RSTaskDuration = 100;
+            SSTaskDuration = 100;
             RobotMoveZoneDuration = 100;
             FixedMPSplacement = false;
             RobotPlaceDuration = 400;
@@ -143,6 +145,9 @@ namespace Simulator {
                         break;
                     case "ds-deliver-duration":
                         DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
+                        break;
+                    case "ss-task-duration":
+                        SSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "fixed-mps-position":
                         FixedMPSplacement = bool.Parse(value.ToString().ToUpper());

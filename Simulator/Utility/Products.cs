@@ -68,6 +68,9 @@ public class Products {
         internalProductCounter++;
         counterMutex.ReleaseMutex();
     }
+    public Products(BaseColor color, CapColor capColor) : this(color) {
+        AddPart(new CapElement(capColor));
+    }
     public Products(CapColor color) {
         Base = new BaseElement();
         Cap = new CapElement(color);
