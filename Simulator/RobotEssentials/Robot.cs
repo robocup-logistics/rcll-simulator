@@ -25,17 +25,19 @@ public partial class Robot {
     private Mutex? inputOutputMutex = null;
     private Barrier cancelBarrier;
     private bool canceling;
+    //True when the robot is moving diagonal (1.41 times longer than normal movement)
+    private bool isDiagonal;
 
     private UdpConnector? BeaconConnector;
     private ConnectorBase? AgentConnector;
 
     public Mutex TaskMutex;
     //only use the _currentTask if you locked the mutex by hand and need to actually modify the task and not retrieve it .....
+    //Otherwise use the CurrentTask property
     private AgentTask? _currentTask;
     [JsonIgnore]
     public AgentTask? CurrentTask {
         get {
-            //TODO MAYBE DEADLOCK IF SOME TASK WANTSTO ACCES IT AND THEN THE MUTEX IST LOCKED BY HAND AND NEVER COMES TO THE BARRIER
             TaskMutex.WaitOne();
             try {
                 return _currentTask;
@@ -339,6 +341,11 @@ public partial class Robot {
         float deltaX = CurrentZone.X - zone.X;
         float deltaY = CurrentZone.Y - zone.Y;
         float angle = (float)(Math.Atan2(deltaX, deltaY) * (180.0 / Math.PI));
+        if(deltaX == 0 || deltaY == 0) {
+            isDiagonal = false;
+        } else {
+            isDiagonal = true;
+        }
         Position.SetOrientation(angle);
     }
 

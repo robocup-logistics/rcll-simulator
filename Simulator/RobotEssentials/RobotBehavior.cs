@@ -6,7 +6,6 @@ using ErrorCode = LlsfMsgs.AgentTask.Types.ErrorCode;
 namespace Simulator.RobotEssentials;
 public partial class Robot {
 
-    // TODO 1.4 times slow when diagnoal movement
     List<string> machines = new List<string> {
             "C-CS1", "C-CS2", "C-RS1", "C-RS2", "C-DS", "C-BS", "C-SS",
             "M-CS1", "M-CS2", "M-RS1", "M-RS2", "M-DS", "M-BS", "M-SS"
@@ -30,7 +29,8 @@ public partial class Robot {
             if (canceling) {
                 return;
             }
-            Thread.Sleep(Config.RobotMoveZoneDuration);
+            var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
+            Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
             if (canceling) {
                 return;
             }
@@ -83,7 +83,8 @@ public partial class Robot {
             if (canceling) {
                 return;
             }
-            Thread.Sleep(Config.RobotMoveZoneDuration);
+            var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
+            Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
             if (canceling) {
                 return;
             }
@@ -230,7 +231,8 @@ public partial class Robot {
             if (canceling) {
                 return false;
             }
-            Thread.Sleep(Config.RobotMoveZoneDuration);
+            var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
+            Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
             if (canceling) {
                 return false;
             }
