@@ -2,6 +2,7 @@ using LlsfMsgs;
 using Simulator.Utility;
 using Simulator.MPS;
 using ErrorCode = LlsfMsgs.AgentTask.Types.ErrorCode;
+using System.Text.RegularExpressions;
 
 namespace Simulator.RobotEssentials;
 public partial class Robot {
@@ -11,10 +12,44 @@ public partial class Robot {
             "M-CS1", "M-CS2", "M-RS1", "M-RS2", "M-DS", "M-BS", "M-SS"
         };
 
-    private void HandleMove(AgentTask task) {
+    private void BufferAtStation(AgentTask task){
+        string station = task.Buffer.MachineId;
+        uint shelf = task.Buffer.ShelfNumber;
+
+        Regex pattern = new Regex("(M|C)-CS(1|2)");
+        if(!pattern.IsMatch(station)){
+            MyLogger.Log("The station is not a CapStation!");
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return;
+        }
+
+        if(shelf < 1 || shelf > 3){
+            MyLogger.Log("The shelf number is invalid!");
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return;
+        }
+
+        AgentTask gripTask = task.Clone();
+        gripTask.Retrieve = new Retrieve();
+        gripTask.Retrieve.MachineId = station;
+        gripTask.Retrieve.MachinePoint = "shelf" + shelf;
+        if(!GetFromStation(gripTask, false)){
+            return;
+        }
+        AgentTask placeTask = task.Clone();
+        placeTask.Deliver = new Deliver();
+        placeTask.Deliver.MachineId = station;
+        placeTask.Deliver.MachinePoint = "input";
+        if(!DeliverToStation(placeTask, false)){
+            return;
+        }
+        TaskSucceded(task);
+    }
+
+    private bool HandleMove(AgentTask task) {
         if (CurrentTask == null) {
             MyLogger.Log("Current task is null!");
-            return;
+            return false;
         }
         var Waypoint = task.Move.Waypoint;
         var MachinePoint = task.Move.MachinePoint;
@@ -22,17 +57,17 @@ public partial class Robot {
         if (targetZone == 0) {
             MyLogger.Log("Couldn't find the machine position!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
-            return;
+            return false;
         }
         if (EntryZone != null) {
             LookAtZone(EntryZone);
             if (canceling) {
-                return;
+                return false;
             }
             var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
             Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
             if (canceling) {
-                return;
+                return false;
             }
             SetZone(EntryZone);
             EntryZone = null;
@@ -48,7 +83,7 @@ public partial class Robot {
         else {
             MyLogger.Log("Finished the move to waypoint unsuccessful!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
-            return;
+            return false;
         }
         if (machines.Contains(task.Move.Waypoint)) {
             bool input = true;
@@ -60,47 +95,48 @@ public partial class Robot {
             if (mps == null) {
                 MyLogger.Log("The Machine not Found!");
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
-                return;
+                return false;
             }
             Mutex mutex = input ? mps.robotAtInput : mps.robotAtOutput;
             while (!mutex.WaitOne(500)) {
                 if (canceling) {
-                    return;
+                    return false;
                 }
             }
             inputOutputMutex = mutex;
             if (canceling) {
-                return;
+                return false;
             }
             var zone = ZonesManager.GetInstance().GetMachineZone(task.Move.Waypoint);
             if (zone == null) {
                 MyLogger.Log("The Machine Zone not Found!");
                 TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
-                return;
+                return false;
             }
             LookAtZone(zone);
 
             if (canceling) {
-                return;
+                return false;
             }
             var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
             Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
             if (canceling) {
-                return;
+                return false;
             }
             EntryZone = CurrentZone;
             SetZone(zone);
             SetPositionBack(0.5f);
         }
         TaskSucceded(task);
+        return true;
     }
 
-    public void GetFromStation(AgentTask task) {
+    public bool GetFromStation(AgentTask task, bool succedTask = true) {
         MyLogger.Log("Get From Station task!");
         SerializeRobotToJson();
         if (task == null) {
             MyLogger.Log("GetFromStation -> the current task is NULL!");
-            return;
+            return false;
         }
         var machine = task.Retrieve.MachineId;
         var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
@@ -109,7 +145,7 @@ public partial class Robot {
         if (mps == null || targetZone == 0) {
             MyLogger.Log("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
-            return;
+            return false;
         }
 
         Mutex targetMutex = mps.robotAtOutput;
@@ -121,24 +157,24 @@ public partial class Robot {
         if (mps == null || targetMutex != inputOutputMutex) {
             MyLogger.Log("The Robot isn't at the Output of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
-            return;
+            return false;
         }
 
         if (HeldProduct != null) {
             MyLogger.Log("The Robot already has a product in its grip!");
             TaskFailed(task, (uint)ErrorCode.WorkpieceAlreadyInGripper);
-            return;
+            return false;
         }
         MyLogger.Log("Starting the GRIP Action!");
         SerializeRobotToJson();
         if (canceling) {
-            return;
+            return false;
         }
         FutureProduct = mps.RemoveProduct(target, true);
         Thread.Sleep(Config.RobotGrabProductDuration);
         if (canceling) {
             FutureProduct = null;
-            return;
+            return false;
         }
         HeldProduct = mps.RemoveProduct(target);
         FutureProduct = null;
@@ -146,20 +182,22 @@ public partial class Robot {
         if (HeldProduct == null) {
             MyLogger.Log("The Machine didn't have a product to give!");
             TaskFailed(task, (uint)ErrorCode.WorkpieceSensorDisagreement);
-            return;
+            return false;
         }
 
         MyLogger.Log("Got a new Product!");
         MyLogger.Log(HeldProduct.ProductDescription());
-        TaskSucceded(task);
-
+        if(succedTask){
+            TaskSucceded(task);
+        }
+        return true;
     }
 
-    private void DeliverToStation(AgentTask task) {
+    private bool DeliverToStation(AgentTask task, bool succedTask = true) {
         MyLogger.Log("DeliverToStation!");
         SerializeRobotToJson();
         if (task == null) {
-            return;
+            return false;
         }
         var machine = task.Deliver.MachineId;
         var mps = MpsManager.GetMachineByName(task.Deliver.MachineId);
@@ -168,7 +206,7 @@ public partial class Robot {
         if (mps == null || targetZone == 0) {
             MyLogger.Log("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
-            return;
+            return false;
         }
         Mutex targetMutex = mps.robotAtInput;
         if (target.ToLower() == "output") {
@@ -177,35 +215,38 @@ public partial class Robot {
         if (mps == null || targetMutex != inputOutputMutex) {
             MyLogger.Log("The Robot isn't at the correct Side of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
-            return;
+            return false;
         }
         if (!mps.EmptyMachinePoint(target)) {
             MyLogger.Log("Something went wrong with placing. Seems there is already a product at "
                          + target + " of machine " + mps.Name);
             TaskFailed(task, (uint)ErrorCode.MachinePointOccupied);
-            return;
+            return false;
         }
         SerializeRobotToJson();
         MyLogger.Log("Aligning and starting the place action");
         if (canceling) {
-            return;
+            return false;
         }
         Thread.Sleep(Config.RobotPlaceDuration);
         if (canceling) {
-            return;
+            return false;
         }
 
         if (HeldProduct == null) {
             MyLogger.Log("The Robot doesn't have a product in its grip!");
             TaskFailed(task, (uint)ErrorCode.NoWorkpieceInGripper);
-            return;
+            return false;
         }
 
         mps.PlaceProduct(target, HeldProduct);
 
         HeldProduct = null;
 
-        TaskSucceded(task);
+        if(succedTask){
+            TaskSucceded(task);
+        }
+        return true;
     }
 
     public bool Move(Zone TargetZone, AgentTask task) {

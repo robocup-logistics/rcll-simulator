@@ -213,6 +213,7 @@ public partial class Robot {
             if (_currentTask.TaskId != task.TaskId) {
                 throw new Exception("RACECONDITION HAPPENED");
             }
+            MyLogger.Log("Task " + task.TaskId + " was successful!");
             _currentTask.Successful = true;
             LastTask = _currentTask;
             _currentTask = null;
@@ -313,7 +314,7 @@ public partial class Robot {
                 DeliverToStation(task);
                 break;
             case TaskEnum.Buffer:
-                //TODO IMPLEMENT (REPLANISHMENT?)
+                BufferAtStation(task);
                 break;
             case TaskEnum.Explore:
                 ExploreMachine(task);
