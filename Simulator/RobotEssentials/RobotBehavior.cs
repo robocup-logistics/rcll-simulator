@@ -221,6 +221,9 @@ public partial class Robot {
         }
 
         MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
+        if(path.Count == 0) {
+            return false;
+        }
         foreach (var z in path) {
             MyLogger.Log("Doing a step towards + " + z.ZoneId);
             LookAtZone(z);
