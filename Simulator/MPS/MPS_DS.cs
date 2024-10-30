@@ -8,7 +8,7 @@ public class MPS_DS : Mps {
     private List<Products> Slot1;
     private List<Products> Slot2;
     private List<Products> Slot3;
-    public MPS_DS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+    public MPS_DS(Configurations config, string name) : base(config, name) {
         Type = MpsType.DeliveryStation;
         Slot1 = new List<Products>();
         Slot2 = new List<Products>();
@@ -45,7 +45,7 @@ public class MPS_DS : Mps {
                         DeliverToSlotTask(command);
                         break;
                     default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
             }
@@ -66,7 +66,7 @@ public class MPS_DS : Mps {
             case "output":
                 return false;
             default:
-                MyLogger.Log("Defaulting!?");
+                MyLogger.Warn("Defaulting!?");
                 if (ProductAtIn != null)
                     return false;
                 ProductAtIn = heldProduct;
@@ -75,7 +75,7 @@ public class MPS_DS : Mps {
     }
 
     private void DeliverToSlotTask(MQTTCommand command) {
-        MyLogger.Log("DeliverToSlotTask!");
+        MyLogger.Info("DeliverToSlotTask!");
         StartTask();
         for (var count = 0; count < 45 && ProductAtIn == null; count++) {
             Thread.Sleep(1000);
@@ -86,7 +86,7 @@ public class MPS_DS : Mps {
             return;
         }
         string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
-        MyLogger.Log("Deliver to slot " + name);
+        MyLogger.Debug("Deliver to slot " + name);
         Thread.Sleep(Config.DSTaskDuration);
         switch (command.arg1) {
             case ARG1.SLOT1:

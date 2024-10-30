@@ -28,9 +28,9 @@ public class ZonesManager {
     private ZonesManager() {
         ZoneList = new List<CZones>();
         Dictionary = new Dictionary<Zone, CZones>();
-        MyLogger = new MyLogger("Zones", true);
+        MyLogger = new MyLogger("Zones");
         ZoneManagerMutex = new Mutex();
-        MyLogger.Log("Creating General Zones");
+        MyLogger.Info("Creating General Zones");
         foreach (Zone z in Enum.GetValues(typeof(Zone))) {
             int val = (int)z;
             // Y value is the last digit
@@ -51,7 +51,7 @@ public class ZonesManager {
             ZoneList.Add(zone);
         }
 
-        MyLogger.Log("Starting to add Neighborhood");
+        MyLogger.Info("Starting to add Neighborhood");
         AddNeighborhood();
         SetInsertionZone();
     }
@@ -71,25 +71,25 @@ public class ZonesManager {
     }
 
     public Zone GetWaypoint(string target, string machinepoint = "") {
-        MyLogger.Log("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
+        MyLogger.Info("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
         Zone result;
         try {
             if (target.Contains("C_Z") || target.Contains("M_Z")) {
                 target = target.Substring(0, 5);
             }
             result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
-            MyLogger.Log("Is a Zone Waypoint!");
+            MyLogger.Info("Is a Zone Waypoint!");
             return result;
         }
         catch (Exception) {
-            MyLogger.Log("Is not a Zone Waypoint!");
+            MyLogger.Error("Is not a Zone Waypoint!");
             return GetZoneNextToMachine(target, machinepoint); ;
         }
     }
 
     public void PlaceMachine(Zone zone, uint orientation, Mps machine) {
         if (!Dictionary.ContainsKey(zone)) return;
-        MyLogger.Log("Placed " + machine.Name + " at zone " + zone + " with the orientation " + orientation);
+        MyLogger.Info("Placed " + machine.Name + " at zone " + zone + " with the orientation " + orientation);
         Dictionary[zone].PlaceMachine(machine, orientation);
         machine.Zone = zone;
     }
@@ -104,7 +104,7 @@ public class ZonesManager {
     }
 
     public Zone GetZoneNextToMachine(string MachineName, string machinepoint = "") {
-        MyLogger.Log("Getting Zone next to machine!" + MachineName);
+        MyLogger.Info("Getting Zone next to machine!" + MachineName);
         foreach (var (key, value) in Dictionary) {
             if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
                 var orientation = value.Orientation;
@@ -117,27 +117,27 @@ public class ZonesManager {
                 var waypoint = Zone.CZ11;
 
                 var radians = (Math.PI / 180) * orientation;
-                MyLogger.Log("Orientation = " + orientation + " and in radians " + radians);
+                MyLogger.Info("Orientation = " + orientation + " and in radians " + radians);
                 var y = Convert.ToInt32(Math.Sin(radians));
                 var x = Convert.ToInt32(Math.Cos(radians));
-                MyLogger.Log("X offset = " + x + " and offset y = " + y);
+                MyLogger.Info("X offset = " + x + " and offset y = " + y);
                 waypoint = CheckNeighbours(neighborhood, value, x, y);
                 return waypoint;
             }
         }
-        MyLogger.Log("Couldn't find the machine " + MachineName);
+        MyLogger.Info("Couldn't find the machine " + MachineName);
         return 0;
     }
 
     public Zone CheckNeighbours(List<CZones> Neighbours, CZones compareable, int x, int y) {
-        MyLogger.Log("Checking " + compareable.X + "/" + compareable.Y);
+        MyLogger.Info("Checking " + compareable.X + "/" + compareable.Y);
         foreach (var n in Neighbours) {
             if (n.X == compareable.X + x && n.Y == compareable.Y + y) {
-                MyLogger.Log("The searched neighbour is " + n.ZoneId + " with " + n.X + "/" + n.Y);
+                MyLogger.Debug("The searched neighbour is " + n.ZoneId + " with " + n.X + "/" + n.Y);
                 return n.ZoneId;
             }
         }
-        MyLogger.Log("No neighbour found!");
+        MyLogger.Warn("No neighbour found!");
         return 0;
     }
 
@@ -154,36 +154,21 @@ public class ZonesManager {
         fScore.Add(start.ZoneId, CalcDistance(start, end));
         List<CZones> path = new List<CZones>();
         while (openList.Count != 0) {
-            /*MyLogger.Log("###########################");
-            MyLogger.Log("OpenList");
-            foreach (var z in openList)
-            {
-                MyLogger.Log("Zone: " + z.Key.GetZoneString() + "\tDist = " +z.Value);
-
-            }
-            MyLogger.Log("###########################");*/
-
             var values = openList.Values.ToList();
             var index = values.IndexOf(values.Min());
             var current = openList.Keys.ElementAt(index);
-            //MyLogger.Log("Current expanded zone = " + current.GetZoneString());
-            //current.GetsMovedTo = true;
+
             if (current.ZoneId == end.ZoneId) {
-                MyLogger.Log("A Valid path has been found!");
+                MyLogger.Info("A Valid path has been found!");
                 return ReconstructPath(cameFrom, current);
             }
 
             openList.Remove(current);
             var neighborhood = current.GetNeighborhood();
-            /*MyLogger.Log("----------------");
-            MyLogger.Log("Neighborhood = " + neighborhood.Count);
 
-            foreach(var n in neighborhood)
-                MyLogger.Log(n.GetZoneString());
-            MyLogger.Log("----------------");*/
             foreach (var neighbor in neighborhood) {
                 if (neighbor.Machine != null) {
-                    MyLogger.Log("Skipping field as there is a machine!");
+                    MyLogger.Debug("Skipping field as there is a machine!");
                     continue;
                 }
                 var tentative_gScore = gScore[current.ZoneId] + CalcDistance(neighbor, current);
@@ -201,7 +186,7 @@ public class ZonesManager {
                     gScore[neighbor.ZoneId] = tentative_gScore;
                     var dist = CalcDistance(neighbor, end);
                     var comp = tentative_gScore + dist;
-                    //MyLogger.Log("Zone " + neighbor.GetZoneString() + " is " + dist + " from end");
+
                     fScore[neighbor.ZoneId] = comp;
 
                     if (!openList.ContainsKey(neighbor)) {
@@ -210,13 +195,10 @@ public class ZonesManager {
                     else {
                         openList[neighbor] = comp;
                     }
-
                 }
-
             }
-
         }
-        MyLogger.Log("No Valid Path found for target [" + end.GetZoneString() + "]!");
+        MyLogger.Warn("No Valid Path found for target [" + end.GetZoneString() + "]!");
         return new List<CZones>();
     }
 
@@ -243,7 +225,7 @@ public class ZonesManager {
 
     public static double CalcDistance(CZones Start, CZones End) {
         if (Start == null || End == null) {
-            ZonesManager.GetInstance().MyLogger.Log("CalcDistance has a null?");
+            ZonesManager.GetInstance().MyLogger.Warn("CalcDistance has a null?");
             return 1000;
         }
 
@@ -303,7 +285,7 @@ public class ZonesManager {
                     }
                 }
             }
-            MyLogger.Log("Added " + z.GetNeighborhood().Count + " to the zone " + z.ZoneId);
+            MyLogger.Debug("Added " + z.GetNeighborhood().Count + " to the zone " + z.ZoneId);
         }
 
     }

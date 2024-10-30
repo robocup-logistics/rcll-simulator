@@ -28,7 +28,7 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
             case (int)RobotInfo.Types.CompType.MsgType:
                 return HandleRobotInfo(stream, componentId, payloadSize);
             default:
-                MyLogger.Log($"Unknown MessageType {messageType} for Component {componentId}");
+                MyLogger.Warn($"Unknown MessageType {messageType} for Component {componentId}");
                 return false;
         }
     }
@@ -39,20 +39,21 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
 
     private bool HandleMachineInfo(byte[] stream, int componentId, int payloadSize) {
         if ((int)MachineInfo.Types.CompType.CompId != componentId) {
-            MyLogger.Log($"Component ID mismatch: expected {MachineInfo.Types.CompType.CompId}, found {componentId}");
+            MyLogger.Warn($"Component ID mismatch: expected {MachineInfo.Types.CompType.CompId}, found {componentId}");
             return false;
         }
 
         var machineInfoParser = new MessageParser<MachineInfo>(() => new MachineInfo());
         try {
             var machineInfo = machineInfoParser.ParseFrom(stream, 12, payloadSize - 4);
-            MyLogger.Log("MachineInfo message parsed successfully.");
-            MyLogger.Log($"Parsed message: {machineInfo}");
+            MyLogger.Debug("MachineInfo message parsed successfully.");
+            MyLogger.Debug($"Parsed message: {machineInfo}");
             // Additional handling logic...
             string msg = machineInfo.ToString();
-            MyLogger.Log($"The Parsed message = {msg}");
+            MyLogger.Info($"The Parsed message = {msg}");
+            //TODO remove
             if (machineInfo.Machines.Count < mpsManager_.Machines.Count) {
-                MyLogger.Log("MachineInfo is not containing all machines!");
+                MyLogger.Debug("MachineInfo is not containing all machines!");
                 return false;
             }
             zonesManager_.ZoneManagerMutex.WaitOne();
@@ -65,7 +66,7 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
             return true;
         }
         catch (Exception e) {
-            MyLogger.Log($"Parsing error: {e}");
+            MyLogger.Error($"Parsing error: {e}");
             return false;
         }
     }
@@ -76,8 +77,8 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
 
         robotManager_.HandleRobotInfo(robotInfo);
 
-        MyLogger.Log("GameInfo message parsed successfully.");
-        MyLogger.Log($"Parsed message: {robotInfo}");
+        MyLogger.Info("GameInfo message parsed successfully.");
+        MyLogger.Debug($"Parsed message: {robotInfo}");
         return true;
     }
 
@@ -91,8 +92,8 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
         if (gameState.HasPointsMagenta)
             Config.Teams[1].Points = gameState.PointsMagenta;
 
-        MyLogger.Log("GameState message parsed successfully.");
-        MyLogger.Log($"Parsed message: {gameState}");
+        MyLogger.Info("GameState message parsed successfully.");
+        MyLogger.Debug($"Parsed message: {gameState}");
         return true;
     }
 

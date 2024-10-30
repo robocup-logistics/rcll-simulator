@@ -10,7 +10,7 @@ public class MPS_CS : Mps {
     private Products? ShelfLeft;
     private Products? ShelfMiddle;
     private Products? ShelfRight;
-    public MPS_CS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+    public MPS_CS(Configurations config, string name) : base(config, name) {
         Type = MpsType.CapStation;
         StoredCap = null;
         Replanish();
@@ -52,7 +52,7 @@ public class MPS_CS : Mps {
                         HandleBelt(command);
                         break;
                     default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
             }
@@ -63,13 +63,13 @@ public class MPS_CS : Mps {
     }
 
     public void CapTask(MQTTCommand command) {
-        MyLogger.Log("Got a Cap Task!");
+        MyLogger.Info("Got a Cap Task!");
         StartTask();
         switch (command.arg1) {
             case ARG1.RETRIEVE: {
-                    MyLogger.Log("Got a Retrieve CAP task!");
+                    MyLogger.Info("Got a Retrieve CAP task!");
                     if (ProductOnBelt == null || StoredCap != null) {
-                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                        MyLogger.Error("Can't retrieve the CAP as there is no product!");
                         MqttHelper.SetStatus(MQTTStatus.ERROR);
                         return;
                     }
@@ -80,13 +80,13 @@ public class MPS_CS : Mps {
                     break;
                 }
             case ARG1.MOUNT: {
-                    MyLogger.Log("Got a Mount Cap TASK!");
+                    MyLogger.Info("Got a Mount Cap TASK!");
                     if (StoredCap != null && ProductOnBelt != null) {
                         Thread.Sleep(Config.CSTaskDuration);
                         ProductOnBelt.AddPart(StoredCap);
                     }
                     else {
-                        MyLogger.Log("Can't retrieve the CAP as there is no product!");
+                        MyLogger.Error("Can't retrieve the CAP as there is no product!");
                         MqttHelper.SetStatus(MQTTStatus.ERROR);
                         return;
                     }
@@ -99,17 +99,18 @@ public class MPS_CS : Mps {
 
     public override Products? RemoveProduct(string machinePoint, bool dryRun = false) {
         Products? returnProduct;
-        MyLogger.Log("Someone trys to grabs a Item from!");
+        MyLogger.Debug("Someone trys to grabs a Item from: " + machinePoint + dryRun.ToString());
 
         switch (machinePoint.ToLower()) {
             case "output":
-                MyLogger.Log("my Output!");
+                MyLogger.Debug("my Output: " + ProductAtOut?.ToString());
                 returnProduct = ProductAtOut;
                 if (!dryRun) {
                     ProductAtOut = null;
                 }
                 break;
             case "input":
+                MyLogger.Debug("my Input: " + ProductAtIn?.ToString());
                 returnProduct = ProductAtIn;
                 if (!dryRun) {
                     ProductAtIn = null;
@@ -117,6 +118,7 @@ public class MPS_CS : Mps {
                 break;
             case "shelf1":
             case "left":
+                MyLogger.Debug("my shelf left: : " + ShelfLeft?.ToString());
                 returnProduct = ShelfLeft;
                 if (!dryRun) {
                     ShelfLeft = null;
@@ -124,6 +126,7 @@ public class MPS_CS : Mps {
                 break;
             case "shelf2":
             case "middle":
+                MyLogger.Debug("my shelf mid: : " + ShelfMiddle?.ToString());
                 returnProduct = ShelfRight;
                 if (!dryRun) {
                     ShelfRight = null;
@@ -131,13 +134,14 @@ public class MPS_CS : Mps {
                 break;
             case "shelf3":
             case "right":
+                MyLogger.Debug("my shelf Right: : " + ShelfRight?.ToString());
                 returnProduct = ShelfLeft;
                 if (!dryRun) {
                     ShelfLeft = null;
                 }
                 break;
             default:
-                MyLogger.Log("Defaulting!?");
+                MyLogger.Warn("Defaulting!?");
                 returnProduct = null;
                 break;
         }

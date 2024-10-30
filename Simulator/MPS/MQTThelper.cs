@@ -44,14 +44,14 @@ public class MQTThelper {
 
         MqttFactory = new MqttFactory();
         Client = MqttFactory.CreateMqttClient();
-        MyLogger.Log("Starting connection!");
+        MyLogger.Info("Starting connection!");
         var mqttClientOptions = new MqttClientOptionsBuilder()
             .WithTcpServer(Url)
             .WithClientId(Name)
             .WithWillQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
             .Build();
         Client.ConnectAsync(mqttClientOptions, CancellationToken.None).GetAwaiter().GetResult();
-        MyLogger.Log("Connected!");
+        MyLogger.Info("Connected!");
         Client.ApplicationMessageReceivedAsync += HandleUpdate;
         Subscribe();
 
@@ -68,7 +68,7 @@ public class MQTThelper {
         string topic_name = topic.Split("/")[^1];
         string payload = Encoding.UTF8.GetString(args.ApplicationMessage.PayloadSegment);
         if (topic_name == "Command") {
-            MyLogger.Log($"Received Command {payload}");
+            MyLogger.Debug($"Received Command {payload}");
             var m_command = new MQTTCommand(payload);
             if (m_command.validate()) {
                 CommandMutex.WaitOne();
@@ -82,7 +82,7 @@ public class MQTThelper {
             }
         }
         else {
-            MyLogger.Log($"Received unknown topic {topic_name}");
+            MyLogger.Debug($"Received unknown topic {topic_name}");
         }
 
         return Task.CompletedTask;
@@ -94,7 +94,7 @@ public class MQTThelper {
             .Build();
 
         var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
-        MyLogger.Log("Created Subscriptions");
+        MyLogger.Info("Created Subscriptions");
     }
 
     public void SetStatus(MQTTStatus value) {
@@ -124,12 +124,12 @@ public class MQTThelper {
             .WithTopic(TopicPrefix + topic_name)
             .WithPayload(value.ToString())
             .Build();
-        MyLogger.Log($"Publishing {TopicPrefix}{topic_name} to value {value}");
+        MyLogger.Debug($"Publishing {TopicPrefix}{topic_name} to value {value}");
         Client.PublishAsync(applicationMessage, CancellationToken.None).GetAwaiter();
     }
 
     public async Task Disconnect() {
-        MyLogger.Log("Closing the MQTT client.");
+        MyLogger.Info("Closing the MQTT client.");
 
         await Client.DisconnectAsync();
     }

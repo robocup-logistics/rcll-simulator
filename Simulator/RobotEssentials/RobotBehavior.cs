@@ -18,13 +18,13 @@ public partial class Robot {
 
         Regex pattern = new Regex("(M|C)-CS(1|2)");
         if (!pattern.IsMatch(station)) {
-            MyLogger.Log("The station is not a CapStation!");
+            MyLogger.Warn("The station is not a CapStation!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
         }
 
         if (shelf < 1 || shelf > 3) {
-            MyLogger.Log("The shelf number is invalid!");
+            MyLogger.Warn("The shelf number is invalid!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
         }
@@ -48,14 +48,14 @@ public partial class Robot {
 
     private bool HandleMove(AgentTask task) {
         if (CurrentTask == null) {
-            MyLogger.Log("Current task is null!");
+            MyLogger.Error("Current task is null!");
             return false;
         }
         var Waypoint = task.Move.Waypoint;
         var MachinePoint = task.Move.MachinePoint;
         Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint, MachinePoint);
         if (targetZone == 0) {
-            MyLogger.Log("Couldn't find the machine position!");
+            MyLogger.Warn("Couldn't find the machine position!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
         }
@@ -78,10 +78,10 @@ public partial class Robot {
             }
         }
         if (Move(targetZone, task)) {
-            MyLogger.Log("Finished the move to waypoint successful!");
+            MyLogger.Info("Finished the move to waypoint successful!");
         }
         else {
-            MyLogger.Log("Finished the move to waypoint unsuccessful!");
+            MyLogger.Warn("Finished the move to waypoint unsuccessful!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
         }
@@ -93,7 +93,7 @@ public partial class Robot {
 
             var mps = MpsManager.GetInstance().GetMachineByName(task.Move.Waypoint);
             if (mps == null) {
-                MyLogger.Log("The Machine not Found!");
+                MyLogger.Warn("The Machine not Found!");
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
                 return false;
             }
@@ -109,7 +109,7 @@ public partial class Robot {
             }
             var zone = ZonesManager.GetInstance().GetMachineZone(task.Move.Waypoint);
             if (zone == null) {
-                MyLogger.Log("The Machine Zone not Found!");
+                MyLogger.Warn("The Machine Zone not Found!");
                 TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
                 return false;
             }
@@ -132,10 +132,10 @@ public partial class Robot {
     }
 
     public bool GetFromStation(AgentTask task, bool succedTask = true) {
-        MyLogger.Log("Get From Station task!");
+        MyLogger.Info("Get From Station task!");
         SerializeRobotToJson();
         if (task == null) {
-            MyLogger.Log("GetFromStation -> the current task is NULL!");
+            MyLogger.Error("GetFromStation -> the current task is NULL!");
             return false;
         }
         var machine = task.Retrieve.MachineId;
@@ -143,7 +143,7 @@ public partial class Robot {
         var target = task.Retrieve.MachinePoint;
         Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
-            MyLogger.Log("Couldnt find the requested target machine!");
+            MyLogger.Warn("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
             return false;
         }
@@ -155,17 +155,17 @@ public partial class Robot {
             targetMutex = mps.robotAtInput;
         }
         if (mps == null || targetMutex != inputOutputMutex) {
-            MyLogger.Log("The Robot isn't at the Output of the Machine!");
+            MyLogger.Warn("The Robot isn't at the Output of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
             return false;
         }
 
         if (HeldProduct != null) {
-            MyLogger.Log("The Robot already has a product in its grip!");
+            MyLogger.Warn("The Robot already has a product in its grip!");
             TaskFailed(task, (uint)ErrorCode.WorkpieceAlreadyInGripper);
             return false;
         }
-        MyLogger.Log("Starting the GRIP Action!");
+        MyLogger.Info("Starting the Grip Action!");
         SerializeRobotToJson();
         if (canceling) {
             return false;
@@ -180,13 +180,13 @@ public partial class Robot {
         FutureProduct = null;
 
         if (HeldProduct == null) {
-            MyLogger.Log("The Machine didn't have a product to give!");
+            MyLogger.Warn("The Machine didn't have a product to give!");
             TaskFailed(task, (uint)ErrorCode.WorkpieceSensorDisagreement);
             return false;
         }
 
-        MyLogger.Log("Got a new Product!");
-        MyLogger.Log(HeldProduct.ProductDescription());
+        MyLogger.Info("Got a new Product!");
+        MyLogger.Debug(HeldProduct.ProductDescription());
         if (succedTask) {
             TaskSucceded(task);
         }
@@ -194,7 +194,7 @@ public partial class Robot {
     }
 
     private bool DeliverToStation(AgentTask task, bool succedTask = true) {
-        MyLogger.Log("DeliverToStation!");
+        MyLogger.Info("DeliverToStation!");
         SerializeRobotToJson();
         if (task == null) {
             return false;
@@ -204,7 +204,7 @@ public partial class Robot {
         var target = task.Deliver.MachinePoint;
         Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
-            MyLogger.Log("Couldnt find the requested target machine!");
+            MyLogger.Warn("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
             return false;
         }
@@ -213,18 +213,18 @@ public partial class Robot {
             targetMutex = mps.robotAtOutput;
         }
         if (mps == null || targetMutex != inputOutputMutex) {
-            MyLogger.Log("The Robot isn't at the correct Side of the Machine!");
+            MyLogger.Warn("The Robot isn't at the correct Side of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
             return false;
         }
         if (!mps.EmptyMachinePoint(target)) {
-            MyLogger.Log("Something went wrong with placing. Seems there is already a product at "
+            MyLogger.Warn("Something went wrong with placing. Seems there is already a product at "
                          + target + " of machine " + mps.Name);
             TaskFailed(task, (uint)ErrorCode.MachinePointOccupied);
             return false;
         }
         SerializeRobotToJson();
-        MyLogger.Log("Aligning and starting the place action");
+        MyLogger.Info("Aligning and starting the place action");
         if (canceling) {
             return false;
         }
@@ -234,7 +234,7 @@ public partial class Robot {
         }
 
         if (HeldProduct == null) {
-            MyLogger.Log("The Robot doesn't have a product in its grip!");
+            MyLogger.Warn("The Robot doesn't have a product in its grip!");
             TaskFailed(task, (uint)ErrorCode.NoWorkpieceInGripper);
             return false;
         }
@@ -252,22 +252,24 @@ public partial class Robot {
     public bool Move(Zone TargetZone, AgentTask task) {
         var end = ZonesManager.GetInstance().GetZone(TargetZone);
         if (end == null) {
-            MyLogger.Log("TargetZone is null!");
+            MyLogger.Error("TargetZone is null!");
             return false;
         }
 
         var path = ZonesManager.GetInstance().Astar(CurrentZone, end);
         if (path.Count == 0 && CurrentZone.ZoneId == TargetZone) {
-            MyLogger.Log("Finished the move as I'm already in place!");
+            MyLogger.Info("Finished the move as I'm already in place!");
             return true;
         }
 
-        MyLogger.Log(path.Count != 0 ? "Got a Path!" : "No Path could be computed!!");
         if (path.Count == 0) {
+            MyLogger.Error("No Path could be computed!!");
             return false;
         }
+
+        MyLogger.Debug("Got a Path!");
         foreach (var z in path) {
-            MyLogger.Log("Doing a step towards + " + z.ZoneId);
+            MyLogger.Debug("Doing a step towards + " + z.ZoneId);
             LookAtZone(z);
             if (canceling) {
                 return false;
@@ -280,7 +282,7 @@ public partial class Robot {
             SetZone(z);
         }
 
-        MyLogger.Log("Finishing the move command");
+        MyLogger.Info("Finishing the move command");
         return true;
     }
 

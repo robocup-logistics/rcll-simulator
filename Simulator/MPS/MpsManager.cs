@@ -18,9 +18,9 @@ namespace Simulator.MPS {
         }
         public MpsManager(Configurations config) {
             Instance = this;
-            myLogger = new MyLogger("MpsManager", true);
+            myLogger = new MyLogger("MpsManager");
             Config = config;
-            myLogger.Log("Started the Mps Manager!");
+            myLogger.Info("Started the Mps Manager!");
             Machines = new List<Mps>();
             AllMachineSet = false;
             CreateMachines();
@@ -31,27 +31,27 @@ namespace Simulator.MPS {
                 Thread? thread;
                 switch (mps.Type) {
                     case Mps.MpsType.BaseStation:
-                        var bs = new MPS_BS(Config, mps.Name, mps.Debug);
+                        var bs = new MPS_BS(Config, mps.Name);
                         thread = new Thread(bs.Run);
                         currentMps = bs;
                         break;
                     case Mps.MpsType.CapStation:
-                        var cs = new MPS_CS(Config, mps.Name, mps.Debug);
+                        var cs = new MPS_CS(Config, mps.Name);
                         thread = new Thread(cs.Run);
                         currentMps = cs;
                         break;
                     case Mps.MpsType.DeliveryStation:
-                        var ds = new MPS_DS(Config, mps.Name, mps.Debug);
+                        var ds = new MPS_DS(Config, mps.Name);
                         thread = new Thread(ds.Run);
                         currentMps = ds;
                         break;
                     case Mps.MpsType.RingStation:
-                        var rs = new MPS_RS(Config, mps.Name, mps.Debug);
+                        var rs = new MPS_RS(Config, mps.Name);
                         thread = new Thread(rs.Run);
                         currentMps = rs;
                         break;
                     case Mps.MpsType.StorageStation:
-                        var ss = new MPS_SS(Config, mps.Name, mps.Debug);
+                        var ss = new MPS_SS(Config, mps.Name);
                         thread = new Thread(ss.Run);
                         currentMps = ss;
                         break;
@@ -82,14 +82,14 @@ namespace Simulator.MPS {
         }
 
         public void PlaceMachines(MachineInfo Info) {
-            myLogger.Log("Starting to PlaceMachines!");
-            myLogger.Log("Received Information = " + Info.ToString());
+            myLogger.Info("Starting to PlaceMachines!");
+            myLogger.Debug("Received Information = " + Info.ToString());
             var list = new List<Zone>();
             foreach (var machine in Info.Machines) {
                 list.Add(machine.Zone);
             }
             if (false && list.Distinct().Count() > Info.Machines.Count) {
-                myLogger.Log("Duplicated zones for machines. Will skip this place machines! " + list.Distinct().Count() + "!=" + Info.Machines.Count + "");
+                myLogger.Debug("Duplicated zones for machines. Will skip this place machines! " + list.Distinct().Count() + "!=" + Info.Machines.Count + "");
                 return;
             }
             foreach (var machineInfo in Info.Machines) {
@@ -97,7 +97,7 @@ namespace Simulator.MPS {
                     if (machine.GotPlaced) {
                         continue;
                     }
-                    myLogger.Log("Placed " + machine.Name + "!");
+                    myLogger.Debug("Placed " + machine.Name + "!");
 
                     machine.Zone = machineInfo.Zone;
                     machine.Rotation = machineInfo.Rotation;

@@ -17,15 +17,15 @@ class PBMessageHandlerRobot : PBMessageHandlerBase {
                     new(() => new AgentTask());
 
                 AgentTask task = taskParser.ParseFrom(stream, 12, payloadSize - 4);
-                MyLogger.Log("Parsing of the AgentTask was successful!");
+                MyLogger.Info("Parsing of the AgentTask was successful!");
                 Robot.HandleAgentTaskMessage(task);
                 msg = task.ToString();
                 break;
             default:
-                MyLogger.Log("Unknown MsgType " + messageType + " for component " + componentId);
+                MyLogger.Warn("Unknown MsgType " + messageType + " for component " + componentId);
                 return false;
         }
-        MyLogger.Log("Handeld message = " + msg);
+        MyLogger.Debug("Handeld message = " + msg);
         return true;
     }
 

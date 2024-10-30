@@ -129,8 +129,8 @@ public partial class Robot {
         JerseyNumber = robotConfig.Jersey;
         FinishedTasks = new List<CFinishedTask>();
 
-        MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName, debug);
-        MyLogger.Log(RobotName + " is ready for production!");
+        MyLogger = new MyLogger(this.JerseyNumber + "_" + this.RobotName);
+        MyLogger.Info(RobotName + " is ready for production!");
         Running = true;
         RobotState = RobotState.Active;
 
@@ -142,21 +142,21 @@ public partial class Robot {
 
     public void HandleAgentTaskMessage(AgentTask task) {
         if (task.TeamColor != TeamColor || task.RobotId != JerseyNumber) {
-            MyLogger.Log("Got a task thats not for me. I ignore it!");
+            MyLogger.Warn("Got a task thats not for me. I ignore it!");
             return;
         }
         if (RobotState != RobotState.Active) {
-            MyLogger.Log("Robot is not active. Ignoring the task");
+            MyLogger.Info("Robot is not active. Ignoring the task");
             return;
         }
         TaskMutex.WaitOne();
         try {
             if (_currentTask != null) {
                 if (task.TaskId == _currentTask.TaskId) {
-                    MyLogger.Log("Recived the current task again. Going to ignore that message");
+                    MyLogger.Debug("Recived the current task again. Going to ignore that message");
                     return;
                 }
-                MyLogger.Log("Received a new task!");
+                MyLogger.Info("Received a new task!");
                 TaskMutex.ReleaseMutex();
                 if (!CancelCurrentTask()) {
                     if (CurrentTask != null) {
@@ -213,7 +213,7 @@ public partial class Robot {
             if (_currentTask.TaskId != task.TaskId) {
                 throw new Exception("RACECONDITION HAPPENED");
             }
-            MyLogger.Log("Task " + task.TaskId + " was successful!");
+            MyLogger.Info("Task " + task.TaskId + " was successful!");
             _currentTask.Successful = true;
             LastTask = _currentTask;
             _currentTask = null;
@@ -248,7 +248,7 @@ public partial class Robot {
 
         var port = TeamColor == Team.Cyan ? Config.Refbox.CyanSendPort : Config.Refbox.MagentaSendPort;
         if (Config.RobotDirectBeaconSignals) {
-            MyLogger.Log("Robot " + RobotName + " is starting! Team is " + teamConfig.Name
+            MyLogger.Info("Robot " + RobotName + " is starting! Team is " + teamConfig.Name
                         + " with ip " + Config.Refbox.IP + " and port " + port);
             BeaconConnector = new UdpConnector(Config, Config.Refbox.IP, port, this, MyLogger, teamConfig.Keyphrase);
         }
@@ -260,7 +260,7 @@ public partial class Robot {
             AgentConnector = new UdpConnector(Config, this, MyLogger);
         }
 
-        MyLogger.Log("Starting " + RobotName + "'s working thread!");
+        MyLogger.Info("Starting " + RobotName + "'s working thread!");
         SerializeRobotToJson();
         while (Running) {
             if (canceling) {
@@ -301,9 +301,9 @@ public partial class Robot {
             // MyLogger.Log("No Tasks currently!");
             return;
         }
-        MyLogger.Log("#######################################################################");
-        MyLogger.Log("The current task = " + task.ToString());
-        MyLogger.Log("#######################################################################");
+        MyLogger.Info("#######################################################################");
+        MyLogger.Info("The current task = " + task.ToString());
+        MyLogger.Info("#######################################################################");
 
         switch (CheckTaskType(task)) {
             case TaskEnum.Move:
@@ -322,7 +322,7 @@ public partial class Robot {
                 ExploreMachine(task);
                 break;
             default:
-                MyLogger.Log("Somehow an empty task was added?");
+                MyLogger.Warn("Somehow an empty task was added?");
                 break;
         }
         SerializeRobotToJson();

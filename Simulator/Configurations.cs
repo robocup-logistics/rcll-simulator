@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using LlsfMsgs;
 using YamlDotNet.RepresentationModel;
+using Simulator.Utility;
 using MpsType = Simulator.MPS.Mps.MpsType;
 
 namespace Simulator {
@@ -116,6 +117,15 @@ namespace Simulator {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
+                    case "debug":
+                        MyLogger.debug_ = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "warn-to-console":
+                        MyLogger.WarnToConsole = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "error-to-console":
+                        MyLogger.ErrorToConsole = bool.Parse(value.ToString().ToLower());
+                        break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
@@ -143,8 +153,7 @@ namespace Simulator {
                     case "rs-mount-duration":
                         RSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
-                    case "ds-deliver-duration":
-                        DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
+                    case "ds-deliver-duration": DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "ss-task-duration":
                         SSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
@@ -181,7 +190,6 @@ namespace Simulator {
         private static MpsConfig? CreateMachineConfig(KeyValuePair<YamlNode, YamlNode> child) {
             var orientation = 0;
             var zone = Zone.CZ11;
-            var debug = false;
             var type = MpsType.BaseStation;
             var (yamlNode, yamlNode1) = child;
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
@@ -189,22 +197,7 @@ namespace Simulator {
                 switch (key.ToString().ToLower()) {
                     //Console.WriteLine(entry);
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("This has to be skipped!");
                         return null;
-                    case "debug":
-                        switch (value.ToString().ToLower()) {
-                            case "true":
-                                debug = true;
-                                break;
-                            case "false":
-                                debug = false;
-                                break;
-                            default:
-                                type = MpsType.CapStation;
-                                break;
-                        }
-
-                        break;
                     case "type":
                         type = value.ToString().ToUpper() switch {
                             "BS" => MpsType.BaseStation,
@@ -225,7 +218,7 @@ namespace Simulator {
             }
 
             var color = yamlNode.ToString().Contains("M-") ? Team.Magenta : Team.Cyan;
-            var config = new MpsConfig(yamlNode.ToString(), type, color, debug, zone, orientation);
+            var config = new MpsConfig(yamlNode.ToString(), type, color, zone, orientation);
             return config;
         }
 
@@ -443,14 +436,12 @@ namespace Simulator {
         public string Name { get; }
         public MPS.Mps.MpsType Type { get; }
         public Team Team { get; }
-        public bool Debug { get; }
         public Zone Zone { get; }
         public int Orientation { get; }
-        public MpsConfig(string name, MPS.Mps.MpsType type, Team team, bool debug, Zone zone = 0, int orientation = -1) {
+        public MpsConfig(string name, MPS.Mps.MpsType type, Team team, Zone zone = 0, int orientation = -1) {
             Name = name;
             Type = type;
             Team = team;
-            Debug = debug;
             Zone = zone;
             Orientation = orientation;
         }
@@ -460,7 +451,6 @@ namespace Simulator {
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Type = [" + Type + "]");
             Console.WriteLine("Team = [" + Team + "]");
-            Console.WriteLine("Debug = [" + Debug + "]");
             Console.WriteLine("Zone = [" + Zone + "]");
             Console.WriteLine("Orientation = [" + Orientation + "]");
         }

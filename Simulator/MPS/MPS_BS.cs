@@ -5,15 +5,15 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS;
 public class MPS_BS : Mps {
-    public MPS_BS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+    public MPS_BS(Configurations config, string name) : base(config, name) {
         Type = MpsType.BaseStation;
     }
     public void DispenseBase(MQTTCommand command) {
-        MyLogger.Log("Got a GetBase Task!");
+        MyLogger.Info("Got a GetBase Task!");
         StartTask();
         Thread.Sleep(Config.BSTaskDuration);
         string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
-        MyLogger.Log("Placed a Base from stock " + name + " on the belt");
+        MyLogger.Debug("Placed a Base from stock " + name + " on the belt");
         switch (command.arg1) {
             case ARG1.RED:
                 ProductOnBelt = new Products(BaseColor.BaseRed);
@@ -25,7 +25,7 @@ public class MPS_BS : Mps {
                 ProductOnBelt = new Products(BaseColor.BaseBlack);
                 break;
             default:
-                MyLogger.Log("Unknown Stock to get base from!");
+                MyLogger.Error("Unknown Stock to get base from!");
                 break;
         }
 
@@ -55,7 +55,7 @@ public class MPS_BS : Mps {
                         HandleBelt(command);
                         break;
                     default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
             }

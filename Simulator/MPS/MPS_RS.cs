@@ -6,7 +6,7 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 namespace Simulator.MPS;
 public class MPS_RS : Mps {
 
-    public MPS_RS(Configurations config, string name, bool debug = false) : base(config, name, debug, true) {
+    public MPS_RS(Configurations config, string name) : base(config, name) {
         Type = MpsType.RingStation;
         MqttHelper.ResetSlideCount();
     }
@@ -35,7 +35,7 @@ public class MPS_RS : Mps {
                         HandleBelt(command);
                         break;
                     default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
             }
@@ -46,18 +46,18 @@ public class MPS_RS : Mps {
     }
 
     public override bool PlaceProduct(string machinePoint, Products heldProduct) {
-        MyLogger.Log("Got a PlaceProduct for RingStation!");
+        MyLogger.Info("Got a PlaceProduct for RingStation!");
         if (machinePoint.ToLower().Equals("slide")) {
-            MyLogger.Log("Added a Base to the slide!");
+            MyLogger.Info("Added a Base to the slide!");
             MqttHelper.IncreaseSlideCount();
-            MyLogger.Log("The Current SlideCnt is = " + (MqttHelper.SlideCnt));
+            MyLogger.Debug("The Current SlideCnt is = " + (MqttHelper.SlideCnt));
             return true;
         }
         return base.PlaceProduct(machinePoint, heldProduct);
     }
 
     public void MountRingTask(MQTTCommand command) {
-        MyLogger.Log("Got a Mount Ring Task!");
+        MyLogger.Info("Got a Mount Ring Task!");
         StartTask();
         for (var count = 0; count < 45 && ProductOnBelt == null; count++) {
             Thread.Sleep(1000);
@@ -77,7 +77,7 @@ public class MPS_RS : Mps {
         }
         Thread.Sleep(Config.RSTaskDuration);
         ProductOnBelt.AddPart(ringToMount);
-        MyLogger.Log("Ring Mounted!");
+        MyLogger.Info("Ring Mounted!");
         FinishedTask();
     }
 }

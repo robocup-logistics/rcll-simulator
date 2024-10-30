@@ -36,7 +36,7 @@ class UdpConnector : ConnectorBase {
     public UdpConnector(Configurations config, Robot robot, MyLogger logger)
         : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
         // IN THIS CONSTRUCTOR THE CLASS IS WAITING FOR AGENT TASK MESSAGES ON A SPECIFIC PORT AND SEND BACK ON ANOTHER ONe
-        MyLogger.Log("Starting UdpConnector for RobotManager to receive AgentTask messages!");
+        MyLogger.Info("Starting UdpConnector for RobotManager to receive AgentTask messages!");
 
         PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
         PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
@@ -59,7 +59,7 @@ class UdpConnector : ConnectorBase {
     }
 
     public void ReceiveAgentTask() {
-        MyLogger.Log("Starting the ReceiveUDPMethod!");
+        MyLogger.Info("Starting the ReceiveUDPMethod!");
 
         if (RecvClient == null) {
             throw new Exception("RecvClient is null");
@@ -68,18 +68,17 @@ class UdpConnector : ConnectorBase {
             throw new Exception("PBHandler is null");
         }
 
+        MyLogger.Info("Waiting on message on port " + Port);
         while (Running) {
             try {
-                MyLogger.Log("Waiting on message on port " + Port);
-
                 // Receive the message
                 var message = RecvClient.Receive(ref receiveEndpoint);
 
-                MyLogger.Log("Received " + message.Length + " bytes.");
+                MyLogger.Info("Received " + message.Length + " bytes.");
 
                 // Check the message header and get the payload size
                 var payload = PbHandler.CheckMessageHeader(message);
-                MyLogger.Log("Decoded the payload as being " + payload);
+                MyLogger.Debug("Decoded the payload as being " + payload);
 
                 // If payload is invalid, skip processing
                 if (payload == -1) {
@@ -90,7 +89,7 @@ class UdpConnector : ConnectorBase {
                 if (payload > message.Length - 8) {
                     int remainingBytes = payload + 8 - message.Length;
 
-                    MyLogger.Log($"Missing {remainingBytes} bytes, receiving more data...");
+                    MyLogger.Debug($"Missing {remainingBytes} bytes, receiving more data...");
 
                     // Receive the remaining data (This part assumes RecvClient is capable of receiving in chunks)
                     while (remainingBytes > 0) {
@@ -110,7 +109,7 @@ class UdpConnector : ConnectorBase {
                 PbHandler.HandleMessage(message);
             }
             catch (Exception e) {
-                MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
+                MyLogger.Error(e + " - Something went wrong with the ReceiveThread!");
                 Thread.Sleep(1000); // Small delay to avoid tight loop on exceptions
             }
         }

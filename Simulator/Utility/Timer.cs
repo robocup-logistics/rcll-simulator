@@ -33,7 +33,7 @@ public class Timer {
         Nsec = 0;
         Config = config;
         TimeFactor = Config.TimeFactor;
-        MyLogger = new MyLogger("Timer", true);
+        MyLogger = new MyLogger("Timer");
         Tickthread = new Thread(Tick);
         Tickthread.Start();
 
@@ -42,7 +42,7 @@ public class Timer {
 
     public void UpdateTime(Time gameTime) {
         TimerMutex.WaitOne();
-        MyLogger.Log("Got Update time message!");
+        MyLogger.Debug("Got Update time message! " + gameTime.ToString());
         Sec = gameTime.Sec;
         Nsec = gameTime.Nsec;
         TimerMutex.ReleaseMutex();

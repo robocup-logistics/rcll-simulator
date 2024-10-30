@@ -4,6 +4,7 @@ using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
+//TODO Compare gameinfo with machine states and error out all missmatches
 namespace Simulator.MPS;
 public abstract class Mps {
     public readonly MyLogger MyLogger;
@@ -13,7 +14,6 @@ public abstract class Mps {
     public ExplorationState ExplorationState;
     public Zone Zone { get; set; }
     public uint Rotation { get; set; }
-    public bool Debug;
     public Light RedLight { get; }
     public Light GreenLight { get; }
     public Light YellowLight { get; }
@@ -36,11 +36,10 @@ public abstract class Mps {
         StorageStation = 500
     }
 
-    protected Mps(Configurations config, string name, bool debug = false, bool slideCount = false) {
+    protected Mps(Configurations config, string name, bool slideCount = false) {
         // Constructor for basic member initializations
         Config = config;
         Name = name;
-        Debug = debug;
 
         GotPlaced = false;
         ProductAtOut = null;
@@ -52,7 +51,7 @@ public abstract class Mps {
         robotAtInput = new Mutex();
         robotAtOutput = new Mutex();
 
-        MyLogger = new MyLogger(Name, Debug);
+        MyLogger = new MyLogger(Name);
         MyLogger.Info("Starting Machine");
 
         RedLight = new Light(LightColor.Red);
@@ -104,7 +103,7 @@ public abstract class Mps {
         string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
         switch (command.arg1) {
             case ARG1.RESET:
-                MyLogger.Log("Handle Lights got a ResetLights task!");
+                MyLogger.Debug("Handle Lights got a ResetLights task!");
                 RedLight.SetLight(LightState.Off);
                 YellowLight.SetLight(LightState.Off);
                 GreenLight.SetLight(LightState.Off);
@@ -116,7 +115,7 @@ public abstract class Mps {
                     RedLight.SetLight(LightState.Off);
                 else if (command.arg2 == ARG2.BLINK)
                     RedLight.SetLight(LightState.Blink);
-                MyLogger.Log("Handle Lights got a RedLight task with [" + name + "]!");
+                MyLogger.Debug("Handle Lights got a RedLight task with [" + name + "]!");
                 break;
             case ARG1.YELLOW:
                 if (command.arg2 == ARG2.ON)
@@ -125,7 +124,7 @@ public abstract class Mps {
                     YellowLight.SetLight(LightState.Off);
                 else if (command.arg2 == ARG2.BLINK)
                     YellowLight.SetLight(LightState.Blink);
-                MyLogger.Log("Handle Lights got a YellowLight task with [" + name + "]!");
+                MyLogger.Debug("Handle Lights got a YellowLight task with [" + name + "]!");
                 break;
             case ARG1.GREEN:
                 if (command.arg2 == ARG2.ON)
@@ -134,7 +133,7 @@ public abstract class Mps {
                     GreenLight.SetLight(LightState.Off);
                 else if (command.arg2 == ARG2.BLINK)
                     GreenLight.SetLight(LightState.Blink);
-                MyLogger.Log("Handle Lights got a GreenLight task with [" + name + "]!");
+                MyLogger.Debug("Handle Lights got a GreenLight task with [" + name + "]!");
                 break;
             default:
                 break;
@@ -144,27 +143,26 @@ public abstract class Mps {
     }
 
     public void HandleBelt(MQTTCommand command) {
-        MyLogger.Log("Got a Band on Task!");
+        MyLogger.Info("Got a Band on Task!");
         StartTask();
-        MyLogger.Log("Product on belt?");
+        MyLogger.Debug("Product on belt?");
         for (var counter = 0; counter < 225 && (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null); counter++) {
             Thread.Sleep(200);
         }
         if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
-            MyLogger.Log("Still no Product on the Belt!");
+            MyLogger.Warn("Still no Product on the Belt!");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
-        MyLogger.Log("Product on belt!");
-        MyLogger.Log("Product is moving on the belt!");
+        MyLogger.Info("Product on belt!");
+        MyLogger.Info("Product is moving on the belt!");
         Thread.Sleep(Config.BeltActionDuration);
         string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
-        MyLogger.Log("Product has reached its destination [" + name + "]!");
         switch (command.arg2) {
             case ARG2.IN:
                 ProductAtIn = ProductOnBelt;
                 ProductOnBelt = null;
-                MyLogger.Log("We place the Product onto the InputBeltPosition");
+                MyLogger.Info("We place the Product onto the InputBeltPosition");
                 if (ProductAtIn != null) {
                     MqttHelper.SetBarcode(ProductAtIn.ID);
                 }
@@ -172,7 +170,7 @@ public abstract class Mps {
             case ARG2.OUT:
                 ProductAtOut = ProductOnBelt;
                 ProductOnBelt = null;
-                MyLogger.Log("We place the Product onto the OutBeltPosition");
+                MyLogger.Info("We place the Product onto the OutBeltPosition");
                 break;
             case ARG2.MID:
                 if (command.arg1 == ARG1.TO_OUTPUT) {
@@ -183,15 +181,14 @@ public abstract class Mps {
                     ProductOnBelt = ProductAtOut;
                     ProductAtOut = null;
                 }
-                MyLogger.Log("We place the Product onto the Middle of the belt");
+                MyLogger.Info("We place the Product onto the Middle of the belt");
                 break;
         }
-        //Belt.SetTarget(target, direction);
+
         FinishedTask();
     }
 
     public virtual bool PlaceProduct(string machinePoint, Products heldProduct) {
-        //MyLogger.Log("Got a PlaceProduct!");
         switch (machinePoint.ToLower()) {
             case "input":
                 if (ProductAtIn != null)
@@ -204,7 +201,7 @@ public abstract class Mps {
                 ProductAtOut = heldProduct;
                 return true;
             default:
-                MyLogger.Log("Defaulting!?");
+                MyLogger.Warn("Defaulting!?");
                 if (ProductAtIn != null)
                     return false;
                 ProductAtIn = heldProduct;
@@ -227,7 +224,7 @@ public abstract class Mps {
                 }
                 break;
             default:
-                MyLogger.Log("Defaulting!?");
+                MyLogger.Warn("Defaulting!?");
                 returnProduct = ProductAtIn;
                 if (!dryRun) {
                     ProductAtIn = null;

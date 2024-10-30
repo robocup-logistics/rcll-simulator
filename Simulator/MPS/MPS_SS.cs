@@ -1,12 +1,15 @@
-﻿using LlsfMsgs; using Simulator.Utility; using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
+﻿using LlsfMsgs;
+using Simulator.Utility;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 
 namespace Simulator.MPS;
-public class MPS_SS : Mps {public List<List<Products?>> Storage;
+public class MPS_SS : Mps {
+    public List<List<Products?>> Storage = new List<List<Products?>>();
     public static readonly int ShelfCount = 6;
     public static readonly int SlotCount = 8;
 
-    public MPS_SS(Configurations config, string name, bool debug = false) : base(config, name, debug) {
+    public MPS_SS(Configurations config, string name) : base(config, name) {
         Type = MpsType.StorageStation;
         ResetStorage();
     }
@@ -51,7 +54,7 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
                         HandleRelocate(command);
                         break;
                     default:
-                        MyLogger.Log("Unhandelt ActionType: " + command.command);
+                        MyLogger.Warn("Unhandelt ActionType: " + command.command);
                         break;
                 }
             }
@@ -67,21 +70,21 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
     }
 
     public void HandleStore(MQTTCommand command) {
-        if(command.arg1_shelf == null || command.arg1_slot == null) {
+        if (command.arg1_shelf == null || command.arg1_slot == null) {
             throw new Exception("Command shelf or slot is null");
         }
         StartTask();
         int shelf = (int)command.arg1_shelf;
         int slot = (int)command.arg1_slot;
 
-        if(Storage[shelf][slot] != null) {
-            MyLogger.Log("Not going to store since this slot is already used");
+        if (Storage[shelf][slot] != null) {
+            MyLogger.Error("Not going to store since this slot is already used");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
 
-        if(ProductOnBelt == null) {
-            MyLogger.Log("No Product on Belt");
+        if (ProductOnBelt == null) {
+            MyLogger.Error("No Product on Belt");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
@@ -94,21 +97,21 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
     }
 
     public void HandleRetrieve(MQTTCommand command) {
-        if(command.arg1_shelf == null || command.arg1_slot == null) {
+        if (command.arg1_shelf == null || command.arg1_slot == null) {
             throw new Exception("Command shelf or slot is null");
         }
         StartTask();
         int shelf = (int)command.arg1_shelf;
         int slot = (int)command.arg1_slot;
 
-        if(Storage[shelf][slot] == null) {
-            MyLogger.Log("Not going to retrieve since this slot is empty");
+        if (Storage[shelf][slot] == null) {
+            MyLogger.Error("Not going to retrieve since this slot is empty");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
 
-        if(ProductOnBelt != null) {
-            MyLogger.Log("Product already on Belt");
+        if (ProductOnBelt != null) {
+            MyLogger.Error("Product already on Belt");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
@@ -121,7 +124,7 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
     }
 
     public void HandleRelocate(MQTTCommand command) {
-        if(command.arg1_shelf == null || command.arg1_slot == null ||
+        if (command.arg1_shelf == null || command.arg1_slot == null ||
            command.arg2_slot == null || command.arg2_shelf == null) {
             throw new Exception("Command shelf or slot is null");
         }
@@ -131,13 +134,13 @@ public class MPS_SS : Mps {public List<List<Products?>> Storage;
         int toShelf = (int)command.arg2_shelf;
         int toSlot = (int)command.arg2_slot;
 
-        if(Storage[fromShelf][fromSlot] == null) {
-            MyLogger.Log("Not going to relocate since this slot is empty");
+        if (Storage[fromShelf][fromSlot] == null) {
+            MyLogger.Error("Not going to relocate since this slot is empty");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }
-        if(Storage[toShelf][toSlot] == null) {
-            MyLogger.Log("Not going to relocate since this slot is already used");
+        if (Storage[toShelf][toSlot] == null) {
+            MyLogger.Error("Not going to relocate since this slot is already used");
             MqttHelper.SetStatus(MQTTStatus.ERROR);
             return;
         }

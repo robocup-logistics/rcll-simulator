@@ -11,16 +11,16 @@ class PBMessageHandlerBase {
 
     public int CheckMessageHeader(byte[] Stream) {
         if (Stream.Length < 8) {
-            MyLogger.Log("The received Message is to short to be parsed!");
+            MyLogger.Debug("The received Message is to short to be parsed!");
             return -1;
         }
         //TODO FRAME HEADER I MAYBE DELETED TOO MUCH
         if (FrameHeader.Version != Stream[0]) {
-            MyLogger.Log("Version is different!");
+            MyLogger.Warn("Version is different!");
             return -1;
         }
         if (FrameHeader.Cipher != Stream[1]) {
-            MyLogger.Log("Cipher is different!");
+            MyLogger.Warn("Cipher is different!");
             return -1;
         }
         var payloadsize = BytesToInt(Stream, 4, 4);
@@ -40,7 +40,7 @@ class PBMessageHandlerBase {
         int messageType = BytesToInt(stream, 10, 2);
 
         if (payloadSize == 0) {
-            MyLogger.Log($"The payload size is {payloadSize}, no further processing.");
+            MyLogger.Warn($"The payload size is {payloadSize}, no further processing.");
             return false;
         }
 

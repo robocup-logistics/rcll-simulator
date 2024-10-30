@@ -27,8 +27,8 @@ namespace Simulator.WebGui {
             listener.Prefixes.Add(Url);
 
             listener.Start();
-            MyLogger = new MyLogger("Web", true);
-            MyLogger.Log($"Listening for the WebGUI to connect to {Url}");
+            MyLogger = new MyLogger("Web");
+            MyLogger.Info($"Listening for the WebGUI to connect to {Url}");
             Console.WriteLine($"Listening for the WebGUI to connect to {Url}");
             _robotManager = robotManager;
             _mpsManager = mpsManager;
@@ -56,22 +56,20 @@ namespace Simulator.WebGui {
                 // Print out some info about the request
                 //Console.WriteLine("Request #: {0}", ++requestCount);
                 if (req.Url != null) {
-                    MyLogger.Log(req.Url.ToString());
+                    MyLogger.Info(req.Url.ToString());
                 }
                 //Console.WriteLine(req.Url.ToString());
-                MyLogger.Log(req.HttpMethod);
+                MyLogger.Info(req.HttpMethod);
                 //Console.WriteLine(req.HttpMethod);
                 //MyLogger.Log(req.UserHostName);
                 //Console.WriteLine(req.UserHostName);
                 //MyLogger.Log(req.UserAgent);
                 //Console.WriteLine(req.UserAgent);
 
-                MyLogger.Log(" ");
-
                 switch (req.HttpMethod) {
                     // If `shutdown` url requested w/ POST, then shutdown the server after serving the page
                     case "POST" when (req.Url?.AbsolutePath == "/shutdown"):
-                        MyLogger.Log("Shutdown requested");
+                        MyLogger.Info("Shutdown requested");
                         runServer = false;
                         break;
                     case "OPTIONS": {
@@ -101,7 +99,7 @@ namespace Simulator.WebGui {
                                 return;
                             }
                             var segment = req.Url.Segments[req.Url.Segments.Length - 1];
-                            MyLogger.Log("The query = " + req.Url.Query.ToString());
+                            MyLogger.Info("The query = " + req.Url.Query.ToString());
 
                             var disableSubmit = !runServer ? "disabled" : "";
                             resp.ContentType = "text/html";
@@ -115,27 +113,27 @@ namespace Simulator.WebGui {
 
                             resp.AppendHeader("Access-Control-Allow-Origin", "*");
                             byte[] data;
-                            MyLogger.Log("Switching with the segment: " + segment);
+                            MyLogger.Info("Switching with the segment: " + segment);
 
                             switch (segment) {
                                 case "zones": {
                                         resp.ContentType = "JSON";
                                         var jsonString = JsonSerializer.Serialize(ZonesManager.GetInstance().ZoneList);
-                                        MyLogger.Log(jsonString);
+                                        MyLogger.Info(jsonString);
                                         data = Encoding.UTF8.GetBytes(jsonString);
                                         break;
                                     }
                                 case "robots": {
                                         resp.ContentType = "JSON";
                                         var jsonString = JsonSerializer.Serialize(_robotManager?.Robots);
-                                        MyLogger.Log(jsonString);
+                                        MyLogger.Info(jsonString);
                                         data = Encoding.UTF8.GetBytes(jsonString);
                                         break;
                                     }
                                 case "machines": {
                                         resp.ContentType = "JSON";
                                         var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
-                                        MyLogger.Log(jsonString);
+                                        MyLogger.Info(jsonString);
                                         data = Encoding.UTF8.GetBytes(jsonString);
                                         //Console.WriteLine("Creating the Json took : {0}", timer.ElapsedMilliseconds.ToString());
 

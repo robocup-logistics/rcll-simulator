@@ -31,7 +31,7 @@ abstract class ConnectorBase {
                 Address = Dns.GetHostAddresses(ip)[0];
             }
             catch (Exception) {
-                MyLogger.Log("Not able to get DNS? Retrying");
+                MyLogger.Warn("Not able to get DNS? Retrying");
                 Address = IPAddress.Any;
                 Thread.Sleep(1000);
                 return false;
