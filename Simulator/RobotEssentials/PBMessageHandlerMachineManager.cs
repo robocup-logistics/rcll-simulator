@@ -27,6 +27,8 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
                 return HandleGameState(stream, payloadSize);
             case (int)RobotInfo.Types.CompType.MsgType:
                 return HandleRobotInfo(stream, componentId, payloadSize);
+            case (int) OrderInfo.Types.CompType.MsgType:
+                return true;
             default:
                 MyLogger.Warn($"Unknown MessageType {messageType} for Component {componentId}");
                 return false;

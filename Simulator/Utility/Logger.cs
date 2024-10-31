@@ -3,7 +3,7 @@
 namespace Simulator.Utility;
 public class MyLogger {
     public static string BaseFolder = "";
-    public static bool debug_ = false;
+    public static bool debug_ = true;
     public static bool WarnToConsole = false;
     public static bool ErrorToConsole = false;
     private readonly string Prefix;
@@ -16,6 +16,7 @@ public class MyLogger {
         Filename = Path.Combine(BaseFolder, prefix + ".log");
 
         Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
             .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
             .CreateLogger();
 

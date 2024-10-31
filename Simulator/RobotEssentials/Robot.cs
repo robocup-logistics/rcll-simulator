@@ -157,13 +157,12 @@ public partial class Robot {
                     return;
                 }
                 MyLogger.Info("Received a new task!");
-                TaskMutex.ReleaseMutex();
                 if (!CancelCurrentTask()) {
                     if (CurrentTask != null) {
                         throw new Exception("cancleing task wasn't succesfull but the task wasn't finished eitehr");
                     }
                 }
-                CurrentTask = task;
+                _currentTask = task;
             }
             else {
                 _currentTask = task;

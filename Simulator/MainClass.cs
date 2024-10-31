@@ -7,6 +7,8 @@ using LlsfMsgs;
 //TODO Dynamic reload field
 //TODO Reconnect everything
 //TODO Timeout machine failure
+//TODO GRIP WITHOUT SHELF ID
+//TODO RESET MACHINE DISABLE
 
 namespace Simulator;
 internal class MainClass {
@@ -94,7 +96,6 @@ internal class MainClass {
                     Name = m.Name,
                     Zone = m.Zone,
                     Rotation = (uint)m.Orientation
-
                 };
                 mi.Machines.Add(machine);
             }

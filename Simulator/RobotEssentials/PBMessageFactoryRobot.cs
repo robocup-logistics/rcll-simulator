@@ -59,7 +59,6 @@ internal class PBMessageFactoryRobot {
         }
         if (desc != null && bs.Task != null) {
             bs.Task.WorkpieceDescription = desc;
-            // Console.WriteLine(bs.Task.WorkpieceDescription.ToString());
         }
         if (Robot != null && Robot.FinishedTasks.Count != 0) {
             foreach (var t in Robot.FinishedTasks) {
@@ -70,8 +69,8 @@ internal class PBMessageFactoryRobot {
                 bs.FinishedTasks.Add(task);
             }
         }
-        // Console.WriteLine(bs.ToString());
-        // MyLogger.Log(bs.ToString());
+
+        // MyLogger.Debug("BEACON: " + bs.ToString());
         var cmp = (ushort)BeaconSignal.Types.CompType.CompId;
         var msg = (ushort)BeaconSignal.Types.CompType.MsgType;
         return CreateMessage<BeaconSignal>(bs, cmp, msg);

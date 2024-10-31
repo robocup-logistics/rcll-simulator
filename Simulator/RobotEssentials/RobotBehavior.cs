@@ -99,10 +99,13 @@ public partial class Robot {
             }
             Mutex mutex = input ? mps.robotAtInput : mps.robotAtOutput;
             while (!mutex.WaitOne(500)) {
+                MyLogger.Debug("Waiting for the Machine to be free!");
                 if (canceling) {
                     return false;
                 }
             }
+
+            MyLogger.Debug("Waiting Aquired Lock!");
             inputOutputMutex = mutex;
             if (canceling) {
                 return false;
