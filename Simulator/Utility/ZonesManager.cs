@@ -82,7 +82,6 @@ public class ZonesManager {
             return result;
         }
         catch (Exception) {
-            MyLogger.Error("Is not a Zone Waypoint!");
             return GetZoneNextToMachine(target, machinepoint); ;
         }
     }
@@ -109,7 +108,7 @@ public class ZonesManager {
             if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
                 var orientation = value.Orientation;
                 var neighborhood = value.GetNeighborhood();
-                if (MachineName.Contains("output") || machinepoint.Equals("output")) {
+                if (machinepoint.ToLower().Equals("output")) {
                     orientation += 180;
                     orientation %= 360;
                 }
@@ -125,7 +124,7 @@ public class ZonesManager {
                 return waypoint;
             }
         }
-        MyLogger.Info("Couldn't find the machine " + MachineName);
+        MyLogger.Error("Couldn't find the machine " + MachineName);
         return 0;
     }
 

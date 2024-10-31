@@ -18,8 +18,8 @@ public class MPS_CS : Mps {
 
     public override void ResetMachine() {
         base.ResetMachine();
-        StoredCap = null;
-        Replanish();
+        // StoredCap = null;
+        // Replanish();
     }
     //TODO CONFIG FROM REFBOX
     public void Replanish() {

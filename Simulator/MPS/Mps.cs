@@ -81,9 +81,9 @@ public abstract class Mps {
         MqttHelper.SetStatus(MQTTStatus.BUSY);
         Thread.Sleep(1000);
 
-        ProductAtIn = null;
-        ProductAtOut = null;
-        ProductOnBelt = null;
+        // ProductAtIn = null;
+        // ProductAtOut = null;
+        // ProductOnBelt = null;
         MqttHelper.SetStatus(MQTTStatus.READY);
     }
 

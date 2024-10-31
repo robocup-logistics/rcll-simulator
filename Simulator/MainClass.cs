@@ -9,6 +9,7 @@ using LlsfMsgs;
 //TODO Timeout machine failure
 //TODO GRIP WITHOUT SHELF ID
 //TODO RESET MACHINE DISABLE
+//TODO Proper reset message (Refbox TODO)
 
 namespace Simulator;
 internal class MainClass {
