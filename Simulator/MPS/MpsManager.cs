@@ -26,32 +26,45 @@ namespace Simulator.MPS {
             CreateMachines();
         }
         private void CreateMachines() {
+            bool magentaTag = true;
+            bool cyanTag = true;
+
+            foreach(var teamconfig in Config.Teams) {
+                if (teamconfig.Color == Team.Magenta) {
+                    magentaTag = !teamconfig.Markerless;
+                }
+                if (teamconfig.Color == Team.Cyan) {
+                    cyanTag = !teamconfig.Markerless;
+                }
+            }
+
             foreach (var mps in Config.MpsConfigs) {
+                var hasTag = mps.Name.Contains("M-") ? magentaTag : cyanTag;
                 Mps? currentMps;
                 Thread? thread;
                 switch (mps.Type) {
                     case Mps.MpsType.BaseStation:
-                        var bs = new MPS_BS(Config, mps.Name);
+                        var bs = new MPS_BS(Config, mps.Name, hasTag);
                         thread = new Thread(bs.Run);
                         currentMps = bs;
                         break;
                     case Mps.MpsType.CapStation:
-                        var cs = new MPS_CS(Config, mps.Name);
+                        var cs = new MPS_CS(Config, mps.Name, hasTag);
                         thread = new Thread(cs.Run);
                         currentMps = cs;
                         break;
                     case Mps.MpsType.DeliveryStation:
-                        var ds = new MPS_DS(Config, mps.Name);
+                        var ds = new MPS_DS(Config, mps.Name, hasTag);
                         thread = new Thread(ds.Run);
                         currentMps = ds;
                         break;
                     case Mps.MpsType.RingStation:
-                        var rs = new MPS_RS(Config, mps.Name);
+                        var rs = new MPS_RS(Config, mps.Name, hasTag);
                         thread = new Thread(rs.Run);
                         currentMps = rs;
                         break;
                     case Mps.MpsType.StorageStation:
-                        var ss = new MPS_SS(Config, mps.Name);
+                        var ss = new MPS_SS(Config, mps.Name, hasTag);
                         thread = new Thread(ss.Run);
                         currentMps = ss;
                         break;

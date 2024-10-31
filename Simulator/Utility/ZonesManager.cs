@@ -70,6 +70,15 @@ public class ZonesManager {
         return Dictionary.ContainsKey(zone) ? Dictionary[zone] : null;
     }
 
+    public CZones? GetZone(string name) {
+        foreach (var (key, value) in Dictionary) {
+            if(key.ToString() == name) {
+                return value;
+            }
+        }
+        return null;
+    }
+
     public Zone GetWaypoint(string target, string machinepoint = "") {
         MyLogger.Info("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
         Zone result;
@@ -318,11 +327,37 @@ public class CZones {
     public void AddNeighbor(CZones newNeighbor) {
         NeighborsList.Add(newNeighbor);
     }
+
+    public bool Found(Team team, bool? value = null) {
+        if(Machine == null) {
+            return true;
+        }
+
+        if(team == Team.Cyan) {
+            if(value != null) {
+                Machine.FoundCyan = (bool)value;
+            }
+            return Machine.FoundCyan;
+        } else {
+            if(value != null) {
+                Machine.FoundMagenta = (bool)value;
+            }
+            return Machine.FoundMagenta;
+        }
+    }
+    
     public bool Free() {
         if (Machine == null) {
             return true;
         }
         return false;
+    }
+
+    public bool HasTag() {
+        if (Machine == null) {
+            return false;
+        }
+        return Machine.HasTag ? true : false;
     }
 
     public void PlaceMachine(MPS.Mps machine, uint orientation) {

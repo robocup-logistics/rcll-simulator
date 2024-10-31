@@ -21,6 +21,7 @@ public partial class Robot {
     public CZones CurrentZone { get; private set; }
     public CZones HomeZone { get; private set; }
     public RobotConfig RobotConfig;
+    public Random Random = new Random();
     //if the robot enters a machine, the input/output mutex that gets locked
     //will be stored here as a reference to make sure it releases it on leaving the input/output
     private Mutex? inputOutputMutex = null;
@@ -36,6 +37,7 @@ public partial class Robot {
     //only use the _currentTask if you locked the mutex by hand and need to actually modify the task and not retrieve it .....
     //Otherwise use the CurrentTask property
     private AgentTask? _currentTask;
+    private ZonesManager ZonesManager;
     [JsonIgnore]
     public AgentTask? CurrentTask {
         get {
@@ -135,6 +137,7 @@ public partial class Robot {
         RobotState = RobotState.Active;
 
         MpsManager = mpsManager;
+        ZonesManager = ZonesManager.GetInstance();
         HomeZone = startZone;
         CurrentZone = startZone;
         Position = new CPosition(startZone.X, startZone.Y, 180);
@@ -397,6 +400,12 @@ public partial class Robot {
 
     public void SerializeRobotToJson() {
         JsonInformation = JsonSerializer.Serialize(this);
+    }
+
+    public bool RoleTheDice(int percentage)
+    {
+        int randomValue = Random.Next(0, 100);
+        return randomValue < percentage;
     }
 }
 

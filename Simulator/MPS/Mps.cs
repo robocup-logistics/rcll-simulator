@@ -10,8 +10,10 @@ public abstract class Mps {
     public readonly MyLogger MyLogger;
     public string Name { get; private set; }
     public MpsType Type;
-    //TODO EXPLORATION
-    public ExplorationState ExplorationState;
+
+    public bool HasTag { get; private set; }
+    public bool FoundCyan;
+    public bool FoundMagenta;
     public Zone Zone { get; set; }
     public uint Rotation { get; set; }
     public Light RedLight { get; }
@@ -36,10 +38,11 @@ public abstract class Mps {
         StorageStation = 500
     }
 
-    protected Mps(Configurations config, string name, bool slideCount = false) {
+    protected Mps(Configurations config, string name, bool hasTag, bool slideCount = false) {
         // Constructor for basic member initializations
         Config = config;
         Name = name;
+        HasTag = hasTag;
 
         GotPlaced = false;
         ProductAtOut = null;

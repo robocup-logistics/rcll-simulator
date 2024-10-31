@@ -53,7 +53,7 @@ public partial class Robot {
         }
         var Waypoint = task.Move.Waypoint;
         var MachinePoint = task.Move.MachinePoint;
-        Zone targetZone = ZonesManager.GetInstance().GetWaypoint(Waypoint, MachinePoint);
+        Zone targetZone = ZonesManager.GetWaypoint(Waypoint, MachinePoint);
         if (targetZone == 0) {
             MyLogger.Warn("Couldn't find the machine position!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
@@ -110,7 +110,7 @@ public partial class Robot {
             if (canceling) {
                 return false;
             }
-            var zone = ZonesManager.GetInstance().GetMachineZone(task.Move.Waypoint);
+            var zone = ZonesManager.GetMachineZone(task.Move.Waypoint);
             if (zone == null) {
                 MyLogger.Warn("The Machine Zone not Found!");
                 TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
@@ -144,7 +144,7 @@ public partial class Robot {
         var machine = task.Retrieve.MachineId;
         var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
         var target = task.Retrieve.MachinePoint;
-        Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
+        Zone targetZone = ZonesManager.GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
             MyLogger.Warn("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
@@ -205,7 +205,7 @@ public partial class Robot {
         var machine = task.Deliver.MachineId;
         var mps = MpsManager.GetMachineByName(task.Deliver.MachineId);
         var target = task.Deliver.MachinePoint;
-        Zone targetZone = ZonesManager.GetInstance().GetWaypoint(machine, target);
+        Zone targetZone = ZonesManager.GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
             MyLogger.Warn("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
@@ -253,13 +253,13 @@ public partial class Robot {
     }
 
     public bool Move(Zone TargetZone, AgentTask task) {
-        var end = ZonesManager.GetInstance().GetZone(TargetZone);
+        var end = ZonesManager.GetZone(TargetZone);
         if (end == null) {
             MyLogger.Error("TargetZone is null!");
             return false;
         }
 
-        var path = ZonesManager.GetInstance().Astar(CurrentZone, end);
+        var path = ZonesManager.Astar(CurrentZone, end);
         if (path.Count == 0 && CurrentZone.ZoneId == TargetZone) {
             MyLogger.Info("Finished the move as I'm already in place!");
             return true;
@@ -290,7 +290,124 @@ public partial class Robot {
     }
 
     private void ExploreMachine(AgentTask task) {
-        throw new NotImplementedException();//TODO
+        MyLogger.Info("Exploring the Machine!");
+        if(!task.ExploreMachine.HasWaypoint){
+            MyLogger.Warn("The task has no waypoint!");
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return;
+        }
+
+        var waypoint = task.ExploreMachine.Waypoint;
+
+        var targetZone = ZonesManager.GetZone(waypoint);
+        if(targetZone == null){
+            MyLogger.Warn("The target zone is not found! Name" + waypoint);
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return;
+        }
+
+        if(CurrentZone == targetZone){
+            MyLogger.Info("Already at the target zone!");
+            TaskSucceded(task);
+            return;
+        }
+
+        if(!targetZone.Free()){
+            MyLogger.Info("The target zone is not free!");
+            var machine = targetZone.GetZoneString();
+            targetZone = ZonesManager.GetZone(ZonesManager.GetZoneNextToMachine(machine));
+        }
+        if(targetZone == null){
+            MyLogger.Warn("Machine Zone not found: Name" + waypoint);
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return;
+        }
+
+        var path = ZonesManager.Astar(CurrentZone, targetZone);
+
+        if (path.Count == 0) {
+            MyLogger.Error("No Path could be computed!!");
+            TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
+        }
+
+        foreach (var z in path) {
+            MyLogger.Debug("Doing a step towards + " + z.ZoneId);
+            LookAtZone(z);
+            if (canceling) {
+                return;
+            }
+            var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
+            Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
+            if (canceling) {
+                return;
+            }
+            SetZone(z);
+            foreach(var zone in CurrentZone.GetNeighborhood()){
+                if(!zone.Free() && !zone.Found(TeamColor)){
+                    if(canceling){
+                        return;
+                    }
+                    Thread.Sleep(Config.RobotExploreDuration);
+                    var hasTag = zone.HasTag();
+                    if(!teamConfig.Markerless && !hasTag) {
+                        // Only rot and zone can be determined
+                        if(!Config.RobotReportDirect) {
+                            if(RoleTheDice(Config.ExplorationProbability)){
+                                var report = GetMachineReport(zone.ZoneId, null, (uint)zone.Orientation);
+                                AgentConnector?.AppendMachineReport(report);
+                                zone.Found(TeamColor, true);
+                            }
+                        }
+                    } else {
+                        // All information can be determined
+                        if(Config.RobotReportDirect) {
+                            if(RoleTheDice(Config.ExplorationProbability)){
+                                var report = GetMachineReport(zone.ZoneId, zone.GetZoneString(), (uint)zone.Orientation);
+                                BeaconConnector?.AppendMachineReport(report);
+                                zone.Found(TeamColor, true);
+                            }
+                        } else {
+                            string? name = null;
+                            uint? orientation = null;
+                            if(RoleTheDice(Config.ExplorationProbability)){
+                                name = zone.GetZoneString();
+                            }
+                            if(RoleTheDice(Config.ExplorationProbability)){
+                                orientation = (uint)zone.Orientation;
+                            }
+                            if(name != null || orientation != null) {
+                                var report = GetMachineReport(zone.ZoneId, name, orientation, teamConfig.Markerless);
+                                AgentConnector?.AppendMachineReport(report);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private List<string> types = new List<string>{"CS", "RS", "SS", "DS", "BS"};
+
+    private MachineReport GetMachineReport(Zone zone, string? name, uint? Orientation, bool markerless = false){
+        var report = new MachineReport();
+        string? type = null;
+        if(name != null) {
+            type = types.FirstOrDefault(t => name.Contains(t));
+        }
+        report.TeamColor = TeamColor;
+        report.Machines.Add(new MachineReportEntry() {
+            Zone = zone,
+            Type = type
+        });
+
+        // Name can be retrieved from the agent through the refbox
+        if(!markerless) {
+            report.Machines[0].Name = name;
+        }
+        if(Orientation != null){
+            report.Machines[0].Rotation = (uint)Orientation;
+        }
+        return report;
     }
 
 }// class Robot

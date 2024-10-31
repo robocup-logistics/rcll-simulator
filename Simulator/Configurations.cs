@@ -23,6 +23,8 @@ namespace Simulator {
         // all member variables concerning the simulation are here
         public int FieldWidth = 14;
         public int FieldHeight = 8;
+        public int ExplorationProbability = 80;
+        public int RobotExploreDuration = 2;
 
         public bool FixedMPSplacement { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
@@ -40,6 +42,7 @@ namespace Simulator {
         public string WebguiPrefix { get; private set; }
         public uint WebguiPort { get; private set; }
         public bool BarcodeScanner { get; private set; }
+        public bool RobotReportDirect { get; private set; }
 
         public Configurations(string path) {
             MpsConfigs = new List<MpsConfig>();
@@ -117,6 +120,15 @@ namespace Simulator {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
+                    case "report-machhine-direct":
+                        RobotReportDirect = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "robot-explore-zone":
+                        RobotExploreDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
+                        break;
+                    case "exploration-probablitity":
+                        ExplorationProbability = int.Parse(value.ToString());
+                        break;
                     case "debug":
                         MyLogger.debug_ = bool.Parse(value.ToString().ToLower());
                         break;
@@ -159,7 +171,7 @@ namespace Simulator {
                         SSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "fixed-mps-position":
-                        FixedMPSplacement = bool.Parse(value.ToString().ToUpper());
+                        FixedMPSplacement = bool.Parse(value.ToString().ToLower());
                         break;
                     case "robot-direct-beacon":
                         RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
@@ -282,6 +294,7 @@ namespace Simulator {
         private static TeamConfig? CreateTeamConfig(KeyValuePair<YamlNode, YamlNode> child) {
             string? name = null;
             var color = Team.Cyan;
+            var markerless = false;
 
             var (yamlNode, yamlNode1) = child;
             if (!yamlNode.ToString().ToLower().Contains("magenta")) {
@@ -305,6 +318,9 @@ namespace Simulator {
                     case "name":
                         name = value.ToString();
                         break;
+                    case "markerless":
+                         markerless = bool.Parse(value.ToString().ToLower());
+                        break;
                     case "keyphrase":
                         keyphrase = value.ToString();
                         break;
@@ -313,7 +329,7 @@ namespace Simulator {
             if (name == null) {
                 throw new Exception("Team has no name");
             }
-            var config = new TeamConfig(name, color, keyphrase);
+            var config = new TeamConfig(name, color, markerless, keyphrase);
             return config;
         }
 
@@ -461,11 +477,13 @@ namespace Simulator {
         public Team Color { get; }
         public uint Points { get; set; }
         public string? Keyphrase { get; set; }
-        public TeamConfig(string name, Team color, string? keyphrase = null) {
+        public bool Markerless;
+        public TeamConfig(string name, Team color, bool markerless, string? keyphrase = null) {
             Name = name;
             Color = color;
             Points = 0;
             Keyphrase = keyphrase;
+            Markerless = markerless;
         }
     }
 

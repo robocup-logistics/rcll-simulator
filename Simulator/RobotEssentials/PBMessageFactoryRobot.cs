@@ -35,6 +35,12 @@ internal class PBMessageFactoryRobot {
         return new Message(fh, mh, mb, Keyphrase);
     }
 
+    public byte[] CreateMachineReport(MachineReport report) {
+        var cmp = (ushort)MachineReport.Types.CompType.CompId;
+        var msg = (ushort)MachineReport.Types.CompType.MsgType;
+        return CreateMessage<MachineReport>(report, cmp, msg).GetBytes();
+    }
+
     public Message CreateBeaconSignal() {
         var bs = new BeaconSignal {
             Time = GetTimeMessage(),

@@ -6,7 +6,7 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 namespace Simulator.MPS;
 public class MPS_RS : Mps {
 
-    public MPS_RS(Configurations config, string name) : base(config, name) {
+    public MPS_RS(Configurations config, string name, bool hasTag) : base(config, name, hasTag, true) {
         Type = MpsType.RingStation;
         MqttHelper.ResetSlideCount();
     }

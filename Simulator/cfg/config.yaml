@@ -124,10 +124,12 @@ teams:
   CYAN:
     name: GRIPS
     active: true
+    markerles: true
   MAGENTA:
     name: Carologistics
     active: true
     keyphrase: randomkey
+    markerles: false
 refbox:
   public:
     ip: 127.0.0.1
@@ -152,9 +154,12 @@ general:
   debug: true
   warn-to-console: true
   error-to-console: true
+  report-machine-direct: true # If false the robot will send the reports to the agent as MachineReport
   fixed-mps-position: false
   robot-direct-beacon: true  # Robot is expected to send his beaconsignals directly to the refbox via udp
   enable-barcode-scanner: false
+  exploration-probability: 80 # Percentage of how likely it is to find an entire machine
+  robot-explore-zone-duration: 1 # in seconds
   robot-move-zone-duration: 2 # in seconds
   robot-grab-product-duration: 10 # duration for a single try of a grab
   robot-place-product-duration: 10 # duration for a single place try

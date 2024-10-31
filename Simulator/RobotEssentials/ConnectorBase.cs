@@ -6,7 +6,7 @@ abstract class ConnectorBase {
     public bool Running = true;
     public IPEndPoint Endpoint;
     public MyLogger MyLogger;
-    public Queue<byte[]> Messages;
+    public Queue<byte[]> ReportMessages;
     public IPAddress Address = IPAddress.Any;
     public PBMessageFactoryRobot? PbFactory;
     public PBMessageHandlerBase? PbHandler;
@@ -16,7 +16,7 @@ abstract class ConnectorBase {
 
     protected ConnectorBase(Configurations config, string ip, int port, MyLogger logger) {
         ResolveIpAddress(ip);
-        Messages = new Queue<byte[]>();
+        ReportMessages = new Queue<byte[]>();
         MyLogger = logger;
         IP = ip;
         Port = port;
@@ -49,5 +49,14 @@ abstract class ConnectorBase {
 
     public virtual void Stop() {
         Running = true;
+    }
+
+    public void AppendMachineReport(LlsfMsgs.MachineReport report) {
+        if (PbFactory == null) {
+            throw new Exception("PbFactory is null");
+        }
+        lock(ReportMessages){
+            ReportMessages.Enqueue(PbFactory.CreateMachineReport(report));
+        }
     }
 }

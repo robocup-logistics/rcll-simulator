@@ -6,9 +6,7 @@ using LlsfMsgs;
 //TODO dynamic gamefiled size
 //TODO Dynamic reload field
 //TODO Reconnect everything
-//TODO Timeout machine failure
 //TODO GRIP WITHOUT SHELF ID
-//TODO RESET MACHINE DISABLE
 //TODO Proper reset message (Refbox TODO)
 
 namespace Simulator;

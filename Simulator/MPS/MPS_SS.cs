@@ -9,7 +9,7 @@ public class MPS_SS : Mps {
     public static readonly int ShelfCount = 6;
     public static readonly int SlotCount = 8;
 
-    public MPS_SS(Configurations config, string name) : base(config, name) {
+    public MPS_SS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
         Type = MpsType.StorageStation;
         List<Products?> baseList = Enumerable.Repeat<Products?>(null, SlotCount).ToList();
         Storage = Enumerable.Repeat(baseList, ShelfCount).ToList();

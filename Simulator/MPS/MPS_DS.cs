@@ -8,7 +8,7 @@ public class MPS_DS : Mps {
     private List<Products> Slot1;
     private List<Products> Slot2;
     private List<Products> Slot3;
-    public MPS_DS(Configurations config, string name) : base(config, name) {
+    public MPS_DS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
         Type = MpsType.DeliveryStation;
         Slot1 = new List<Products>();
         Slot2 = new List<Products>();

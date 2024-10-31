@@ -75,6 +75,12 @@ class TcpConnector : ConnectorBase {
                     ConnectSocket.Send(lastTask.GetBytes());
                 }
                 Thread.Sleep(500);
+                if(!Config.RobotReportDirect && ReportMessages.Count > 0) {
+                    lock(ReportMessages) {
+                        ConnectSocket.Send(ReportMessages.Dequeue());
+                        Thread.Sleep(200);
+                    }
+                }
             }
             catch (SocketException se) {
                 MyLogger.Error(se + " - Socket exception occurred in the SendToAgentThread!");

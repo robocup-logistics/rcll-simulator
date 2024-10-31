@@ -5,7 +5,7 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS;
 public class MPS_BS : Mps {
-    public MPS_BS(Configurations config, string name) : base(config, name) {
+    public MPS_BS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
         Type = MpsType.BaseStation;
     }
     public void DispenseBase(MQTTCommand command) {
