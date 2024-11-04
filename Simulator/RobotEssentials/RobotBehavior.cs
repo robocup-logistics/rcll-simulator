@@ -97,6 +97,13 @@ public partial class Robot {
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
                 return false;
             }
+
+            if(mps.teamColor != TeamColor){
+                MyLogger.Warn("The Machine is not of the same team color!");
+                TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+                return false;
+            }
+
             Mutex mutex = input ? mps.robotAtInput : mps.robotAtOutput;
             while (!mutex.WaitOne(500)) {
                 MyLogger.Debug("Waiting for the Machine to be free!");
@@ -148,6 +155,12 @@ public partial class Robot {
         if (mps == null || targetZone == 0) {
             MyLogger.Warn("Couldnt find the requested target machine!");
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
+            return false;
+        }
+
+        if(mps.teamColor != TeamColor){
+            MyLogger.Warn("The Machine is not of the same team color!");
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
         }
 
@@ -211,6 +224,13 @@ public partial class Robot {
             TaskFailed(task, (uint)ErrorCode.MpsNotFound);
             return false;
         }
+
+        if(mps.teamColor != TeamColor){
+            MyLogger.Warn("The Machine is not of the same team color!");
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+            return false;
+        }
+
         Mutex targetMutex = mps.robotAtInput;
         if (target.ToLower() == "output") {
             targetMutex = mps.robotAtOutput;

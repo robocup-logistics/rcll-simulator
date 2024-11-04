@@ -52,27 +52,27 @@ public class MpsManager {
             Thread? thread;
             switch (mps.Type) {
                 case MpsType.BaseStation:
-                    var bs = new MPS_BS(Config, mps.Name, hasTag);
+                    var bs = new MPS_BS(Config, mps.Name, mps.Team, hasTag);
                     thread = new Thread(bs.Run);
                     currentMps = bs;
                     break;
                 case MpsType.CapStation:
-                    var cs = new MPS_CS(Config, mps.Name, hasTag);
+                    var cs = new MPS_CS(Config, mps.Name, mps.Team, hasTag);
                     thread = new Thread(cs.Run);
                     currentMps = cs;
                     break;
                 case MpsType.DeliveryStation:
-                    var ds = new MPS_DS(Config, mps.Name, hasTag);
+                    var ds = new MPS_DS(Config, mps.Name, mps.Team, hasTag);
                     thread = new Thread(ds.Run);
                     currentMps = ds;
                     break;
                 case MpsType.RingStation:
-                    var rs = new MPS_RS(Config, mps.Name, hasTag);
+                    var rs = new MPS_RS(Config, mps.Name, mps.Team, hasTag);
                     thread = new Thread(rs.Run);
                     currentMps = rs;
                     break;
                 case MpsType.StorageStation:
-                    var ss = new MPS_SS(Config, mps.Name, hasTag);
+                    var ss = new MPS_SS(Config, mps.Name, mps.Team, hasTag);
                     thread = new Thread(ss.Run);
                     currentMps = ss;
                     break;

@@ -9,7 +9,7 @@ public class MPS_SS : Mps {
     public static readonly int ShelfCount = 6;
     public static readonly int SlotCount = 8;
 
-    public MPS_SS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
+    public MPS_SS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
         Type = MpsType.StorageStation;
         for (int i = 0; i < ShelfCount; i++)
         {

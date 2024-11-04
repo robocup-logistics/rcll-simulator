@@ -1,4 +1,5 @@
-﻿using Simulator.Utility;
+﻿using LlsfMsgs;
+using Simulator.Utility;
 using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
@@ -8,7 +9,7 @@ public class MPS_DS : Mps {
     private List<Products> Slot1;
     private List<Products> Slot2;
     private List<Products> Slot3;
-    public MPS_DS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
+    public MPS_DS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
         Type = MpsType.DeliveryStation;
         Slot1 = new List<Products>();
         Slot2 = new List<Products>();

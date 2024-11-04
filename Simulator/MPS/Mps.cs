@@ -4,8 +4,6 @@ using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
-//TODO Compare gameinfo with machine states and error out all missmatches
-//TODO TEAM ONLY INTERACTION
 //TODO RESET ON SETUP PHASE
 namespace Simulator.MPS;
 
@@ -41,12 +39,14 @@ public abstract class Mps {
     public Mutex robotAtInput;
     public Mutex robotAtOutput;
     public bool Working { get; private set; }
+    public Team teamColor;
 
-    protected Mps(Configurations config, string name, bool hasTag, bool slideCount = false) {
+    protected Mps(Configurations config, string name, Team team, bool hasTag, bool slideCount = false) {
         // Constructor for basic member initializations
         Config = config;
         Name = name;
         HasTag = hasTag;
+        teamColor = team;
 
         GotPlaced = false;
         ProductAtOut = null;

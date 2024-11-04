@@ -10,7 +10,7 @@ public class MPS_CS : Mps {
     private Products? ShelfLeft;
     private Products? ShelfMiddle;
     private Products? ShelfRight;
-    public MPS_CS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
+    public MPS_CS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
         Type = MpsType.CapStation;
         StoredCap = null;
         Replanish();
