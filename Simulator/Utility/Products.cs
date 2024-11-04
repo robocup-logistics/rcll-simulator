@@ -14,8 +14,6 @@ public class Products {
     [JsonProperty]
     public int ID { get; private set; }
     [JsonProperty]
-    public Complexity Complexity { get; private set; }
-    [JsonProperty]
     public int RingCount { get; private set; }
     [JsonProperty]
     public BaseElement? Base { get; private set; }
@@ -23,16 +21,11 @@ public class Products {
     public CapElement? Cap { get; private set; }
     [JsonProperty]
     public List<RingElement> RingList { get; private set; }
-    public void AddPart(BaseElement newBase) {
-        Base = newBase;
-    }
     public void AddPart(CapElement newCap) {
         Cap = newCap;
-        Complexity++;
     }
     public void AddPart(RingElement newRing) {
         RingList.Add(newRing);
-        Complexity++;
         RingCount++;
     }
     public string ProductDescription() {
@@ -44,9 +37,61 @@ public class Products {
         }
         return baseString + " - " + ringString + capString;
     }
+
+    public string ToText(CapColor capColor) {
+        switch(capColor) {
+            case(CapColor.CapBlack):
+                return "CAP_BLACK";
+            case(CapColor.CapGrey):
+                return "CAP_GREY";
+        }
+        return "";
+    }
+
+    public string ToText(RingColor ringColor) {
+        switch(ringColor) {
+            case(RingColor.RingBlue):
+                return "RING_BLUE";
+            case(RingColor.RingYellow):
+                return "RING_YELLOW";
+            case(RingColor.RingOrange):
+                return "RING_ORANGE";
+            case(RingColor.RingGreen):
+                return "RING_GREEN";
+        }
+        return "";
+    }
+
+    public string ToText(BaseColor baseColor) {
+        switch(baseColor) {
+            case(BaseColor.BaseBlack):
+                return "BASE_BLACK";
+            case(BaseColor.BaseRed):
+                return "BASE_RED";
+            case(BaseColor.BaseClear):
+                return "BASE_CLEAR";
+            case(BaseColor.BaseSilver):
+                return "BASE_SILVER";
+        }
+        return "";
+    }
+
+    public string MachineInfoDescription() {
+        string description = "";
+        if(Base != null) {
+            description += ToText(Base.BaseColor);
+        }
+        foreach (var r in RingList) {
+            description += " " + ToText(r.RingColor);
+        }
+        if(Cap != null) {
+            description += " " + ToText(Cap.CapColor);
+        }
+        return description;
+    }
+
     public Products(BaseColor color) {
         Base = new BaseElement(color);
-        Complexity = (Complexity) - 1;
         RingCount = 0;
         RingList = new List<RingElement>();
         switch (color) {
@@ -68,13 +113,14 @@ public class Products {
         internalProductCounter++;
         counterMutex.ReleaseMutex();
     }
+
     public Products(BaseColor color, CapColor capColor) : this(color) {
         AddPart(new CapElement(capColor));
     }
+
     public Products(CapColor color) {
         Base = new BaseElement();
         Cap = new CapElement(color);
-        Complexity = (Complexity)0;
         RingCount = 0;
         RingList = new List<RingElement>();
         counterMutex.WaitOne();
@@ -83,17 +129,6 @@ public class Products {
         counterMutex.ReleaseMutex();
     }
 
-    public Products(RingColor color) {
-        RingList = new List<RingElement>();
-        RingList.Add(new RingElement(color));
-        Complexity = (Complexity)1;
-        RingCount = 0;
-        RingList = new List<RingElement>();
-    }
-    public Products() {
-        RingList = new List<RingElement>();
-        Complexity = 0;
-    }
     public CapElement? RetrieveCap() {
         if (Cap != null) {
             var cap = Cap;

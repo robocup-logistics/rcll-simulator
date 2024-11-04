@@ -309,7 +309,17 @@ public class CZones {
     public Mps? Machine { get; private set; }
 
     [JsonIgnore]
-    public uint Orientation { get; private set; }
+    public uint Orientation {
+        get {
+            return Machine != null ? Machine.Rotation : 0;
+        }
+        set {
+            if (Machine != null) {
+                Machine.Rotation = value;
+            }
+        }
+    }
+
     public Zone ZoneId { get; private set; }
     public float X { get; private set; }
     public float Y { get; private set; }

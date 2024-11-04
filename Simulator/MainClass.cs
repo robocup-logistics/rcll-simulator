@@ -17,6 +17,7 @@ internal class MainClass {
     private static ZonesManager? ZoneManager;
     private static Configurations? Config;
     private static TcpConnector? RefboxConnector;
+    private static GTMonitor? GTMonitor;
 
 
     private static void Main(string[] args) {
@@ -80,9 +81,13 @@ internal class MainClass {
         Console.Write("Starting the Robots ... ");
         RobotManager = new RobotManager(Config, MachineManager);
         Console.WriteLine("done!");
+        if(Config.GroundTruthMonitor){
+            GTMonitor = new GTMonitor();
+        }
         RefboxConnector = new TcpConnector(Config, Config.Refbox.IP,
                                 Config.Refbox.TcpPort, MachineManager,
-                                RobotManager, new MyLogger("RefboxPublic"));
+                                RobotManager, GTMonitor, new MyLogger("RefboxPublic"));
+
         Console.Write("Creating the Zones ... ");
         ZoneManager = ZonesManager.GetInstance();
         Console.WriteLine("done!");

@@ -18,7 +18,8 @@ class TcpConnector : ConnectorBase {
     public Thread? ConnectThread;
     public Thread? ListenThread;
 
-    public TcpConnector(Configurations config, string ip, int port, MpsManager mpsManager, RobotManager robotManager, MyLogger logger)
+    public TcpConnector(Configurations config, string ip, int port, MpsManager mpsManager, RobotManager robotManager,
+                        GTMonitor? gtMonitor, MyLogger logger)
         : base(config, ip, port, logger) {
         //THIS CONSTRUCTOR IS USED TO COMMUNICATE WITH THE REFBOX TO GET ROBOTINFO MACHIEN INFO AND GAMESTATE
         MyLogger.Info("Starting Refbox TcpConnector for " + ip + ":" + port + "!");
@@ -27,7 +28,7 @@ class TcpConnector : ConnectorBase {
         ConnectThread = new Thread(() => ReceiveThreadMethod(ConnectSocket));
         ConnectThread.Name = "Manager_TCP_ReceiveThread";
 
-        PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, robotManager, MyLogger);
+        PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, robotManager, gtMonitor, MyLogger);
 
         Connect();
         ConnectThread.Start();

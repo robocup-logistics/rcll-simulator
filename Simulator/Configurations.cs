@@ -2,7 +2,7 @@
 using LlsfMsgs;
 using YamlDotNet.RepresentationModel;
 using Simulator.Utility;
-using MpsType = Simulator.MPS.Mps.MpsType;
+using Simulator.MPS;
 
 namespace Simulator {
     /// <summary>
@@ -27,6 +27,7 @@ namespace Simulator {
         public int RobotExploreDuration = 2;
 
         public bool FixedMPSplacement { get; private set; }
+        public bool GroundTruthMonitor { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int RobotPlaceDuration { get; private set; }
         public int RobotGrabProductDuration { get; private set; }
@@ -119,6 +120,9 @@ namespace Simulator {
                 switch (key.ToString().ToLower()) {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
+                        break;
+                    case "monitor-ground-truth":
+                        GroundTruthMonitor = bool.Parse(value.ToString().ToLower());
                         break;
                     case "report-machhine-direct":
                         RobotReportDirect = bool.Parse(value.ToString().ToLower());
@@ -450,11 +454,11 @@ namespace Simulator {
 
     public class MpsConfig {
         public string Name { get; }
-        public MPS.Mps.MpsType Type { get; }
+        public MpsType Type { get; }
         public Team Team { get; }
         public Zone Zone { get; }
         public int Orientation { get; }
-        public MpsConfig(string name, MPS.Mps.MpsType type, Team team, Zone zone = 0, int orientation = -1) {
+        public MpsConfig(string name, MpsType type, Team team, Zone zone = 0, int orientation = -1) {
             Name = name;
             Type = type;
             Team = team;

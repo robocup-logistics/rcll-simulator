@@ -330,6 +330,7 @@ public partial class Robot {
             TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
         }
 
+        //TODO MIRROR REPORT
         foreach (var z in path) {
             MyLogger.Debug("Doing a step towards + " + z.ZoneId);
             LookAtZone(z);

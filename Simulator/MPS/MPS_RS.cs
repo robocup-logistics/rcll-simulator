@@ -5,10 +5,14 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS;
 public class MPS_RS : Mps {
+    public RingColor Ring1;
+    public RingColor Ring2;
 
     public MPS_RS(Configurations config, string name, bool hasTag) : base(config, name, hasTag, true) {
         Type = MpsType.RingStation;
         MqttHelper.ResetSlideCount();
+        Ring1 = Name.Contains("RS1") ? RingColor.RingYellow : RingColor.RingBlue;
+        Ring2 = Name.Contains("RS1") ? RingColor.RingGreen : RingColor.RingOrange;
     }
 
     protected override void Work() {
@@ -67,10 +71,10 @@ public class MPS_RS : Mps {
         switch (command.arg1) {
             case ARG1.RING1:
                 //TODO GET COLOR FROM REFBOX
-                ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingYellow) : new RingElement(RingColor.RingBlue);
+                ringToMount = new RingElement(Ring1);
                 break;
             case ARG1.RING2:
-                ringToMount = Name.Contains("RS1") ? new RingElement(RingColor.RingGreen) : new RingElement(RingColor.RingOrange);
+                ringToMount = new RingElement(Ring2);
                 break;
             default:
                 throw new Exception("Unknown Ring to mount!");

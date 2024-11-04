@@ -9,12 +9,15 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
     private readonly MpsManager mpsManager_;
     private readonly RobotManager robotManager_;
     private readonly ZonesManager zonesManager_;
+    private readonly GTMonitor? GTMonitor;
 
-    public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, RobotManager robotManager, MyLogger log)
+    public PBMessageHandlerMachineManager(Configurations config, MpsManager mpsManager, RobotManager robotManager, GTMonitor? gtMonitor,
+                                          MyLogger log)
         : base(config, log) {
         mpsManager_ = mpsManager;
         robotManager_ = robotManager;
         zonesManager_ = ZonesManager.GetInstance();
+        GTMonitor = gtMonitor;
     }
 
     #region Message Handling
@@ -50,11 +53,14 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
         var machineInfoParser = new MessageParser<MachineInfo>(() => new MachineInfo());
         try {
             var machineInfo = machineInfoParser.ParseFrom(stream, 12, payloadSize - 4);
-            MyLogger.Debug("MachineInfo message parsed successfully.");
+            MyLogger.Info("MachineInfo message parsed successfully.");
             MyLogger.Debug($"Parsed message: {machineInfo}");
-            // Additional handling logic...
+
+            if(GTMonitor != null)
+                GTMonitor.Append(machineInfo);
+
             string msg = machineInfo.ToString();
-            MyLogger.Info($"The Parsed message = {msg}");
+            MyLogger.Debug($"The Parsed message = {msg}");
             //TODO remove
             if (machineInfo.Machines.Count < mpsManager_.Machines.Count) {
                 MyLogger.Debug("MachineInfo is not containing all machines!");

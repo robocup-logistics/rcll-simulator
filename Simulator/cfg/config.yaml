@@ -151,6 +151,8 @@ webui:
   port: 8000
 general:
   timefactor: 1.0
+  monitor-ground-truth: true # If true the sim will check if the refbox has the right world model about the robots and mps
+  # All divergences will be logged in GTMonitor.log
   debug: true
   warn-to-console: true
   error-to-console: true

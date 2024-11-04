@@ -11,8 +11,12 @@ public class MPS_SS : Mps {
 
     public MPS_SS(Configurations config, string name, bool hasTag) : base(config, name, hasTag) {
         Type = MpsType.StorageStation;
-        List<Products?> baseList = Enumerable.Repeat<Products?>(null, SlotCount).ToList();
-        Storage = Enumerable.Repeat(baseList, ShelfCount).ToList();
+        for (int i = 0; i < ShelfCount; i++)
+        {
+            // Create a new instance of baseList for each shelf
+            List<Products?> baseList = Enumerable.Repeat<Products?>(null, SlotCount).ToList();
+            Storage.Add(baseList);
+        }
         Storage[0][1] = new Products(BaseColor.BaseRed, CapColor.CapGrey);
         Storage[1][1] = new Products(BaseColor.BaseRed, CapColor.CapBlack);
         Storage[2][1] = new Products(BaseColor.BaseSilver, CapColor.CapGrey);

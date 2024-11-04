@@ -5,7 +5,18 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
 //TODO Compare gameinfo with machine states and error out all missmatches
+//TODO TEAM ONLY INTERACTION
+//TODO RESET ON SETUP PHASE
 namespace Simulator.MPS;
+
+public enum MpsType {
+    BaseStation = 100,
+    RingStation = 200,
+    CapStation = 300,
+    DeliveryStation = 400,
+    StorageStation = 500
+}
+
 public abstract class Mps {
     public readonly MyLogger MyLogger;
     public string Name { get; private set; }
@@ -30,13 +41,6 @@ public abstract class Mps {
     public Mutex robotAtInput;
     public Mutex robotAtOutput;
     public bool Working { get; private set; }
-    public enum MpsType {
-        BaseStation = 100,
-        RingStation = 200,
-        CapStation = 300,
-        DeliveryStation = 400,
-        StorageStation = 500
-    }
 
     protected Mps(Configurations config, string name, bool hasTag, bool slideCount = false) {
         // Constructor for basic member initializations
