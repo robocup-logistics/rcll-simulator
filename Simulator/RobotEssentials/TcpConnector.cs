@@ -1,5 +1,7 @@
-﻿using System.Net.Sockets;
+﻿using System;
 using System.Net;
+using System.Net.Sockets;
+using System.Threading;
 using Simulator.Utility;
 using Simulator.MPS;
 
@@ -26,11 +28,11 @@ class TcpConnector : ConnectorBase {
 
         ConnectSocket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
         ConnectThread = new Thread(() => ReceiveThreadMethod(ConnectSocket));
-        ConnectThread.Name = "Manager_TCP_ReceiveThread";
+        ConnectThread.Name = "Refbox_TCP_ReceiveThread";
 
         PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, robotManager, gtMonitor, MyLogger);
 
-        Connect();
+        Connect(ConnectSocket);
         ConnectThread.Start();
     }
 
@@ -55,7 +57,7 @@ class TcpConnector : ConnectorBase {
         ListenThread = new Thread(() => AcceptClients());
         ListenThread.Name = "Manager_TCP_ReceiveThread";
 
-        Connect();
+        Connect(ConnectSocket);
         ListenThread.Start();
         ConnectThread.Start();
     }
@@ -85,10 +87,11 @@ class TcpConnector : ConnectorBase {
             }
             catch (SocketException se) {
                 MyLogger.Error(se + " - Socket exception occurred in the SendToAgentThread!");
-                return;
+                Thread.Sleep(500);
             }
             catch (Exception e) {
                 MyLogger.Error(e + " - Something went wrong with the SendToAgentThread!");
+                Thread.Sleep(500);
             }
         }
     }
@@ -105,7 +108,7 @@ class TcpConnector : ConnectorBase {
                     continue;
                 }
                 // Start a new thread to handle this client
-                Thread clientThread = new Thread(() => ReceiveThreadMethod(clientSocket));
+                Thread clientThread = new Thread(() => ReceiveThreadMethod(clientSocket, false));
                 clientThread.Start();
             }
             catch (Exception e) {
@@ -115,7 +118,7 @@ class TcpConnector : ConnectorBase {
     }
 
 
-    public void ReceiveThreadMethod(Socket socket) {
+    public void ReceiveThreadMethod(Socket socket, bool reconnect = true) {
         MyLogger.Info("Starting the ReceiveThread!");
         if (socket == null) {
             throw new Exception("Socket is null");
@@ -127,8 +130,15 @@ class TcpConnector : ConnectorBase {
             try {
                 if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
                     MyLogger.Warn("Connection closed by remote host.");
-                    break;
+                    if(!reconnect) {
+                        return;
+                    }
+                    socket.Close();
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    Connect(socket);
+                    continue;
                 }
+
                 if (socket.Available == 0) {
                     Thread.Sleep(50);
                     continue;
@@ -148,7 +158,10 @@ class TcpConnector : ConnectorBase {
                     MyLogger.Debug("Lines Receive " + message);
                     remainingBytes = payload + 8 - message;
                     if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
-                        MyLogger.Warn("Connection closed by remote host.");
+                        MyLogger.Warn("Csefdasfonnection closed by remote host.");
+                        if(!reconnect) {
+                            return;
+                        }
                         break;
                     }
                 }
@@ -164,16 +177,16 @@ class TcpConnector : ConnectorBase {
         }
     }
 
-    public bool Connect() {
+    public bool Connect(Socket socket) {
         MyLogger.Info("Connecting ....");
-        while (!ConnectSocket.Connected) {
+        while (!socket.Connected) {
             try {
-                ConnectSocket.Connect(Endpoint);
-                MyLogger.Info(".... connected!");
+                socket.Connect(Endpoint);
+                MyLogger.Error(".... connected!");
             }
             catch (SocketException) {
+                Thread.Sleep(5000);
                 MyLogger.Warn("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
-                Thread.Sleep(10000);
             }
         }
         return true;

@@ -5,7 +5,6 @@ using LlsfMsgs;
 
 //TODO dynamic gamefiled size
 //TODO Dynamic reload field
-//TODO Reconnect everything
 //TODO GRIP WITHOUT SHELF ID
 //TODO Proper reset message (Refbox TODO)
 

@@ -77,11 +77,9 @@ public class MQTThelper {
     }
 
     private async Task PublishQueuedMessages() {
-        while (MessageQueue.TryDequeue(out var message))
-        {
+        while (MessageQueue.TryDequeue(out var message)) {
             var (topic, value) = message;
-            try
-            {
+            try {
                 var applicationMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
                     .WithPayload(value)
@@ -89,8 +87,7 @@ public class MQTThelper {
                 MyLogger.Debug($"Publishing queued message for {topic} with value {value}");
                 await Client.PublishAsync(applicationMessage, CancellationToken.None);
             }
-            catch (Exception ex)
-            {
+            catch (Exception ex) {
                 MyLogger.Error($"Failed to publish queued message: {ex.Message}");
                 EnqueueMessage(topic, value); // Re-enqueue message if publish fails
                 break; // Exit the loop if a message fails to publish
@@ -103,8 +100,7 @@ public class MQTThelper {
     }
 
     private (string Topic, string Value)? DequeueMessage() {
-        if (MessageQueue.TryDequeue(out var message))
-        {
+        if (MessageQueue.TryDequeue(out var message)) {
             return message;
         }
         return null;
@@ -204,14 +200,15 @@ public class MQTThelper {
     }
 
     private void PublishChange(string topic_name, string value) {
-        try{
+        try {
             var applicationMessage = new MqttApplicationMessageBuilder()
                 .WithTopic(TopicPrefix + topic_name)
                 .WithPayload(value.ToString())
                 .Build();
             MyLogger.Debug($"Publishing {TopicPrefix}{topic_name} to value {value}");
             Client.PublishAsync(applicationMessage, CancellationToken.None).GetAwaiter();
-        } catch {
+        }
+        catch {
             MyLogger.Debug($"Pubslihing failed, enqueuing {topic_name} with value {value}");
             EnqueueMessage(topic_name, value);
         }
