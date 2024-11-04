@@ -133,8 +133,8 @@ class UdpConnector : ConnectorBase {
                 SendClient.Send(lastTask.GetBytes(), lastTask.GetBytes().Length, Endpoint);
             }
             Thread.Sleep(500);
-            if(!Config.RobotReportDirect && ReportMessages.Count > 0) {
-                lock(ReportMessages) {
+            if (!Config.RobotReportDirect && ReportMessages.Count > 0) {
+                lock (ReportMessages) {
                     SendClient.Send(ReportMessages.Dequeue(), Endpoint);
                     Thread.Sleep(200);
                 }
@@ -153,8 +153,8 @@ class UdpConnector : ConnectorBase {
             var msg = PbFactory.CreateBeaconSignal();
             SendClient.Send(msg.GetBytes(), msg.GetBytes().Length, Endpoint);
             Thread.Sleep(1000);
-            if(Config.RobotReportDirect && ReportMessages.Count > 0) {
-                lock(ReportMessages) {
+            if (Config.RobotReportDirect && ReportMessages.Count > 0) {
+                lock (ReportMessages) {
                     SendClient.Send(ReportMessages.Dequeue(), Endpoint);
                     Thread.Sleep(200);
                 }

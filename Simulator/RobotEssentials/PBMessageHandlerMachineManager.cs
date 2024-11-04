@@ -30,9 +30,9 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
                 return HandleGameState(stream, payloadSize);
             case (int)RobotInfo.Types.CompType.MsgType:
                 return HandleRobotInfo(stream, componentId, payloadSize);
-            case (int) OrderInfo.Types.CompType.MsgType:
-            case (int) AttentionMessage.Types.CompType.MsgType:
-            case (int) VersionInfo.Types.CompType.MsgType:
+            case (int)OrderInfo.Types.CompType.MsgType:
+            case (int)AttentionMessage.Types.CompType.MsgType:
+            case (int)VersionInfo.Types.CompType.MsgType:
                 return true;
             default:
                 MyLogger.Warn($"Unknown MessageType {messageType} for Component {componentId}");
@@ -56,7 +56,7 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
             MyLogger.Info("MachineInfo message parsed successfully.");
             MyLogger.Debug($"Parsed message: {machineInfo}");
 
-            if(GTMonitor != null)
+            if (GTMonitor != null)
                 GTMonitor.Append(machineInfo);
 
             string msg = machineInfo.ToString();

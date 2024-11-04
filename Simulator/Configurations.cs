@@ -169,7 +169,8 @@ namespace Simulator {
                     case "rs-mount-duration":
                         RSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
-                    case "ds-deliver-duration": DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
+                    case "ds-deliver-duration":
+                        DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
                     case "ss-task-duration":
                         SSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
@@ -323,7 +324,7 @@ namespace Simulator {
                         name = value.ToString();
                         break;
                     case "markerless":
-                         markerless = bool.Parse(value.ToString().ToLower());
+                        markerless = bool.Parse(value.ToString().ToLower());
                         break;
                     case "keyphrase":
                         keyphrase = value.ToString();

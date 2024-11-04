@@ -39,38 +39,38 @@ public class Products {
     }
 
     public string ToText(CapColor capColor) {
-        switch(capColor) {
-            case(CapColor.CapBlack):
+        switch (capColor) {
+            case (CapColor.CapBlack):
                 return "CAP_BLACK";
-            case(CapColor.CapGrey):
+            case (CapColor.CapGrey):
                 return "CAP_GREY";
         }
         return "";
     }
 
     public string ToText(RingColor ringColor) {
-        switch(ringColor) {
-            case(RingColor.RingBlue):
+        switch (ringColor) {
+            case (RingColor.RingBlue):
                 return "RING_BLUE";
-            case(RingColor.RingYellow):
+            case (RingColor.RingYellow):
                 return "RING_YELLOW";
-            case(RingColor.RingOrange):
+            case (RingColor.RingOrange):
                 return "RING_ORANGE";
-            case(RingColor.RingGreen):
+            case (RingColor.RingGreen):
                 return "RING_GREEN";
         }
         return "";
     }
 
     public string ToText(BaseColor baseColor) {
-        switch(baseColor) {
-            case(BaseColor.BaseBlack):
+        switch (baseColor) {
+            case (BaseColor.BaseBlack):
                 return "BASE_BLACK";
-            case(BaseColor.BaseRed):
+            case (BaseColor.BaseRed):
                 return "BASE_RED";
-            case(BaseColor.BaseClear):
+            case (BaseColor.BaseClear):
                 return "BASE_CLEAR";
-            case(BaseColor.BaseSilver):
+            case (BaseColor.BaseSilver):
                 return "BASE_SILVER";
         }
         return "";
@@ -78,13 +78,13 @@ public class Products {
 
     public string MachineInfoDescription() {
         string description = "";
-        if(Base != null) {
+        if (Base != null) {
             description += ToText(Base.BaseColor);
         }
         foreach (var r in RingList) {
             description += " " + ToText(r.RingColor);
         }
-        if(Cap != null) {
+        if (Cap != null) {
             description += " " + ToText(Cap.CapColor);
         }
         return description;

@@ -37,7 +37,7 @@ public class MpsManager {
         bool magentaTag = true;
         bool cyanTag = true;
 
-        foreach(var teamconfig in Config.Teams) {
+        foreach (var teamconfig in Config.Teams) {
             if (teamconfig.Color == Team.Magenta) {
                 magentaTag = !teamconfig.Markerless;
             }

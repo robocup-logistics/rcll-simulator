@@ -81,7 +81,7 @@ internal class MainClass {
         Console.Write("Starting the Robots ... ");
         RobotManager = new RobotManager(Config, MachineManager);
         Console.WriteLine("done!");
-        if(Config.GroundTruthMonitor){
+        if (Config.GroundTruthMonitor) {
             GTMonitor = new GTMonitor();
         }
         RefboxConnector = new TcpConnector(Config, Config.Refbox.IP,

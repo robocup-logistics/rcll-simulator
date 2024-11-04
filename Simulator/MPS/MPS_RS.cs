@@ -1,4 +1,4 @@
-﻿using LlsfMsgs;
+using LlsfMsgs;
 using Simulator.Utility;
 using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
@@ -8,7 +8,7 @@ public class MPS_RS : Mps {
     public RingColor Ring1;
     public RingColor Ring2;
 
-    public MPS_RS(Configurations config, string name, bool hasTag) : base(config, name, hasTag, true) {
+    public MPS_RS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag, true) {
         Type = MpsType.RingStation;
         MqttHelper.ResetSlideCount();
         Ring1 = Name.Contains("RS1") ? RingColor.RingYellow : RingColor.RingBlue;

@@ -68,15 +68,9 @@ public abstract class Mps {
         CommandEvent = new ManualResetEvent(false);
         CommandMutex = new Mutex();
 
-        try {
-            MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort,
-                                        config, CommandEvent, CommandMutex, MyLogger, slideCount);
-        }
-        catch (Exception e) {
-            Console.WriteLine(e);
-            throw new Exception("Could not connect to MQTT Broker!");
-            //TODO add recovery
-        }
+        MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort,
+                                    config, CommandEvent, CommandMutex, MyLogger, slideCount);
+        MqttHelper.Initialize();
     }
 
     protected abstract void Work();

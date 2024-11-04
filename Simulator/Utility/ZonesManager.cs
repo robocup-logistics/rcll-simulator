@@ -72,7 +72,7 @@ public class ZonesManager {
 
     public CZones? GetZone(string name) {
         foreach (var (key, value) in Dictionary) {
-            if(key.ToString() == name) {
+            if (key.ToString() == name) {
                 return value;
             }
         }
@@ -339,23 +339,24 @@ public class CZones {
     }
 
     public bool Found(Team team, bool? value = null) {
-        if(Machine == null) {
+        if (Machine == null) {
             return true;
         }
 
-        if(team == Team.Cyan) {
-            if(value != null) {
+        if (team == Team.Cyan) {
+            if (value != null) {
                 Machine.FoundCyan = (bool)value;
             }
             return Machine.FoundCyan;
-        } else {
-            if(value != null) {
+        }
+        else {
+            if (value != null) {
                 Machine.FoundMagenta = (bool)value;
             }
             return Machine.FoundMagenta;
         }
     }
-    
+
     public bool Free() {
         if (Machine == null) {
             return true;

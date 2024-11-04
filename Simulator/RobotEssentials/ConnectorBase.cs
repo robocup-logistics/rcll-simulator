@@ -55,7 +55,7 @@ abstract class ConnectorBase {
         if (PbFactory == null) {
             throw new Exception("PbFactory is null");
         }
-        lock(ReportMessages){
+        lock (ReportMessages) {
             ReportMessages.Enqueue(PbFactory.CreateMachineReport(report));
         }
     }

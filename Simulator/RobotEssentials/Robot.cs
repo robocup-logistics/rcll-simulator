@@ -402,8 +402,7 @@ public partial class Robot {
         JsonInformation = JsonSerializer.Serialize(this);
     }
 
-    public bool RoleTheDice(int percentage)
-    {
+    public bool RoleTheDice(int percentage) {
         int randomValue = Random.Next(0, 100);
         return randomValue < percentage;
     }

@@ -34,13 +34,13 @@ public class MyLogger {
         Mutex.WaitOne();
         Logger.Warning(text);
         Mutex.ReleaseMutex();
-        if(WarnToConsole){
-            Console.Error.WriteLineAsync(Prefix + "[WARN] "+ text);
+        if (WarnToConsole) {
+            Console.Error.WriteLineAsync(Prefix + "[WARN] " + text);
         }
     }
 
     public void Debug(string text) {
-        if(debug_){
+        if (debug_) {
             Mutex.WaitOne();
             Logger.Debug(text);
             Mutex.ReleaseMutex();
@@ -51,8 +51,8 @@ public class MyLogger {
         Mutex.WaitOne();
         Logger.Error(text);
         Mutex.ReleaseMutex();
-        if(ErrorToConsole) {
-            Console.Error.WriteLineAsync(Prefix + "[ERROR] "+ text);
+        if (ErrorToConsole) {
+            Console.Error.WriteLineAsync(Prefix + "[ERROR] " + text);
         }
     }
 

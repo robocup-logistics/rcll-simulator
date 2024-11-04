@@ -11,8 +11,7 @@ public class MPS_SS : Mps {
 
     public MPS_SS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
         Type = MpsType.StorageStation;
-        for (int i = 0; i < ShelfCount; i++)
-        {
+        for (int i = 0; i < ShelfCount; i++) {
             // Create a new instance of baseList for each shelf
             List<Products?> baseList = Enumerable.Repeat<Products?>(null, SlotCount).ToList();
             Storage.Add(baseList);

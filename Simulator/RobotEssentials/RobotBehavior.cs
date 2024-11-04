@@ -98,7 +98,7 @@ public partial class Robot {
                 return false;
             }
 
-            if(mps.teamColor != TeamColor){
+            if (mps.teamColor != TeamColor) {
                 MyLogger.Warn("The Machine is not of the same team color!");
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
                 return false;
@@ -158,7 +158,7 @@ public partial class Robot {
             return false;
         }
 
-        if(mps.teamColor != TeamColor){
+        if (mps.teamColor != TeamColor) {
             MyLogger.Warn("The Machine is not of the same team color!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
@@ -225,7 +225,7 @@ public partial class Robot {
             return false;
         }
 
-        if(mps.teamColor != TeamColor){
+        if (mps.teamColor != TeamColor) {
             MyLogger.Warn("The Machine is not of the same team color!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
@@ -311,7 +311,7 @@ public partial class Robot {
 
     private void ExploreMachine(AgentTask task) {
         MyLogger.Info("Exploring the Machine!");
-        if(!task.ExploreMachine.HasWaypoint){
+        if (!task.ExploreMachine.HasWaypoint) {
             MyLogger.Warn("The task has no waypoint!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
@@ -320,24 +320,24 @@ public partial class Robot {
         var waypoint = task.ExploreMachine.Waypoint;
 
         var targetZone = ZonesManager.GetZone(waypoint);
-        if(targetZone == null){
+        if (targetZone == null) {
             MyLogger.Warn("The target zone is not found! Name" + waypoint);
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
         }
 
-        if(CurrentZone == targetZone){
+        if (CurrentZone == targetZone) {
             MyLogger.Info("Already at the target zone!");
             TaskSucceded(task);
             return;
         }
 
-        if(!targetZone.Free()){
+        if (!targetZone.Free()) {
             MyLogger.Info("The target zone is not free!");
             var machine = targetZone.GetZoneString();
             targetZone = ZonesManager.GetZone(ZonesManager.GetZoneNextToMachine(machine));
         }
-        if(targetZone == null){
+        if (targetZone == null) {
             MyLogger.Warn("Machine Zone not found: Name" + waypoint);
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
@@ -363,40 +363,42 @@ public partial class Robot {
                 return;
             }
             SetZone(z);
-            foreach(var zone in CurrentZone.GetNeighborhood()){
-                if(!zone.Free() && !zone.Found(TeamColor)){
-                    if(canceling){
+            foreach (var zone in CurrentZone.GetNeighborhood()) {
+                if (!zone.Free() && !zone.Found(TeamColor)) {
+                    if (canceling) {
                         return;
                     }
                     Thread.Sleep(Config.RobotExploreDuration);
                     var hasTag = zone.HasTag();
-                    if(!teamConfig.Markerless && !hasTag) {
+                    if (!teamConfig.Markerless && !hasTag) {
                         // Only rot and zone can be determined
-                        if(!Config.RobotReportDirect) {
-                            if(RoleTheDice(Config.ExplorationProbability)){
+                        if (!Config.RobotReportDirect) {
+                            if (RoleTheDice(Config.ExplorationProbability)) {
                                 var report = GetMachineReport(zone.ZoneId, null, (uint)zone.Orientation);
                                 AgentConnector?.AppendMachineReport(report);
                                 zone.Found(TeamColor, true);
                             }
                         }
-                    } else {
+                    }
+                    else {
                         // All information can be determined
-                        if(Config.RobotReportDirect) {
-                            if(RoleTheDice(Config.ExplorationProbability)){
+                        if (Config.RobotReportDirect) {
+                            if (RoleTheDice(Config.ExplorationProbability)) {
                                 var report = GetMachineReport(zone.ZoneId, zone.GetZoneString(), (uint)zone.Orientation);
                                 BeaconConnector?.AppendMachineReport(report);
                                 zone.Found(TeamColor, true);
                             }
-                        } else {
+                        }
+                        else {
                             string? name = null;
                             uint? orientation = null;
-                            if(RoleTheDice(Config.ExplorationProbability)){
+                            if (RoleTheDice(Config.ExplorationProbability)) {
                                 name = zone.GetZoneString();
                             }
-                            if(RoleTheDice(Config.ExplorationProbability)){
+                            if (RoleTheDice(Config.ExplorationProbability)) {
                                 orientation = (uint)zone.Orientation;
                             }
-                            if(name != null || orientation != null) {
+                            if (name != null || orientation != null) {
                                 var report = GetMachineReport(zone.ZoneId, name, orientation, teamConfig.Markerless);
                                 AgentConnector?.AppendMachineReport(report);
                             }
@@ -407,12 +409,12 @@ public partial class Robot {
         }
     }
 
-    private List<string> types = new List<string>{"CS", "RS", "SS", "DS", "BS"};
+    private List<string> types = new List<string> { "CS", "RS", "SS", "DS", "BS" };
 
-    private MachineReport GetMachineReport(Zone zone, string? name, uint? Orientation, bool markerless = false){
+    private MachineReport GetMachineReport(Zone zone, string? name, uint? Orientation, bool markerless = false) {
         var report = new MachineReport();
         string? type = null;
-        if(name != null) {
+        if (name != null) {
             type = types.FirstOrDefault(t => name.Contains(t));
         }
         report.TeamColor = TeamColor;
@@ -422,10 +424,10 @@ public partial class Robot {
         });
 
         // Name can be retrieved from the agent through the refbox
-        if(!markerless) {
+        if (!markerless) {
             report.Machines[0].Name = name;
         }
-        if(Orientation != null){
+        if (Orientation != null) {
             report.Machines[0].Rotation = (uint)Orientation;
         }
         return report;

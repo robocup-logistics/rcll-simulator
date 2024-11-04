@@ -31,7 +31,7 @@ public class GTMonitor {
     }
 
     private string TypeToString(MpsType type) {
-        switch(type) {
+        switch (type) {
             case MpsType.BaseStation:
                 return "BS";
             case MpsType.RingStation:
@@ -47,8 +47,8 @@ public class GTMonitor {
     }
 
     private void SyncDisagreements(List<string> currentDisagreements) {
-        foreach(var disagreement in currentDisagreements) {
-            if(!KnownDisagreements.Any(kd => kd.key == disagreement)) {
+        foreach (var disagreement in currentDisagreements) {
+            if (!KnownDisagreements.Any(kd => kd.key == disagreement)) {
                 KnownDisagreements.Add(new Disagreement(disagreement));
             }
         }
@@ -74,7 +74,7 @@ public class GTMonitor {
 
     private void Monitor() {
         while (Running) {
-            if(MachineInfos.Count == 0) {
+            if (MachineInfos.Count == 0) {
                 Thread.Sleep(500);
                 continue;
             }
@@ -89,73 +89,73 @@ public class GTMonitor {
                 CZones? zone = ZonesManager.GetZone(machine.Zone);
                 Mps? mps = MpsManager.GetMachineByName(machine.Name);
 
-                if(mps == null) {
+                if (mps == null) {
                     string dissagreement = "Machine " + machine.Name + " only exists in Refbox";
                     dissagreements.Add(dissagreement);
                 }
 
-                if(zone == null) {
+                if (zone == null) {
                     string dissagreement = "Zone " + machine.Zone.ToString() + " only exists in Refbox";
                     dissagreements.Add(dissagreement);
                 }
 
-                if(mps == null || zone == null) {
+                if (mps == null || zone == null) {
                     continue;
                 }
 
-                if(mps.Rotation != machine.Rotation) {
+                if (mps.Rotation != machine.Rotation) {
                     string dissagreement = "Machine rotation should be " + machine.Rotation + " but is acutally " + mps.Rotation;
                     dissagreements.Add(dissagreement);
                 }
 
-                if(mps.Zone != machine.Zone) {
+                if (mps.Zone != machine.Zone) {
                     string dissagreement = "Machine " + machine.Name + " zone should be " + machine.Zone + " but is acutally " + mps.Zone;
                     dissagreements.Add(dissagreement);
                 }
 
-                if(TypeToString(mps.Type) != machine.Type) {
-                    string dissagreement = "Machine "+ machine.Name + " type should be " + machine.Type + " but is acutally " + TypeToString(mps.Type);
+                if (TypeToString(mps.Type) != machine.Type) {
+                    string dissagreement = "Machine " + machine.Name + " type should be " + machine.Type + " but is acutally " + TypeToString(mps.Type);
                     dissagreements.Add(dissagreement);
                 }
 
-                if(machine.Type == "CS") {
+                if (machine.Type == "CS") {
                     uint capCount = 0;
                     var cs = (MPS_CS)mps;
-                    if(cs.StoredCap != null) {
+                    if (cs.StoredCap != null) {
                         capCount++;
                     }
-                    if(machine.LoadedWith != capCount) {
+                    if (machine.LoadedWith != capCount) {
                         string dissagreement = "Machine " + machine.Name + " should be loaded with " + machine.LoadedWith + " caps but is acutally loaded with " + capCount;
                         dissagreements.Add(dissagreement);
 
                     }
                 }
-                if(machine.Type == "RS") {
+                if (machine.Type == "RS") {
                     uint baseCount = 0;
 
-                    if(mps.ProductAtIn != null) {
+                    if (mps.ProductAtIn != null) {
                         baseCount++;
                     }
 
-                    if(mps.ProductOnBelt != null) {
+                    if (mps.ProductOnBelt != null) {
                         baseCount++;
                     }
 
-                    if(mps.ProductAtOut != null) {
+                    if (mps.ProductAtOut != null) {
                         baseCount++;
                     }
 
-                    if(machine.LoadedWith != baseCount) {
+                    if (machine.LoadedWith != baseCount) {
                         string dissagreement = "Machine " + machine.Name + " should be loaded with " + machine.LoadedWith + " caps but is acutally loaded with " + baseCount;
                         dissagreements.Add(dissagreement);
                     }
                 }
-                if(machine.Type == "SS") {
+                if (machine.Type == "SS") {
                     var ss = (MPS_SS)mps;
 
-                    foreach(var status in machine.StatusSs) {
+                    foreach (var status in machine.StatusSs) {
                         var localProduct = ss.Storage[(int)status.Shelf][(int)status.Slot]?.MachineInfoDescription();
-                        if((!status.IsFilled && localProduct != null)
+                        if ((!status.IsFilled && localProduct != null)
                            || (status.IsFilled && localProduct != status.Description)) {
                             string dissagreement = "Machine " + machine.Name + " should have " + status.Description + " on shelf " + status.Shelf + " slot " + status.Slot + " but has " + ss.Storage[(int)status.Shelf][(int)status.Slot]?.MachineInfoDescription();
                             dissagreements.Add(dissagreement);
