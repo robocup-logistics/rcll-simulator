@@ -1,4 +1,4 @@
-﻿using Google.Protobuf;
+using Google.Protobuf;
 using LlsfMsgs;
 using Simulator.MPS;
 using Simulator.Utility;
@@ -61,18 +61,7 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
 
             string msg = machineInfo.ToString();
             MyLogger.Debug($"The Parsed message = {msg}");
-            //TODO remove
-            if (machineInfo.Machines.Count < mpsManager_.Machines.Count) {
-                MyLogger.Debug("MachineInfo is not containing all machines!");
-                return false;
-            }
-            zonesManager_.ZoneManagerMutex.WaitOne();
-            if (mpsManager_.AllMachineSet) {
-                ZonesManager.GetInstance().ZoneManagerMutex.ReleaseMutex();
-                return true;
-            }
-            mpsManager_.PlaceMachines(machineInfo);
-            zonesManager_.ZoneManagerMutex.ReleaseMutex();
+            mpsManager_.HandleMachineInfo(machineInfo);
             return true;
         }
         catch (Exception e) {
@@ -96,14 +85,20 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
         var gameStateParser = new MessageParser<GameState>(() => new GameState());
         var gameState = gameStateParser.ParseFrom(stream, 12, payloadSize - 4);
         Timer.GetInstance(Config).UpdateTime(gameState.GameTime);
-
-        if (gameState.HasPointsCyan)
-            Config.Teams[0].Points = gameState.PointsCyan;
-        if (gameState.HasPointsMagenta)
-            Config.Teams[1].Points = gameState.PointsMagenta;
-
         MyLogger.Info("GameState message parsed successfully.");
         MyLogger.Debug($"Parsed message: {gameState}");
+
+        if (CurrentGame.GamePhase != gameState.Phase) {
+            MyLogger.Info($"Game Phase changed from {CurrentGame.GamePhase} to {gameState.Phase}");
+            if (gameState.Phase == GameState.Types.Phase.Setup) {
+                mpsManager_.ResetMachines();
+                robotManager_.ResetRobots();
+            }
+            CurrentGame.GamePhase = gameState.Phase;
+        }
+
+        CurrentGame.GameState = gameState.State;
+
         return true;
     }
 

@@ -18,11 +18,7 @@ namespace Simulator {
         public RefboxConfig Refbox { get; set; }
         public float TimeFactor { get; private set; } = 1f;
 
-        // definitions for the web gui
-
         // all member variables concerning the simulation are here
-        public int FieldWidth = 14;
-        public int FieldHeight = 8;
         public int ExplorationProbability = 80;
         public int RobotExploreDuration = 2;
 
@@ -480,13 +476,11 @@ namespace Simulator {
     public class TeamConfig {
         public string Name { get; }
         public Team Color { get; }
-        public uint Points { get; set; }
         public string? Keyphrase { get; set; }
         public bool Markerless;
         public TeamConfig(string name, Team color, bool markerless, string? keyphrase = null) {
             Name = name;
             Color = color;
-            Points = 0;
             Keyphrase = keyphrase;
             Markerless = markerless;
         }

@@ -28,7 +28,6 @@ public abstract class Mps {
     public Light RedLight { get; }
     public Light GreenLight { get; }
     public Light YellowLight { get; }
-    public bool GotPlaced;
     public Products? ProductOnBelt { get; set; }
     public Products? ProductAtIn { get; set; }
     public Products? ProductAtOut { get; set; }
@@ -36,27 +35,26 @@ public abstract class Mps {
     public MQTThelper MqttHelper;
     protected ManualResetEvent CommandEvent;
     public Mutex CommandMutex;
-    public Mutex robotAtInput;
-    public Mutex robotAtOutput;
+    public RobotLock robotAtInput;
+    public RobotLock robotAtOutput;
     public bool Working { get; private set; }
-    public Team teamColor;
+    public Team TeamColor;
 
     protected Mps(Configurations config, string name, Team team, bool hasTag, bool slideCount = false) {
         // Constructor for basic member initializations
         Config = config;
         Name = name;
         HasTag = hasTag;
-        teamColor = team;
+        TeamColor = team;
 
-        GotPlaced = false;
         ProductAtOut = null;
         ProductAtIn = null;
         ProductOnBelt = null;
         Rotation = 0;
         Zone = Zone.MZ41;
         Working = true;
-        robotAtInput = new Mutex();
-        robotAtOutput = new Mutex();
+        robotAtInput = new RobotLock();
+        robotAtOutput = new RobotLock();
 
         MyLogger = new MyLogger(Name);
         MyLogger.Info("Starting Machine");
@@ -78,14 +76,16 @@ public abstract class Mps {
         Work();
     }
 
-    public virtual void ResetMachine() {
+    public void ResetMachine() {
         MqttHelper.SetStatus(MQTTStatus.BUSY);
         Thread.Sleep(1000);
-
-        // ProductAtIn = null;
-        // ProductAtOut = null;
-        // ProductOnBelt = null;
         MqttHelper.SetStatus(MQTTStatus.READY);
+    }
+
+    public virtual void HardResetMachine() {
+        ProductAtIn = null;
+        ProductAtOut = null;
+        ProductOnBelt = null;
     }
 
     public void StartTask() {
@@ -247,5 +247,36 @@ public abstract class Mps {
             default:
                 return false;
         }
+    }
+
+    public static string ToText(MpsType type) {
+        return type switch {
+            MpsType.BaseStation => "BS",
+            MpsType.RingStation => "RS",
+            MpsType.CapStation => "CS",
+            MpsType.DeliveryStation => "DS",
+            MpsType.StorageStation => "SS",
+            _ => "Unknown"
+        };
+    }
+
+    public virtual bool DeepEquals(Machine machine) {
+        if (Name != machine.Name) {
+            return false;
+        }
+
+        if (Rotation != machine.Rotation) {
+            return false;
+        }
+
+        if (Zone != machine.Zone) {
+            return false;
+        }
+
+        if (ToText(Type) != machine.Type) {
+            return false;
+        }
+
+        return true;
     }
 }

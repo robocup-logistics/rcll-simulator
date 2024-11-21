@@ -8,14 +8,23 @@ public class RobotManager {
     private ZonesManager ZonesManager_;
     private MpsManager MpsManager;
     private readonly Configurations Config;
+    public static RobotManager? Instance;
+    public static RobotManager GetInstance() {
+        if (Instance == null) {
+            throw new NullReferenceException("RobotManager not initialized!");
+        }
+        return Instance;
+    }
 
     public RobotManager(Configurations config, MpsManager mpsManager) {
+        Instance = this;
         Robots = new List<Robot>();
         ZonesManager_ = ZonesManager.GetInstance();
         MpsManager = mpsManager;
         Config = config;
         CreateRobots();
     }
+
     private void CreateRobots() {
         var configs = Config.RobotConfigs;
         foreach (var rob in configs) {
@@ -35,12 +44,23 @@ public class RobotManager {
             Robots.Add(robot);
         }
     }
+
     public void HandleRobotInfo(RobotInfo robotInfo) {
-        foreach (var info in robotInfo.Robots) {
-            foreach (var robot in Robots) {
-                if (robot.JerseyNumber == info.Number && robot.TeamColor == info.TeamColor) {
-                    robot.HandleRobotInfo(info);
+        lock (Robots) {
+            foreach (var info in robotInfo.Robots) {
+                foreach (var robot in Robots) {
+                    if (robot.JerseyNumber == info.Number && robot.TeamColor == info.TeamColor) {
+                        robot.HandleRobotInfo(info);
+                    }
                 }
+            }
+        }
+    }
+
+    public void ResetRobots() {
+        lock (Robots) {
+            foreach (var robot in Robots) {
+                robot.Reset();
             }
         }
     }
@@ -48,6 +68,37 @@ public class RobotManager {
     public void StopAllRobots() {
         foreach (var robot in Robots) {
             robot.RobotStop();
+        }
+    }
+
+    private Mutex pauseMutex = new Mutex();
+    // Pauses all Robots that want to move to this mps
+    public void PauseRobots(String name) {
+        pauseMutex.WaitOne();
+        foreach (Robot robot in Robots) {
+            if (robot.Pause(name)) {
+                robot.RobotStop();
+            }
+        }
+    }
+
+    public void ResumeRobots() {
+        foreach (Robot robot in Robots) {
+            robot.Resume();
+        }
+        pauseMutex.ReleaseMutex();
+    }
+
+    public void MoveRobotsToMachine(Mps machine) {
+        foreach (Robot robot in Robots) {
+            if (robot.inputOutputLock == machine.robotAtOutput || robot.inputOutputLock == machine.robotAtInput) {
+                CZones? zone = ZonesManager_.GetZone(machine.Zone);
+                if(zone == null) {
+                    throw new Exception("Couldn't find the zone for the machine! "
+                                        + "Machine: " + machine.Name + " Zone: " + machine.Zone);
+                }
+                robot.SetZone(zone);
+            }
         }
     }
 }

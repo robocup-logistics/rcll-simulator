@@ -8,11 +8,21 @@ public class MPS_RS : Mps {
     public RingColor Ring1;
     public RingColor Ring2;
 
-    public MPS_RS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag, true) {
+    public MPS_RS(Configurations config, string name, Team team, bool hasTag, RingColor? ring1 = null, RingColor? ring2 = null) : base(config, name, team, hasTag, true) {
         Type = MpsType.RingStation;
         MqttHelper.ResetSlideCount();
-        Ring1 = Name.Contains("RS1") ? RingColor.RingYellow : RingColor.RingBlue;
-        Ring2 = Name.Contains("RS1") ? RingColor.RingGreen : RingColor.RingOrange;
+
+        if (ring1 == null) {
+            Ring1 = Name.Contains("RS1") ? RingColor.RingYellow : RingColor.RingBlue;
+        } else {
+            Ring1 = (RingColor)ring1;
+        }
+
+        if (ring2 == null) {
+            Ring2 = Name.Contains("RS1") ? RingColor.RingGreen : RingColor.RingOrange;
+        } else {
+            Ring2 = (RingColor)ring2;
+        }
     }
 
     protected override void Work() {
@@ -70,7 +80,6 @@ public class MPS_RS : Mps {
         RingElement ringToMount;
         switch (command.arg1) {
             case ARG1.RING1:
-                //TODO GET COLOR FROM REFBOX
                 ringToMount = new RingElement(Ring1);
                 break;
             case ARG1.RING2:
@@ -84,4 +93,34 @@ public class MPS_RS : Mps {
         MyLogger.Info("Ring Mounted!");
         FinishedTask();
     }
+
+    public static string ToText(RingColor color) {
+        return color switch {
+            RingColor.RingBlue => "RING_BLUE",
+            RingColor.RingGreen => "RING_GREEN",
+            RingColor.RingOrange => "RING_ORANGE",
+            RingColor.RingYellow => "RING_YELLOW",
+            _ => "Unknown"
+        };
+    }
+
+
+    public override bool DeepEquals(Machine machine) {
+        if (!base.DeepEquals(machine)) {
+            return false;
+        }
+        if (machine.RingColors.Count < 2) {
+            return true;
+        }
+
+        if (Ring1 != machine.RingColors[0]) {
+            return false;
+
+        }
+        if (Ring2 != machine.RingColors[1]) {
+            return false;
+        }
+        return true;
+    }
+
 }

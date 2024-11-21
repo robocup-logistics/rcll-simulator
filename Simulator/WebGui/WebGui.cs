@@ -130,15 +130,6 @@ namespace Simulator.WebGui {
                                         data = Encoding.UTF8.GetBytes(jsonString);
                                         break;
                                     }
-                                case "machines": {
-                                        resp.ContentType = "JSON";
-                                        var jsonString = JsonSerializer.Serialize(_mpsManager?.Machines);
-                                        MyLogger.Info(jsonString);
-                                        data = Encoding.UTF8.GetBytes(jsonString);
-                                        //Console.WriteLine("Creating the Json took : {0}", timer.ElapsedMilliseconds.ToString());
-
-                                        break;
-                                    }
                                 case "products": {
                                         resp.ContentType = "JSON";
                                         var product = new Products(BaseColor.BaseBlack);
@@ -163,11 +154,5 @@ namespace Simulator.WebGui {
                 }
             }
         }
-    }
-
-    internal class JsonTask {
-        public string? Task { get; set; }
-        public string? Target { get; set; }
-        public string? MachinePoint { get; set; }
     }
 }

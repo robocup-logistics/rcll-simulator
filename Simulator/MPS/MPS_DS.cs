@@ -16,11 +16,11 @@ public class MPS_DS : Mps {
         Slot3 = new List<Products>();
     }
 
-    public override void ResetMachine() {
-        base.ResetMachine();
-        // Slot1 = new List<Products>();
-        // Slot2 = new List<Products>();
-        // Slot3 = new List<Products>();
+    public override void HardResetMachine() {
+        base.HardResetMachine();
+        Slot1 = new List<Products>();
+        Slot2 = new List<Products>();
+        Slot3 = new List<Products>();
     }
 
     protected override void Work() {

@@ -7,25 +7,31 @@ using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 namespace Simulator.MPS;
 public class MPS_CS : Mps {
     public CapElement? StoredCap { get; private set; }
+    public CapColor capColor { get; private set; }
     private Products? ShelfLeft;
     private Products? ShelfMiddle;
     private Products? ShelfRight;
-    public MPS_CS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
+    public MPS_CS(Configurations config, string name, Team team, bool hasTag, CapColor? cap = null) : base(config, name, team, hasTag) {
         Type = MpsType.CapStation;
         StoredCap = null;
+        if(cap == null) {
+            capColor = Name.Contains("CS1") ? CapColor.CapBlack : CapColor.CapGrey;
+        } else {
+            capColor = (CapColor)cap;
+        }
         Replanish();
     }
 
-    public override void ResetMachine() {
-        base.ResetMachine();
-        // StoredCap = null;
-        // Replanish();
+    public override void HardResetMachine() {
+        StoredCap = null;
+        Replanish();
+        base.HardResetMachine();
     }
-    //TODO CONFIG FROM REFBOX
+
     public void Replanish() {
-        ShelfLeft = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
-        ShelfMiddle = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
-        ShelfRight = Name.Contains("CS1") ? new Products(CapColor.CapBlack) : new Products(CapColor.CapGrey);
+        ShelfLeft = new Products(capColor);
+        ShelfMiddle = new Products(capColor);
+        ShelfRight = new Products(capColor);
     }
 
     protected override void Work() {

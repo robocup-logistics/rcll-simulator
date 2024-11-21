@@ -1,19 +1,18 @@
 using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
-using LlsfMsgs;
 
 //TODO dynamic gamefiled size
 //TODO Dynamic reload field
 //TODO GRIP WITHOUT SHELF ID
 //TODO Proper reset message (Refbox TODO)
+//TODO VOLITILE
 
 namespace Simulator;
 internal class MainClass {
     private static MyLogger? MainLogger;
     private static RobotManager? RobotManager;
     private static MpsManager? MachineManager;
-    private static ZonesManager? ZoneManager;
     private static Configurations? Config;
     private static TcpConnector? RefboxConnector;
     private static GTMonitor? GTMonitor;
@@ -86,26 +85,6 @@ internal class MainClass {
         RefboxConnector = new TcpConnector(Config, Config.Refbox.IP,
                                 Config.Refbox.TcpPort, MachineManager,
                                 RobotManager, GTMonitor, new MyLogger("RefboxPublic"));
-
-        Console.Write("Creating the Zones ... ");
-        ZoneManager = ZonesManager.GetInstance();
-        Console.WriteLine("done!");
-
-        if (Config.FixedMPSplacement) {
-            Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
-            var mi = new MachineInfo();
-            foreach (var m in Config.MpsConfigs) {
-                var machine = new Machine() {
-                    Name = m.Name,
-                    Zone = m.Zone,
-                    Rotation = (uint)m.Orientation
-                };
-                mi.Machines.Add(machine);
-            }
-
-            MachineManager.PlaceMachines(mi);
-            Console.WriteLine("done!");
-        }
 
         var web = new WebGui.WebGui(Config, MachineManager, RobotManager);
         Console.WriteLine("Everything is set up! Waiting for connections!");

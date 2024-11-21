@@ -56,7 +56,7 @@ public class ZonesManager {
         SetInsertionZone();
     }
 
-    //Removes the Insertionzones Connection
+    //TODO Removes the Insertionzones Connection
     public void SetInsertionZone() {
         Dictionary[Zone.MZ71].SetNeighborhood(Dictionary[Zone.MZ61]);
         Dictionary[Zone.MZ61].SetNeighborhood(Dictionary[Zone.MZ51]);
@@ -100,6 +100,14 @@ public class ZonesManager {
         MyLogger.Info("Placed " + machine.Name + " at zone " + zone + " with the orientation " + orientation);
         Dictionary[zone].PlaceMachine(machine, orientation);
         machine.Zone = zone;
+    }
+
+    public void MoveMachine(Mps mps, Zone zone, uint orientation) {
+        if (!Dictionary.ContainsKey(zone)) return;
+        MyLogger.Info("Moved " + mps.Name + " to zone " + zone);
+        Dictionary[mps.Zone].RemoveMachine();
+        mps.Zone = zone;
+        Dictionary[zone].PlaceMachine(mps, orientation);
     }
 
     public CZones? GetMachineZone(string MachineName) {
@@ -374,6 +382,10 @@ public class CZones {
     public void PlaceMachine(MPS.Mps machine, uint orientation) {
         Machine = machine;
         Orientation = orientation;
+    }
+
+    public void RemoveMachine() {
+        Machine = null;
     }
 
     public string GetZoneString() {

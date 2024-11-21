@@ -1,41 +1,32 @@
-﻿using Simulator.Utility;
+﻿using System.Collections.Concurrent;
+using Simulator.Utility;
 using LlsfMsgs;
+using Simulator.RobotEssentials;
 
 namespace Simulator.MPS;
 public class MpsManager {
-    public bool AllMachineSet { get; private set; }
-    public List<Mps> Machines { get; }
+    private ConcurrentDictionary<string, Mps> Machines { get; }
+    private ZonesManager ZonesManager;
     private MyLogger myLogger;
     private readonly Configurations Config;
     private static MpsManager? Instance;
+    private bool magentaTag = true;
+    private bool cyanTag = true;
 
-
-    private static readonly object _lock = new object();
     public static MpsManager GetInstance() {
         if (Instance == null) {
-            lock (_lock) {
-                if (Instance == null) {
-                    Instance = new MpsManager();
-                }
-            }
+            throw new NullReferenceException("MPsManager not initialized!");
         }
         return Instance;
     }
-    public MpsManager() {
-        throw new NotImplementedException();
-    }
+
     public MpsManager(Configurations config) {
         Instance = this;
         myLogger = new MyLogger("MpsManager");
         Config = config;
         myLogger.Info("Started the Mps Manager!");
-        Machines = new List<Mps>();
-        AllMachineSet = false;
-        CreateMachines();
-    }
-    private void CreateMachines() {
-        bool magentaTag = true;
-        bool cyanTag = true;
+        Machines = new ConcurrentDictionary<string, Mps>();
+        ZonesManager = ZonesManager.GetInstance();
 
         foreach (var teamconfig in Config.Teams) {
             if (teamconfig.Color == Team.Magenta) {
@@ -46,6 +37,14 @@ public class MpsManager {
             }
         }
 
+        if (Config.FixedMPSplacement) {
+            CreateMachines();
+        }
+    }
+
+    private void CreateMachines() {
+
+        Console.WriteLine("Fixed Positions enabled! Placing machines .. ");
         foreach (var mps in Config.MpsConfigs) {
             var hasTag = mps.Name.Contains("M-") ? magentaTag : cyanTag;
             Mps? currentMps;
@@ -88,64 +87,110 @@ public class MpsManager {
 
             thread.Name = currentMps.Name + "_workingThread";
             thread.Start();
-            Machines.Add(currentMps);
+            Machines.TryAdd(mps.Name, currentMps);
+            ZonesManager.PlaceMachine(mps.Zone, (uint)mps.Orientation, currentMps);
         }
-
-    }
-    public Mps? GetMachineByName(string machineId) {
-        foreach (var m in Machines) {
-            if (machineId.Equals(m.Name)) {
-                return m;
-            }
-        }
-
-        return null;
     }
 
-    public void PlaceMachines(MachineInfo Info) {
-        myLogger.Info("Starting to PlaceMachines!");
-        myLogger.Debug("Received Information = " + Info.ToString());
-        var list = new List<Zone>();
-        foreach (var machine in Info.Machines) {
-            list.Add(machine.Zone);
+    private void CreateMachine(Machine machine) {
+        Mps? currentMps;
+        var hasTag = machine.TeamColor == Team.Magenta ? magentaTag : cyanTag;
+        Thread? thread;
+        switch (machine.Type) {
+            case "BS":
+                var bs = new MPS_BS(Config, machine.Name, machine.TeamColor, hasTag);
+                thread = new Thread(bs.Run);
+                currentMps = bs;
+                break;
+            case "CS":
+                var cs = new MPS_CS(Config, machine.Name, machine.TeamColor, hasTag);
+                thread = new Thread(cs.Run);
+                currentMps = cs;
+                break;
+            case "DS":
+                var ds = new MPS_DS(Config, machine.Name, machine.TeamColor, hasTag);
+                thread = new Thread(ds.Run);
+                currentMps = ds;
+                break;
+            case "RS":
+                var rs = new MPS_RS(Config, machine.Name, machine.TeamColor, hasTag, machine.RingColors[0], machine.RingColors[1]);
+                thread = new Thread(rs.Run);
+                currentMps = rs;
+                break;
+            case "SS":
+                var ss = new MPS_SS(Config, machine.Name, machine.TeamColor, hasTag);
+                thread = new Thread(ss.Run);
+                currentMps = ss;
+                break;
+            default:
+                Console.WriteLine("Unknown station type!");
+                thread = null;
+                currentMps = null;
+                break;
         }
-        if (false && list.Distinct().Count() > Info.Machines.Count) {
-            myLogger.Debug("Duplicated zones for machines. Will skip this place machines! " + list.Distinct().Count() + "!=" + Info.Machines.Count + "");
+        if (currentMps == null || thread == null) {
             return;
         }
-        foreach (var machineInfo in Info.Machines) {
-            foreach (var machine in Machines.Where(machine => machineInfo.Name.Equals(machine.Name))) {
-                if (machine.GotPlaced) {
-                    continue;
-                }
-                myLogger.Debug("Placed " + machine.Name + "!");
 
-                machine.Zone = machineInfo.Zone;
-                machine.Rotation = machineInfo.Rotation;
-                ZonesManager.GetInstance().PlaceMachine(machineInfo.Zone, machine.Rotation, machine);
-                machine.GotPlaced = true;
+        thread.Name = currentMps.Name + "_workingThread";
+        thread.Start();
+        Machines.TryAdd(machine.Name, currentMps);
+        ZonesManager.PlaceMachine(machine.Zone, machine.Rotation, currentMps);
+    }
+
+    public Mps? GetMachineByName(string machineId) {
+        return Machines[machineId];
+    }
+
+    public void HandleMachineInfo(MachineInfo machineInfo) {
+        foreach (var machine in machineInfo.Machines) {
+            if (Machines.ContainsKey(machine.Name)) {
+                if (!Machines[machine.Name].DeepEquals(machine)) {
+                    UpdateMachine(Machines[machine.Name], machine);
+                }
             }
-        }
-        var notset = false;
-        foreach (var machine in Machines) {
-            if (machine.GotPlaced == false) {
-                notset = true;
+            else {
+                CreateMachine(machine);
             }
-        }
-        if (notset == false) {
-            AllMachineSet = true;
         }
     }
 
-    internal bool FindMachine(string machine, ref Zone Target) {
-        foreach (var m in Machines) {
-            if (m.Name.Equals(machine)) {
+    private void UpdateMachine(Mps machine, Machine newMachine) {
+        if (machine.Zone != newMachine.Zone || machine.Rotation != newMachine.Rotation) {
+            RobotManager robotManager = RobotManager.GetInstance();
+            robotManager.PauseRobots(machine.Name);
+            ZonesManager.MoveMachine(machine, newMachine.Zone, newMachine.Rotation);
+            robotManager.MoveRobotsToMachine(machine);
+            robotManager.ResumeRobots();
+        }
 
-                Target = m.Zone;
-                return true;
+        if (machine.TeamColor != newMachine.TeamColor) {
+            throw new Exception("Team color change not supported!");
+        }
+
+        if (machine.Type == MpsType.RingStation) {
+            MPS_RS rs = (MPS_RS)machine;
+            if (rs.Ring1 != newMachine.RingColors[0]) {
+                myLogger.Warn("Ring 1 color changed on " + rs.Name);
+                rs.Ring1 = newMachine.RingColors[0];
+            }
+            if (rs.Ring2 != newMachine.RingColors[1]) {
+                myLogger.Warn("Ring 2 color changed on " + rs.Name);
+                rs.Ring2 = newMachine.RingColors[1];
             }
         }
 
-        return false;
+        // if (machine.Type == MpsType.CapStation) {
+        //     MPS_CS cs = (MPS_CS)machine;
+        //     // TODO IF Cap Color will be send from the refbox
+        //     // check if it is equals and add to DeepEqua
+        //     // the check for equallity
+        // }
+    }
+
+    public void ResetMachines() {
+        foreach(KeyValuePair<string, Mps> machine in Machines) {
+            machine.Value.HardResetMachine();
+        }
     }
 }

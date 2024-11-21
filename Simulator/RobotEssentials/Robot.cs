@@ -24,9 +24,10 @@ public partial class Robot {
     public Random Random = new Random();
     //if the robot enters a machine, the input/output mutex that gets locked
     //will be stored here as a reference to make sure it releases it on leaving the input/output
-    private Mutex? inputOutputMutex = null;
+    public RobotLock? inputOutputLock { get; private set; }
     private Barrier cancelBarrier;
     private bool canceling;
+    private bool isPaused = false;
     //True when the robot is moving diagonal (1.41 times longer than normal movement)
     private bool isDiagonal;
 
@@ -271,6 +272,11 @@ public partial class Robot {
                 // First time to be in sync with the Cancle function
                 // Second time to wait till the Cancle function is done
             }
+            if (CurrentGame.GameState != GameState.Types.State.Running ||
+               CurrentGame.GamePhase != GameState.Types.Phase.Production) {
+                Thread.Sleep(500);
+                continue;
+            }
             Work();
         }
 
@@ -383,12 +389,12 @@ public partial class Robot {
     private TaskEnum CheckTaskType(AgentTask task) {
         if (task?.Move != null)
             return TaskEnum.Move;
+        else if (task?.Buffer != null)
+            return TaskEnum.Buffer;
         else if (task?.Retrieve != null)
             return TaskEnum.Retrieve;
         else if (task?.Deliver != null)
             return TaskEnum.Deliver;
-        else if (task?.Buffer != null)
-            return TaskEnum.Buffer;
         else if (task?.ExploreMachine != null)
             return TaskEnum.Explore;
         return TaskEnum.None;
@@ -405,6 +411,81 @@ public partial class Robot {
     public bool RoleTheDice(int percentage) {
         int randomValue = Random.Next(0, 100);
         return randomValue < percentage;
+    }
+
+    public void Reset() {
+        TaskMutex.WaitOne();
+        CancelCurrentTask();
+        HeldProduct = null;
+        FutureProduct = null;
+        SetZone(HomeZone);
+        LastTaskMutex.WaitOne();
+        FinishedTasks.Clear();
+        LastTaskMutex.ReleaseMutex();
+        if (inputOutputLock != null) {
+            inputOutputLock.ForceRelease();
+            inputOutputLock = null;
+        }
+
+        TaskMutex.ReleaseMutex();
+    }
+
+    public bool Pause(string name) {
+        TaskMutex.WaitOne();
+        try {
+            if (CurrentTask == null) {
+                return false;
+            }
+            if (MovesToMPS(name, CurrentTask)) {
+                lock (CancelLock) {
+                    canceling = true;
+                    TaskMutex.ReleaseMutex();
+                    cancelBarrier.SignalAndWait();
+                    TaskMutex.WaitOne();
+                    // The Robot work thread will be stopped until Signaled Again
+                    try {
+                        if (_currentTask == null) {
+                            // Task already finished
+                            return false;
+                        }
+                        return true;
+                    }
+                    finally {
+                        // The Robot work thread can continue now
+                        canceling = false;
+                        isPaused = true;
+                        TaskMutex.ReleaseMutex();
+                        //Cancel barrier ist not signaled here because the robot needs to pause
+                    }
+                }
+            }
+            return false;
+        }
+        finally {
+            TaskMutex.ReleaseMutex();
+        }
+    }
+
+    public void Resume() {
+        if (isPaused) {
+            isPaused = false;
+            cancelBarrier.SignalAndWait();
+        }
+    }
+
+    public bool MovesToMPS(string name, AgentTask task) {
+        switch (CheckTaskType(task)) {
+            case TaskEnum.Move:
+                return task.Move.Waypoint == name;
+            case TaskEnum.Retrieve:
+                return task.Retrieve.MachineId == name;
+            case TaskEnum.Deliver:
+                return task.Deliver.MachineId == name;
+            case TaskEnum.Buffer:
+                return task.Buffer.MachineId == name;
+            default:
+                return false;
+        }
     }
 }
 

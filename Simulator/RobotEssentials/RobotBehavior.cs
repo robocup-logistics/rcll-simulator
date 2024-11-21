@@ -29,12 +29,16 @@ public partial class Robot {
             return;
         }
 
-        AgentTask gripTask = task.Clone();
-        gripTask.Retrieve = new Retrieve();
-        gripTask.Retrieve.MachineId = station;
-        gripTask.Retrieve.MachinePoint = "shelf" + shelf;
-        if (!GetFromStation(gripTask, false)) {
-            return;
+        // IF the machine is moved in between the robot is paused and needs to continue
+        // then the robot does not need to grab if it helds a product and the agent task retrieve is defined
+        if (!(HeldProduct != null && task.Retrieve != null)) {
+            AgentTask gripTask = task.Clone();
+            gripTask.Retrieve = new Retrieve();
+            gripTask.Retrieve.MachineId = station;
+            gripTask.Retrieve.MachinePoint = "shelf" + shelf;
+            if (!GetFromStation(gripTask, false)) {
+                return;
+            }
         }
         AgentTask placeTask = task.Clone();
         placeTask.Deliver = new Deliver();
@@ -72,9 +76,9 @@ public partial class Robot {
             SetZone(EntryZone);
             EntryZone = null;
 
-            if (inputOutputMutex != null) {
-                inputOutputMutex.ReleaseMutex();
-                inputOutputMutex = null;
+            if (inputOutputLock != null) {
+                inputOutputLock.Release(this);
+                inputOutputLock = null;
             }
         }
         if (Move(targetZone, task)) {
@@ -98,14 +102,14 @@ public partial class Robot {
                 return false;
             }
 
-            if (mps.teamColor != TeamColor) {
+            if (mps.TeamColor != TeamColor) {
                 MyLogger.Warn("The Machine is not of the same team color!");
                 TaskFailed(task, (uint)ErrorCode.InvalidTarget);
                 return false;
             }
 
-            Mutex mutex = input ? mps.robotAtInput : mps.robotAtOutput;
-            while (!mutex.WaitOne(500)) {
+            RobotLock Lock = input ? mps.robotAtInput : mps.robotAtOutput;
+            while (!Lock.Acquire(this, 500)) {
                 MyLogger.Debug("Waiting for the Machine to be free!");
                 if (canceling) {
                     return false;
@@ -113,7 +117,7 @@ public partial class Robot {
             }
 
             MyLogger.Debug("Waiting Aquired Lock!");
-            inputOutputMutex = mutex;
+            inputOutputLock = Lock;
             if (canceling) {
                 return false;
             }
@@ -158,19 +162,19 @@ public partial class Robot {
             return false;
         }
 
-        if (mps.teamColor != TeamColor) {
+        if (mps.TeamColor != TeamColor) {
             MyLogger.Warn("The Machine is not of the same team color!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
         }
 
-        Mutex targetMutex = mps.robotAtOutput;
+        RobotLock targetLock = mps.robotAtOutput;
         if (target.ToLower() == "input" ||
            target.ToLower() == "left" || target.ToLower() == "right" || target.ToLower() == "middle"
            || target.ToLower() == "shelf1" || target.ToLower() == "shelf2" || target.ToLower() == "shelf3") {
-            targetMutex = mps.robotAtInput;
+            targetLock = mps.robotAtInput;
         }
-        if (mps == null || targetMutex != inputOutputMutex) {
+        if (mps == null || targetLock != inputOutputLock) {
             MyLogger.Warn("The Robot isn't at the Output of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
             return false;
@@ -225,17 +229,17 @@ public partial class Robot {
             return false;
         }
 
-        if (mps.teamColor != TeamColor) {
+        if (mps.TeamColor != TeamColor) {
             MyLogger.Warn("The Machine is not of the same team color!");
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return false;
         }
 
-        Mutex targetMutex = mps.robotAtInput;
+        RobotLock targetLock = mps.robotAtInput;
         if (target.ToLower() == "output") {
-            targetMutex = mps.robotAtOutput;
+            targetLock = mps.robotAtOutput;
         }
-        if (mps == null || targetMutex != inputOutputMutex) {
+        if (mps == null || targetLock != inputOutputLock) {
             MyLogger.Warn("The Robot isn't at the correct Side of the Machine!");
             TaskFailed(task, (uint)ErrorCode.NotAtPosition);
             return false;

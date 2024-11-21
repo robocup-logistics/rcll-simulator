@@ -130,7 +130,7 @@ class TcpConnector : ConnectorBase {
             try {
                 if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
                     MyLogger.Warn("Connection closed by remote host.");
-                    if(!reconnect) {
+                    if (!reconnect) {
                         return;
                     }
                     socket.Close();
@@ -159,7 +159,7 @@ class TcpConnector : ConnectorBase {
                     remainingBytes = payload + 8 - message;
                     if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
                         MyLogger.Warn("Csefdasfonnection closed by remote host.");
-                        if(!reconnect) {
+                        if (!reconnect) {
                             return;
                         }
                         break;
@@ -182,7 +182,6 @@ class TcpConnector : ConnectorBase {
         while (!socket.Connected) {
             try {
                 socket.Connect(Endpoint);
-                MyLogger.Error(".... connected!");
             }
             catch (SocketException) {
                 Thread.Sleep(5000);
