@@ -88,7 +88,7 @@ class PBMessageHandlerMachineManager : PBMessageHandlerBase {
         MyLogger.Info("GameState message parsed successfully.");
         MyLogger.Debug($"Parsed message: {gameState}");
 
-        if(CurrentGame.height != gameState.FieldHeight || CurrentGame.width != gameState.FieldWidth) {
+        if (CurrentGame.height != gameState.FieldHeight || CurrentGame.width != gameState.FieldWidth) {
             MyLogger.Info($"Field size changed from {CurrentGame.width}x{CurrentGame.height} to {gameState.FieldWidth}x{gameState.FieldHeight}");
             zonesManager_.Resize(gameState.FieldWidth, gameState.FieldHeight);
         }

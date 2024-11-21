@@ -14,13 +14,15 @@ public class MPS_RS : Mps {
 
         if (ring1 == null) {
             Ring1 = Name.Contains("RS1") ? RingColor.RingYellow : RingColor.RingBlue;
-        } else {
+        }
+        else {
             Ring1 = (RingColor)ring1;
         }
 
         if (ring2 == null) {
             Ring2 = Name.Contains("RS1") ? RingColor.RingGreen : RingColor.RingOrange;
-        } else {
+        }
+        else {
             Ring2 = (RingColor)ring2;
         }
     }

@@ -14,8 +14,7 @@ public class MPS_SS : Mps {
         HardResetMachine();
     }
 
-    public override void HardResetMachine()
-    {
+    public override void HardResetMachine() {
         base.HardResetMachine();
         for (int i = 0; i < ShelfCount; i++) {
             // Create a new instance of baseList for each shelf

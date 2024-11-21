@@ -21,22 +21,23 @@ public partial class Robot {
             TaskFailed(task, (uint)ErrorCode.InvalidTarget);
             return;
         }
-
-        if (shelf < 1 || shelf > 3) {
-            MyLogger.Warn("The shelf number is invalid!");
-            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
-            return;
-        }
-
         // IF the machine is moved in between the robot is paused and needs to continue
         // then the robot does not need to grab if it helds a product and the agent task retrieve is defined
         if (!(HeldProduct != null && task.Retrieve != null)) {
             AgentTask gripTask = task.Clone();
             gripTask.Retrieve = new Retrieve();
             gripTask.Retrieve.MachineId = station;
-            if(task.Buffer.HasShelfNumber) {
+            if (task.Buffer.HasShelfNumber) {
                 gripTask.Retrieve.MachinePoint = "shelf" + task.Buffer.ShelfNumber;
-            } else {
+
+                if (task.Buffer.ShelfNumber < 1 || task.Buffer.ShelfNumber > 3) {
+                    MyLogger.Warn("The shelf number is invalid!");
+                    TaskFailed(task, (uint)ErrorCode.InvalidTarget);
+                    return;
+                }
+
+            }
+            else {
                 gripTask.Retrieve.MachinePoint = "any";
             }
 
@@ -159,7 +160,7 @@ public partial class Robot {
         var machine = task.Retrieve.MachineId;
         var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
         var target = task.Retrieve.MachinePoint;
-        if(!task.Retrieve.HasMachineId) {
+        if (!task.Retrieve.HasMachineId) {
             task.Retrieve.MachineId = "any";
         }
         Zone targetZone = ZonesManager.GetWaypoint(machine, target);
@@ -361,7 +362,6 @@ public partial class Robot {
             TaskFailed(task, (uint)ErrorCode.UnableToMoveToTarget);
         }
 
-        //TODO MIRROR REPORT
         foreach (var z in path) {
             MyLogger.Debug("Doing a step towards + " + z.ZoneId);
             LookAtZone(z);
@@ -395,7 +395,7 @@ public partial class Robot {
                         // All information can be determined
                         if (Config.RobotReportDirect) {
                             if (RoleTheDice(Config.ExplorationProbability)) {
-                                var report = GetMachineReport(zone.ZoneId, zone.GetZoneString(), (uint)zone.Orientation);
+                                var report = GetMachineReport(zone.ZoneId, zone.GetZoneString(), (uint)zone.Orientation, false, true);
                                 BeaconConnector?.AppendMachineReport(report);
                                 zone.Found(TeamColor, true);
                             }
@@ -422,13 +422,25 @@ public partial class Robot {
 
     private List<string> types = new List<string> { "CS", "RS", "SS", "DS", "BS" };
 
-    private MachineReport GetMachineReport(Zone zone, string? name, uint? Orientation, bool markerless = false) {
+    private MachineReport GetMachineReport(Zone zone, string? name, uint? Orientation, bool markerless = false, bool mirror = false) {
         var report = new MachineReport();
         string? type = null;
         if (name != null) {
             type = types.FirstOrDefault(t => name.Contains(t));
         }
         report.TeamColor = TeamColor;
+        if (mirror) {
+            Mps? machine = ZonesManager.GetZone(zone)?.Machine;
+            if (machine != null && machine?.TeamColor != TeamColor) {
+                if (machine != null) {
+                    string otherName = SwitchName(machine.Name);
+                    var mps = MpsManager.GetInstance().GetMachineByName(otherName);
+                    if (mps != null) {
+                        zone = mps.Zone;
+                    }
+                }
+            }
+        }
         report.Machines.Add(new MachineReportEntry() {
             Zone = zone,
             Type = type
@@ -442,6 +454,18 @@ public partial class Robot {
             report.Machines[0].Rotation = (uint)Orientation;
         }
         return report;
+    }
+
+    static string SwitchName(string name) {
+        if (name.StartsWith("C-")) {
+            return "M-" + name.Substring(2);
+        }
+        else if (name.StartsWith("M-")) {
+            return "C-" + name.Substring(2);
+        }
+        else {
+            throw new ArgumentException("Name does not start with 'C-' or 'M-'");
+        }
     }
 
 }// class Robot

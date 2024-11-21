@@ -14,9 +14,10 @@ public class MPS_CS : Mps {
     public MPS_CS(Configurations config, string name, Team team, bool hasTag, CapColor? cap = null) : base(config, name, team, hasTag) {
         Type = MpsType.CapStation;
         StoredCap = null;
-        if(cap == null) {
+        if (cap == null) {
             capColor = Name.Contains("CS1") ? CapColor.CapBlack : CapColor.CapGrey;
-        } else {
+        }
+        else {
             capColor = (CapColor)cap;
         }
         Replanish();

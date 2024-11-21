@@ -98,7 +98,7 @@ public class RobotManager {
         foreach (Robot robot in Robots) {
             if (robot.inputOutputLock == machine.robotAtOutput || robot.inputOutputLock == machine.robotAtInput) {
                 CZones? zone = ZonesManager_.GetZone(machine.Zone);
-                if(zone == null) {
+                if (zone == null) {
                     throw new Exception("Couldn't find the zone for the machine! "
                                         + "Machine: " + machine.Name + " Zone: " + machine.Zone);
                 }

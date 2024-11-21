@@ -2,8 +2,6 @@ using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
 
-//TODO VOLITILE
-
 namespace Simulator;
 internal class MainClass {
     private static MyLogger? MainLogger;

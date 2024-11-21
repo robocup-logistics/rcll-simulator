@@ -68,8 +68,8 @@ public class ZonesManager {
                 uint val = y + x * 10;
                 Zone cyan = (Zone)(val);
                 Zone magenta = (Zone)(val + 1000);
-                CZones Cyan =  new CZones(x - 0.5f, y - 0.5f, 0, Team.Cyan, cyan);
-                CZones Magenta =  new CZones(-x + 0.5f, y - 0.5f, 0, Team.Magenta, magenta);
+                CZones Cyan = new CZones(x - 0.5f, y - 0.5f, 0, Team.Cyan, cyan);
+                CZones Magenta = new CZones(-x + 0.5f, y - 0.5f, 0, Team.Magenta, magenta);
                 newDictionary.Add(cyan, Cyan);
                 newDictionary.Add(magenta, Magenta);
                 newZoneList.Add(Cyan);
