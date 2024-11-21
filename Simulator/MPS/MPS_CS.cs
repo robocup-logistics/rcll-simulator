@@ -146,6 +146,9 @@ public class MPS_CS : Mps {
                     ShelfLeft = null;
                 }
                 break;
+            case "any":
+                returnProduct = new Products(capColor);
+                break;
             default:
                 MyLogger.Warn("Defaulting!?");
                 returnProduct = null;

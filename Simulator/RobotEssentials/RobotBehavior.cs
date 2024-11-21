@@ -14,7 +14,6 @@ public partial class Robot {
 
     private void BufferAtStation(AgentTask task) {
         string station = task.Buffer.MachineId;
-        uint shelf = task.Buffer.ShelfNumber;
 
         Regex pattern = new Regex("(M|C)-CS(1|2)");
         if (!pattern.IsMatch(station)) {
@@ -35,7 +34,12 @@ public partial class Robot {
             AgentTask gripTask = task.Clone();
             gripTask.Retrieve = new Retrieve();
             gripTask.Retrieve.MachineId = station;
-            gripTask.Retrieve.MachinePoint = "shelf" + shelf;
+            if(task.Buffer.HasShelfNumber) {
+                gripTask.Retrieve.MachinePoint = "shelf" + task.Buffer.ShelfNumber;
+            } else {
+                gripTask.Retrieve.MachinePoint = "any";
+            }
+
             if (!GetFromStation(gripTask, false)) {
                 return;
             }
@@ -155,6 +159,9 @@ public partial class Robot {
         var machine = task.Retrieve.MachineId;
         var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
         var target = task.Retrieve.MachinePoint;
+        if(!task.Retrieve.HasMachineId) {
+            task.Retrieve.MachineId = "any";
+        }
         Zone targetZone = ZonesManager.GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
             MyLogger.Warn("Couldnt find the requested target machine!");

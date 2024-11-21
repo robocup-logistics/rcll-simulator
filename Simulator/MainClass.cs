@@ -2,8 +2,6 @@ using Simulator.MPS;
 using Simulator.RobotEssentials;
 using Simulator.Utility;
 
-//TODO dynamic gamefiled size
-//TODO GRIP WITHOUT SHELF ID
 //TODO VOLITILE
 
 namespace Simulator;
