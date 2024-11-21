@@ -73,20 +73,25 @@ public class RobotManager {
 
     private Mutex pauseMutex = new Mutex();
     // Pauses all Robots that want to move to this mps
-    public void PauseRobots(String name) {
+    public void PauseRobots(String? name = null) {
         pauseMutex.WaitOne();
         foreach (Robot robot in Robots) {
-            if (robot.Pause(name)) {
-                robot.RobotStop();
-            }
+            robot.Pause(name);
         }
     }
+
 
     public void ResumeRobots() {
         foreach (Robot robot in Robots) {
             robot.Resume();
         }
         pauseMutex.ReleaseMutex();
+    }
+
+    public void HomeRobots() {
+        foreach (Robot robot in Robots) {
+            robot.Home();
+        }
     }
 
     public void MoveRobotsToMachine(Mps machine) {

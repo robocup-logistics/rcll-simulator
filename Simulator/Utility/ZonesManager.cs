@@ -1,11 +1,12 @@
 ﻿using LlsfMsgs;
 using Simulator.MPS;
+using Simulator.RobotEssentials;
 using System.Text.Json.Serialization;
 
 namespace Simulator.Utility;
 public class ZonesManager {
     public List<CZones> ZoneList { get; private set; }
-    private readonly Dictionary<Zone, CZones> Dictionary;
+    private Dictionary<Zone, CZones> Dictionary;
     private static ZonesManager? Instance;
     public Mutex ZoneManagerMutex;
     private MyLogger MyLogger;
@@ -56,14 +57,48 @@ public class ZonesManager {
         SetInsertionZone();
     }
 
-    //TODO Removes the Insertionzones Connection
+    public void Resize(uint width, uint height) {
+        RobotManager robotManager = RobotManager.GetInstance();
+        robotManager.PauseRobots();
+        List<CZones> newZoneList = new List<CZones>();
+        Dictionary<Zone, CZones> newDictionary = new Dictionary<Zone, CZones>();
+
+        foreach (uint x in Enumerable.Range(1, (int)width).Select(i => (uint)i)) {
+            foreach (uint y in Enumerable.Range(1, (int)height).Select(i => (uint)i)) {
+                uint val = y + x * 10;
+                Zone cyan = (Zone)(val);
+                Zone magenta = (Zone)(val + 1000);
+                CZones Cyan =  new CZones(x - 0.5f, y - 0.5f, 0, Team.Cyan, cyan);
+                CZones Magenta =  new CZones(-x + 0.5f, y - 0.5f, 0, Team.Magenta, magenta);
+                newDictionary.Add(cyan, Cyan);
+                newDictionary.Add(magenta, Magenta);
+                newZoneList.Add(Cyan);
+                newZoneList.Add(Magenta);
+            }
+        }
+
+        CurrentGame.width = width;
+        CurrentGame.height = height;
+        SetInsertionZone();
+
+        MpsManager mpsManager = MpsManager.GetInstance();
+        mpsManager.MoveMachineToNewField(Dictionary);
+
+        ZoneList = newZoneList;
+        Dictionary = newDictionary;
+        robotManager.HomeRobots();
+        robotManager.ResumeRobots();
+    }
+
+
     public void SetInsertionZone() {
-        Dictionary[Zone.MZ71].SetNeighborhood(Dictionary[Zone.MZ61]);
-        Dictionary[Zone.MZ61].SetNeighborhood(Dictionary[Zone.MZ51]);
-        Dictionary[Zone.MZ51].SetNeighborhood(Dictionary[Zone.MZ52]);
-        Dictionary[Zone.CZ71].SetNeighborhood(Dictionary[Zone.CZ61]);
-        Dictionary[Zone.CZ61].SetNeighborhood(Dictionary[Zone.CZ51]);
-        Dictionary[Zone.CZ51].SetNeighborhood(Dictionary[Zone.CZ52]);
+        uint width = CurrentGame.width;
+        Dictionary[(Zone)(1 + width * 10)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 1) * 10)]);
+        Dictionary[(Zone)(1 + (width - 1) * 10)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 2) * 10)]);
+        Dictionary[(Zone)(1 + (width - 2) * 10)].SetNeighborhood(Dictionary[(Zone)(2 + (width - 2) * 10)]);
+        Dictionary[(Zone)(1 + width * 10) + 1000].SetNeighborhood(Dictionary[(Zone)(1 + (width - 1) * 10 + 1000)]);
+        Dictionary[(Zone)(1 + (width - 1) * 10 + 1000)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 2) * 10 + 1000)]);
+        Dictionary[(Zone)(1 + (width - 2) * 10 + 1000)].SetNeighborhood(Dictionary[(Zone)(2 + (width - 2) * 10 + 1000)]);
     }
 
     public CZones? GetZone(Zone zone) {

@@ -285,18 +285,22 @@ public partial class Robot {
         }
     }
 
+    public void Home() {
+        SetZone(HomeZone);
+    }
+
     public void HandleRobotInfo(LlsfMsgs.Robot info) {
         if (info.State == RobotState.Maintenance) {
             RobotState = RobotState.Maintenance;
             CancelCurrentTask();
             HeldProduct = null;
-            SetZone(HomeZone);
+            Home();
         }
         else if (info.State == RobotState.Disqualified) {
             RobotState = RobotState.Disqualified;
             CancelCurrentTask();
             HeldProduct = null;
-            SetZone(HomeZone);
+            Home();
         }
         else {
             RobotState = RobotState.Active;
@@ -430,13 +434,13 @@ public partial class Robot {
         TaskMutex.ReleaseMutex();
     }
 
-    public bool Pause(string name) {
+    public bool Pause(string? name = null) {
         TaskMutex.WaitOne();
         try {
             if (CurrentTask == null) {
                 return false;
             }
-            if (MovesToMPS(name, CurrentTask)) {
+            if (name == null || MovesToMPS(name, CurrentTask)) {
                 lock (CancelLock) {
                     canceling = true;
                     TaskMutex.ReleaseMutex();

@@ -144,6 +144,10 @@ public class MpsManager {
 
     public void HandleMachineInfo(MachineInfo machineInfo) {
         foreach (var machine in machineInfo.Machines) {
+            if(ZonesManager.GetZone(machine.Zone) == null) {
+                myLogger.Warn("Zone not found for machine " + machine.Name);
+                continue;
+            }
             if (Machines.ContainsKey(machine.Name)) {
                 if (!Machines[machine.Name].DeepEquals(machine)) {
                     UpdateMachine(Machines[machine.Name], machine);
@@ -191,6 +195,12 @@ public class MpsManager {
     public void ResetMachines() {
         foreach(KeyValuePair<string, Mps> machine in Machines) {
             machine.Value.HardResetMachine();
+        }
+    }
+
+    public void MoveMachineToNewField(Dictionary<Zone, CZones> Dictionary) {
+        foreach(KeyValuePair<string, Mps> machine in Machines) {
+            Dictionary[machine.Value.Zone].PlaceMachine(machine.Value, machine.Value.Rotation);
         }
     }
 }

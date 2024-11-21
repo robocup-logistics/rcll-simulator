@@ -4,7 +4,6 @@ using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 using ARG2 = Simulator.MPS.MQTTCommand.ARG2;
 
-//TODO RESET ON SETUP PHASE
 namespace Simulator.MPS;
 
 public enum MpsType {

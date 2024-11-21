@@ -3,9 +3,7 @@ using Simulator.RobotEssentials;
 using Simulator.Utility;
 
 //TODO dynamic gamefiled size
-//TODO Dynamic reload field
 //TODO GRIP WITHOUT SHELF ID
-//TODO Proper reset message (Refbox TODO)
 //TODO VOLITILE
 
 namespace Simulator;
