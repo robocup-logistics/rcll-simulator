@@ -33,7 +33,6 @@ public abstract class Mps {
     protected readonly Configurations Config;
     public MQTThelper MqttHelper;
     protected ManualResetEvent CommandEvent;
-    public Mutex CommandMutex;
     public RobotLock robotAtInput;
     public RobotLock robotAtOutput;
     public bool Working { get; private set; }
@@ -66,10 +65,9 @@ public abstract class Mps {
         GreenLight = new Light(LightColor.Green);
 
         CommandEvent = new ManualResetEvent(false);
-        CommandMutex = new Mutex();
 
         MqttHelper = new MQTThelper(Name, config.Refbox.BrokerIp, config.Refbox.BrokerPort,
-                                    config, CommandEvent, CommandMutex, MyLogger, slideCount);
+                                    config, CommandEvent, MyLogger, slideCount);
         MqttHelper.Initialize();
     }
 

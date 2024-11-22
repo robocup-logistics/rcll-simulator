@@ -10,7 +10,6 @@ public class MQTThelper {
     private IMqttClient Client;
     private string CommandToppic;
     private MqttFactory MqttFactory;
-    private Mutex CommandMutex;
     private string Name;
     private string Url;
     private string TopicPrefix;
@@ -26,7 +25,7 @@ public class MQTThelper {
     public int BarCode { get; private set; }
     public MQTTStatus Status { get; private set; }
     public uint SlideCnt { get; private set; }
-    public MQTTCommand command { get; private set; }
+    public ConcurrentQueue<MQTTCommand> command { get; private set; }
     private ManualResetEvent CommandEvent;
     private Configurations Config;
     private bool _isConnected = false;
@@ -34,7 +33,7 @@ public class MQTThelper {
     private readonly ConcurrentQueue<(string Topic, string Value)> MessageQueue = new ConcurrentQueue<(string, string)>();
 
     public MQTThelper(string name, string url, int port, Configurations config,
-                      ManualResetEvent commandEvent, Mutex commandMutex, MyLogger logger,
+                      ManualResetEvent commandEvent, MyLogger logger,
                       bool slideCount = false) {
         Name = name;
         MyLogger = logger;
@@ -43,9 +42,8 @@ public class MQTThelper {
         TopicPrefix = $"MPS/{Name}/";
         CommandEvent = commandEvent;
         SlideCount = slideCount;
-        command = new MQTTCommand();
+        command = new ConcurrentQueue<MQTTCommand>();
         Config = config;
-        CommandMutex = commandMutex;
 
         MqttFactory = new MqttFactory();
         Client = MqttFactory.CreateMqttClient();
@@ -150,14 +148,10 @@ public class MQTThelper {
             MyLogger.Debug($"Received Command {payload}");
             var m_command = new MQTTCommand(payload);
             if (m_command.validate()) {
-                CommandMutex.WaitOne();
-                try {
-                    command = m_command;
-                    CommandEvent.Set();
-                }
-                finally {
-                    CommandMutex.ReleaseMutex();
-                }
+                command.Enqueue(m_command);
+                CommandEvent.Set();
+            } else {
+                MyLogger.Error($"Received invalid command {payload}");
             }
         }
         else {

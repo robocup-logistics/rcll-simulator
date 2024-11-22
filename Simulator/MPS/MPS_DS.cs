@@ -28,10 +28,8 @@ public class MPS_DS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            CommandMutex.WaitOne();
-
-            try {
-                var command = MqttHelper.command;
+            MQTTCommand? command;
+            while(MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
                         Slot1 = new List<Products>();
@@ -49,9 +47,6 @@ public class MPS_DS : Mps {
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            }
-            finally {
-                CommandMutex.ReleaseMutex();
             }
         }
     }

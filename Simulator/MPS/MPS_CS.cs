@@ -40,10 +40,8 @@ public class MPS_CS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            CommandMutex.WaitOne();
-
-            try {
-                var command = MqttHelper.command;
+            MQTTCommand? command;
+            while(MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
                         StoredCap = null;
@@ -62,9 +60,6 @@ public class MPS_CS : Mps {
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            }
-            finally {
-                CommandMutex.ReleaseMutex();
             }
         }
     }
@@ -106,7 +101,7 @@ public class MPS_CS : Mps {
 
     public override Products? RemoveProduct(string machinePoint, bool dryRun = false) {
         Products? returnProduct;
-        MyLogger.Debug("Someone trys to grabs a Item from: " + machinePoint + dryRun.ToString());
+        MyLogger.Debug("Someone trys to grabs a Item from: " + machinePoint + " dry run: " + dryRun.ToString());
 
         switch (machinePoint.ToLower()) {
             case "output":
@@ -134,7 +129,7 @@ public class MPS_CS : Mps {
             case "shelf2":
             case "middle":
                 MyLogger.Debug("my shelf mid: : " + ShelfMiddle?.ToString());
-                returnProduct = ShelfRight;
+                returnProduct = ShelfMiddle;
                 if (!dryRun) {
                     ShelfRight = null;
                 }
@@ -142,7 +137,7 @@ public class MPS_CS : Mps {
             case "shelf3":
             case "right":
                 MyLogger.Debug("my shelf Right: : " + ShelfRight?.ToString());
-                returnProduct = ShelfLeft;
+                returnProduct = ShelfRight;
                 if (!dryRun) {
                     ShelfLeft = null;
                 }
@@ -171,10 +166,13 @@ public class MPS_CS : Mps {
             case "slide":
                 return true;
             case "shelf1":
+            case "left":
                 return ShelfLeft == null;
             case "shelf2":
+            case "middle":
                 return ShelfMiddle == null;
             case "shelf3":
+            case "right":
                 return ShelfRight == null;
             default:
                 return false;

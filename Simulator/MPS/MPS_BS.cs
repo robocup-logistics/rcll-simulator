@@ -37,10 +37,8 @@ public class MPS_BS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            CommandMutex.WaitOne();
-
-            try {
-                var command = MqttHelper.command;
+            MQTTCommand? command;
+            while(MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
                         ResetMachine();
@@ -58,9 +56,6 @@ public class MPS_BS : Mps {
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            }
-            finally {
-                CommandMutex.ReleaseMutex();
             }
         }
     }

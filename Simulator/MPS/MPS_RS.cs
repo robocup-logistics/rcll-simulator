@@ -32,10 +32,8 @@ public class MPS_RS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
-            CommandMutex.WaitOne();
-
-            try {
-                var command = MqttHelper.command;
+            MQTTCommand? command;
+            while(MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
                         MqttHelper.ResetSlideCount();
@@ -54,9 +52,6 @@ public class MPS_RS : Mps {
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
                 }
-            }
-            finally {
-                CommandMutex.ReleaseMutex();
             }
         }
     }
@@ -92,7 +87,7 @@ public class MPS_RS : Mps {
         }
         Thread.Sleep(Config.RSTaskDuration);
         ProductOnBelt.AddPart(ringToMount);
-        MyLogger.Info("Ring Mounted!");
+        MyLogger.Info("Ring Mounted! Color: " + ringToMount.RingColor.ToString());
         FinishedTask();
     }
 

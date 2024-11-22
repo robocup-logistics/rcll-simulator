@@ -105,7 +105,7 @@ public class MQTTCommand {
                         return false;
                 }
             case (COMMAND.CAP_ACTION):
-                if (arg1 == ARG1.RETRIEVE || arg1 == ARG1.RESET)
+                if (arg1 == ARG1.RETRIEVE || arg1 == ARG1.MOUNT)
                     return true;
                 else
                     return false;

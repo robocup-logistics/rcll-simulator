@@ -139,7 +139,7 @@ public class MpsManager {
     }
 
     public Mps? GetMachineByName(string machineId) {
-        return Machines[machineId];
+        return Machines.ContainsKey(machineId) ? Machines[machineId] : null;
     }
 
     public void HandleMachineInfo(MachineInfo machineInfo) {
