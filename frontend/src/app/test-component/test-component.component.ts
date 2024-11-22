@@ -81,7 +81,7 @@ export class TestComponentComponent implements OnInit {
     this.stage = new Konva.Stage({
       container: 'container',
       width: window.innerWidth,
-      height: 820,
+      height: 1080,
     });
     this.layer = new Konva.Layer();
     this.stage.add(this.layer);
@@ -97,7 +97,7 @@ export class TestComponentComponent implements OnInit {
       for (i = 0; i < this.zonesData?.length; i++) {
         var z = this.zonesData[i]
         var color = 'magenta'
-        if (z.X >= 7) {
+        if (z.X >= 0) {
           color = 'cyan'
         }
         this.createZone(z, color)
@@ -129,6 +129,13 @@ export class TestComponentComponent implements OnInit {
     this.getZonesFromServer();
     this.getRobotDataFromServer();
     this.getMachinesFromServer();
+    if(this.MachineMap.size == 0 && this.machinesData != undefined) {
+      for (let i = 0; i < this.machinesData?.length; i++) {
+        var machine = this.machinesData[i];
+        //console.log("Machine = " + machine.Name + " " + machine.Zone);
+        this.createMachines(machine);
+      }
+    }
     this.updateZones();
     this.updateRobots();
     this.updateMachines();

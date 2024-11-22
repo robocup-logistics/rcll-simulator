@@ -30,7 +30,7 @@ export class KonvaZone{
     this.Height = 100;
     this.Group = new Konva.Group(
       {
-        x: offsetX + z.X * this.Width,
+        x: 1000 + offsetX + z.X * this.Width,
         y: 800 -  z.Y *  this.Height,
         width:  this.Width,
         height:  this.Height,

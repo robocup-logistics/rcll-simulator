@@ -203,4 +203,9 @@ public class MpsManager {
             Dictionary[machine.Value.Zone].PlaceMachine(machine.Value, machine.Value.Rotation);
         }
     }
+
+    // Use for webgui only
+    public List<Mps> GetAllMachines() {
+        return Machines.Values.ToList();
+    }
 }

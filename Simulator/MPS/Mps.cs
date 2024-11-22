@@ -39,7 +39,10 @@ public abstract class Mps {
     public bool Working { get; private set; }
     public Team TeamColor;
 
+    public string TaskDescription { get; set; }
+
     protected Mps(Configurations config, string name, Team team, bool hasTag, bool slideCount = false) {
+        TaskDescription = "Idle";
         // Constructor for basic member initializations
         Config = config;
         Name = name;
