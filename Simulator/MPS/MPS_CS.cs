@@ -44,7 +44,6 @@ public class MPS_CS : Mps {
             while(MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
-                        StoredCap = null;
                         ResetMachine();
                         break;
                     case COMMAND.LIGHT:
