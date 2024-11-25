@@ -1,6 +1,7 @@
 #!/bin/python3
 import sys
 import os
+import json
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -50,7 +51,7 @@ def main():
                 selection = int(input("Enter the number of the entry you want to select: "))
                 if 1 <= selection <= len(entries):
                     selected_entry = entries[selection - 1]
-                    # print(f"You selected: {selected_entry}")
+                    print(f"You selected entry number {selection}")
                     break
                 else:
                     print("Invalid selection. Please enter a number between 1 and", len(entries))
@@ -65,10 +66,17 @@ def main():
         os.makedirs("game_logs", exist_ok=True)
         filepath = os.path.join("game_logs", filename + ".json")
 
-        # Save the selected entry to the file
+        # Save the entire selected entry to the file in JSON format
         with open(filepath, "w") as file:
-            file.write(str(selected_entry))
+            json.dump(selected_entry, file, indent=4, default=str)
         print(f"Selected entry saved to {filepath}")
+
+        # Create a symlink to the latest file
+        latest_symlink = "latest"
+        if os.path.islink(latest_symlink) or os.path.exists(latest_symlink):
+            os.remove(latest_symlink)
+        os.symlink(filepath, latest_symlink)
+        print(f"Symlink created at {latest_symlink}")
 
     except Exception as e:
         print(f"Failed to connect to MongoDB or retrieve data: {e}")
