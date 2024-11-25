@@ -15,7 +15,7 @@ public class MPS_CS : Mps {
         Type = MpsType.CapStation;
         StoredCap = null;
         if (cap == null) {
-            capColor = Name.Contains("CS1") ? CapColor.CapBlack : CapColor.CapGrey;
+            capColor = Name.Contains("CS1") ? CapColor.CapGrey : CapColor.CapBlack;
         }
         else {
             capColor = (CapColor)cap;

@@ -144,6 +144,10 @@ public class MpsManager {
 
     public void HandleMachineInfo(MachineInfo machineInfo) {
         foreach (var machine in machineInfo.Machines) {
+            if(machine.State == "BROKEN") {
+                myLogger.Warn("Machine " + machine.Name + " is broken!");
+                GetMachineByName(machine.Name)?.HardResetMachine();
+            }
             if (ZonesManager.GetZone(machine.Zone) == null) {
                 myLogger.Warn("Zone not found for machine " + machine.Name);
                 continue;

@@ -91,6 +91,7 @@ public class ZonesManager {
     }
 
 
+    // TODO REMOVE OTHER NEIGHTBOURS
     public void SetInsertionZone() {
         uint width = CurrentGame.width;
         Dictionary[(Zone)(1 + width * 10)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 1) * 10)]);

@@ -99,3 +99,4 @@ internal class MainClass {
         Environment.Exit(0);
     }
 }
+//TODO SYMLINK FILES NOT FOLDER
