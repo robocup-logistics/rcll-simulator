@@ -2,6 +2,7 @@
 import sys
 import os
 import json
+import uuid
 from pymongo import MongoClient
 from datetime import datetime
 
@@ -58,8 +59,21 @@ def main():
             except ValueError:
                 print("Invalid input. Please enter a valid number.")
 
+        # Generate a random UUID and update the selected entry
+        report_name = str(uuid.uuid4())
+        selected_entry["report_name"] = report_name
+        update_result = collection.update_one({"_id": selected_entry["_id"]}, {"$set": {"report_name": report_name}})
+
+        # Verify that the update was successful
+        if update_result.matched_count == 0:
+            print("Failed to update the report_name in the MongoDB server.")
+            return
+        else:
+            print("Successfully updated the report_name in the MongoDB server.")
+
+
         # Ask for filename to save the selected entry
-        default_filename = start_time.strftime('%Y-%m-%d_%H-%M-%S')
+        default_filename = selected_entry.get("start_time").strftime('%Y-%m-%d_%H-%M-%S') if selected_entry.get("start_time") else "default_report"
         filename = input(f"Enter the filename to save the entry (default: {default_filename}): ") or default_filename
         
         # Ensure the 'game_logs' directory exists
