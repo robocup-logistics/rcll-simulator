@@ -16,14 +16,17 @@ public class MQTThelper {
 
     private MyLogger MyLogger;
     public enum MQTTStatus {
-        READY = 0,
+        IDLE = 0,
         BUSY = 1,
-        ERROR = 2,
-        DISABLED = 3
+    }
+    public enum MQTTWPSensor {
+        NoWP = 0,
+        WP = 1,
     }
 
     public int BarCode { get; private set; }
     public MQTTStatus Status { get; private set; }
+    public MQTTWPSensor WPSensor { get; private set; }
     public uint SlideCnt { get; private set; }
     public ConcurrentQueue<MQTTCommand> command { get; private set; }
     private ManualResetEvent CommandEvent;
@@ -81,6 +84,7 @@ public class MQTThelper {
                 var applicationMessage = new MqttApplicationMessageBuilder()
                     .WithTopic(topic)
                     .WithPayload(value)
+                    .WithQualityOfServiceLevel(MQTTnet.Protocol.MqttQualityOfServiceLevel.ExactlyOnce)
                     .Build();
                 MyLogger.Debug($"Publishing queued message for {topic} with value {value}");
                 await Client.PublishAsync(applicationMessage, CancellationToken.None);
@@ -112,7 +116,8 @@ public class MQTThelper {
         Client.ApplicationMessageReceivedAsync += HandleUpdate;
 
         SetBarcode(0);
-        SetStatus(MQTTStatus.READY);
+        SetStatus(MQTTStatus.IDLE);
+        PublishChange("WP-Sensor", "NoWP");
 
         if (SlideCount) {
             ResetSlideCount();
@@ -150,7 +155,8 @@ public class MQTThelper {
             if (m_command.validate()) {
                 command.Enqueue(m_command);
                 CommandEvent.Set();
-            } else {
+            }
+            else {
                 MyLogger.Error($"Received invalid command {payload}");
             }
         }
@@ -163,7 +169,10 @@ public class MQTThelper {
 
     public Task Subscribe() {
         var mqttSubscribeOptions = MqttFactory.CreateSubscribeOptionsBuilder()
-            .WithTopicFilter(f => { f.WithTopic(CommandToppic); })
+            .WithTopicFilter(f => {
+                f.WithTopic(CommandToppic)
+                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce);
+            })
             .Build();
 
         var response = Client.SubscribeAsync(mqttSubscribeOptions, CancellationToken.None).GetAwaiter().GetResult();
@@ -175,6 +184,14 @@ public class MQTThelper {
         Status = value;
         string name = Enum.GetName(typeof(MQTTStatus), value) ?? "";
         PublishChange("Status", name);
+    }
+
+    public void SetWPSensor(MQTTWPSensor value) {
+        if (value != WPSensor) {
+            WPSensor = value;
+            string name = Enum.GetName(typeof(MQTTWPSensor), value) ?? "";
+            PublishChange("WP-Sensor", name);
+        }
     }
 
     public void SetBarcode(int value) {
@@ -197,14 +214,15 @@ public class MQTThelper {
         try {
             var applicationMessage = new MqttApplicationMessageBuilder()
                 .WithTopic(TopicPrefix + topic_name)
-                .WithPayload(value.ToString())
+                .WithPayload(value)
+                .WithQualityOfServiceLevel(MqttQualityOfServiceLevel.ExactlyOnce)
                 .Build();
             MyLogger.Debug($"Publishing {TopicPrefix}{topic_name} to value {value}");
             Client.PublishAsync(applicationMessage, CancellationToken.None).GetAwaiter();
         }
         catch {
             MyLogger.Debug($"Pubslihing failed, enqueuing {topic_name} with value {value}");
-            EnqueueMessage(topic_name, value);
+            EnqueueMessage(TopicPrefix + topic_name, value);
         }
     }
 

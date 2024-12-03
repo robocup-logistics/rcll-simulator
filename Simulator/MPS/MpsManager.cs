@@ -144,7 +144,7 @@ public class MpsManager {
 
     public void HandleMachineInfo(MachineInfo machineInfo) {
         foreach (var machine in machineInfo.Machines) {
-            if(machine.State == "BROKEN") {
+            if (machine.State == "BROKEN") {
                 myLogger.Warn("Machine " + machine.Name + " is broken!");
                 GetMachineByName(machine.Name)?.HardResetMachine();
             }

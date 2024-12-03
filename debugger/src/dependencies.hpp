@@ -7,6 +7,10 @@
 
 #include <nlohmann/json.hpp>
 #include <vector>
+#include <map>
+#include <mutex>
+#include <memory>
+
 
 class Dependencies {
 public:
@@ -14,6 +18,19 @@ public:
     void add_edge(int from, int to);
     void finish_task(int task);
     std::vector<int> get_next_tasks();
+
+    std::string to_string() const {
+        std::ostringstream oss;
+        for (const auto& [from, to_list] : adj) {
+            oss << from << " -> [";
+            for (size_t i = 0; i < to_list.size(); ++i) {
+                oss << to_list[i];
+                if (i < to_list.size() - 1) oss << ", ";
+            }
+            oss << "]\n";
+        }
+        return oss.str();
+    }
 private:
     std::map<int, std::vector<int>> adj;
     std::map<int, int> in;

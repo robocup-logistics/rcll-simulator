@@ -40,11 +40,17 @@ public class MPS_CS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
+            if (ProductAtOut != null) {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+            }
+            else {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+            }
+
             MQTTCommand? command;
-            while(MqttHelper.command.TryDequeue(out command)) {
+            while (MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
-                        ResetMachine();
                         break;
                     case COMMAND.LIGHT:
                         HandleLights(command);
@@ -54,6 +60,12 @@ public class MPS_CS : Mps {
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+                        if (ProductAtOut != null) {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+                        }
+                        else {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+                        }
                         break;
                     default:
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
@@ -71,7 +83,7 @@ public class MPS_CS : Mps {
                     MyLogger.Info("Got a Retrieve CAP task!");
                     if (ProductOnBelt == null || StoredCap != null) {
                         MyLogger.Error("Can't retrieve the CAP as there is no product!");
-                        MqttHelper.SetStatus(MQTTStatus.ERROR);
+                        MqttHelper.SetStatus(MQTTStatus.IDLE);
                         return;
                     }
                     else {
@@ -88,7 +100,7 @@ public class MPS_CS : Mps {
                     }
                     else {
                         MyLogger.Error("Can't retrieve the CAP as there is no product!");
-                        MqttHelper.SetStatus(MQTTStatus.ERROR);
+                        MqttHelper.SetStatus(MQTTStatus.IDLE);
                         return;
                     }
 
@@ -152,6 +164,7 @@ public class MPS_CS : Mps {
         if (ShelfLeft == null && ShelfMiddle == null && ShelfRight == null) {
             Replanish();
         }
+        CommandEvent.Set();
         return returnProduct;
     }
 

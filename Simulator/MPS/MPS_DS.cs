@@ -29,13 +29,9 @@ public class MPS_DS : Mps {
             CommandEvent.Reset();
 
             MQTTCommand? command;
-            while(MqttHelper.command.TryDequeue(out command)) {
+            while (MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
-                        Slot1 = new List<Products>();
-                        Slot2 = new List<Products>();
-                        Slot3 = new List<Products>();
-                        ResetMachine();
                         break;
                     case COMMAND.LIGHT:
                         HandleLights(command);
@@ -78,7 +74,7 @@ public class MPS_DS : Mps {
         }
 
         if (ProductAtIn == null) {
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
         string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";

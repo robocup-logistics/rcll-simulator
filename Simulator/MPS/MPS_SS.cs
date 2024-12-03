@@ -34,17 +34,29 @@ public class MPS_SS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
+            if (ProductAtOut != null) {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+            }
+            else {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+            }
+
             MQTTCommand? command;
-            while(MqttHelper.command.TryDequeue(out command)) {
+            while (MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
-                        ResetMachine();
                         break;
                     case COMMAND.LIGHT:
                         HandleLights(command);
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+                        if (ProductAtOut != null) {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+                        }
+                        else {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+                        }
                         break;
                     case COMMAND.STORE:
                         HandleStore(command);
@@ -73,13 +85,13 @@ public class MPS_SS : Mps {
 
         if (Storage[shelf][slot] != null) {
             MyLogger.Error("Not going to store since this slot is already used");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
 
         if (ProductOnBelt == null) {
             MyLogger.Error("No Product on Belt");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
 
@@ -100,13 +112,13 @@ public class MPS_SS : Mps {
 
         if (Storage[shelf][slot] == null) {
             MyLogger.Error("Not going to retrieve since this slot is empty");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
 
         if (ProductOnBelt != null) {
             MyLogger.Error("Product already on Belt");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
 
@@ -130,12 +142,12 @@ public class MPS_SS : Mps {
 
         if (Storage[fromShelf][fromSlot] == null) {
             MyLogger.Error("Not going to relocate since this slot is empty");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
         if (Storage[toShelf][toSlot] == null) {
             MyLogger.Error("Not going to relocate since this slot is already used");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
 

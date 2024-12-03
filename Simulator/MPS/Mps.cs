@@ -76,12 +76,6 @@ public abstract class Mps {
         Work();
     }
 
-    public void ResetMachine() {
-        MqttHelper.SetStatus(MQTTStatus.BUSY);
-        Thread.Sleep(1000);
-        MqttHelper.SetStatus(MQTTStatus.READY);
-    }
-
     public virtual void HardResetMachine() {
         ProductAtIn = null;
         ProductAtOut = null;
@@ -94,13 +88,11 @@ public abstract class Mps {
 
     public void FinishedTask() {
         Thread.Sleep(250);
-        MqttHelper.SetStatus(MQTTStatus.READY);
+        MqttHelper.SetStatus(MQTTStatus.IDLE);
         Thread.Sleep(250);
     }
 
     public void HandleLights(MQTTCommand command) {
-        StartTask();
-
         string name = Enum.GetName(typeof(ARG2), command.arg2) ?? "";
         switch (command.arg1) {
             case ARG1.RESET:
@@ -139,8 +131,6 @@ public abstract class Mps {
             default:
                 break;
         }
-
-        FinishedTask();
     }
 
     public void HandleBelt(MQTTCommand command) {
@@ -152,7 +142,7 @@ public abstract class Mps {
         }
         if (ProductAtIn == null && ProductAtOut == null && ProductOnBelt == null) {
             MyLogger.Warn("Still no Product on the Belt!");
-            MqttHelper.SetStatus(MQTTStatus.ERROR);
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
             return;
         }
         MyLogger.Info("Product on belt!");
@@ -232,6 +222,7 @@ public abstract class Mps {
                 }
                 break;
         }
+        CommandEvent.Set();
         return returnProduct;
     }
 

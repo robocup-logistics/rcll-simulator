@@ -2,6 +2,7 @@
 
 Dependencies::Dependencies() : mutex(), adj(), in() {
 }
+
 void Dependencies::add_edge(int from, int to) {
     if(adj.find(from) == adj.end()) {
         adj[from] = std::vector<int>();

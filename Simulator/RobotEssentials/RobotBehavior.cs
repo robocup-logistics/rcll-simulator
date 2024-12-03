@@ -275,7 +275,7 @@ public partial class Robot {
         }
 
         mps.PlaceProduct(target, HeldProduct);
-        if(target.ToLower() == "slide") {
+        if (target.ToLower() == "slide") {
             //FIXME
             Thread.Sleep(1000);
         }

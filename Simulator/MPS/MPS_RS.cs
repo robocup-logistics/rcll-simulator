@@ -27,17 +27,33 @@ public class MPS_RS : Mps {
         }
     }
 
+    public override void HardResetMachine() {
+        base.HardResetMachine();
+        MqttHelper.ResetSlideCount();
+    }
+
     protected override void Work() {
         while (Working) {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
+            if (ProductAtOut != null) {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+            }
+            else {
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+            }
+
             MQTTCommand? command;
-            while(MqttHelper.command.TryDequeue(out command)) {
+            while (MqttHelper.command.TryDequeue(out command)) {
+                if (ProductAtOut != null) {
+                    MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+                }
+                else {
+                    MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+                }
                 switch (command.command) {
                     case COMMAND.RESET:
-                        MqttHelper.ResetSlideCount();
-                        ResetMachine();
                         break;
                     case COMMAND.LIGHT:
                         HandleLights(command);
@@ -47,6 +63,12 @@ public class MPS_RS : Mps {
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+                        if (ProductAtOut != null) {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+                        }
+                        else {
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+                        }
                         break;
                     default:
                         MyLogger.Error("Unhandelt ActionType: " + command.command);

@@ -126,16 +126,25 @@ int main(int argc, char *argv[]) {
             }
         }
 
-        for (MachineInstruction cmp_instruction : instructions) {
-            if(cmp_instruction.id == instruction.id) {
-                continue;
-            }
+        // for (MachineInstruction cmp_instruction : instructions) {
+        //     if(cmp_instruction.id == instruction.id) {
+        //         continue;
+        //     }
 
-            if (cmp_instruction.end_time < instruction.start_time) {
-                dep.add_edge(instruction.id, instruction.id);
-            }
-        }
+        //     if (cmp_instruction.end_time < instruction.start_time) {
+        //         dep.add_edge(instruction.id, instruction.id);
+        //     }
+        // }
     }
+
+    std::string filename = "dag_output.txt";
+    std::ofstream outfile(filename);
+    if (!outfile) {
+        std::cerr << "Failed to open file: " << filename << std::endl;
+    }
+    outfile << dep.to_string();
+    outfile.close();
+    std::cout << "DAG data written to file: " << filename << std::endl;
 
     machine_task = std::map<std::string, int>();
     gamereport::set_dict(machine_task);

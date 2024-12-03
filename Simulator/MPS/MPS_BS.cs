@@ -37,11 +37,19 @@ public class MPS_BS : Mps {
             CommandEvent.WaitOne();
             CommandEvent.Reset();
 
+            if (ProductAtOut != null || ProductAtIn != null) {
+                MyLogger.Error("Product in or out not empty!");
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+            }
+            else {
+                MyLogger.Error("Product in or out empty!");
+                MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+            }
+
             MQTTCommand? command;
-            while(MqttHelper.command.TryDequeue(out command)) {
+            while (MqttHelper.command.TryDequeue(out command)) {
                 switch (command.command) {
                     case COMMAND.RESET:
-                        ResetMachine();
                         break;
                     case COMMAND.LIGHT:
                         HandleLights(command);
@@ -51,6 +59,14 @@ public class MPS_BS : Mps {
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+                        if (ProductAtOut != null || ProductAtIn != null) {
+                            MyLogger.Error("Product in or out not empty!");
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
+                        }
+                        else {
+                            MyLogger.Error("Product in or out empty!");
+                            MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
+                        }
                         break;
                     default:
                         MyLogger.Error("Unhandelt ActionType: " + command.command);
