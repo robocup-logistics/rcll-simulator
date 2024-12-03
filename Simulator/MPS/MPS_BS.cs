@@ -38,11 +38,9 @@ public class MPS_BS : Mps {
             CommandEvent.Reset();
 
             if (ProductAtOut != null || ProductAtIn != null) {
-                MyLogger.Error("Product in or out not empty!");
                 MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
             }
             else {
-                MyLogger.Error("Product in or out empty!");
                 MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
             }
 
@@ -60,11 +58,9 @@ public class MPS_BS : Mps {
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
                         if (ProductAtOut != null || ProductAtIn != null) {
-                            MyLogger.Error("Product in or out not empty!");
                             MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
                         }
                         else {
-                            MyLogger.Error("Product in or out empty!");
                             MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.NoWP);
                         }
                         break;

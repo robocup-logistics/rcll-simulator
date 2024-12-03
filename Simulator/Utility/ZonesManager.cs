@@ -90,16 +90,52 @@ public class ZonesManager {
         robotManager.ResumeRobots();
     }
 
+    private Zone yxToZone(uint y, uint x, Team team) {
+        return (Zone)(y + x * 10 + (team == Team.Cyan ? 0 : 1000));
+    }
 
-    // TODO REMOVE OTHER NEIGHTBOURS
     public void SetInsertionZone() {
         uint width = CurrentGame.width;
-        Dictionary[(Zone)(1 + width * 10)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 1) * 10)]);
-        Dictionary[(Zone)(1 + (width - 1) * 10)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 2) * 10)]);
-        Dictionary[(Zone)(1 + (width - 2) * 10)].SetNeighborhood(Dictionary[(Zone)(2 + (width - 2) * 10)]);
-        Dictionary[(Zone)(1 + width * 10) + 1000].SetNeighborhood(Dictionary[(Zone)(1 + (width - 1) * 10 + 1000)]);
-        Dictionary[(Zone)(1 + (width - 1) * 10 + 1000)].SetNeighborhood(Dictionary[(Zone)(1 + (width - 2) * 10 + 1000)]);
-        Dictionary[(Zone)(1 + (width - 2) * 10 + 1000)].SetNeighborhood(Dictionary[(Zone)(2 + (width - 2) * 10 + 1000)]);
+        Dictionary[yxToZone(1, width, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 1, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 2, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(2, width - 2, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 1, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 2, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(2, width - 2, Team.Magenta)]);
+
+        // The way back needs to be added again
+        Dictionary[yxToZone(1, width - 1, Team.Cyan)].AddNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 2, Team.Cyan)].AddNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width - 1, Team.Magenta)].AddNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 2, Team.Magenta)].AddNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+
+        // Remove traveling from the neighbours to the insertion Zone:
+        Dictionary[yxToZone(2, width, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+
+        Dictionary[yxToZone(2, width, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 2, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 3, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width - 4, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Cyan)]);
+
+        //Magenta
+        Dictionary[yxToZone(2, width, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+
+        Dictionary[yxToZone(2, width, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 2, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 3, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+
+        Dictionary[yxToZone(1, width - 4, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Magenta)]);
     }
 
     public CZones? GetZone(Zone zone) {
@@ -441,4 +477,11 @@ public class CZones {
         NeighborsList.Add(zones);
     }
 
+    public void AddNeighborhood(CZones zones) {
+        NeighborsList.Add(zones);
+    }
+
+    public void RemoveNeighbor(CZones zones) {
+        NeighborsList.Remove(zones);
+    }
 }

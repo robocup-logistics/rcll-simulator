@@ -49,20 +49,27 @@ internal class MainClass {
             Directory.CreateDirectory(dateTimeFolder);
         }
 
-        // Path for the 'latest' symlink
-        string latestLinkPath = Path.Combine(baseLogFolder, "latest");
+        string latestFolderPath = Path.Combine(baseLogFolder, "latest");
 
-        // Delete old symlink if it exists
-        if (File.Exists(latestLinkPath) || Directory.Exists(latestLinkPath)) {
-            // Check if it's a directory or file link because behavior can differ on different systems
-            FileSystemInfo fileInfo = new FileInfo(latestLinkPath);
-            if ((fileInfo.Attributes & FileAttributes.Directory) == FileAttributes.Directory)
-                Directory.Delete(latestLinkPath);
-            else
-                File.Delete(latestLinkPath);
+        // Ensure the 'latest' folder exists and is empty
+        if (Directory.Exists(latestFolderPath)) {
+            if ((File.GetAttributes(latestFolderPath) & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint) {
+                // It's a symlink, delete it
+                Directory.Delete(latestFolderPath, true);
+            } else {
+                // It's a regular directory, delete all contents inside it
+                foreach (var file in Directory.GetFiles(latestFolderPath)) {
+                    File.Delete(file);
+                }
+                foreach (var directory in Directory.GetDirectories(latestFolderPath)) {
+                    Directory.Delete(directory, true);
+                }
+            }
+        } else {
+            // Create the 'latest' folder if it does not exist
+            Directory.CreateDirectory(latestFolderPath);
         }
 
-        Directory.CreateSymbolicLink(latestLinkPath, dateTime);
         MyLogger.BaseFolder = dateTimeFolder;
 
         Config = new Configurations(path);
@@ -99,4 +106,3 @@ internal class MainClass {
         Environment.Exit(0);
     }
 }
-//TODO SYMLINK FILES NOT FOLDER
