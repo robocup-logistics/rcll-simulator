@@ -153,7 +153,7 @@ public class MPS_CS : Mps {
                     ShelfLeft = null;
                 }
                 break;
-            case "any":
+            case "shelf":
                 returnProduct = new Products(capColor);
                 break;
             default:

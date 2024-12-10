@@ -38,7 +38,7 @@ public partial class Robot {
 
             }
             else {
-                gripTask.Retrieve.MachinePoint = "any";
+                gripTask.Retrieve.MachinePoint = "shelf";
             }
 
             if (!GetFromStation(gripTask, false)) {
@@ -159,10 +159,10 @@ public partial class Robot {
         }
         var machine = task.Retrieve.MachineId;
         var mps = MpsManager.GetMachineByName(task.Retrieve.MachineId);
-        var target = task.Retrieve.MachinePoint;
-        if (!task.Retrieve.HasMachineId) {
-            task.Retrieve.MachineId = "any";
+        if (!task.Retrieve.HasMachinePoint) {
+            TaskFailed(task, (uint)ErrorCode.InvalidTarget);
         }
+        var target = task.Retrieve.MachinePoint;
         Zone targetZone = ZonesManager.GetWaypoint(machine, target);
         if (mps == null || targetZone == 0) {
             MyLogger.Warn("Couldnt find the requested target machine!");
@@ -179,7 +179,8 @@ public partial class Robot {
         RobotLock targetLock = mps.robotAtOutput;
         if (target.ToLower() == "input" ||
            target.ToLower() == "left" || target.ToLower() == "right" || target.ToLower() == "middle"
-           || target.ToLower() == "shelf1" || target.ToLower() == "shelf2" || target.ToLower() == "shelf3") {
+           || target.ToLower() == "shelf1" || target.ToLower() == "shelf2" || target.ToLower() == "shelf3"
+           || target.ToLower() == "shelf") {
             targetLock = mps.robotAtInput;
         }
         if (mps == null || targetLock != inputOutputLock) {
