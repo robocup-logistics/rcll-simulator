@@ -43,7 +43,7 @@ internal class MainClass {
         }
 
         // Directory for actual logs with date-time stamp
-        var dateTime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+        string dateTime = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
         string dateTimeFolder = Path.Combine(baseLogFolder, dateTime);
         if (!Directory.Exists(dateTimeFolder)) {
             Directory.CreateDirectory(dateTimeFolder);
@@ -71,6 +71,7 @@ internal class MainClass {
         }
 
         MyLogger.BaseFolder = dateTimeFolder;
+        MyLogger.dateTimeFolder = dateTime;
 
         Config = new Configurations(path);
         MainLogger = new MyLogger("MainClass");

@@ -3,6 +3,7 @@
 namespace Simulator.Utility;
 public class MyLogger {
     public static string BaseFolder = "";
+    public static string dateTimeFolder = "";
     public static bool debug_ = true;
     public static bool WarnToConsole = false;
     public static bool ErrorToConsole = false;
@@ -15,7 +16,7 @@ public class MyLogger {
         Prefix = "[" + prefix + "] ";
         Filename = Path.Combine(BaseFolder, prefix + ".log");
         string latest = Path.Combine(BaseFolder, "..", "latest", prefix + ".log");
-        string latestSymlink = Path.Combine("..", "..", Filename);
+        string latestSymlink = Path.Combine("..", dateTimeFolder, prefix + ".log");
 
         Logger = new LoggerConfiguration()
             .MinimumLevel.Debug()
