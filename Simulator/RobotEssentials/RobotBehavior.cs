@@ -62,6 +62,29 @@ public partial class Robot {
         }
         var Waypoint = task.Move.Waypoint;
         var MachinePoint = task.Move.MachinePoint;
+        if(Waypoint.ToLower().Contains("wait")) {
+            MyLogger.Info("Waiting for the next task!");
+            if (EntryZone != null) {
+                LookAtZone(EntryZone);
+                if (canceling) {
+                    return false;
+                }
+                var diagonalTimeFactor = isDiagonal ? 1.4f : 1.0f;
+                Thread.Sleep((int)((float)Config.RobotMoveZoneDuration * diagonalTimeFactor));
+                if (canceling) {
+                    return false;
+                }
+                SetZone(EntryZone);
+                EntryZone = null;
+
+                if (inputOutputLock != null) {
+                    inputOutputLock.Release(this);
+                    inputOutputLock = null;
+                }
+            }
+            TaskSucceded(task);
+            return true;
+        }
         Zone targetZone = ZonesManager.GetWaypoint(Waypoint, MachinePoint);
         if (targetZone == 0) {
             MyLogger.Warn("Couldn't find the machine position!");
