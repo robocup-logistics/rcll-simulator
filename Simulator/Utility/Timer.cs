@@ -28,7 +28,6 @@ public class Timer {
         return Instance;
     }
     private Timer(Configurations config) {
-        DateTime now = DateTime.Now;
         Sec = 0;
         Nsec = 0;
         Config = config;
@@ -57,11 +56,13 @@ public class Timer {
     }
     public void Tick() {
         while (true) {
+            TimerMutex.WaitOne();
             Nsec += (long)(500_000_000 * TimeFactor);
             if (Nsec >= 1_000_000_000) {
                 Sec += 1;
                 Nsec -= 1_000_000_000;
             }
+            TimerMutex.ReleaseMutex();
             Thread.Sleep(500);
         }
     }

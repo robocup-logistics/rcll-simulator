@@ -109,6 +109,7 @@ public class MPS_CS : Mps {
         }
         FinishedTask();
     }
+    //TODO FAIL MACHINE
 
     public override Products? RemoveProduct(string machinePoint, bool dryRun = false) {
         Products? returnProduct;
@@ -142,7 +143,7 @@ public class MPS_CS : Mps {
                 MyLogger.Debug("my shelf mid: : " + ShelfMiddle?.ToString());
                 returnProduct = ShelfMiddle;
                 if (!dryRun) {
-                    ShelfRight = null;
+                    ShelfMiddle = null;
                 }
                 break;
             case "shelf3":
@@ -150,7 +151,7 @@ public class MPS_CS : Mps {
                 MyLogger.Debug("my shelf Right: : " + ShelfRight?.ToString());
                 returnProduct = ShelfRight;
                 if (!dryRun) {
-                    ShelfLeft = null;
+                    ShelfRight = null;
                 }
                 break;
             case "shelf":
