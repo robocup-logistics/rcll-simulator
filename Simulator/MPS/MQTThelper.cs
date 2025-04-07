@@ -194,8 +194,11 @@ public class MQTThelper {
         }
     }
 
-    public void SetBarcode(int value) {
-        BarCode = value;
+    public void SetBarcode(int? value) {
+        if(value == null) {
+            return;
+        }
+        BarCode = (int)value;
         if (Config.BarcodeScanner)
             PublishChange("Barcode", BarCode.ToString());
     }

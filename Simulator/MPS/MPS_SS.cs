@@ -2,6 +2,7 @@
 using Simulator.Utility;
 using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
 using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
+using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
 
 namespace Simulator.MPS;
 public class MPS_SS : Mps {
@@ -51,6 +52,9 @@ public class MPS_SS : Mps {
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+                        if (command.arg1 == ARG1.TO_OUTPUT) {
+                            MqttHelper.SetBarcode(ProductAtOut?.ID);
+                        }
                         if (ProductAtOut != null) {
                             MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
                         }

@@ -154,9 +154,6 @@ public abstract class Mps {
                 ProductAtIn = ProductOnBelt;
                 ProductOnBelt = null;
                 MyLogger.Info("We place the Product onto the InputBeltPosition");
-                if (ProductAtIn != null) {
-                    MqttHelper.SetBarcode(ProductAtIn.ID);
-                }
                 break;
             case ARG2.OUT:
                 ProductAtOut = ProductOnBelt;

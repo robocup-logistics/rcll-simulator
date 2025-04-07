@@ -37,6 +37,7 @@ public class MPS_DS : Mps {
                         HandleLights(command);
                         break;
                     case COMMAND.DELIVER:
+                        MqttHelper.SetBarcode(ProductAtIn?.ID);
                         DeliverToSlotTask(command);
                         break;
                     default:

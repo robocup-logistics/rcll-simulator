@@ -57,6 +57,13 @@ public class MPS_BS : Mps {
                         break;
                     case COMMAND.MOVE_CONVEYOR:
                         HandleBelt(command);
+
+                        if (command.arg1 == ARG1.TO_OUTPUT) {
+                            MqttHelper.SetBarcode(ProductAtOut?.ID);
+                        }
+                        if (command.arg1 == ARG1.TO_INPUT) {
+                            MqttHelper.SetBarcode(ProductAtIn?.ID);
+                        }
                         if (ProductAtOut != null || ProductAtIn != null) {
                             MqttHelper.SetWPSensor(MQTThelper.MQTTWPSensor.WP);
                         }
