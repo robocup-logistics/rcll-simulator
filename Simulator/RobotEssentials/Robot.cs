@@ -153,15 +153,16 @@ public partial class Robot {
             MyLogger.Info("Robot is not active. Ignoring the task");
             return;
         }
-        TaskMutex.WaitOne();
         try {
+            TaskMutex.WaitOne();
             if (_currentTask != null) {
                 if (task.TaskId == _currentTask.TaskId) {
                     MyLogger.Debug("Recived the current task again. Going to ignore that message");
                     return;
                 }
                 MyLogger.Info("Received a new task!");
-                if (!CancelCurrentTask()) {
+                TaskMutex.ReleaseMutex();
+                if (!CancelCurrentTask(false)) {
                     if (CurrentTask != null) {
                         throw new Exception("cancleing task wasn't succesfull but the task wasn't finished eitehr");
                     }
@@ -179,7 +180,8 @@ public partial class Robot {
 
     //RobotInfo and AgetTask can both call this function to prevent race conditons
     private object CancelLock = new Object();
-    public bool CancelCurrentTask() {
+    public bool CancelCurrentTask(bool unlock_task_mutex = true) {
+        MyLogger.Info("Received a new task!");
         lock (CancelLock) {
             canceling = true;
             cancelBarrier.SignalAndWait();
@@ -199,15 +201,17 @@ public partial class Robot {
             finally {
                 // The Robot work thread can continue now
                 canceling = false;
-                TaskMutex.ReleaseMutex();
+                if (unlock_task_mutex) {
+                    TaskMutex.ReleaseMutex();
+                }
                 cancelBarrier.SignalAndWait();
             }
         }
     }
 
     public void TaskSucceded(AgentTask task) {
-        TaskMutex.WaitOne();
         try {
+            TaskMutex.WaitOne();
             if (_currentTask == null) {
                 throw new Exception("No Task to finish");
             }
