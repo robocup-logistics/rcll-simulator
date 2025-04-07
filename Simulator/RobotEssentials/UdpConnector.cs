@@ -24,7 +24,7 @@ class UdpConnector : ConnectorBase {
         // IN THIS CONSTRUCTOR, THIS CLASS IS SENDING THE BEACON SIGNAL TO REFBOX FOR ROBOT
 
         SendThread = new Thread(() => SendBeaconMethod());
-        SendThread.Name = "Robot" + robot.JerseyNumber + "_UDP_SENNDER_THREAD";
+        SendThread.Name = "Robot" + robot.JerseyNumber + robot.TeamColor + "_UDP_SENDER_THREAD";
 
         PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger, keyphrase);
         SendClient = new UdpClient();
@@ -127,12 +127,15 @@ class UdpConnector : ConnectorBase {
             if (task != null) {
                 SendClient.Send(task.GetBytes(), task.GetBytes().Length, Endpoint);
             }
-            Thread.Sleep(500);
+            Thread.Sleep(250);
             var lastTask = PbFactory.GetLastTask();
             if (lastTask != null) {
                 SendClient.Send(lastTask.GetBytes(), lastTask.GetBytes().Length, Endpoint);
             }
-            Thread.Sleep(500);
+            Thread.Sleep(250);
+            var beacon = PbFactory.CreateBeaconSignal();
+            SendClient.Send(beacon.GetBytes(), beacon.GetBytes().Length, Endpoint);
+            Thread.Sleep(250);
             if (!Config.RobotReportDirect && ReportMessages.Count > 0) {
                 lock (ReportMessages) {
                     SendClient.Send(ReportMessages.Dequeue(), Endpoint);
