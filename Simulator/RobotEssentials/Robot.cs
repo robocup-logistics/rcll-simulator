@@ -427,6 +427,8 @@ public partial class Robot {
         HeldProduct = null;
         FutureProduct = null;
         SetZone(HomeZone);
+        EntryZone = null;
+        Position.SetOrientation(0);
         LastTaskMutex.WaitOne();
         FinishedTasks.Clear();
         LastTaskMutex.ReleaseMutex();
