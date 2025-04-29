@@ -62,7 +62,7 @@ public partial class Robot {
         }
         var Waypoint = task.Move.Waypoint;
         var MachinePoint = task.Move.MachinePoint;
-        if(Waypoint.ToLower().Contains("wait")) {
+        if (Waypoint.ToLower().Contains("wait")) {
             MyLogger.Info("Waiting for the next task!");
             if (EntryZone != null) {
                 LookAtZone(EntryZone);

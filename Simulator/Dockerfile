@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:6.0
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 #RUN apt-get update && apt-get -y install xterm libncurses5-dev locales locales-all
 RUN apt-get update && \
     apt-get install -y --no-install-recommends  protobuf-compiler && \

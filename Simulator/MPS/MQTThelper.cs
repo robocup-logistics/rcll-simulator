@@ -195,7 +195,7 @@ public class MQTThelper {
     }
 
     public void SetBarcode(int? value) {
-        if(value == null) {
+        if (value == null) {
             return;
         }
         BarCode = (int)value;

@@ -56,7 +56,8 @@ internal class MainClass {
             if ((File.GetAttributes(latestFolderPath) & FileAttributes.ReparsePoint) == FileAttributes.ReparsePoint) {
                 // It's a symlink, delete it
                 Directory.Delete(latestFolderPath, true);
-            } else {
+            }
+            else {
                 // It's a regular directory, delete all contents inside it
                 foreach (var file in Directory.GetFiles(latestFolderPath)) {
                     File.Delete(file);
@@ -65,7 +66,8 @@ internal class MainClass {
                     Directory.Delete(directory, true);
                 }
             }
-        } else {
+        }
+        else {
             // Create the 'latest' folder if it does not exist
             Directory.CreateDirectory(latestFolderPath);
         }
