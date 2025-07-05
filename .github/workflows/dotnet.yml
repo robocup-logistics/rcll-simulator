@@ -15,6 +15,10 @@ jobs:
     steps:
     - name: Checkout the code
       uses: actions/checkout@v3
+    - name: Install Protobuf compiler
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y protobuf-compiler
     - name: Setup .NET
       uses: actions/setup-dotnet@v3
       with:
@@ -31,4 +35,4 @@ jobs:
         container-name: 'mosquitto'
         config: ${{ github.workspace }}/.github/workflows/mosquitto.conf
     - name: Test
-      run: dotnet test Simulatortests/Simulatortests.csproj --no-build --verbosity normal 
+      run: dotnet test Simulatortests/Simulatortests.csproj --no-build --verbosity normal
