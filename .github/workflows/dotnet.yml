@@ -27,7 +27,9 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: ls
-      run: lss
+      run: ls
+    - name: tree
+      run: tree
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
