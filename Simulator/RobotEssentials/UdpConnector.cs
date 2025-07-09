@@ -1,147 +1,167 @@
-﻿using System;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
-using System.Threading;
-using Simulator.MPS;
 using Simulator.Utility;
 
-namespace Simulator.RobotEssentials
-{
-    /// <summary>
-    /// Class <c>UdpConnector</c> is used for communication with the Refbox.
-    /// </summary>
-    class UdpConnector : ConnectorBase
-    {
-        private readonly PBMessageHandlerBase PbHandler;
-        private Configurations Config;
-        private bool OnlySending;
-        private UdpClient Client;
-        
-        private string IpString;
-        public UdpConnector(Configurations config, string ip, int port, Robot? rob, MyLogger logger, bool onlySend) : base(config, ip, port, rob, logger)
-        {
-            //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            PbHandler = new PBMessageHandlerRobot(Config, rob, MyLogger);
+namespace Simulator.RobotEssentials;
+/// <summary>
+/// Class <c>UdpConnector</c> is used to communicate with
+/// The refbox to send Beacon signals on behalf of a robot
+/// Listen to RobotInfo messages to relay to the robot
+/// Listen to udp AgentTask messages to relay to the RobotManager
+/// </summary>
+class UdpConnector : ConnectorBase {
 
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
-            RecvThread = new Thread(() => ReceiveUdpMethod());
-            RecvThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
-            SendThread = new Thread(() => SendUdpMethod());
-            SendThread.Name = "Robot" + rob.JerseyNumber + "_UDP_ReceiveThread";
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-            Client = new UdpClient();
-            Client.EnableBroadcast = true;
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
+    public UdpClient? SendClient;
+    public UdpClient? RecvClient;
+    public IPEndPoint? receiveEndpoint;
+
+    public Thread? SendThread;
+    public Thread? RecvThread;
+
+    public UdpConnector(Configurations config, string refboxIp, int refboxPort,
+                        Robot robot, MyLogger logger, string? keyphrase = null)
+        : base(config, refboxIp, refboxPort, logger) {
+        // IN THIS CONSTRUCTOR, THIS CLASS IS SENDING THE BEACON SIGNAL TO REFBOX FOR ROBOT
+
+        SendThread = new Thread(() => SendBeaconMethod());
+        SendThread.Name = "Robot" + robot.JerseyNumber + robot.TeamColor + "_UDP_SENDER_THREAD";
+
+        PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger, keyphrase);
+        SendClient = new UdpClient();
+        SendClient.EnableBroadcast = true;
+
+        SendThread.Start();
+    }
+
+    public UdpConnector(Configurations config, Robot robot, MyLogger logger)
+        : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
+        // IN THIS CONSTRUCTOR THE CLASS IS WAITING FOR AGENT TASK MESSAGES ON A SPECIFIC PORT AND SEND BACK ON ANOTHER ONe
+        MyLogger.Info("Starting UdpConnector for RobotManager to receive AgentTask messages!");
+
+        PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
+        PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
+
+        receiveEndpoint = new IPEndPoint(IPAddress.Any, robot.RobotConfig.RecvPort);
+        RecvClient = new UdpClient();
+        RecvClient.Client.Bind(receiveEndpoint);
+        RecvClient.EnableBroadcast = true;
+
+        SendClient = new UdpClient();
+        SendClient.EnableBroadcast = true;
+
+        RecvThread = new Thread(() => ReceiveAgentTask());
+        RecvThread.Name = robot.RobotName + "mpsManager_UDP_ReceiveThread";
+        SendThread = new Thread(() => SendAgentTask());
+        SendThread.Name = robot.RobotName + "mpsManager_UDP_SendThread";
+
+        SendThread.Start();
+        RecvThread.Start();
+    }
+
+    public void ReceiveAgentTask() {
+        MyLogger.Info("Starting the ReceiveUDPMethod!");
+
+        if (RecvClient == null) {
+            throw new Exception("RecvClient is null");
+        }
+        if (PbHandler == null) {
+            throw new Exception("PBHandler is null");
         }
 
-        public UdpConnector(Configurations config, string ip, int port, MpsManager mpsManager, MyLogger logger) : base(config, ip, port, null, logger)
-        {
-            //address = System.Net.IPAddress.Parse(Configurations.GetInstance().Refbox.IP);
-            MyLogger.Log("Starting UdpConnector without a robot!");
-            PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, MyLogger);
+        MyLogger.Info("Waiting on message on port " + Port);
+        while (Running) {
+            try {
+                // Receive the message
+                var message = RecvClient.Receive(ref receiveEndpoint);
 
-            IpString = ip;
-            RecvThread = new Thread(() => ReceiveUdpMethod());
-            RecvThread.Name = "mpsManager_UDP_ReceiveThread";
-            //SendThread = new Thread(() => SendUdpMethod());
+                MyLogger.Info("Received " + message.Length + " bytes.");
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
-            Client = new UdpClient();
-            Client.EnableBroadcast = true;
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-        }
+                // Check the message header and get the payload size
+                var payload = PbHandler.CheckMessageHeader(message);
+                MyLogger.Debug("Decoded the payload as being " + payload);
 
-        public void ReceiveUdpMethod()
-        {
-            MyLogger.Log("Starting the ReceiveUDPMethod!");
-            ResolveIpAddress(IpString);
-            var recvEndpoint = new IPEndPoint(IPAddress.Any, 0);
-            MyLogger.Log("Broadcasts are = " + Client.EnableBroadcast);
-
-            while (Running)
-            {
-                try
-                {
-                    MyLogger.Log("Waiting on message on port " + Port);
-                    var message = Client.Receive(ref recvEndpoint);
-                    var payload = PbHandler.CheckMessageHeader(message);
-                    MyLogger.Log("Received " + message.Length + " bytes and decoded the payload as being " + payload);
-                    PbHandler.HandleMessage(message);
+                // If payload is invalid, skip processing
+                if (payload == -1) {
+                    continue;
                 }
-                catch (Exception e)
-                {
-                    MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
-                    Thread.Sleep(1000);
-                }
-            }
-        }
 
-        public void SendUdpMethod()
-        {
-            MyLogger.Log("Sending message to port " + Port);
+                // If the payload indicates missing data
+                if (payload > message.Length - 8) {
+                    int remainingBytes = payload + 8 - message.Length;
 
-            while (Running)
-            {
-                try
-                {
-                    byte[] message;
-                    if(Messages.Count == 0)
-                    {
-                        MyLogger.Log("Sending a message to " + Address + ":" + Port + "!");
-                        message = ((PBMessageFactoryRobot)PbFactory).CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        if (Owner != null)
-                        {
-                            message = ((PBMessageFactoryRobot)PbFactory).CreateMessage((PBMessageFactoryBase
-                                .MessageTypes.BeaconSignal));
-                        }
-                        else
-                        {
-                            message = PbFactory.CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        }
-                    }
-                    else
-                    {
-                        MyLogger.Log("Sending Queue message to " + Address + ":" + Port + "!");
-                        message = Messages.Dequeue();
-                    }
-                    if(message != Array.Empty<byte>())
-                    {
-                        Client.Send(message, message.Length,Address.ToString(), Port);
+                    MyLogger.Debug($"Missing {remainingBytes} bytes, receiving more data...");
+
+                    // Receive the remaining data (This part assumes RecvClient is capable of receiving in chunks)
+                    while (remainingBytes > 0) {
+                        var extraData = RecvClient.Receive(ref receiveEndpoint);
+
+                        var combinedMessage = new byte[message.Length + extraData.Length];
+                        Buffer.BlockCopy(message, 0, combinedMessage, 0, message.Length);
+                        Buffer.BlockCopy(extraData, 0, combinedMessage, message.Length, extraData.Length);
+
+                        message = combinedMessage;
+
+                        remainingBytes -= extraData.Length;
                     }
                 }
-                catch (Exception e)
-                {
-                    MyLogger.Log(e + " - Something went wrong with the SendThread!");
-                }
-                Thread.Sleep(1000);
-            }
 
-        }
-        
-        public bool Start()
-        {
-            Running = true;
-            //PublicSendThread.Start();
-            if(Owner == null)
-            {
-                RecvThread.Start();
+                // Now that we have the full message, process it
+                PbHandler.HandleMessage(message);
             }
-            else
-            {
-                SendThread.Start();
-                Thread.Sleep(400);
-                if (!OnlySending)
-                {
-                    RecvThread.Start();
+            catch (Exception e) {
+                MyLogger.Error(e + " - Something went wrong with the ReceiveThread!");
+                Thread.Sleep(1000); // Small delay to avoid tight loop on exceptions
+            }
+        }
+    }
+
+    public void SendAgentTask() {
+        if (PbFactory == null) {
+            throw new Exception("PBFactory is null");
+        }
+        if (SendClient == null) {
+            throw new Exception("SendClient is null");
+        }
+        while (Running) {
+            var task = PbFactory.GetAgentTask();
+            if (task != null) {
+                SendClient.Send(task.GetBytes(), task.GetBytes().Length, Endpoint);
+            }
+            Thread.Sleep(250);
+            var lastTask = PbFactory.GetLastTask();
+            if (lastTask != null) {
+                SendClient.Send(lastTask.GetBytes(), lastTask.GetBytes().Length, Endpoint);
+            }
+            Thread.Sleep(250);
+            var beacon = PbFactory.CreateBeaconSignal();
+            SendClient.Send(beacon.GetBytes(), beacon.GetBytes().Length, Endpoint);
+            Thread.Sleep(250);
+            if (!Config.RobotReportDirect && ReportMessages.Count > 0) {
+                lock (ReportMessages) {
+                    SendClient.Send(ReportMessages.Dequeue(), Endpoint);
+                    Thread.Sleep(200);
                 }
             }
-            return true;
         }
+    }
 
-        public void Stop()
-        {
-            Running = false;
+    private void SendBeaconMethod() {
+        if (PbFactory == null) {
+            throw new Exception("PBFactory is null");
+        }
+        if (SendClient == null) {
+            throw new Exception("SendClient is null");
+        }
+        while (Running) {
+            var msg = PbFactory.CreateBeaconSignal();
+            SendClient.Send(msg.GetBytes(), msg.GetBytes().Length, Endpoint);
+            Thread.Sleep(1000);
+            if (Config.RobotReportDirect && ReportMessages.Count > 0) {
+                lock (ReportMessages) {
+                    SendClient.Send(ReportMessages.Dequeue(), Endpoint);
+                    Thread.Sleep(200);
+                }
+            }
         }
     }
 }

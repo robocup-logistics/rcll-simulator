@@ -1,68 +1,62 @@
-﻿using System.Collections.Generic;
-using System.Net;
-using System.Net.Sockets;
-using System.Threading;
-using Org.BouncyCastle.Math.EC;
+﻿using System.Net;
 using Simulator.Utility;
 
-namespace Simulator.RobotEssentials
-{
-    class ConnectorBase
-    {
-        public Robot? Owner;
-        public bool Running;
-        public IPEndPoint Endpoint;
-        public MyLogger MyLogger;
-        public Queue<byte[]> Messages;
-        public Thread SendThread;
-        public Thread RecvThread;
-        public IPAddress Address;
-        public PBMessageFactoryBase PbFactory;
-        protected PBMessageHandlerBase PbHandler;
-        public readonly Configurations Config;
-        public string IP;
-        public int Port;
+namespace Simulator.RobotEssentials;
+abstract class ConnectorBase {
+    public bool Running = true;
+    public IPEndPoint Endpoint;
+    public MyLogger MyLogger;
+    public Queue<byte[]> ReportMessages;
+    public IPAddress Address = IPAddress.Any;
+    public PBMessageFactoryRobot? PbFactory;
+    public PBMessageHandlerBase? PbHandler;
+    public readonly Configurations Config;
+    public string IP;
+    public int Port;
 
-        //public UdpClient UdpSender;
-        //public UdpClient UdpReciever;
-        public ConnectorBase(Configurations config, string ip, int port, Robot? rob, MyLogger logger)
-        {
-            Messages = new Queue<byte[]>();
-            MyLogger = logger;
-            IP = ip;
-            Port = port;
-            this.Owner = rob;
-            Address = IPAddress.Any;
-            Config = config;
-            //PbFactory = Owner != null ? new PBMessageFactoryRobot(Owner, MyLogger) : new PBMessageFactoryBase(MyLogger);
-        }
+    protected ConnectorBase(Configurations config, string ip, int port, MyLogger logger) {
+        ResolveIpAddress(ip);
+        ReportMessages = new Queue<byte[]>();
+        MyLogger = logger;
+        IP = ip;
+        Port = port;
+        Endpoint = new IPEndPoint(Address, Port);
+        Config = config;
+    }
 
-        public bool ResolveIpAddress(string ip)
-        {
-            MyLogger.Log("Starting the ResolveIpFunction");
-            while (Address.Equals(IPAddress.Any))
-            {
-                try
-                {
-                    Address = Dns.GetHostAddresses(ip)[0];
-                }
-                catch (Exception)
-                {
-                    MyLogger.Log("Not able to get DNS? Retrying");
-                    Thread.Sleep(1000);
-                }
+    public bool ResolveIpAddress(string ip) {
+        // MyLogger.Log("Starting the ResolveIpFunction");
+        while (Address.Equals(IPAddress.Any)) {
+            try {
+                Address = Dns.GetHostAddresses(ip)[0];
             }
-            return true;
+            catch (Exception) {
+                MyLogger.Warn("Not able to get DNS? Retrying");
+                Address = IPAddress.Any;
+                Thread.Sleep(1000);
+                return false;
+            }
         }
-        public void AddMessage(byte[] msg)
-        {
-            MyLogger.Log("Added a Message to the List!");
-            Messages.Enqueue(msg);
-            //WaitSend.Set();
+        return true;
+    }
+
+    protected void MessageReceived(byte[] message) {
+        if (PbHandler == null) {
+            throw new Exception("PbHandler is null");
         }
-        public byte[] CreateMessage(PBMessageFactoryBase.MessageTypes type)
-        {
-            return PbFactory.CreateMessage(type);
+        PbHandler.HandleMessage(message);
+    }
+
+    public virtual void Stop() {
+        Running = true;
+    }
+
+    public void AppendMachineReport(LlsfMsgs.MachineReport report) {
+        if (PbFactory == null) {
+            throw new Exception("PbFactory is null");
+        }
+        lock (ReportMessages) {
+            ReportMessages.Enqueue(PbFactory.CreateMachineReport(report));
         }
     }
 }

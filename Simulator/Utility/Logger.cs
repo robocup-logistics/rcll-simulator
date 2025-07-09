@@ -1,139 +1,69 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading;
-using Opc.UaFx;
-using Serilog;
-using Serilog.Core;
+﻿using Serilog;
 
-namespace Simulator.Utility
-{
-    public class MyLogger
-    {
-        private readonly bool Debug;
-        private readonly string Prefix;
-        private readonly string Filename;
-        private readonly string LogsFolder;
-        private readonly Mutex Mutex = new Mutex();
-        private Serilog.Core.Logger? Logger;
-        public enum LogTypes { Info, Error, Warning
-        }
-        public MyLogger(string prefix, bool debug)
-        {
-            Debug = debug;
-            Prefix = "[" + prefix +"] ";
-            Prefix = "";
-            LogsFolder = "logs" + Path.DirectorySeparatorChar;
-            Filename = LogsFolder + prefix + ".log";
-            //Console.WriteLine(Directory.GetCurrentDirectory() + "Writing to  : " + Filename);
-            Logger = new LoggerConfiguration()
-                .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
-                .CreateLogger();
-            
-            Log("------------------------------------------");
-            Log("Starting new logging session at " + DateTime.Now);
-        }
-        public void Log(OpcNode node)
-        {
-            if (Debug)
-            {
-                Mutex.WaitOne();
-                WriteLine(Prefix, node.Name + " " + node.Id);
-                Mutex.ReleaseMutex();
-            }
+namespace Simulator.Utility;
+public class MyLogger {
+    public static string BaseFolder = "";
+    public static string dateTimeFolder = "";
+    public static bool debug_ = true;
+    public static bool WarnToConsole = false;
+    public static bool ErrorToConsole = false;
+    private readonly string Prefix;
+    private readonly string Filename;
+    private readonly Mutex Mutex = new Mutex();
+    private Serilog.Core.Logger Logger;
+
+    public MyLogger(string prefix) {
+        Prefix = "[" + prefix + "] ";
+        Filename = Path.Combine(BaseFolder, prefix + ".log");
+        string latest = Path.Combine(BaseFolder, "..", "latest", prefix + ".log");
+        string latestSymlink = Path.Combine("..", dateTimeFolder, prefix + ".log");
+
+        Logger = new LoggerConfiguration()
+            .MinimumLevel.Debug()
+            .WriteTo.File(Filename, outputTemplate: "{Timestamp:yyyy-MM-dd HH:mm:ss.fff} [{Level:u3}] {Message:lj}{NewLine}{Exception}")
+            .CreateLogger();
+
+        if (File.Exists(latest) || Directory.Exists(latest)) {
+            File.Delete(latest);
         }
 
-        public void Log(string text)
-        {
-            if (Debug)
-            {
-                Mutex.WaitOne();
-                Logger.Information(text);
-                Mutex.ReleaseMutex();
-            }
-        }
+        // Create the symlink
+        File.CreateSymbolicLink(latest, latestSymlink);
 
-        public void Log(byte[] text)
-        {
-            if (Debug)
-            {
-                Mutex.WaitOne();
-                foreach (var b in text)
-                {
-                    Write(b);
-                }
-                Mutex.ReleaseMutex();
-            }
-        }
-        public void Info(string text)
-        {
-            if (Debug)
-            {
-                Mutex.WaitOne();
-                Logger.Information(text);
-                Mutex.ReleaseMutex();
-            }
-        }
+        Info("------------------------------------------");
+        Info("Starting new logging session at " + DateTime.Now);
+    }
 
-        private void WriteLine(string prefix, string text)
-        {
-            Mutex.WaitOne();
-            using (var w = File.AppendText(Filename))
-            {
-                Log(prefix, text, w);
-                //Console.WriteLine(prefix + text);
-            }
-            Mutex.ReleaseMutex();
-            /*using (StreamReader r = File.OpenText("log.txt"))
-            {
-                DumpLog(r);
-            }*/
-        }
-        private void Write(byte text)
-        {
-            using (var w = File.AppendText(Filename))
-            {
-                Log("", text.ToString(), w);
-                //Console.Write(text);
-            }
+    public void Info(string text) {
+        Mutex.WaitOne();
+        Logger.Information(text);
+        Mutex.ReleaseMutex();
+    }
 
-            /*using (StreamReader r = File.OpenText("log.txt"))
-            {
-                DumpLog(r);
-            }*/
-        }
-        public static void Log(string prefix, string logMessage, TextWriter w)
-        {
-            //removed prefix for now
-            //w.Write($"{prefix}: ");
-            //w.Write($"{DateTime.Now.ToLongTimeString()} {DateTime.Now.ToLongDateString()}");
-            //w.WriteLine("  :");
-            //Logger.Information($"{logMessage}");
-            //w.WriteLine("-------------------------------");
-        }
-
-        public string GetLines(int lines)
-        {
-            /*string text = "";
-            mutex.WaitOne();
-            List<string> debugtext = File.ReadLines(filename).Reverse().Take(lines).Reverse().ToList();
-            mutex.ReleaseMutex();
-
-            foreach (var line in debugtext)
-            {
-                text += line + "\n";
-            }
-            */
-            return "";
-        }
-        public static void DumpLog(StreamReader r)
-        {
-            string line;
-            while ((line = r.ReadLine()) != null)
-            {
-                Console.WriteLine(line);
-            }
+    public void Warn(string text) {
+        Mutex.WaitOne();
+        Logger.Warning(text);
+        Mutex.ReleaseMutex();
+        if (WarnToConsole) {
+            Console.Error.WriteLineAsync(Prefix + "[WARN] " + text);
         }
     }
+
+    public void Debug(string text) {
+        if (debug_) {
+            Mutex.WaitOne();
+            Logger.Debug(text);
+            Mutex.ReleaseMutex();
+        }
+    }
+
+    public void Error(string text) {
+        Mutex.WaitOne();
+        Logger.Error(text);
+        Mutex.ReleaseMutex();
+        if (ErrorToConsole) {
+            Console.Error.WriteLineAsync(Prefix + "[ERROR] " + text);
+        }
+    }
+
 }

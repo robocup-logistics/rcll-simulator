@@ -1,118 +1,98 @@
-﻿using System.Text.Json;
-using LlsfMsgs;
-using System.Threading;
+﻿using LlsfMsgs;
 using Simulator.Utility;
+using COMMAND = Simulator.MPS.MQTTCommand.COMMAND;
+using ARG1 = Simulator.MPS.MQTTCommand.ARG1;
+using MQTTStatus = Simulator.MPS.MQTThelper.MQTTStatus;
 
-namespace Simulator.MPS
-{
-    public class MPS_DS : Mps
-    {
-        // TODO Add some more space to the slots
-        private Products? Slot1;
-        private Products? Slot2;
-        private Products? Slot3;
-        public enum BaseSpecificActions
-        {
-            Reset = 400,
-            DeliverToSlot = 401
-        }
-        public MPS_DS(Configurations config,  string name, int port, int id, Team team, bool debug = false) : base(config, name, port, id, team, debug)
-        {
-            Type = MpsType.DeliveryStation;
-            //if (Configurations.GetInstance().MockUp) return;
-        }
-        public new void Run()
-        {
-            /*if (Configurations.GetInstance().MockUp)
-            {
-                return;
-            }*/
-            var BasicThread = new Thread(base.HandleBasicTasks);
-            BasicThread.Start();
-            BasicThread.Name = Name + "_HandleBasicThread";
-            Work();
-        }
-        public bool ProductAtSlot(int slot)
-        {
-            switch (slot)
-            {
-                case 1:
-                    if (Slot1 != null)
-                        return true;
-                    else
-                        return false;
-                case 2:
-                    if (Slot2 != null)
-                        return true;
-                    else
-                        return false;
-                case 3:
-                    if (Slot3 != null)
-                        return true;
-                    else
-                        return false;
-            }
-            return false;
-        }
-        private void Work()
-        {
-            SerializeMachineToJson();
-            while (Working)
-            {
-                InEvent.WaitOne();
-                InEvent.Reset();
-                GotConnection = true;
-                //HandleBasicTasks();
-                switch (InNodes.ActionId.Value)
-                {
-                    case (ushort)BaseSpecificActions.Reset:
-                        ResetMachine();
+namespace Simulator.MPS;
+public class MPS_DS : Mps {
+    private List<Products> Slot1;
+    private List<Products> Slot2;
+    private List<Products> Slot3;
+    public MPS_DS(Configurations config, string name, Team team, bool hasTag) : base(config, name, team, hasTag) {
+        Type = MpsType.DeliveryStation;
+        Slot1 = new List<Products>();
+        Slot2 = new List<Products>();
+        Slot3 = new List<Products>();
+    }
+
+    public override void HardResetMachine() {
+        base.HardResetMachine();
+        Slot1 = new List<Products>();
+        Slot2 = new List<Products>();
+        Slot3 = new List<Products>();
+    }
+
+    protected override void Work() {
+        while (Working) {
+            CommandEvent.WaitOne();
+            CommandEvent.Reset();
+
+            MQTTCommand? command;
+            while (MqttHelper.command.TryDequeue(out command)) {
+                switch (command.command) {
+                    case COMMAND.RESET:
                         break;
-                    case (ushort)BaseSpecificActions.DeliverToSlot:
-                        DeliverToSlotTask();
+                    case COMMAND.LIGHT:
+                        HandleLights(command);
+                        break;
+                    case COMMAND.DELIVER:
+                        MqttHelper.SetBarcode(ProductAtIn?.ID);
+                        DeliverToSlotTask(command);
                         break;
                     default:
-                        MyLogger.Log("In Action ID = " + InNodes.ActionId.Value);
+                        MyLogger.Error("Unhandelt ActionType: " + command.command);
                         break;
-
                 }
-                MyLogger.Log("enable = [" + InNodes.StatusNodes.enable.Value + "] ready = [" + InNodes.StatusNodes.ready.Value + "] busy = [" + InNodes.StatusNodes.busy.Value + "] error = [" + InNodes.StatusNodes.error.Value + "]");
-                TaskDescription = "Idle";
             }
+        }
+    }
+
+    public override bool PlaceProduct(string machinePoint, Products heldProduct) {
+        //MyLogger.Log("Got a PlaceProduct!");
+        switch (machinePoint.ToLower()) {
+            case "input":
+                if (ProductAtIn != null)
+                    return false;
+                ProductAtIn = heldProduct;
+                return true;
+            case "output":
+                return false;
+            default:
+                MyLogger.Warn("Defaulting!?");
+                if (ProductAtIn != null)
+                    return false;
+                ProductAtIn = heldProduct;
+                return false;
+        }
+    }
+
+    private void DeliverToSlotTask(MQTTCommand command) {
+        MyLogger.Info("DeliverToSlotTask!");
+        StartTask();
+        for (var count = 0; count < 45 && ProductAtIn == null; count++) {
+            Thread.Sleep(1000);
         }
 
-        private void DeliverToSlotTask()
-        {
-            MyLogger.Log("DeliverToSlotTask!");
-            TaskDescription = "Delivering Product";
-            var slot = InNodes.Data0.Value;
-            StartTask();
-            for(var count = 0; count  < 45 && ProductAtIn == null; count++)
-            {
-                Thread.Sleep(1000);
-            }
-            if (ProductAtIn == null) return;
-            MyLogger.Log("Deliver to slot " + InNodes.Data0.Value);
-            Thread.Sleep(Config.DSTaskDuration);
-            switch (slot)
-            {
-                case 1:
-                    Slot1 = ProductAtIn;
-                    break;
-                case 2:
-                    Slot2 = ProductAtIn;
-                    break;
-                case 3:
-                    Slot3 = ProductAtIn;
-                    break;
-            }
-            ProductAtIn = null;
-            FinishedTask();
+        if (ProductAtIn == null) {
+            MqttHelper.SetStatus(MQTTStatus.IDLE);
+            return;
         }
-        public void SerializeMachineToJson()
-        {
-            JsonInformation = JsonSerializer.Serialize(this);
-            //Console.WriteLine(JsonInformation);
+        string name = Enum.GetName(typeof(ARG1), command.arg1) ?? "";
+        MyLogger.Debug("Deliver to slot " + name);
+        Thread.Sleep(Config.DSTaskDuration);
+        switch (command.arg1) {
+            case ARG1.SLOT1:
+                Slot1.Add(ProductAtIn);
+                break;
+            case ARG1.SLOT2:
+                Slot2.Add(ProductAtIn);
+                break;
+            case ARG1.SLOT3:
+                Slot3.Add(ProductAtIn);
+                break;
         }
+        ProductAtIn = null;
+        FinishedTask();
     }
 }

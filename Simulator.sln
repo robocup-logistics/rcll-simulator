@@ -7,11 +7,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulator", "Simulator\Simu
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{C7A82E88-10AD-487F-9CBB-13EEEC734508}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Simulatortests", "Simulatortests\Simulatortests.csproj", "{D1BD7345-E0F9-4980-B78D-50C40D58D9DD}"
-	ProjectSection(ProjectDependencies) = postProject
-		{42B35108-C52B-48C0-AAA1-16152264869A} = {42B35108-C52B-48C0-AAA1-16152264869A}
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU

@@ -1,546 +1,487 @@
 ﻿using LlsfMsgs;
 using Simulator.MPS;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime;
-using System.Security.Cryptography.X509Certificates;
+using Simulator.RobotEssentials;
 using System.Text.Json.Serialization;
-using System.Threading;
-using Opc.Ua;
-using Robot = Simulator.RobotEssentials.Robot;
 
-namespace Simulator.Utility
-{
-    public class ZonesManager
-    {
-        public List<Zones> ZoneList { get; private set; }
-        private readonly Dictionary<Zone, Zones> Dictionary;
-        private static ZonesManager? Instance;
-        public Mutex ZoneManagerMutex;
-        private MyLogger MyLogger;
-        /// <returns>
-        /// Returns the instance of the Configurations Singleton
-        /// </returns>
-        public static ZonesManager GetInstance()
-        {
-            return Instance ??= new ZonesManager();
-        }
+namespace Simulator.Utility;
+public class ZonesManager {
+    public List<CZones> ZoneList { get; private set; }
+    private Dictionary<Zone, CZones> Dictionary;
+    private static ZonesManager? Instance;
+    public Mutex ZoneManagerMutex;
+    private MyLogger MyLogger;
 
-        private ZonesManager()
-        {
-            ZoneList = new List<Zones>();
-            Dictionary = new Dictionary<Zone, Zones>();
-            MyLogger = new MyLogger("Zones", true);
-            ZoneManagerMutex = new Mutex();
-            MyLogger.Log("Creating General Zones");
-            foreach (Zone z in Enum.GetValues(typeof(Zone)))
-            {
-                int val = (int)z;
-                var y = val % 10;
-                val /= 10;
-                var x = val % 10;
-                val /= 10;
-                Team color = Team.Cyan;
-                if (val > 0)
-                {
-                    color = Team.Magenta;
+    private static readonly object _lock = new object();
+    /// <returns>
+    /// Returns the instance of the Configurations Singleton
+    /// </returns>
+    public static ZonesManager GetInstance() {
+        if (Instance == null) {
+            lock (_lock) {
+                if (Instance == null) {
+                    Instance = new ZonesManager();
                 }
-
-                Zones zone;
-                zone = color == Team.Cyan ? new Zones(x + 6, y, 0, color, z) : new Zones(7 - x, y, 0, color, z);
-                Dictionary.Add(z, zone);
-                ZoneList.Add(zone);
-            }
-
-            //Todo add deployment zones for robots
-            MyLogger.Log("Creating Deployment Zones");
-            for (int i = 0; i < 3; i++)
-            {
-                var DeployZoneCyan = (Zone)((5 + i) * 10 + 1);
-                var deploymentZoneCyan = new Zones(5 + i + 6, 1, 0, Team.Cyan, DeployZoneCyan);
-                var DeployZoneMagenta = (Zone)(1000 + (5 + i) * 10 + 1);
-                var deploymentZoneMagenta = new Zones(7 - 5 - i, 1, 0, Team.Magenta, DeployZoneMagenta);
-                ZoneList.Add(deploymentZoneMagenta);
-                ZoneList.Add(deploymentZoneCyan);
-                Dictionary.Add(DeployZoneCyan, deploymentZoneCyan);
-                Dictionary.Add(DeployZoneMagenta, deploymentZoneMagenta);
-            }
-            MyLogger.Log("Starting to add Neighborhood");
-            AddNeighborhood();
-
-        }
-        public Zones? GetZone(Zone zone)
-        {
-            return Dictionary.ContainsKey(zone) ? Dictionary[zone] : null;
-        }
-
-        public void ShowNeighbourhood(Zone z)
-        {
-            var zones = GetZone(z);
-            foreach (var n in zones.GetNeighborhood())
-            {
-                n.GetsMovedTo = true;
             }
         }
-        public Zone GetWaypoint(string target, string machinepoint = "")
-        {
-            MyLogger.Log("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
-            Zone result;
-            try
-            {
-                //TODO update to a fancier handling of strings
-                /*if(target.Contains("CS1") || target.Contains("CS2")||target.Contains("RS1") || target.Contains("RS2"))
-                    result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 5));
-                else
-                    result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", "").Substring(0, 4));*/
-                result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
-                MyLogger.Log("Is a Zone Waypoint!");
+        return Instance;
+    }
+
+    private ZonesManager() {
+        ZoneList = new List<CZones>();
+        Dictionary = new Dictionary<Zone, CZones>();
+        MyLogger = new MyLogger("Zones");
+        ZoneManagerMutex = new Mutex();
+        MyLogger.Info("Creating General Zones");
+        foreach (Zone z in Enum.GetValues(typeof(Zone))) {
+            int val = (int)z;
+            // Y value is the last digit
+            var y = val % 10;
+            val /= 10;
+            // X value is the second last digit
+            var x = val % 10;
+            val /= 10;
+            // Team side is determind by adding 1000 to Magenta
+            Team color = Team.Cyan;
+            if (val > 0) {
+                color = Team.Magenta;
             }
-            catch (Exception )
-            {
-                MyLogger.Log("Is not a Zone Waypoint!");
-                return GetZoneNextToMachine(target, machinepoint); ;
+
+            CZones zone;
+            zone = color == Team.Cyan ? new CZones(x - 0.5f, y - 0.5f, 0, color, z) : new CZones(-x + 0.5f, y - 0.5f, 0, color, z);
+            Dictionary.Add(z, zone);
+            ZoneList.Add(zone);
+        }
+
+        MyLogger.Info("Starting to add Neighborhood");
+        AddNeighborhood();
+        SetInsertionZone();
+    }
+
+    public void Resize(uint width, uint height) {
+        RobotManager robotManager = RobotManager.GetInstance();
+        robotManager.PauseRobots();
+        List<CZones> newZoneList = new List<CZones>();
+        Dictionary<Zone, CZones> newDictionary = new Dictionary<Zone, CZones>();
+
+        foreach (uint x in Enumerable.Range(1, (int)width).Select(i => (uint)i)) {
+            foreach (uint y in Enumerable.Range(1, (int)height).Select(i => (uint)i)) {
+                uint val = y + x * 10;
+                Zone cyan = (Zone)(val);
+                Zone magenta = (Zone)(val + 1000);
+                CZones Cyan = new CZones(x - 0.5f, y - 0.5f, 0, Team.Cyan, cyan);
+                CZones Magenta = new CZones(-x + 0.5f, y - 0.5f, 0, Team.Magenta, magenta);
+                newDictionary.Add(cyan, Cyan);
+                newDictionary.Add(magenta, Magenta);
+                newZoneList.Add(Cyan);
+                newZoneList.Add(Magenta);
             }
+        }
+
+        CurrentGame.width = width;
+        CurrentGame.height = height;
+        SetInsertionZone();
+
+        MpsManager mpsManager = MpsManager.GetInstance();
+        mpsManager.MoveMachineToNewField(Dictionary);
+
+        ZoneList = newZoneList;
+        Dictionary = newDictionary;
+        robotManager.HomeRobots();
+        robotManager.ResumeRobots();
+    }
+
+    private Zone yxToZone(uint y, uint x, Team team) {
+        return (Zone)(y + x * 10 + (team == Team.Cyan ? 0 : 1000));
+    }
+
+    public void SetInsertionZone() {
+        uint width = CurrentGame.width;
+        Dictionary[yxToZone(1, width, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 1, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 2, Team.Cyan)].SetNeighborhood(Dictionary[yxToZone(2, width - 2, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 1, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 2, Team.Magenta)].SetNeighborhood(Dictionary[yxToZone(2, width - 2, Team.Magenta)]);
+
+        // The way back needs to be added again
+        Dictionary[yxToZone(1, width - 1, Team.Cyan)].AddNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 2, Team.Cyan)].AddNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width - 1, Team.Magenta)].AddNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 2, Team.Magenta)].AddNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+
+        // Remove traveling from the neighbours to the insertion Zone:
+        Dictionary[yxToZone(2, width, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Cyan)]);
+
+        Dictionary[yxToZone(2, width, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 2, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Cyan)]);
+
+        Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+        Dictionary[yxToZone(2, width - 3, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
+
+        Dictionary[yxToZone(1, width - 4, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Cyan)]);
+
+        //Magenta
+        Dictionary[yxToZone(2, width, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
+
+        Dictionary[yxToZone(2, width, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 2, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 1, Team.Magenta)]);
+
+        Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+        Dictionary[yxToZone(2, width - 3, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
+
+        Dictionary[yxToZone(1, width - 4, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Magenta)]);
+    }
+
+    public CZones? GetZone(Zone zone) {
+        return Dictionary.ContainsKey(zone) ? Dictionary[zone] : null;
+    }
+
+    public CZones? GetZone(string name) {
+        foreach (var (key, value) in Dictionary) {
+            if (key.ToString() == name) {
+                return value;
+            }
+        }
+        return null;
+    }
+
+    public Zone GetWaypoint(string target, string machinepoint = "") {
+        MyLogger.Info("GetWayPoint with target [" + target + " and machinepoint = " + machinepoint + "]!");
+        Zone result;
+        try {
+            if (target.Contains("C_Z") || target.Contains("M_Z")) {
+                target = target.Substring(0, 5);
+            }
+            result = (Zone)Enum.Parse(typeof(Zone), target.Replace("_", ""));
+            MyLogger.Info("Is a Zone Waypoint!");
             return result;
         }
-        public static Zone GetZoneFromString(string? zoneString)
-        {
-            if (zoneString == null)
-            {
-                return 0;
-            }
-            if (zoneString.Contains("_"))
-            {
-                zoneString = zoneString.Replace("_", "");
-            }
-            var result = (Zone)Enum.Parse(typeof(Zone), zoneString);
-            return result;
+        catch (Exception) {
+            return GetZoneNextToMachine(target, machinepoint); ;
         }
+    }
 
-        public void PlaceMachine(Zone zone, uint orientation, Mps machine)
-        {
-            if (!Dictionary.ContainsKey(zone)) return;
-            MyLogger.Log("Placed " + machine.Name + " at zone " + zone + " with the orientation " + orientation);
-            Dictionary[zone].PlaceMachine(machine, orientation);
-            machine.Zone = zone;
-        }
+    public void PlaceMachine(Zone zone, uint orientation, Mps machine) {
+        if (!Dictionary.ContainsKey(zone)) return;
+        MyLogger.Info("Placed " + machine.Name + " at zone " + zone + " with the orientation " + orientation);
+        Dictionary[zone].PlaceMachine(machine, orientation);
+        machine.Zone = zone;
+    }
 
-        public void DeployRobot(Robot robot)
-        {
-            if (robot.TeamColor == Team.Cyan)
-            {
-                var DeployZoneCyan = (Zone)((5 + 0) * 10 + 1);
-                if (Dictionary.ContainsKey(DeployZoneCyan) || Dictionary[DeployZoneCyan].Robot != null)
-                {
-                    Dictionary[DeployZoneCyan].PlaceRobot(robot,0);
-                }
+    public void MoveMachine(Mps mps, Zone zone, uint orientation) {
+        if (!Dictionary.ContainsKey(zone)) return;
+        MyLogger.Info("Moved " + mps.Name + " to zone " + zone);
+        Dictionary[mps.Zone].RemoveMachine();
+        mps.Zone = zone;
+        Dictionary[zone].PlaceMachine(mps, orientation);
+    }
+
+    public CZones? GetMachineZone(string MachineName) {
+        foreach (var (key, value) in Dictionary) {
+            if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
+                return value;
             }
         }
-        public bool PlaceRobot(Zone zone, uint orientation, Robot robot)
-        {
-            if (!Dictionary.ContainsKey(zone) || Dictionary[zone].Robot != null) return false;
-            Dictionary[zone].PlaceRobot(robot, orientation);
-            return true;
+        return null;
+    }
 
-        }
-        public bool RemoveRobot(Zone zone, uint orientation, Robot robot)
-        {
-            if (!Dictionary.ContainsKey(zone) || Dictionary[zone].Robot == null) return false;
-            Dictionary[zone].RemoveRobot();
-            return true;
-
-        }
-
-        public Zone GetZoneNextToMachine(string MachineName, string machinepoint = "")
-        {
-            MyLogger.Log("Getting Zone next to machine!" + MachineName);
-            foreach (var (key, value) in Dictionary)
-            {
-                if (value.Machine != null && MachineName.Contains(value.Machine.Name))
-                {
-                    int offset = 0;
-                    var orientation = value.Orientation;
-                    var neighborhood = value.GetNeighborhood();
-                    if (MachineName.Contains("output") || machinepoint.Equals("output"))
-                    {
-                        orientation += 180;
-                        orientation %= 360;
-                    }
-
-                    var waypoint = Zone.CZ11;
-
-                    var radians = (Math.PI / 180) * orientation;
-                    MyLogger.Log("Orientation = " + orientation + " and in radians " + radians);
-                    var y = Convert.ToInt32(Math.Sin(radians));
-                    var x = Convert.ToInt32(Math.Cos(radians));
-                    MyLogger.Log("X offset = " + x + " and offset y = " + y);
-                    waypoint = CheckNeighbours(neighborhood, value, x, y);
-                    return waypoint;
-
-                    /*MyLogger.Log("Offset = " + offset );
-                    if((((int)key+offset) % 100) < (int)Zone.CZ11)
-                    {
-                        MyLogger.Log("The key = " + key + " and the offset = " + offset);
-                        MyLogger.Log("Below 10, need to switch sides!");
-                        if((int)key > 500)
-                        {
-                            offset = -1000; 
-                        }
-                        else
-                        {
-                            offset = 1000;
-                        }
-                    }
-                    MyLogger.Log("We got for " + MachineName + " the adjacent zone " + ((Zone) key + offset).ToString());*/
-                    return key + offset;
+    public Zone GetZoneNextToMachine(string MachineName, string machinepoint = "") {
+        MyLogger.Info("Getting Zone next to machine!" + MachineName);
+        foreach (var (key, value) in Dictionary) {
+            if (value.Machine != null && MachineName.Contains(value.Machine.Name)) {
+                var orientation = value.Orientation;
+                var neighborhood = value.GetNeighborhood();
+                if (machinepoint.ToLower().Equals("output")) {
+                    orientation += 180;
+                    orientation %= 360;
                 }
+
+                var waypoint = Zone.CZ11;
+
+                var radians = (Math.PI / 180) * orientation;
+                MyLogger.Info("Orientation = " + orientation + " and in radians " + radians);
+                var y = Convert.ToInt32(Math.Sin(radians));
+                var x = Convert.ToInt32(Math.Cos(radians));
+                MyLogger.Info("X offset = " + x + " and offset y = " + y);
+                waypoint = CheckNeighbours(neighborhood, value, x, y);
+                return waypoint;
             }
-            MyLogger.Log("Couldn't find the machine " + MachineName);
-            return 0;
         }
+        MyLogger.Error("Couldn't find the machine " + MachineName);
+        return 0;
+    }
 
-        public Zone CheckNeighbours(List<Zones> Neighbours, Zones compareable, int x, int y)
-        {
-            MyLogger.Log("Checking " + compareable.X + "/" + compareable.Y);
-            foreach (var n in Neighbours)
-            {
-                if (n.X == compareable.X + x && n.Y == compareable.Y + y)
-                {
-                    MyLogger.Log("The searched neighbour is " + n.ZoneId + " with " + n.X + "/" + n.Y );
-                    return n.ZoneId;
-                }
+    public Zone CheckNeighbours(List<CZones> Neighbours, CZones compareable, int x, int y) {
+        MyLogger.Info("Checking " + compareable.X + "/" + compareable.Y);
+        foreach (var n in Neighbours) {
+            if (n.X == compareable.X + x && n.Y == compareable.Y + y) {
+                MyLogger.Debug("The searched neighbour is " + n.ZoneId + " with " + n.X + "/" + n.Y);
+                return n.ZoneId;
             }
-            MyLogger.Log("No neighbour found!");
-            return 0;
         }
-        public List<Zones> GetPathToZone(Zone Start, Zone Target)
-        {
-            List<Zones> Path = new List<Zones>();
-            var currentZone = Dictionary[Start];
-            var targetZone = Dictionary[Target];
-            MyLogger.Log("----------------------------------------");
-            while (currentZone.ZoneId != Target)
-            {
-                var list = currentZone.GetNeighborhood();
-                double shortest = 100;
-                Zones shortestZone = null;
-                MyLogger.Log("Start search for " + targetZone.ZoneId.ToString() + " from zone " + currentZone.ZoneId.ToString());
-                foreach (var e in list)
-                {
-                    if (e.Machine != null)
-                    {
-                        continue;
-                    }
-                    MyLogger.Log("Checking " + e.ZoneId.ToString() + " with coordinates " + e.X + "/" + e.Y);
-                    var dist = CalcDistance(e, targetZone);
-                    MyLogger.Log("Distance = " + dist.ToString());
-                    if (dist < shortest)
-                    {
-                        shortest = dist;
-                        shortestZone = e;
-                    }
-                }
+        MyLogger.Warn("No neighbour found!");
+        return 0;
+    }
 
-                if (shortestZone == null) continue;
-                Path.Add(shortestZone);
-                currentZone = shortestZone;
+    public List<CZones> Astar(CZones start, CZones end) {
+        var comparer = Comparer<CZones>.Create(
+            (k1, k2) => k1.ZoneId.CompareTo(k2.ZoneId));
+        SortedDictionary<CZones, double> openList = new SortedDictionary<CZones, double>(comparer);
+        Dictionary<Zone, int> closedList = new Dictionary<Zone, int>();
+        Dictionary<CZones, CZones> cameFrom = new Dictionary<CZones, CZones>();
+        openList.Add(start, 0);
+        SortedDictionary<Zone, double> gScore = new SortedDictionary<Zone, double>();
+        SortedDictionary<Zone, double> fScore = new SortedDictionary<Zone, double>();
+        gScore.Add(start.ZoneId, 0);
+        fScore.Add(start.ZoneId, CalcDistance(start, end));
+        List<CZones> path = new List<CZones>();
+        while (openList.Count != 0) {
+            var values = openList.Values.ToList();
+            var index = values.IndexOf(values.Min());
+            var current = openList.Keys.ElementAt(index);
+
+            if (current.ZoneId == end.ZoneId) {
+                MyLogger.Info("A Valid path has been found!");
+                return ReconstructPath(cameFrom, current);
             }
 
-            return Path;
-        }
-        
-        public List<Zones> Astar(Zones start, Zones end)
-        {
-            var comparer = Comparer<Zones>.Create(
-                (k1, k2) => k1.ZoneId.CompareTo(k2.ZoneId));
-            SortedDictionary<Zones, double> openList = new SortedDictionary<Zones, double>(comparer);
-            Dictionary<Zone, int> closedList = new Dictionary<Zone, int>();
-            Dictionary<Zones, Zones> cameFrom = new Dictionary<Zones, Zones>();
-            openList.Add(start,0);
-            SortedDictionary<Zone, double> gScore = new SortedDictionary<Zone, double>();
-            SortedDictionary<Zone, double> fScore = new SortedDictionary<Zone, double>();
-            gScore.Add(start.ZoneId, 0);
-            fScore.Add(start.ZoneId, CalcDistance(start,end));
-            List<Zones> path = new List<Zones>();
-            while (openList.Count != 0)
-            {
-                /*MyLogger.Log("###########################");
-                MyLogger.Log("OpenList");
-                foreach (var z in openList)
-                {
-                    MyLogger.Log("Zone: " + z.Key.GetZoneString() + "\tDist = " +z.Value);
-                    
+            openList.Remove(current);
+            var neighborhood = current.GetNeighborhood();
+
+            foreach (var neighbor in neighborhood) {
+                if (neighbor.Machine != null) {
+                    MyLogger.Debug("Skipping field as there is a machine!");
+                    continue;
                 }
-                MyLogger.Log("###########################");*/
-
-                var values = openList.Values.ToList();
-                var index = values.IndexOf(values.Min());
-                var current = openList.Keys.ElementAt(index);
-                //MyLogger.Log("Current expanded zone = " + current.GetZoneString());
-                //current.GetsMovedTo = true;
-                if (current.ZoneId == end.ZoneId)
-                {
-                    MyLogger.Log("A Valid path has been found!");
-                    return ReconstructPath(cameFrom, current);
+                var tentative_gScore = gScore[current.ZoneId] + CalcDistance(neighbor, current);
+                if (!gScore.ContainsKey(neighbor.ZoneId)) {
+                    gScore.Add(neighbor.ZoneId, 1000);
                 }
-                
-                openList.Remove(current);
-                var neighborhood = current.GetNeighborhood();
-                /*MyLogger.Log("----------------");
-                MyLogger.Log("Neighborhood = " + neighborhood.Count);
-                
-                foreach(var n in neighborhood)
-                    MyLogger.Log(n.GetZoneString());
-                MyLogger.Log("----------------");*/
-                foreach (var neighbor in neighborhood)
-                {
-                    if (neighbor.Machine != null)
-                    {
-                        MyLogger.Log("Skipping field as there is a machine!");
-                        continue;
+                if (tentative_gScore < gScore[neighbor.ZoneId]) {
+                    // This path to neighbor is better than any previous one. Record it!
+                    if (cameFrom.ContainsKey(neighbor)) {
+                        cameFrom[neighbor] = current;
                     }
-                    var tentative_gScore = gScore[current.ZoneId] + CalcDistance(neighbor, current);
-                    if (!gScore.ContainsKey(neighbor.ZoneId))
-                    {
-                        gScore.Add(neighbor.ZoneId,1000);
+                    else {
+                        cameFrom.Add(neighbor, current);
                     }
-                    if (tentative_gScore < gScore[neighbor.ZoneId])
-                    {
-                        // This path to neighbor is better than any previous one. Record it!
-                        if (cameFrom.ContainsKey(neighbor))
-                        {
-                            cameFrom[neighbor] = current;
-                        }
-                        else
-                        {
-                            cameFrom.Add(neighbor, current);
-                        }
-                        gScore[neighbor.ZoneId] = tentative_gScore;
-                        var dist = CalcDistance(neighbor, end);
-                        var comp = tentative_gScore + dist;
-                        //MyLogger.Log("Zone " + neighbor.GetZoneString() + " is " + dist + " from end");
-                        fScore[neighbor.ZoneId] = comp;
+                    gScore[neighbor.ZoneId] = tentative_gScore;
+                    var dist = CalcDistance(neighbor, end);
+                    var comp = tentative_gScore + dist;
 
-                        if (!openList.ContainsKey(neighbor))
-                        {
-                            openList.Add(neighbor, comp);
-                        }
-                        else
-                        {
-                            openList[neighbor] = comp;
-                        }
-                            
-                    }
+                    fScore[neighbor.ZoneId] = comp;
 
+                    if (!openList.ContainsKey(neighbor)) {
+                        openList.Add(neighbor, comp);
+                    }
+                    else {
+                        openList[neighbor] = comp;
+                    }
                 }
-
             }
-            MyLogger.Log("No Valid Path found for target [" + end.GetZoneString() +"]!");
-            return new List<Zones>();
         }
+        MyLogger.Warn("No Valid Path found for target [" + end.GetZoneString() + "]!");
+        return new List<CZones>();
+    }
 
-        private static List<Zones> ReconstructPath(Dictionary<Zones, Zones> cameFrom, Zones current)
+    private static List<CZones> ReconstructPath(Dictionary<CZones, CZones> cameFrom, CZones current) {
+        var path = new List<CZones>
         {
-            var path = new List<Zones>
-            {
                 current
             };
-            bool finished = false;
-            while (!finished)
-            {
-                try
-                {
-                    var element = cameFrom[path[^1]];
-                    path.Add(element);
-                }
-                catch (Exception)
-                {
-                    path.Reverse();
-                    finished = true;
-                }
+        bool finished = false;
+        while (!finished) {
+            try {
+                var element = cameFrom[path[^1]];
+                path.Add(element);
             }
-
-            path.RemoveAt(0); // remove the starting position from the path!
-            return path;
+            catch (Exception) {
+                path.Reverse();
+                finished = true;
+            }
         }
 
-        public static double CalcDistance(Zones Start, Zones End)
-        {
-            if (Start == null || End == null)
-            {
-                ZonesManager.GetInstance().MyLogger.Log("CalcDistance has a null?");
-                return 1000;
-            }
+        path.RemoveAt(0); // remove the starting position from the path!
+        return path;
+    }
 
-            return Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2));
+    public static double CalcDistance(CZones Start, CZones End) {
+        if (Start == null || End == null) {
+            ZonesManager.GetInstance().MyLogger.Warn("CalcDistance has a null?");
+            return 1000;
         }
-        private void AddNeighborhood()
-        {
-            foreach (var z in ZoneList)
-            {
-                // add all adjacent fields
-                if (Dictionary.ContainsKey(z.ZoneId + 1))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId + 1]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId - 1))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId - 1]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId + 10))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId + 10]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId - 10))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId - 10]);
-                }
-                // Add diagonal fields
-                if (Dictionary.ContainsKey(z.ZoneId - 9))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId - 9]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId - 11))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId - 11]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId + 9))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId + 9]);
-                }
-                if (Dictionary.ContainsKey(z.ZoneId + 11))
-                {
-                    z.AddNeighbor(Dictionary[z.ZoneId + 11]);
-                }
 
-                //Added to connect the two halves of the mapping
-                if (((int)z.ZoneId) % 100 - 10 < 10)
-                {
-                    if ((int)z.ZoneId > 100)
-                    {
-                        if (Dictionary.ContainsKey(z.ZoneId - 1000))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId - 1000]);
-                        }
-                        if (Dictionary.ContainsKey(z.ZoneId - 1001))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId - 1001]);
-                        }
-                        if (Dictionary.ContainsKey(z.ZoneId - 999))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId - 999]);
-                        }
-                    }
-                    else
-                    {
-                        if (Dictionary.ContainsKey(z.ZoneId + 1000))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId + 1000]);
-                        }
-                        if (Dictionary.ContainsKey(z.ZoneId + 1001))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId + 1001]);
-                        }
-                        if (Dictionary.ContainsKey(z.ZoneId + 999))
-                        {
-                            z.AddNeighbor(Dictionary[z.ZoneId + 999]);
-                        }
-                    }
-                }
-                MyLogger.Log("Added " + z.GetNeighborhood().Count + " to the zone " + z.ZoneId);
+        return Math.Sqrt(Math.Pow((Start.X - End.X), 2) + Math.Pow((Start.Y - End.Y), 2));
+    }
+    private void AddNeighborhood() {
+        foreach (var z in ZoneList) {
+            // add all adjacent fields
+            if (Dictionary.ContainsKey(z.ZoneId + 1)) {
+                z.AddNeighbor(Dictionary[z.ZoneId + 1]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId - 1)) {
+                z.AddNeighbor(Dictionary[z.ZoneId - 1]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId + 10)) {
+                z.AddNeighbor(Dictionary[z.ZoneId + 10]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId - 10)) {
+                z.AddNeighbor(Dictionary[z.ZoneId - 10]);
+            }
+            // Add diagonal fields
+            if (Dictionary.ContainsKey(z.ZoneId - 9)) {
+                z.AddNeighbor(Dictionary[z.ZoneId - 9]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId - 11)) {
+                z.AddNeighbor(Dictionary[z.ZoneId - 11]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId + 9)) {
+                z.AddNeighbor(Dictionary[z.ZoneId + 9]);
+            }
+            if (Dictionary.ContainsKey(z.ZoneId + 11)) {
+                z.AddNeighbor(Dictionary[z.ZoneId + 11]);
             }
 
+            //Added to connect the two halves of the mapping
+            if (((int)z.ZoneId) % 100 - 10 < 10) {
+                if ((int)z.ZoneId > 100) {
+                    if (Dictionary.ContainsKey(z.ZoneId - 1000)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId - 1000]);
+                    }
+                    if (Dictionary.ContainsKey(z.ZoneId - 1001)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId - 1001]);
+                    }
+                    if (Dictionary.ContainsKey(z.ZoneId - 999)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId - 999]);
+                    }
+                }
+                else {
+                    if (Dictionary.ContainsKey(z.ZoneId + 1000)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId + 1000]);
+                    }
+                    if (Dictionary.ContainsKey(z.ZoneId + 1001)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId + 1001]);
+                    }
+                    if (Dictionary.ContainsKey(z.ZoneId + 999)) {
+                        z.AddNeighbor(Dictionary[z.ZoneId + 999]);
+                    }
+                }
+            }
+            MyLogger.Debug("Added " + z.GetNeighborhood().Count + " to the zone " + z.ZoneId);
+        }
+
+    }
+}
+
+public class CZones {
+
+    private readonly Team ZoneColor;
+
+    private readonly List<CZones> NeighborsList;
+
+    [JsonIgnore]
+    public Mps? Machine { get; private set; }
+
+    [JsonIgnore]
+    public uint Orientation {
+        get {
+            return Machine != null ? Machine.Rotation : 0;
+        }
+        set {
+            if (Machine != null) {
+                Machine.Rotation = value;
+            }
         }
     }
 
-    public class Zones
-    {
+    public Zone ZoneId { get; private set; }
+    public float X { get; private set; }
+    public float Y { get; private set; }
 
-        private readonly Team ZoneColor;
+    public CZones(float x, float y, uint orientation, Team color, Zone zoneId) {
+        X = x;
+        Y = y;
+        Orientation = orientation;
+        ZoneColor = color;
+        NeighborsList = new List<CZones>();
+        ZoneId = zoneId;
+        Machine = null;
+    }
 
-        private readonly List<Zones> NeighborsList;
-        
-        [JsonIgnore]
-        public Mps? Machine { get; private set; }
-        
-        [JsonIgnore]
-        public Robot? Robot { get; private set; }
-        public uint Orientation { get; private set; }
-        public Zone ZoneId { get; private set; }
-        public int X { get; private set; }
-        public int Y { get; private set; }
-        public bool GetsMovedTo { get; set; }
-        
-        [JsonIgnore]
-        public Mutex ZoneMutex {get; private set;}
-        public Zones(int x, int y, uint orientation, Team color, Zone zoneId)
-        {
-            X = x;
-            Y = y;
-            Orientation = orientation;
-            ZoneColor = color;
-            GetsMovedTo = false;
-            NeighborsList = new List<Zones>();
-            ZoneId = zoneId;
-            Machine = null;
-            Robot = null;
-            ZoneMutex = new Mutex();
+    public void AddNeighbor(CZones newNeighbor) {
+        NeighborsList.Add(newNeighbor);
+    }
+
+    public bool Found(Team team, bool? value = null) {
+        if (Machine == null) {
+            return true;
         }
 
-        public void AddNeighbor(Zones newNeighbor)
-        {
-            NeighborsList.Add(newNeighbor);
-        }
-        public bool Free()
-        {
-            if (Machine == null && Robot == null)
-            {
-                return true;
+        if (team == Team.Cyan) {
+            if (value != null) {
+                Machine.FoundCyan = (bool)value;
             }
+            return Machine.FoundCyan;
+        }
+        else {
+            if (value != null) {
+                Machine.FoundMagenta = (bool)value;
+            }
+            return Machine.FoundMagenta;
+        }
+    }
+
+    public bool Free() {
+        if (Machine == null) {
+            return true;
+        }
+        return false;
+    }
+
+    public bool HasTag() {
+        if (Machine == null) {
             return false;
         }
-
-        public void PlaceMachine(MPS.Mps machine, uint orientation)
-        {
-            Machine = machine;
-            Orientation = orientation;
-        }
-
-        public void PlaceRobot(Robot robot, uint orientation)
-        {
-            Robot = robot;
-            Orientation = orientation;
-        }
-        public void RemoveRobot()
-        {
-            Robot = null;
-            Orientation = 0;
-        }
-        public string GetZoneString()
-        {
-            if (Machine != null)
-            {
-                return Machine.Name;
-            }
-
-            if (Robot != null)
-            {
-                return Robot.JerseyNumber + " " +Robot.RobotName;
-            }
-
-            return ZoneId.ToString();
-        }
-
-        public List<Zones> GetNeighborhood()
-        {
-            return NeighborsList;
-        }
-
+        return Machine.HasTag ? true : false;
     }
 
+    public void PlaceMachine(MPS.Mps machine, uint orientation) {
+        Machine = machine;
+        Orientation = orientation;
+    }
 
+    public void RemoveMachine() {
+        Machine = null;
+    }
 
+    public string GetZoneString() {
+        if (Machine != null) {
+            return Machine.Name;
+        }
 
+        return ZoneId.ToString();
+    }
+
+    public List<CZones> GetNeighborhood() {
+        return NeighborsList;
+    }
+
+    public void SetNeighborhood(CZones zones) {
+        NeighborsList.Clear();
+        NeighborsList.Add(zones);
+    }
+
+    public void AddNeighborhood(CZones zones) {
+        NeighborsList.Add(zones);
+    }
+
+    public void RemoveNeighbor(CZones zones) {
+        NeighborsList.Remove(zones);
+    }
 }

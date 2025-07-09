@@ -2,240 +2,204 @@
 using System.Net;
 using System.Net.Sockets;
 using System.Threading;
-using Simulator.MPS;
 using Simulator.Utility;
+using Simulator.MPS;
 
-namespace Simulator.RobotEssentials
-{
-    /// <summary>
-    /// Class <c>TcpConnector</c> is used for communication with the Teamserver.
-    /// </summary>
-    class TcpConnector : ConnectorBase
-    {
-        //TODO add second condition to assign team 2
+namespace Simulator.RobotEssentials;
+/// <summary>
+/// Class <c>TcpConnector</c> is used to communicate with
+/// The refbox to receive Machine Positions to relay to the MPSManager
+/// Listen to tcp AgentTask messages to relay to the RobotManager
+/// </summary>
+class TcpConnector : ConnectorBase {
+    private Socket ConnectSocket;
+    private Socket? ListenSocket;
+    private IPEndPoint? listenEndpoint;
+    private Robot? Robot;
 
-        private Socket Socket;
-        private EventWaitHandle WaitSend;
-        private ManualResetEvent WakePeerUpEvent;
-        public TcpConnector(Configurations config, string ip, int port, Robot rob, MyLogger logger) : base(config, ip, port, rob, logger)
-        {
-            MyLogger.Log("Starting Robot TcpConnector for " + ip + ":" + port + "!");
+    public Thread? ConnectThread;
+    public Thread? ListenThread;
 
+    public TcpConnector(Configurations config, string ip, int port, MpsManager mpsManager, RobotManager robotManager,
+                        GTMonitor? gtMonitor, MyLogger logger)
+        : base(config, ip, port, logger) {
+        //THIS CONSTRUCTOR IS USED TO COMMUNICATE WITH THE REFBOX TO GET ROBOTINFO MACHIEN INFO AND GAMESTATE
+        MyLogger.Info("Starting Refbox TcpConnector for " + ip + ":" + port + "!");
 
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
-            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod());
-            RecvThread.Name = "Robot" + rob.JerseyNumber + "_TCP_ReceiveThread";
-            if (Owner != null)
-            {
-                SendThread = new Thread(() => SendThreadMethod());
-                SendThread.Name = "Robot" + rob.JerseyNumber + "_TCP_SendThread";
+        ConnectSocket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+        ConnectThread = new Thread(() => ReceiveThreadMethod(ConnectSocket));
+        ConnectThread.Name = "Refbox_TCP_ReceiveThread";
 
-            }
+        PbHandler = new PBMessageHandlerMachineManager(Config, mpsManager, robotManager, gtMonitor, MyLogger);
 
-            PbFactory = Owner != null ? new PBMessageFactoryRobot(Config, Owner, MyLogger) : new PBMessageFactoryBase(Config, MyLogger);
+        Connect(ConnectSocket);
+        ConnectThread.Start();
+    }
 
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerRobot(Config, Owner, MyLogger);
+    public TcpConnector(Configurations config, Robot robot, MyLogger logger)
+        : base(config, robot.RobotConfig.Host, robot.RobotConfig.SendPort, logger) {
+        MyLogger.Info("Starting AgentTask TcpConnector on port:" + robot.RobotConfig.RecvPort + "!");
+        Robot = robot;
+
+        ConnectSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
+        ConnectThread = new Thread(() => SendToAgent());
+        ConnectThread.Name = Robot.RobotName + "Manager_TCP_SendThread";
+
+        PbHandler = new PBMessageHandlerRobot(Config, robot, MyLogger);
+        PbFactory = new PBMessageFactoryRobot(Config, robot, MyLogger);
+
+        listenEndpoint = new IPEndPoint(IPAddress.Any, robot.RobotConfig.RecvPort);
+        ListenSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        ListenSocket.Bind(listenEndpoint);
+        ListenSocket.Listen(10);
+
+        ListenThread = new Thread(() => AcceptClients());
+        ListenThread.Name = "Manager_TCP_ReceiveThread";
+
+        Connect(ConnectSocket);
+        ListenThread.Start();
+        ConnectThread.Start();
+    }
+
+    public void SendToAgent() {
+        if (PbFactory == null) {
+            throw new Exception("PBFactory is null");
         }
-
-        public TcpConnector(Configurations config, string ip, int port, MpsManager manager, MyLogger logger) : base(
-            config, ip, port, null, logger)
-        {
-            MyLogger.Log("Starting MPS Manager TcpConnector for " + ip + ":" + port + "!");
-
-
-            ResolveIpAddress(ip);
-            Endpoint = new IPEndPoint(Address, Port);
-            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-            RecvThread = new Thread(() => ReceiveThreadMethod());
-            RecvThread.Name = "MpsManager_TCP_ReceiveThread";
-            //WaitSend = new EventWaitHandle(false, EventResetMode.AutoReset);
-            PbHandler = new PBMessageHandlerMachineManager(Config, manager, MyLogger);
-            Running = true;
-            Connect();
-            RecvThread.Start();
-        }
-        public bool Close()
-        {
-            Socket.Close();
-            return true;
-        }
-
-        public bool Connect()
-        {
-            MyLogger.Log("Connecting ....");
-            while (!Socket.Connected)
-            {
-                try
-                {
-                    Socket.Connect(Endpoint);
-                    MyLogger.Log(".... connected!");
+        while (Running) {
+            try {
+                var task = PbFactory.GetAgentTask();
+                if (task != null) {
+                    ConnectSocket.Send(task.GetBytes());
                 }
-                catch (SocketException)
-                {
-                    MyLogger.Log("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
-                    Thread.Sleep(10000);
+                Thread.Sleep(500);
+                var lastTask = PbFactory.GetLastTask();
+                if (lastTask != null) {
+                    ConnectSocket.Send(lastTask.GetBytes());
                 }
-            }
-            return true;
-        }
-
-        public bool Start()
-        {
-            try
-            {
-                MyLogger.Log("Starting ....");
-                if (Connect())
-                {
-                    Running = true;
-                    MyLogger.Log(".... Started");
-                    if (SendThread != null)
-                    {
-                        SendThread.Start();
+                Thread.Sleep(500);
+                if (!Config.RobotReportDirect && ReportMessages.Count > 0) {
+                    lock (ReportMessages) {
+                        ConnectSocket.Send(ReportMessages.Dequeue());
+                        Thread.Sleep(200);
                     }
-                    RecvThread.Start();
-                }
-                else
-                {
-                    MyLogger.Log(".... couldn't start..");
-                    return false;
                 }
             }
-            catch (SocketException)
-            {
-                MyLogger.Log("STARTING the teamserver didn't work");
-                Running = false;
-                return false;
+            catch (SocketException se) {
+                MyLogger.Error(se + " - Socket exception occurred in the SendToAgentThread!");
+                Thread.Sleep(500);
             }
-            /*finally
-            {
-                Socket?.Close();
-            }*/
-            return true;
+            catch (Exception e) {
+                MyLogger.Error(e + " - Something went wrong with the SendToAgentThread!");
+                Thread.Sleep(500);
+            }
         }
-        
-        public bool Stop()
-        {
-            try
-            {
-                Close();
-                Running = false;
-            }
-            catch (SocketException)
-            {
-                MyLogger.Log(" Something went wrong with closing the Connecting to the Teamserver!");
-                return false;
-            }
-            return true;
-        }
+    }
 
-        public void SendThreadMethod()
-        {
-            MyLogger.Log("Starting the SendThread!");
-            if (Socket == null)
-            {
+    public void AcceptClients() {
+        while (Running) {
+            try {
+                // Accept incoming connections
+                Socket? clientSocket = ListenSocket?.Accept();
+                Console.WriteLine("Accepted a new connection.");
+
+                if (clientSocket == null) {
+                    Thread.Sleep(1000);
+                    continue;
+                }
+                // Start a new thread to handle this client
+                Thread clientThread = new Thread(() => ReceiveThreadMethod(clientSocket, false));
+                clientThread.Start();
+            }
+            catch (Exception e) {
+                Console.WriteLine($"Error accepting client: {e.Message}");
+            }
+        }
+    }
+
+
+    public void ReceiveThreadMethod(Socket socket, bool reconnect = true) {
+        MyLogger.Info("Starting the ReceiveThread!");
+        if (socket == null) {
+            throw new Exception("Socket is null");
+        }
+        if (PbHandler == null) {
+            throw new Exception("PBHandler is null");
+        }
+        while (Running) {
+            try {
+                if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
+                    MyLogger.Warn("Connection closed by remote host.");
+                    if (!reconnect) {
+                        return;
+                    }
+                    socket.Close();
+                    socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                    Connect(socket);
+                    continue;
+                }
+
+                if (socket.Available == 0) {
+                    Thread.Sleep(50);
+                    continue;
+                }
+                MyLogger.Debug("Waiting for a message!");
+                var buffer = new byte[4096];
+                var message = socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
+                int payload = PbHandler.CheckMessageHeader(buffer);
+                if (payload == -1) {
+                    continue;
+                }
+                MyLogger.Debug("Lines Receive " + message + " of " + payload);
+                int remainingBytes = payload + 8 - message;
+                while (remainingBytes > 0) {
+                    MyLogger.Debug($"Missing {remainingBytes} bytes, receiving more data...");
+                    message = socket.Receive(buffer, message, remainingBytes, SocketFlags.None);
+                    MyLogger.Debug("Lines Receive " + message);
+                    remainingBytes = payload + 8 - message;
+                    if (socket.Poll(0, SelectMode.SelectRead) && socket.Available == 0) {
+                        MyLogger.Warn("Csefdasfonnection closed by remote host.");
+                        if (!reconnect) {
+                            return;
+                        }
+                        break;
+                    }
+                }
+                PbHandler.HandleMessage(buffer);
+            }
+            catch (SocketException se) {
+                MyLogger.Error(se + " - Socket exception occurred in the ReceiveThread!");
                 return;
             }
-            while (Running)
-            {
-                try
-                {
-                    //MyLogger.Log("Waiting for a send!");
-                    //WaitSend.WaitOne();
-                    //MyLogger.Log("Got a new Message to send!");
-                    while (true)
-                    {
-                        byte[] msg;
-                        if (Messages.Count == 0)
-                        {
-                            //robot sending a Gripsbeacon message every time he enters. Maybe reduce this spam in the future
-                            //msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                            msg = CreateMessage(PBMessageFactoryBase.MessageTypes.BeaconSignal);
-                        }
-                        else
-                        {
-                            msg = Messages.Dequeue();
-                        }
-                        if (msg != Array.Empty<byte>())
-                        {
-                            Socket.Send(msg);
-                        }
-
-                        Thread.Sleep(1000);
-                    }
-                }
-                catch (Exception e)
-                {
-                    MyLogger.Log(e + " - Something went wrong with the sending to the Teamserver!");
-                    if (!Socket.Connected)
-                    {
-                        MyLogger.Log("the connection is lost retry to connect!");
-                        while (!Socket.Connected)
-                        {
-                            Socket.Close();
-                            Socket = new Socket(Address.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-                            Connect();
-                        }
-                    }
-                }
+            catch (Exception e) {
+                MyLogger.Error(e + " - Something went wrong with the ReceiveThread!");
             }
         }
+    }
 
-
-
-        public void ReceiveThreadMethod()
-        {
-            MyLogger.Log("Starting the ReceiveThread!");
-            while (Running)
-            {
-                try
-                {
-                    if (Socket.Available == 0)
-                    {
-                        Thread.Sleep(200);
-                        continue;
-                    }
-                    //MyLogger.Log("Waiting for a message!");
-                    var buffer = new byte[4096];
-                    var message = Socket.Receive(buffer, 0, buffer.Length, SocketFlags.None);
-                    var payload = PbHandler.CheckMessageHeader(buffer);
-                    if (payload == -1)
-                    {
-                        continue;
-                    }
-                    //MyLogger.Log("Lines Receive " + message);
-                    if (payload > message)
-                    {
-                        //MyLogger.Log("Missing bytes, we need to receive more " + message + "/" + payload);
-                        message = Socket.Receive(buffer, message, payload + 16 - message, SocketFlags.None);
-                        //MyLogger.Log("Lines Receive " + message);
-                    }
-                    //MyLogger.Log("Received a message!");
-                    PbHandler.HandleMessage(buffer);
-                    //MyLogger.Log("Handled the message!");
-                    //MyLogger.Log(message.ToString());
-                }
-                catch (Exception e)
-                {
-                    MyLogger.Log(e + " - Something went wrong with the ReceiveThread!");
-                }
+    public bool Connect(Socket socket) {
+        MyLogger.Info("Connecting ....");
+        while (!socket.Connected) {
+            try {
+                socket.Connect(Endpoint);
+            }
+            catch (SocketException) {
+                Thread.Sleep(5000);
+                MyLogger.Warn("Wasn't able to CONNECT to the " + IP + ":" + Port + "  retrying in a few seconds!");
             }
         }
+        return true;
+    }
 
-        public bool GetConnected()
-        {
-            return Socket.Connected;
+    public override void Stop() {
+        try {
+            Running = false;
+            ConnectSocket.Close();
+            ListenSocket?.Close();
         }
-        public void HandleMessage(IAsyncResult res)
-        {
-
+        catch (SocketException) {
+            MyLogger.Error(" Something went wrong with closing the TCPConection!");
         }
-
-        public void SetWakeUpEvent(ManualResetEvent mre)
-        {
-            WakePeerUpEvent = mre;
-        }
+        return;
     }
 }

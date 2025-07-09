@@ -1,0 +1,12 @@
+# .editorconfig file
+
+# This sets the C# brace style to "K&R" (Kernighan & Ritchie) style, which places the brace on the same line.
+[*.cs]
+csharp_new_line_before_open_brace = none
+
+# Optional: You can also add more rules for different parts of the code
+csharp_new_line_before_open_brace_namespace = false  # No new line before '{' in namespaces
+csharp_new_line_before_open_brace_type = false       # No new line before '{' in class/struct/interface
+csharp_new_line_before_open_brace_method = false     # No new line before '{' in methods
+csharp_new_line_before_open_brace_accessor = false   # No new line before '{' in properties/accessors
+csharp_new_line_before_open_brace_control = false    # No new line before '{' in control blocks (if/else/for/while)

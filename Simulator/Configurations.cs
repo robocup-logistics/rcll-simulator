@@ -1,81 +1,71 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
+﻿using System.Globalization;
 using LlsfMsgs;
 using YamlDotNet.RepresentationModel;
-using MpsType = Simulator.MPS.Mps.MpsType;
+using Simulator.Utility;
+using Simulator.MPS;
 
-namespace Simulator
-{
+namespace Simulator {
     /// <summary>
     /// The configurations class is a singleton which stores all the different configuration values for the Refbox, Teamserver and machines
     /// It also stores the important values from the simulation.
     /// Further more it is intended to load the config from a .yaml file which is not currently support but should be usable in the near future
     /// </summary>
-    public class Configurations
-    {
+    public class Configurations {
         // general configurations are in this place
         public List<MpsConfig> MpsConfigs { get; set; }
         public List<RobotConfig> RobotConfigs { get; set; }
         public List<TeamConfig> Teams { get; set; }
-        public RefboxConfig? Refbox { get; set; }
+        public RefboxConfig Refbox { get; set; }
         public float TimeFactor { get; private set; } = 1f;
 
-        // definitions for the web gui
-
         // all member variables concerning the simulation are here
-        public bool MockUp { get; set; }
+        public int ExplorationProbability = 80;
+        public int RobotExploreDuration = 2;
 
-        public int FieldWidth = 14;
-        public int FieldHeight = 8;
-
-        public bool IgnoreTeamColor { get; private set; } = true;
-        public bool SendPrepare { get; private set; } = true;
         public bool FixedMPSplacement { get; private set; }
+        public bool GroundTruthMonitor { get; private set; }
         public int RobotMoveZoneDuration { get; private set; }
         public int RobotPlaceDuration { get; private set; }
         public int RobotGrabProductDuration { get; private set; }
-        public int RobotMaximumGrabDuration { get; private set; }
         public int BeltActionDuration { get; private set; }
 
         public int CSTaskDuration { get; private set; }
         public int BSTaskDuration { get; private set; }
         public int DSTaskDuration { get; private set; }
         public int RSTaskDuration { get; private set; }
+        public int SSTaskDuration { get; private set; }
         public bool AppendLogging { get; private set; }
-        public string RobotConnectionType { get; private set; }
         public bool RobotDirectBeaconSignals { get; private set; }
-        public string WebguiPrefix { get; private set;}
-        public uint WebguiPort { get; private set;}
+        public string WebguiPrefix { get; private set; }
+        public uint WebguiPort { get; private set; }
         public bool BarcodeScanner { get; private set; }
+        public bool RobotReportDirect { get; private set; }
 
-
-        public Configurations()
-        {
+        public Configurations(string path) {
             MpsConfigs = new List<MpsConfig>();
             RobotConfigs = new List<RobotConfig>();
             Teams = new List<TeamConfig>();
-            MockUp = true;
             BeltActionDuration = 100;
             CSTaskDuration = 100;
             BSTaskDuration = 110;
             DSTaskDuration = 100;
             RSTaskDuration = 100;
+            SSTaskDuration = 100;
             RobotMoveZoneDuration = 100;
             FixedMPSplacement = false;
             RobotPlaceDuration = 400;
-            RobotMaximumGrabDuration = 30000;  //milliseconds
             RobotGrabProductDuration = 100;
             AppendLogging = false;
-            RobotConnectionType = "tcp";
             RobotDirectBeaconSignals = false;
             BarcodeScanner = false;
             WebguiPrefix = "http";
+            LoadConfig(path);
+            if (Refbox == null) {
+                throw new Exception("Refbox config is null.");
+            }
         }
 
-        public void LoadConfig(string path)
-        {
+        private void LoadConfig(string path) {
             using var reader = new StreamReader(path);
             // Load the stream
             var yaml = new YamlStream();
@@ -89,36 +79,32 @@ namespace Simulator
             var general = (YamlMappingNode)mapping.Children[new YamlScalarNode("general")];
             var webgui = (YamlMappingNode)mapping.Children[new YamlScalarNode("webui")];
 
-            foreach (var keyPair in stations.Children)
-            {
+            foreach (var keyPair in stations.Children) {
                 var config = CreateMachineConfig(keyPair);
-                if (config != null)
-                {
+                if (config != null) {
                     MpsConfigs.Add(config);
                 }
             }
 
-            foreach (var keyPair in robots.Children)
-            {
+            foreach (var keyPair in robots.Children) {
                 var config = CreateRobotConfig(keyPair);
-                if (config != null)
-                {
+                if (config != null) {
                     RobotConfigs.Add(config);
                 }
             }
 
-            foreach (var keyPair in teams.Children)
-            {
+            foreach (var keyPair in teams.Children) {
                 var config = CreateTeamConfig(keyPair);
-                if (config != null)
-                {
+                if (config != null) {
                     Teams.Add(config);
                 }
             }
-
-            Refbox = CreateRefboxConfig(refbox);
-            foreach (var (key, value) in general.Children)
-            {
+            RefboxConfig? _refbox = CreateRefboxConfig(refbox);
+            if (_refbox == null) {
+                throw new Exception("Refbox config is null.");
+            }
+            Refbox = _refbox;
+            foreach (var (key, value) in general.Children) {
 
                 /*
                  *    belt-action-duration: 2.5 # time the belt takes to move a product from one place to another - taken from gazebo
@@ -127,19 +113,30 @@ namespace Simulator
                       rs-mount-duration: 3.5  # mounting a ring 3.5 seconds - taken from gazebo
                       ds-deliver-duration: 3.5  # time it takes to deliver - taken from gazebo
                  */
-                switch (key.ToString().ToLower())
-                {
+                switch (key.ToString().ToLower()) {
                     case "timefactor":
                         TimeFactor = float.Parse(value.ToString(), CultureInfo.InvariantCulture);
                         break;
-                    case "robot-prepare-mps":
-                        SendPrepare = bool.Parse(value.ToString().ToLower());
+                    case "monitor-ground-truth":
+                        GroundTruthMonitor = bool.Parse(value.ToString().ToLower());
                         break;
-                    case "ignore-teamcolor":
-                        IgnoreTeamColor = bool.Parse(value.ToString().ToLower());
+                    case "report-machhine-direct":
+                        RobotReportDirect = bool.Parse(value.ToString().ToLower());
                         break;
-                    case "mockup-connections":
-                        MockUp = bool.Parse(value.ToString().ToLower());
+                    case "robot-explore-zone":
+                        RobotExploreDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
+                        break;
+                    case "exploration-probablitity":
+                        ExplorationProbability = int.Parse(value.ToString());
+                        break;
+                    case "debug":
+                        MyLogger.debug_ = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "warn-to-console":
+                        MyLogger.WarnToConsole = bool.Parse(value.ToString().ToLower());
+                        break;
+                    case "error-to-console":
+                        MyLogger.ErrorToConsole = bool.Parse(value.ToString().ToLower());
                         break;
                     case "robot-move-zone-duration":
                         RobotMoveZoneDuration =
@@ -156,9 +153,6 @@ namespace Simulator
                             (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) *
                                   1000); // convert from seconds to milliseconds
                         break;
-                    case "robot-maximum-grab-duration":
-                        RobotMaximumGrabDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
-                        break;
                     case "belt-action-duration":
                         BeltActionDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
@@ -174,11 +168,11 @@ namespace Simulator
                     case "ds-deliver-duration":
                         DSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
-                    case "fixed-mps-position":
-                        FixedMPSplacement = bool.Parse(value.ToString().ToUpper());
+                    case "ss-task-duration":
+                        SSTaskDuration = (int)(float.Parse(value.ToString(), CultureInfo.InvariantCulture) * 1000);
                         break;
-                    case "robot-connection-type":
-                        RobotConnectionType = value.ToString().ToLower();
+                    case "fixed-mps-position":
+                        FixedMPSplacement = bool.Parse(value.ToString().ToLower());
                         break;
                     case "robot-direct-beacon":
                         RobotDirectBeaconSignals = bool.Parse(value.ToString().ToLower());
@@ -189,11 +183,9 @@ namespace Simulator
                 }
             }
 
-            foreach (var (key, value) in webgui.Children)
-            {
+            foreach (var (key, value) in webgui.Children) {
 
-                switch (key.ToString().ToLower())
-                {
+                switch (key.ToString().ToLower()) {
                     case "prefix":
                         WebguiPrefix = value.ToString().ToLower();
                         break;
@@ -208,42 +200,19 @@ namespace Simulator
         }
 
 
-        private static MpsConfig? CreateMachineConfig(KeyValuePair<YamlNode, YamlNode> child)
-        {
-
-            var port = 0;
+        private static MpsConfig? CreateMachineConfig(KeyValuePair<YamlNode, YamlNode> child) {
             var orientation = 0;
             var zone = Zone.CZ11;
-            var debug = false;
             var type = MpsType.BaseStation;
             var (yamlNode, yamlNode1) = child;
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
-            foreach (var (key, value) in allNodes)
-            {
-                switch (key.ToString().ToLower())
-                {
+            foreach (var (key, value) in allNodes) {
+                switch (key.ToString().ToLower()) {
                     //Console.WriteLine(entry);
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("This has to be skipped!");
                         return null;
-                    case "debug":
-                        switch (value.ToString().ToLower())
-                        {
-                            case "true":
-                                debug = true;
-                                break;
-                            case "false":
-                                debug = false;
-                                break;
-                            default:
-                                type = MpsType.CapStation;
-                                break;
-                        }
-
-                        break;
                     case "type":
-                        type = value.ToString().ToUpper() switch
-                        {
+                        type = value.ToString().ToUpper() switch {
                             "BS" => MpsType.BaseStation,
                             "CS" => MpsType.CapStation,
                             "DS" => MpsType.DeliveryStation,
@@ -251,9 +220,6 @@ namespace Simulator
                             "RS" => MpsType.RingStation,
                             _ => MpsType.CapStation
                         };
-                        break;
-                    case "port":
-                        port = int.Parse(value.ToString());
                         break;
                     case "orientation":
                         orientation = int.Parse(value.ToString());
@@ -265,27 +231,27 @@ namespace Simulator
             }
 
             var color = yamlNode.ToString().Contains("M-") ? Team.Magenta : Team.Cyan;
-            var config = new MpsConfig(yamlNode.ToString(), type, port, color, debug, zone, orientation);
+            var config = new MpsConfig(yamlNode.ToString(), type, color, zone, orientation);
             return config;
         }
 
-        private static RobotConfig? CreateRobotConfig(KeyValuePair<YamlNode, YamlNode> child)
-        {
-            var jersey = 0;
+        private static RobotConfig? CreateRobotConfig(KeyValuePair<YamlNode, YamlNode> child) {
+            uint jersey = 0;
             var color = Team.Cyan;
             var (yamlNode, yamlNode1) = child;
             var connection = "tcp";
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
-            foreach (var (key, value) in allNodes)
-            {
-                switch (key.ToString().ToLower())
-                {
+            string host = "0.0.0.0";
+            int recv = 0;
+            int send = 0;
+
+            foreach (var (key, value) in allNodes) {
+                switch (key.ToString().ToLower()) {
                     //Console.WriteLine(entry);
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "jersey":
-                        jersey = int.Parse(value.ToString());
+                        jersey = uint.Parse(value.ToString());
                         break;
                     case "team" when yamlNode1.ToString().ToLower().Contains("magenta"):
                         color = Team.Magenta;
@@ -296,82 +262,92 @@ namespace Simulator
                     case "connection":
                         connection = value.ToString().ToLower();
                         break;
+                    case "recv":
+                        recv = int.Parse(value.ToString());
+                        break;
+                    case "host":
+                        host = value.ToString().ToLower();
+                        break;
+                    case "send":
+                        send = int.Parse(value.ToString());
+                        break;
                 }
             }
-            var config = new RobotConfig(yamlNode.ToString(), jersey, color, connection);
+
+            ConnectionType connectionType = ConnectionType.TCP;
+            switch (connection) {
+                case "tcp":
+                    connectionType = ConnectionType.TCP;
+                    break;
+                case "udp":
+                    connectionType = ConnectionType.UDP;
+                    break;
+                default:
+                    connectionType = ConnectionType.TCP;
+                    break;
+            }
+
+            var config = new RobotConfig(yamlNode.ToString(), jersey, color,
+                                         connectionType, send, host, recv);
             return config;
         }
 
-        private static TeamConfig? CreateTeamConfig(KeyValuePair<YamlNode, YamlNode> child)
-        {
+        private static TeamConfig? CreateTeamConfig(KeyValuePair<YamlNode, YamlNode> child) {
             string? name = null;
-            var port = 0;
-            var ip = "";
             var color = Team.Cyan;
+            var markerless = false;
 
             var (yamlNode, yamlNode1) = child;
-            if (!yamlNode.ToString().ToLower().Contains("magenta"))
-            {
-                if (yamlNode.ToString().ToLower().Contains("cyan"))
-                {
+            if (!yamlNode.ToString().ToLower().Contains("magenta")) {
+                if (yamlNode.ToString().ToLower().Contains("cyan")) {
                     color = Team.Cyan;
                 }
-                else
-                {
+                else {
                     Console.WriteLine("Not a known team color!");
                 }
             }
-            else
-            {
+            else {
                 color = Team.Magenta;
             }
 
+            string? keyphrase = null;
             var allNodes = ((YamlMappingNode)yamlNode1).Children;
-            foreach (var (key, value) in allNodes)
-            {
-                switch (key.ToString().ToLower())
-                {
-                    //Console.WriteLine(entry);
+            foreach (var (key, value) in allNodes) {
+                switch (key.ToString().ToLower()) {
                     case "active" when value.ToString().ToLower().Equals("false"):
-                        //Console.WriteLine("THis has to be skipped!");
                         return null;
                     case "name":
                         name = value.ToString();
                         break;
-                    case "host":
-                        ip = value.ToString();
+                    case "markerless":
+                        markerless = bool.Parse(value.ToString().ToLower());
                         break;
-                    case "port":
-                        port = int.Parse(value.ToString());
+                    case "keyphrase":
+                        keyphrase = value.ToString();
                         break;
                 }
             }
-            if (name == null)
-            {
-                return null;
+            if (name == null) {
+                throw new Exception("Team has no name");
             }
-            var config = new TeamConfig(name, color, ip, port);
+            var config = new TeamConfig(name, color, markerless, keyphrase);
             return config;
         }
 
-        private static RefboxConfig? CreateRefboxConfig(YamlMappingNode refbox)
-        {
+        private static RefboxConfig? CreateRefboxConfig(YamlMappingNode refbox) {
             string? ip = null;
-            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0;
+            int publicSendPort = 0, publicRecvPort = 0, cyanSendPort = 0, cyanRecvPort = 0, magentaSendPort = 0, magentaRecvPort = 0, tcpPort = 0, broker_port = 1883;
             var children = refbox.Children;
+            var broker_ip = "";
             // Step into the public information
             //Console.WriteLine(children[0].Key.ToString());
             var map = (YamlMappingNode)children[0].Value;
-            foreach (var (key, value) in children)
-            {
-                switch (key.ToString())
-                {
+            foreach (var (key, value) in children) {
+                switch (key.ToString()) {
                     case "public":
                         var publicChild = ((YamlMappingNode)value).Children;
-                        foreach (var (yamlNode, yamlNode1) in publicChild)
-                        {
-                            switch (yamlNode.ToString().ToLower())
-                            {
+                        foreach (var (yamlNode, yamlNode1) in publicChild) {
+                            switch (yamlNode.ToString().ToLower()) {
                                 case "ip":
                                     ip = yamlNode1.ToString();
                                     break;
@@ -393,10 +369,8 @@ namespace Simulator
                         break;
                     case "cyan":
                         var cyanChild = ((YamlMappingNode)value).Children;
-                        foreach (var (yamlNode, yamlNode1) in cyanChild)
-                        {
-                            switch (yamlNode.ToString().ToLower())
-                            {
+                        foreach (var (yamlNode, yamlNode1) in cyanChild) {
+                            switch (yamlNode.ToString().ToLower()) {
                                 case "send":
                                     cyanSendPort = int.Parse(yamlNode1.ToString());
                                     break;
@@ -411,10 +385,8 @@ namespace Simulator
                         break;
                     case "magenta":
                         var magentaChild = ((YamlMappingNode)value).Children;
-                        foreach (var (yamlNode, yamlNode1) in magentaChild)
-                        {
-                            switch (yamlNode.ToString().ToLower())
-                            {
+                        foreach (var (yamlNode, yamlNode1) in magentaChild) {
+                            switch (yamlNode.ToString().ToLower()) {
                                 case "send":
                                     magentaSendPort = int.Parse(yamlNode1.ToString());
                                     break;
@@ -427,108 +399,94 @@ namespace Simulator
                             }
                         }
                         break;
+                    case "mqtt":
+                        var mqttChild = ((YamlMappingNode)value).Children;
+                        foreach (var (yamlNode, yamlNode1) in mqttChild) {
+                            switch (yamlNode.ToString().ToLower()) {
+                                case "broker_ip":
+                                    broker_ip = yamlNode1.ToString().ToLower();
+                                    break;
+                                case "broker_port":
+                                    broker_port = int.Parse(yamlNode1.ToString());
+                                    break;
+                                default:
+                                    Console.WriteLine("Unknown key " + yamlNode.ToString());
+                                    return null;
+                            }
+                        }
+                        break;
                     default:
                         Console.WriteLine("Unknown key " + key.ToString());
                         return null;
+
                 }
 
                 //Console.WriteLine(val);
             }
-            if (ip == null)
-            {
+            if (ip == null) {
                 return null;
             }
             var config = new RefboxConfig(ip, tcpPort, publicSendPort, publicRecvPort, cyanSendPort, cyanRecvPort,
-                magentaSendPort, magentaRecvPort);
+                magentaSendPort, magentaRecvPort, broker_ip, broker_port);
             return config;
         }
 
-        public void AddTestData()
-        {
-            Teams.Add(new TeamConfig("TestTeam", Team.Cyan, "TestIp", 0));   
-        }
-        public void AddConfig(RobotConfig conf)
-        {
+        public void AddConfig(RobotConfig conf) {
             RobotConfigs.Add(conf);
 
         }
-        public void AddConfig(MpsConfig conf)
-        {
+        public void AddConfig(MpsConfig conf) {
             MpsConfigs.Add(conf);
 
         }
-        public void AddConfig(TeamConfig conf)
-        {
+        public void AddConfig(TeamConfig conf) {
             Teams.Add(conf);
         }
 
-        public void AddConfig(RefboxConfig refbox)
-        {
+        public void AddConfig(RefboxConfig refbox) {
             Refbox = refbox;
         }
-        public void SetConnectionType(string connectionType)
-        {
-            RobotConnectionType = connectionType;
-        }
 
-        public void ToggleMockUp()
-        {
-            MockUp = !MockUp;
-        }
     }
 
-    public class MpsConfig
-    {
+    public class MpsConfig {
         public string Name { get; }
-        public MPS.Mps.MpsType Type { get; }
-        public int Port { get; }
+        public MpsType Type { get; }
         public Team Team { get; }
-        public bool Debug { get; }
-        public Zone Zone {get;}
-        public int Orientation {get;}
-        public MpsConfig(string name, MPS.Mps.MpsType type, int port, Team team, bool debug, Zone zone = 0, int orientation = -1)
-        {
+        public Zone Zone { get; }
+        public int Orientation { get; }
+        public MpsConfig(string name, MpsType type, Team team, Zone zone = 0, int orientation = -1) {
             Name = name;
             Type = type;
-            Port = port;
             Team = team;
-            Debug = debug;
             Zone = zone;
             Orientation = orientation;
         }
 
-        public void PrintConfig()
-        {
+        public void PrintConfig() {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Type = [" + Type + "]");
-            Console.WriteLine("Port = [" + Port + "]");
             Console.WriteLine("Team = [" + Team + "]");
-            Console.WriteLine("Debug = [" + Debug + "]");
             Console.WriteLine("Zone = [" + Zone + "]");
             Console.WriteLine("Orientation = [" + Orientation + "]");
         }
     }
 
-    public class TeamConfig
-    {
+    public class TeamConfig {
         public string Name { get; }
         public Team Color { get; }
-        public string Ip { get; }
-        public int Port { get; }
-        public uint Points { get; set; }
-        public TeamConfig(string name, Team color, string ip, int port)
-        {
+        public string? Keyphrase { get; set; }
+        public bool Markerless;
+        public TeamConfig(string name, Team color, bool markerless, string? keyphrase = null) {
             Name = name;
             Color = color;
-            Ip = ip;
-            Port = port;
-            Points = 0;
+            Keyphrase = keyphrase;
+            Markerless = markerless;
         }
     }
 
-    public class RefboxConfig
-    {
+    public class RefboxConfig {
         public string IP { get; }
         public int TcpPort { get; }
         public int PublicSendPort { get; }
@@ -537,9 +495,13 @@ namespace Simulator
         public int CyanRecvPort { get; }
         public int MagentaSendPort { get; }
         public int MagentaRecvPort { get; }
+        public string BrokerIp { get; }
+        public int BrokerPort { get; }
 
-        public RefboxConfig(string ip,int tcpPort, int publicSend, int publicRecv, int cyanSend, int cyanRecv, int magentaSend, int magentaRecv)
-        {
+        public RefboxConfig(string ip, int tcpPort, int publicSend,
+                            int publicRecv, int cyanSend, int cyanRecv,
+                            int magentaSend, int magentaRecv,
+                            string broker_ip = "localhost", int brokerPort = 1883) {
             IP = ip;
             TcpPort = tcpPort;
             PublicRecvPort = publicRecv;
@@ -548,9 +510,10 @@ namespace Simulator
             CyanSendPort = cyanSend;
             MagentaRecvPort = magentaRecv;
             MagentaSendPort = magentaSend;
+            BrokerIp = broker_ip;
+            BrokerPort = brokerPort;
         }
-        public void PrintConfig()
-        {
+        public void PrintConfig() {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Ip = [" + IP + "]");
             Console.WriteLine("TcpPort = [" + TcpPort + "]");
@@ -560,29 +523,45 @@ namespace Simulator
             Console.WriteLine("CyanSendPort = [" + CyanSendPort + "]");
             Console.WriteLine("MagentaRecvPort = [" + MagentaRecvPort + "]");
             Console.WriteLine("MagentaSendPort = [" + MagentaSendPort + "]");
+            Console.WriteLine("BrokerIp = [" + BrokerIp + "]");
+            Console.WriteLine("BrokerPort = [" + BrokerPort + "]");
         }
     }
 
-    public class RobotConfig
-    {
+    public enum ConnectionType {
+        TCP,
+        UDP
+    }
+
+    public class RobotConfig {
         public string Name;
-        public int Jersey;
+        public uint Jersey;
         public Team TeamColor;
-        public string Connection;
-        public RobotConfig(string name, int jersey, Team color, string connection)
-        {
+        public ConnectionType connectionType;
+        public int SendPort;
+        public string Host;
+        public int RecvPort;
+        public RobotConfig(string name, uint jersey, Team color, ConnectionType connection,
+                           int sendPort, string host, int recvPort) {
+            if (jersey != 1 && jersey != 2 && jersey != 3) {
+                throw new Exception("Jersey number has to be 1, 2 or 3! Name: " + name);
+            }
             Name = name;
             Jersey = jersey;
             TeamColor = color;
-            Connection = connection;
+            connectionType = connection;
+            RecvPort = recvPort;
+            SendPort = sendPort;
+            Host = host;
         }
-        public void PrintConfig()
-        {
+        public void PrintConfig() {
             Console.WriteLine("---------------------------");
             Console.WriteLine("Name = [" + Name + "]");
             Console.WriteLine("Jersey = [" + Jersey + "]");
             Console.WriteLine("Team = [" + TeamColor + "]");
-            Console.WriteLine("Connection = [" + Connection + "]");
+            Console.WriteLine("SendPort = [" + SendPort + "]");
+            Console.WriteLine("Host = [" + Host + "]");
+            Console.WriteLine("RecvPort = [" + RecvPort + "]");
         }
     }
 }
