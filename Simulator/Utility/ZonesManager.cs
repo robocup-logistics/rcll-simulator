@@ -122,7 +122,7 @@ public class ZonesManager {
         Dictionary[yxToZone(2, width - 1, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
         Dictionary[yxToZone(2, width - 3, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Cyan)]);
 
-        Dictionary[yxToZone(1, width - 4, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Cyan)]);
+        Dictionary[yxToZone(1, width - 2, Team.Cyan)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Cyan)]);
 
         //Magenta
         Dictionary[yxToZone(2, width, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width, Team.Magenta)]);
@@ -135,7 +135,7 @@ public class ZonesManager {
         Dictionary[yxToZone(2, width - 1, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
         Dictionary[yxToZone(2, width - 3, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 2, Team.Magenta)]);
 
-        Dictionary[yxToZone(1, width - 4, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Magenta)]);
+        Dictionary[yxToZone(1, width - 2, Team.Magenta)].RemoveNeighbor(Dictionary[yxToZone(1, width - 3, Team.Magenta)]);
     }
 
     public CZones? GetZone(Zone zone) {
