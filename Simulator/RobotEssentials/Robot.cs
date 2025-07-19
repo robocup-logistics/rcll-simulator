@@ -160,6 +160,10 @@ public partial class Robot {
                     MyLogger.Debug("Recived the current task again. Going to ignore that message");
                     return;
                 }
+                if (task.TaskId == LastTask?.TaskId) {
+                    MyLogger.Debug("Recived the last task again. Going to ignore that message");
+                    return;
+                }
                 if (FinishedTasks.Any(task => task.TaskId == task.TaskId)) {
                     MyLogger.Debug("Recived a finished task again. Going to ignore that message");
                     return;
